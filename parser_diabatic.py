@@ -1,7 +1,5 @@
 import re
 import numpy as np
-import sys
-import matplotlib.pyplot as plt
 import os
 
 
@@ -272,6 +270,8 @@ def analyze_diabatic(output, print_data=False, n_at=12):
 # Start script -------------------------------------------------------------
 
 if __name__ == '__main__':
+    import matplotlib.pyplot as plt
+
     dir_list = os.listdir('data/eclipsed')
 
     total_data = []

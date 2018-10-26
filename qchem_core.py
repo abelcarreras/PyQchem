@@ -10,7 +10,8 @@ import pickle
 try:
     with open('calculation_data.pkl', 'rb') as input:
         calculation_data = pickle.load(input)
-        print(calculation_data)
+        print('Loaded data from calculation_data.pkl')
+        # print(calculation_data)
 except FileNotFoundError:
     calculation_data = {}
 
@@ -261,12 +262,21 @@ def basic_parser_qchem(output):
             exc_energy = float(state_cis_words[5])
             exc_energy_units = state_cis_words[3][1:-1]
             tot_energy = float(state_cis_words[11])
-            tot_energy_units = state_cis_words[12]
-            mul = state_cis_words[14]
-            trans_mom = [float(mom) for mom in [state_cis_words[17],
-                                                state_cis_words[19],
-                                                state_cis_words[21]]]
-            strength = float(state_cis_words[25])
+            try:
+                tot_energy_units = state_cis_words[12]
+                mul = state_cis_words[14]
+                trans_mom = [float(mom) for mom in [state_cis_words[17],
+                                                    state_cis_words[19],
+                                                    state_cis_words[21]]]
+                strength = float(state_cis_words[25])
+            except ValueError:
+                # old version of qchem (< 5.01)
+                tot_energy_units = 'au'
+                mul = state_cis_words[13]
+                trans_mom = [float(mom) for mom in [state_cis_words[16],
+                                                    state_cis_words[18],
+                                                    state_cis_words[20]]]
+                strength = float(state_cis_words[24])
 
             transitions = []
             for i, word in enumerate(state_cis_words):
