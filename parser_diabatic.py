@@ -88,7 +88,7 @@ def analyze_diabatic(output, print_data=False, n_at=12):
         adiabat_h = float(data[2])
         # print (adiabat_h)
         if indices[0] == indices[1]:
-            adiabatic_energies.update({'E_{}'.format(indices[0]+1) : adiabat_h * 27.2114})
+            adiabatic_energies.update({'E_{}'.format(indices[0]+1): adiabat_h * 27.2114})
 
     if print_data:
         for item in sorted(adiabatic_energies):
@@ -245,7 +245,6 @@ def analyze_diabatic(output, print_data=False, n_at=12):
         for item in ['W_DC', 'W_CT', 'W_h', 'W_e']:
             print('{:5} : {:10.5f} {:10.5f} {:10.5f} {:10.5f}'.format(
                 *[item] + [diabatic_contributions[item+'_{}'.format(i+1)] for i in range(4)] ))
-
 
     l = []
     for i in range(4):
