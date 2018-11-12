@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def analyze_diabatic(output, print_data=False, n_at=12):
+def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
 
     # C coordinates
     n = output.find('$molecule')
@@ -48,12 +48,10 @@ def analyze_diabatic(output, print_data=False, n_at=12):
              np.abs(np.abs(e_sum1) - np.abs(h_sum1)) < eps:
             #print ('LE', e_sum1 - e_sum2)
             if (e_sum1 - e_sum2) > 0:
-                #print ('01')
                 label = '01'
             else:
-                #print ('10')
                 label = '10'
-            #label = 'LE'
+
             state_order.append(label)
 
         if ((np.abs(np.abs(e_sum1)) > 1-eps and np.abs(h_sum1) < eps) or
@@ -64,9 +62,7 @@ def analyze_diabatic(output, print_data=False, n_at=12):
                 #print ('CA')
                 label = 'CA'
             else:
-                #print ('AC')
                 label = 'AC'
-            #label = 'AC'
             state_order.append(label)
 
         if print_data:
@@ -74,7 +70,6 @@ def analyze_diabatic(output, print_data=False, n_at=12):
     # AdiabatH
     if len(state_order) < len(loc_diab) or len(state_order) < 4:
         raise Exception('Some states not found')
-
 
     if print_data:
         print ('-------------------------------')
@@ -111,9 +106,6 @@ def analyze_diabatic(output, print_data=False, n_at=12):
 
         # print ('test_indices:', indices, state_order, loc_diab)
         # print ('test_states:', [state_order[indices[0]], state_order[indices[1]]])
-
-        if len(state_order) < 4:
-            raise Exception('Error of state order')
 
         if [state_order[indices[0]], state_order[indices[1]]] == ['01', '10']:
             diabatic_energies.update({'V_DC': adiabat_h * 27.2114})
@@ -258,12 +250,17 @@ def analyze_diabatic(output, print_data=False, n_at=12):
         for i, _l in enumerate(l):
             print ('lambda {}: {:10.5f}'.format(i+1, _l))
 
+    reordering = []
+    for m in re.finditer('Reordering necessary!', output):
+        reordering.append([int(num) for num in output[m.end():m.end()+7].split('->')])
+
     return {'loc_diab': loc_diab,
             'adiabatic_energies': adiabatic_energies,
             'diabatic_energies': diabatic_energies,
             'diabatic_contributions': diabatic_contributions,
             'coefficients': coefficients,
-            'lambda': l}
+            'lambda': l,
+            'reordering' : reordering}
 
 
 # Start script -------------------------------------------------------------

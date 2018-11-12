@@ -1,9 +1,11 @@
 from structure import Structure
-from qchem_core import get_output_from_qchem, create_qchem_input, basic_parser_qchem
+from qchem_core import get_output_from_qchem, create_qchem_input
 import numpy as np
+import pickle
 
-from parser_diabatic import analyze_diabatic
-
+from parsers.parser_diabatic import analyze_diabatic
+from parsers.basic import basic_parser_qchem
+# common qchem input parameters
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
               'basis': '6-31G',
@@ -16,14 +18,18 @@ parameters = {'jobtype': 'sp',
               'RPA': False,
               'gui': 0}
 
-
+# grid parameters
 distance = 4.7000000
 
-slide_y = -1
-slide_z = 0
+range_y = np.arange(0, 3, 0.5).tolist()
+range_y = [0]
 
-for slide_y in np.arange(0, 3, 0.5):
-    for slide_z in np.arange(0, 3, 0.5):
+range_z = np.arange(0, 3, 0.5).tolist()
+
+# Start parsing
+total_data = {}
+for slide_y in range_y:
+    for slide_z in range_z:
 
         coordinates = [[0.0000000,  0.0000000,  0.6660120],
                        [0.0000000,  0.0000000, -0.6660120],
@@ -43,9 +49,6 @@ for slide_y in np.arange(0, 3, 0.5):
         coordinates[:, 1] = coordinates[:, 1] + slide_y
         coordinates[:, 2] = coordinates[:, 2] + slide_z
 
-        print(coordinates)
-        exit()
-
         molecule = Structure(coordinates=coordinates,
                              atomic_elements=['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H'],
                              charge=0)
@@ -53,12 +56,12 @@ for slide_y in np.arange(0, 3, 0.5):
         txt_input = create_qchem_input(molecule, **parameters)
         # print(txt_input)
 
+        # parse CIS data
         data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=basic_parser_qchem)
 
         # if closed shell
         ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge)//2
         n_states = 2
-
 
         # get list of interesting states
         interesting_transitions = []
@@ -68,11 +71,18 @@ for slide_y in np.arange(0, 3, 0.5):
                     interesting_transitions.append([i + 1, transition['origin'], transition['target'], transition['amplitude'] ** 2])
 
         interesting_transitions = np.array(interesting_transitions)
+
         list_states = interesting_transitions[np.array(interesting_transitions)[:, 3].argsort()]
         list_states = np.array(list_states[:, 0][::-1], dtype=int)
         indexes = np.unique(list_states, return_index=True)[1]
         list_states = np.sort([list_states[index] for index in sorted(indexes)][:n_states * 2])
-        # print(list_states)
+        print(list_states)
+
+        # store transition moment info
+        trans_moments = []
+        for state in list_states:
+            trans_moments.append(data['excited states cis'][state]['transition moment'])
+        print(trans_moments)
 
         parameters.update({'loc_cis_ov_separate': False,
                            'er_cis_numstate': n_states*2,
@@ -80,9 +90,18 @@ for slide_y in np.arange(0, 3, 0.5):
                            'localized_diabatization': list_states})
         txt_input = create_qchem_input(molecule, **parameters)
         # print(txt_input)
-
-        data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=analyze_diabatic)
+        try:
+            # parse adiabatic/diabatic data
+            data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=analyze_diabatic)
+            data.update({'transition_moments': trans_moments})
+            total_data['{}_{}'.format(slide_y, slide_z)] = data
+            print(data)
+        except:
+            print('Failed!')
 
         print(data)
 
+total_data.update({'range_y': range_y, 'range_z': range_z})
 
+with open('my_data_4.pkl', 'wb') as f:
+   pickle.dump(total_data, f, pickle.HIGHEST_PROTOCOL)

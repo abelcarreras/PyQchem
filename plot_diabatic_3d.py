@@ -22,7 +22,7 @@ def correct_order(data_1, data_2, order):
     data_2_o = []
 
     for i, o in enumerate(order):
-        print(o)
+
         if o[0] == 1 and o[1] == 0:
             data_1_o.append(data_2[i])
             data_2_o.append(data_1[i])
@@ -43,108 +43,8 @@ def interpolate_data(points, data , y_range, z_range):
     return grid_z2.T.flatten()
 
 
-def close(p1, p2, p3):
-    x = np.array([1, 2, 3], dtype=float)
-    y = np.array([p1, p2, p3], dtype=float)
-
-    return np.sum((np.polyval(np.polyfit(x, y, 1), x) - y) ** 2)
-
-
-def close2(p1_1, p1_2, p2_1, p2_2):
-    a1 = np.abs(p1_1 - p1_2) - np.abs(p2_1 - p1_2)
-    a2 = np.abs(p2_1 - p2_2) - np.abs(p1_1 - p2_2)
-
-    return False
-
-
-def correct_data(data_1, data_2, y_range, z_range):
-    ny = len(y_range)
-    nz = len(z_range)
-    data1_rs = np.array(data_1).reshape(len(y_range), len(z_range))
-    data2_rs = np.array(data_2).reshape(len(y_range), len(z_range))
-    for i in range(ny):
-        for j in range(nz):
-            if i > 2:
-                if close(data1_rs[i, j], data1_rs[i - 1, j], data1_rs[i - 2, j]) > close(data2_rs[i, j], data1_rs[i - 1, j], data1_rs[i - 2, j]):
-                    a = data1_rs[i, j]
-                    data1_rs[i, j] = data2_rs[i, j]
-                    data2_rs[i, j] = a
-
-            if i < ny - 2:
-                if close(data1_rs[i, j], data1_rs[i + 1, j], data1_rs[i + 2, j]) > close(data2_rs[i, j],
-                                                                                         data1_rs[i + 1, j],
-                                                                                         data1_rs[i + 2, j]):
-                    a = data1_rs[i, j]
-                    data1_rs[i, j] = data2_rs[i, j]
-                    data2_rs[i, j] = a
-
-            if j > 2:
-                if close(data1_rs[i, j], data1_rs[i, j-1], data1_rs[i, j - 2]) > close(data2_rs[i, j], data1_rs[i, j-1], data1_rs[i, j-2]):
-                    a = data1_rs[i, j]
-                    data1_rs[i, j] = data2_rs[i, j]
-                    data2_rs[i, j] = a
-
-
-            if j < nz -2:
-                if close(data1_rs[i, j], data1_rs[i, j+1], data1_rs[i, j + 2]) > close(data2_rs[i, j], data1_rs[i, j+1], data1_rs[i, j+2]):
-                    a = data1_rs[i, j]
-                    data1_rs[i, j] = data2_rs[i, j]
-                    data2_rs[i, j] = a
-
-
-    return data1_rs.flatten(), data2_rs.flatten()
-
-
-def correct_data2(data_1, data_2, points):
-    # return data_1, data_2
-
-    d = 0.25
-    for _ in range(1):
-
-        for k, p in enumerate(points):
-            i, j = p
-
-            if [i + d, j] in points and [i + 2*d, j] in points and i < 0:
-                i1 = points.index([i + d, j])
-                i2 = points.index([i + 2*d, j])
-                if close(data_1[k], data_1[i1], data_1[i2]) > close(data_2[k], data_1[i1], data_1[i2]) and \
-                    close2(data_1[k], data_1[i1], data_2[k], data_2[i1]):
-                    a = data_1[k]
-                    data_1[k] = data_2[k]
-                    data_2[k] = a
-
-            if [i - d, j] in points and [i - 2*d, j] in points and i < 0:
-                i1 = points.index([i - d, j])
-                i2 = points.index([i - 2*d, j])
-                if close(data_1[k], data_1[i1], data_1[i2]) > close(data_2[k], data_1[i1], data_1[i2]) and \
-                    close2(data_1[k], data_1[i1], data_2[k], data_2[i1]):
-                    a = data_1[k]
-                    data_1[k] = data_2[k]
-                    data_2[k] = a
-
-            if [i, j + d] in points and [i, j + 2*d] in points and j > 0:
-                i1 = points.index([i, j + d])
-                i2 = points.index([i, j + d])
-                if close(data_1[k], data_1[i1], data_1[i2]) > close(data_2[k], data_1[i1], data_1[i2]) and \
-                    close2(data_1[k], data_1[i1], data_2[k], data_2[i1]):
-                    a = data_1[k]
-                    data_1[k] = data_2[k]
-                    data_2[k] = a
-
-            if [i, j - d] in points and [i, j - 2*d] in points and j < 0:
-                i1 = points.index([i, j - d])
-                i2 = points.index([i, j - d])
-                if close(data_1[k], data_1[i1], data_1[i2]) > close(data_2[k], data_1[i1], data_1[i2]) and \
-                    close2(data_1[k], data_1[i1], data_2[k], data_2[i1]):
-                    a = data_1[k]
-                    data_1[k] = data_2[k]
-                    data_2[k] = a
-
-    return data_1, data_2
-
-
 def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf=None,
-            zlabel='Energy [eV]',zrange=np.arange(-0.2, 0.2+0.025, 0.025)):
+            zlabel='Energy [eV]', zlevels=np.arange(-0.2, 0.2 + 0.025, 0.025)):
 
     # from matplotlib.colors import LinearSegmentedColormap
     # from matplotlib.colors import BoundaryNorm
@@ -152,16 +52,22 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
 
     cmap = plt.get_cmap('PiYG')
 
-    Y, Z = np.meshgrid(y_range, z_range)
+    Y, Z = np.meshgrid(z_range, y_range)
 
     plt.figure(1)
 
+    print(Y.shape)
+    print(len(y_range))
+    print(Z.shape)
+    print(len((z_range)))
+    print(data1.shape)
+
     plt.title(label1)
-    CS = plt.contourf(Y, Z, np.array(data1).reshape(len(y_range), len(z_range)), levels=zrange, cmap=cmap)
+    CS = plt.contourf(Y, Z, np.array(data1).reshape(len(y_range), len(z_range)), levels=zlevels, cmap=cmap)
     CS2 = plt.contour(CS, levels=CS.levels[::1], colors='black')
     plt.clabel(CS2, inline=1, fontsize=10)
-    plt.xlabel('distance Y [Å]')
-    plt.ylabel('distance Z [Å]')
+    plt.xlabel('distance Z [Å]')
+    plt.ylabel('distance Y [Å]')
     plt.xlim([-4, 4])
     plt.ylim([-4, 4])
 
@@ -175,11 +81,11 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
     plt.figure(2)
 
     plt.title(label2)
-    CS = plt.contourf(Y, Z, np.array(data2).reshape(len(y_range), len(z_range)), levels=zrange, cmap=cmap)
+    CS = plt.contourf(Y, Z, np.array(data2).reshape(len(y_range), len(z_range)), levels=zlevels, cmap=cmap)
     CS2 = plt.contour(CS, levels=CS.levels[::1], colors='black')
     plt.clabel(CS2, inline=1, fontsize=10)
-    plt.xlabel('distance Y [Å]')
-    plt.ylabel('distance Z [Å]')
+    plt.xlabel('distance Z [Å]')
+    plt.ylabel('distance Y [Å]')
     plt.xlim([-4, 4])
     plt.ylim([-4, 4])
 
@@ -202,8 +108,8 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
     fake2Dline = mpl.lines.Line2D([0], [0], linestyle="none", c='b', marker='o')
     fake2Dline2 = mpl.lines.Line2D([0], [0], linestyle="none", c='r', marker='o')
     ax.legend([fake2Dline, fake2Dline2], [label1, label2], numpoints=1)
-    ax.set_xlabel('distance Y [Å]')
-    ax.set_ylabel('distance Z [Å]')
+    ax.set_xlabel('distance Z [Å]')
+    ax.set_ylabel('distance Y [Å]')
     ax.set_zlabel(zlabel)
 
     if pdf is not None:
@@ -212,11 +118,67 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
     plt.show()
 
 
+def biplot2(data1, data2, label1, label2, y_range, z_range, pdf=None,
+            zlabel='Energy [eV]', zrange=(-0.2, 0.2), zp=0.025):
+
+    from scipy import interpolate
+
+    Y, Z = np.meshgrid(z_range, y_range)
+
+    print('----------------')
+    print(Y.shape)
+    print(len(Y), len(data1))
+
+    #f1 = interpolate.interp2d(Y, Z, data1, kind='cubic')
+    f1 = interpolate.interp2d(Y, Z, data1, kind='linear')
+    f2 = interpolate.interp2d(Y, Z, data2, kind='linear')
+
+    x = np.arange(-4, 4, zp)
+
+    plt.figure(3)
+
+    plt.xlim([-4, 4])
+    plt.ylim([zrange[0], zrange[1]])
+    plt.xlabel('distance Z [Å]')
+    plt.ylabel(zlabel)
+
+    plt.plot(x, f1(x, 0), label=label1)
+    plt.plot(x, f2(x, 0), label=label2)
+    plt.legend()
+
+    if pdf is not None:
+        pdf.savefig()
+
+    plt.show()
+
+
+def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
+            zlabel='Energy [eV]', zrange=(-0.2, 0.2), title=None):
+
+    data1 = np.array(data1).reshape([len(y_range), len(z_range)])[len(z_range)//2]
+    data2 = np.array(data2).reshape([len(y_range), len(z_range)])[len(z_range)//2]
+
+    plt.title(title)
+    plt.xlim([-4, 4])
+    plt.ylim([zrange[0], zrange[1]])
+    plt.xlabel('distance Z [Å]')
+    plt.ylabel(zlabel)
+
+    plt.plot(z_range, data1, label=label1)
+    plt.plot(z_range, data2, label=label2)
+    plt.legend()
+
+    if pdf is not None:
+        pdf.savefig()
+
+    plt.show()
+
+
 #############################
 folder = '3d_plot/'
 #############################
 
-with open('my_data_4.2_2.pkl', 'rb') as input:
+with open('my_data_4.7_3b.pkl', 'rb') as input:
     calculation_data = pickle.load(input)
     print('Loaded data from calculation_data.pkl')
 
@@ -234,6 +196,10 @@ for slide_y in calculation_data['range_y']:
                 calculation_data.update({'{}_{}'.format(-slide_y, slide_z): data_i,
                                          '{}_{}'.format(slide_y, -slide_z): data_i,
                                          '{}_{}'.format(-slide_y, -slide_z): data_i})
+
+#print(calculation_data['range_y'])
+#exit()
+
 
 if do_full:
     y_range = np.unique((-np.array(calculation_data['range_y'])).tolist() + calculation_data['range_y'])
@@ -264,19 +230,20 @@ states_orders = [get_order_states(data['transition_moments'][0:2]) for data in t
 
 
 data_1 = []
-for i, e in enumerate([data['diabatic_contributions']['W_DC_1'] for data in total_data]):
-    data_1.append(e)
-
 data_2 = []
-for i, e in enumerate([data['diabatic_contributions']['W_DC_2'] for data in total_data]):
-    data_2.append(e)
+for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data in total_data]:
+
+    factor = coeff['S1_C01'] * coeff['S1_C10']
+    data_1.append(diab['V_DC'] * np.sign(factor))
+
+    factor = coeff['S2_C01'] * coeff['S2_C10']
+    data_2.append(diab['V_DC'] * np.sign(factor))
 
 data_1, data_2 = correct_order(data_1, data_2, states_orders)
 
 if interpolate:
     data_1 = interpolate_data(points, data_1, y_range, z_range)
     data_2 = interpolate_data(points, data_2, y_range, z_range)
-
 
 wdc1 = np.array(data_1)
 wdc2 = np.array(data_2)
@@ -285,10 +252,40 @@ pdf = PdfPages(folder + 'W_DC.pdf')
 triplot(data_1, data_2, 'W_DC_1', 'W_DC_2', y_range, z_range, pdf=pdf, wireframe=True)
 pdf.close()
 
-#factor = coefficients['S{}_C10'.format(i + 1)] * coefficients['S{}_C01'.format(i + 1)]
-#w_dc = factor / np.abs(factor) * diabatic_energies['V_DC']
+biplot(data_1, data_2, 'W_DC_1', 'W_DC_2', y_range, z_range)
+
+#exit()
+# ##################### W_DC
+if False:
+    data_1 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_DC_1'] for data in total_data]):
+        data_1.append(e)
+
+    data_2 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_DC_2'] for data in total_data]):
+        data_2.append(e)
+
+    data_1, data_2 = correct_order(data_1, data_2, states_orders)
+
+    if interpolate:
+        data_1 = interpolate_data(points, data_1, y_range, z_range)
+        data_2 = interpolate_data(points, data_2, y_range, z_range)
+
+
+    wdc1 = np.array(data_1)
+    wdc2 = np.array(data_2)
+
+    #pdf = PdfPages(folder + 'W_DC.pdf')
+    triplot(data_1, data_2, 'W_DC_1', 'W_DC_2', y_range, z_range, wireframe=True)
+    #pdf.close()
+
+
+    #factor = coefficients['S{}_C10'.format(i + 1)] * coefficients['S{}_C01'.format(i + 1)]
+    #w_dc = factor / np.abs(factor) * diabatic_energies['V_DC']
+
 
 ####################
+
 data_1 = []
 data_2 = []
 for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data in total_data]:
@@ -313,106 +310,95 @@ if interpolate:
 wct1 = np.array(data_1)
 wct2 = np.array(data_2)
 
-pdf = PdfPages(folder + 'W_CT.pdf')
-triplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, pdf=pdf, wireframe=False)
-pdf.close()
+triplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, wireframe=False)
 
 
 #################### W_CT
-data_1 = []
-for i, e in enumerate([data['diabatic_contributions']['W_CT_1'] for data in total_data]):
-    #print(states_orders[i][0])
+if False:
+    data_1 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_CT_1'] for data in total_data]):
+        data_1.append(e)
 
-    #factor = total_data[i]['coefficients']['S{}_CCA'.format(0 + 1)] * total_data[i]['coefficients']['S{}_CAC'.format(0 + 1)]
-    #w_ct = factor / np.abs(factor) * total_data[i]['diabatic_energies']['V_CT']
-    #data_1.append(w_ct)
+    data_2 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_CT_2'] for data in total_data]):
+        data_2.append(e)
 
-    data_1.append(e)
+    data_1, data_2 = correct_order(data_1, data_2, states_orders)
 
-data_2 = []
-for i, e in enumerate([data['diabatic_contributions']['W_CT_2'] for data in total_data]):
-    #factor = total_data[i]['coefficients']['S{}_CCA'.format(1 + 1)] * total_data[i]['coefficients']['S{}_CAC'.format(1 + 1)]
-    #w_ct = factor / np.abs(factor) * total_data[i]['diabatic_energies']['V_CT']
-    #data_2.append(w_ct)
-
-    data_2.append(e)
-
-#data_1, data_2 = correct_order(data_1, data_2, states_orders)
-
-if interpolate:
-    data_1 = interpolate_data(points, data_1, y_range, z_range)
-    data_2 = interpolate_data(points, data_2, y_range, z_range)
-
-#pdf = PdfPages(folder + 'W_CT.pdf')
-#triplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, pdf=pdf)
-#pdf.close()
+    if interpolate:
+        data_1 = interpolate_data(points, data_1, y_range, z_range)
+        data_2 = interpolate_data(points, data_2, y_range, z_range)
 
 
-#####################
+    pdf = PdfPages(folder + 'W_CT.pdf')
+    triplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, pdf=pdf)
+    pdf.close()
 
-data_1 = []
-for i, e in enumerate([data['diabatic_contributions']['W_e_1'] for data in total_data]):
-    data_1.append(e)
+    biplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range)
 
-data_2 = []
-for i, e in enumerate([data['diabatic_contributions']['W_e_2'] for data in total_data]):
-    data_2.append(e)
+    wct1 = np.array(data_1)
+    wct2 = np.array(data_2)
 
 
-# correct sign:
-for i, lc in enumerate(zip(data_1, data_2)):
-    la, lb = lc
-    if la < 0:
-        data_1[i] *= -1
-    if lb > 0:
-        data_2[i] *= -1
+##################### W_e
+if False:
+    data_1 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_e_1'] for data in total_data]):
+        data_1.append(e)
 
-#data_1, data_2 = correct_order(data_1, data_2, states_orders)
+    data_2 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_e_2'] for data in total_data]):
+        data_2.append(e)
 
-if interpolate:
-    data_1 = interpolate_data(points, data_1, y_range, z_range)
-    data_2 = interpolate_data(points, data_2, y_range, z_range)
 
-pdf = PdfPages(folder + 'W_e.pdf')
-triplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf)
-pdf.close()
+    # correct sign:
+    for i, lc in enumerate(zip(data_1, data_2)):
+        la, lb = lc
+        if la < 0:
+            data_1[i] *= -1
+        if lb > 0:
+            data_2[i] *= -1
 
-we1 = data_1
-we2 = data_2
+    #data_1, data_2 = correct_order(data_1, data_2, states_orders)
 
-#exit()
+    if interpolate:
+        data_1 = interpolate_data(points, data_1, y_range, z_range)
+        data_2 = interpolate_data(points, data_2, y_range, z_range)
+
+
+    pdf = PdfPages(folder + 'W_e.pdf')
+    triplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf)
+    biplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf)
+    pdf.close()
+
+    we1 = data_1
+    we2 = data_2
+
+    #exit()
 
 ############
 data_1 = []
 data_2 = []
 for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data in total_data]:
 
-    factor = coeff['S1_C10'] * coeff['S1_CCA'] + coeff['S1_C01'] * coeff['S1_CAC']
-    # factor = coeff['S1_C10'] * coeff['S1_CAC'] + coeff['S1_C01'] * coeff['S1_CCA']
-
-    data_1.append(diab['V_e'] * np.sign(factor))
-
     #factor = coeff['S1_C10'] * coeff['S1_CAC'] + coeff['S1_C01'] * coeff['S1_CCA']
-    #data_1.append(diab['V_h'] * factor)
 
-    factor = coeff['S2_C10'] * coeff['S2_CCA'] + coeff['S2_C01'] * coeff['S2_CAC']
-    # factor = coeff['S2_C10'] * coeff['S2_CAC'] + coeff['S2_C01'] * coeff['S2_CCA']
+    factor = coeff['S1_C01'] * coeff['S1_CAC']
+    factor2 = coeff['S1_C10'] * coeff['S1_CCA']
 
-    data_2.append(diab['V_e'] * np.sign(factor))
+    #data_1.append(diab['V_e'] * np.sign(factor))
+    data_1.append(diab['V_h_2'] * np.sign(factor2))
 
-    #factor = coeff['S2_C10'] * coeff['S2_CAC'] + coeff['S2_C01'] * coeff['S2_CCA']
-    #data_2.append(diab['V_h'] * factor)
+    #factor = coeff['S2_C10'] * coeff['S2_CCA'] + coeff['S2_C01'] * coeff['S2_CAC']
+
+    factor = coeff['S2_C01'] * coeff['S2_CAC']
+    factor2 = coeff['S2_C10'] * coeff['S2_CCA']
+
+    # data_2.append(diab['V_e'] * np.sign(factor))
+    data_2.append(diab['V_h_2'] * np.sign(factor2))
 
 
 #data_1, data_2 = correct_order(data_1, data_2, states_orders)
-
-# correct sign:
-#for i, lc in enumerate(zip(data_1, data_2)):
-#    la, lb = lc
-#    if la > 0:
-#        data_1[i] *= -1
-#    if lb < 0:
-#        data_2[i] *= -1
 
 if interpolate:
     data_1 = interpolate_data(points, data_1, y_range, z_range)
@@ -421,68 +407,73 @@ if interpolate:
 
 pdf = PdfPages(folder + 'W_e.pdf')
 triplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf)
+biplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf)
 pdf.close()
 
+we1 = data_1
+we2 = data_2
 
-########################
+#exit()
+######################## W_h
+if False:
+    data_1 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_h_1'] for data in total_data]):
+        data_1.append(e)
 
-data_1 = []
-for i, e in enumerate([data['diabatic_contributions']['W_h_1'] for data in total_data]):
-    data_1.append(e)
+    data_2 = []
+    for i, e in enumerate([data['diabatic_contributions']['W_h_2'] for data in total_data]):
+        data_2.append(e)
 
-data_2 = []
-for i, e in enumerate([data['diabatic_contributions']['W_h_2'] for data in total_data]):
-    data_2.append(e)
+    #data_1, data_2 = correct_order(data_1, data_2, states_orders)
 
-#data_1, data_2 = correct_order(data_1, data_2, states_orders)
+    # correct order:
+    for i, lc in enumerate(zip(data_1, data_2)):
+        l1, l2 = lc
+        if l1 > 0:
+            data_1[i] *= -1
+        if l2 < 0:
+            data_2[i] *= -1
 
-# correct order:
-for i, lc in enumerate(zip(data_1, data_2)):
-    l1, l2 = lc
-    if l1 > 0:
-        data_1[i] *= -1
-    if l2 < 0:
-        data_2[i] *= -1
+    if interpolate:
+        data_1 = interpolate_data(points, data_1, y_range, z_range)
+        data_2 = interpolate_data(points, data_2, y_range, z_range)
 
-if interpolate:
-    data_1 = interpolate_data(points, data_1, y_range, z_range)
-    data_2 = interpolate_data(points, data_2, y_range, z_range)
+    with PdfPages(folder + 'W_h.pdf') as pdf:
+        triplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf)
+        biplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf)
 
-with PdfPages(folder + 'W_h.pdf') as pdf:
-    triplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf)
 
-wh1 = data_1
-wh2 = data_2
+    wh1 = data_1
+    wh2 = data_2
 
 ##
 data_1 = []
 data_2 = []
 for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data in total_data]:
 
-    #factor = coeff['S1_C10'] * coeff['S1_CAC'] + coeff['S1_C01'] * coeff['S1_CCA']
+    factor1 = coeff['S1_C10'] * coeff['S1_CAC']
+    factor2 = coeff['S1_C01'] * coeff['S1_CCA']
+    norm = np.abs(factor1) + np.abs(factor2)
+    data_1.append(diab['V_h'] * np.sign(factor1))
+    #data_1.append((diab['V_h'] * factor1 + diab['V_h_2'] * factor2))
+    #data_1.append((diab['V_h'] * np.sign(factor1) + diab['V_h_2'] * np.sign(factor2)))
 
-    data_1.append(diab['V_h'] * np.sign(factor))
+    #data_1.append(norm)
 
-    #factor = coeff['S1_C10'] * coeff['S1_CAC'] + coeff['S1_C01'] * coeff['S1_CCA']
-    #data_1.append(diab['V_h'] * factor)
 
-    factor = coeff['S2_C10'] * coeff['S2_CAC'] + coeff['S2_C01'] * coeff['S2_CCA']
+    factor1 = coeff['S2_C10'] * coeff['S2_CAC']
+    factor2 = coeff['S2_C01'] * coeff['S2_CCA']
+    norm = np.abs(factor1) + np.abs(factor2)
 
-    data_2.append(diab['V_h'] * np.sign(factor))
+    data_2.append(diab['V_h'] * np.sign(factor1))
+    #data_2.append((diab['V_h'] * np.sign(factor1) + diab['V_h_2'] * np.sign(factor2)))
+    #data_2.append(norm)
 
     #factor = coeff['S2_C10'] * coeff['S2_CAC'] + coeff['S2_C01'] * coeff['S2_CCA']
     #data_2.append(diab['V_h'] * factor)
 
 
-#data_1, data_2 = correct_order(data_1, data_2, states_orders)
-
-# correct sign:
-#for i, lc in enumerate(zip(data_1, data_2)):
-#    la, lb = lc
-#    if la > 0:
-#        data_1[i] *= -1
-#    if lb < 0:
-#        data_2[i] *= -1
+data_1, data_2 = correct_order(data_1, data_2, states_orders)
 
 if interpolate:
     data_1 = interpolate_data(points, data_1, y_range, z_range)
@@ -490,9 +481,12 @@ if interpolate:
 
 with PdfPages(folder + 'W_h.pdf') as pdf:
     triplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf)
+    biplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf)
 
+wh1 = data_1
+wh2 = data_2
 
-#exit()
+exit()
 #######################
 
 
@@ -515,8 +509,10 @@ if interpolate:
 
 #data_1, data_2 = correct_data(data_1, data_2, y_range, z_range)
 
+
 with PdfPages(folder + 'lambda.pdf') as pdf:
     triplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, wireframe=True, pdf=pdf, zlabel='')
+    biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, pdf=pdf)
 
 l1 = np.array(data_1)
 l2 = np.array(data_2)
@@ -547,8 +543,10 @@ for c in np.array([data['diabatic_contributions'] for data in total_data]):
 data_1 = 2 * l1 * np.sqrt(1 - l1**2) * (np.array(we1) + np.array(wh1))
 data_2 = 2 * l2 * np.sqrt(1 - l2**2) * (np.array(we2) + np.array(wh2))
 
+
 with PdfPages(folder + 'E1.pdf') as pdf:
     triplot(data_1, data_2, 'E1-1', 'E1-2', y_range, z_range, wireframe=True, pdf=pdf)
+    biplot(data_1, data_2, 'E1-1', 'E1-2', y_range, z_range, pdf=pdf)
 
 #exit()
 
@@ -582,9 +580,11 @@ if interpolate:
 e_le = np.array(data_1)
 e_ct = np.array(data_2)
 
-with PdfPages(folder + 'diabatic_energies.pdf') as pdf:
-    triplot(data_1, data_2, 'E_LE', 'E_CT', y_range, z_range, pdf=pdf, zrange=None, wireframe=False)
 
+with PdfPages(folder + 'diabatic_energies.pdf') as pdf:
+    triplot(data_1, data_2, 'E_LE', 'E_CT', y_range, z_range, pdf=pdf, zlevels=None, wireframe=False)
+
+biplot(data_1, data_2, 'E_LE', 'E_CT', y_range, z_range)
 
 ###
 #l = np.array([data['lambda'] for data in total_data]).T
@@ -607,6 +607,7 @@ data_2 = l2**2 * (e_ct - e_le + wct2 - wdc2)
 with PdfPages(folder + 'E2.pdf') as pdf:
     triplot(data_1, data_2, 'E2-1', 'E2-2', y_range, z_range, wireframe=True, pdf=pdf)
 
+biplot(data_1, data_2, 'E2-1', 'E2-2', y_range, z_range)
 
 
 data_1 = []
@@ -624,12 +625,8 @@ if interpolate:
     data_2 = interpolate_data(points, data_2, y_range, z_range)
 
 with PdfPages(folder + 'adiabatic_energies.pdf') as pdf:
-    triplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, pdf=pdf, zrange=None)
-
-
-
-
-
+    triplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, pdf=pdf, zlevels=None)
+    biplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, pdf=pdf)
 
 
 exit()

@@ -193,7 +193,7 @@ def parse_output(function):
 
 
 @parse_output
-def get_output_from_qchem(input_data, processors=1, binary='qchem', scratch=None):
+def get_output_from_qchem(input_data, processors=1, binary='qchem', use_mpi=False, scratch=None):
 
     if scratch is None:
         scratch = os.environ['QCSCRATCH']
@@ -205,7 +205,11 @@ def get_output_from_qchem(input_data, processors=1, binary='qchem', scratch=None
     qchem_input_file.write(input_data)
     qchem_input_file.close()
     # print(temp_file_name)
-    command = binary + ' -nt {} '.format(processors) + ' {} '.format(temp_file_name)
+    if use_mpi:
+        flag = '-np'
+    else:
+        flag = '-nt'
+    command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
     # print(command)
 
     qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
