@@ -41,7 +41,7 @@ def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
         # print ('e_sum', e_sum1, e_sum2)
         # print ('h_sum', h_sum1, h_sum2)
 
-        eps = 0.2
+        eps = 0.3
         label = ''
         if ((np.abs(e_sum1) > 1-eps and np.abs(e_sum2) < eps) or
             (np.abs(e_sum1) < eps and np.abs(e_sum2) > 1-eps)) and \
@@ -91,6 +91,11 @@ def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
 
         print ('-------------------------------')
 
+    if print_data:
+        for item in sorted(adiabatic_energies):
+            print('{:5} : {:10.5f}'.format(item, adiabatic_energies[item]))
+        print ('-------------------------------')
+
     diabatic_energies = {}
     for m in re.finditer('showmatrix diabatH', output):
         data = output[m.end():m.end()+30].split()
@@ -104,6 +109,8 @@ def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
             else:
                 diabatic_energies.update({'E_CT': adiabat_h * 27.2114})
 
+        diabatic_energies.update({'E_{}_{}'.format(*np.array(indices) + 1): adiabat_h * 27.2114})
+
         # print ('test_indices:', indices, state_order, loc_diab)
         # print ('test_states:', [state_order[indices[0]], state_order[indices[1]]])
 
@@ -116,8 +123,15 @@ def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
         if [state_order[indices[0]], state_order[indices[1]]] == ['01', 'AC']:
             diabatic_energies.update({'V_e': adiabat_h * 27.2114})
 
+        if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'CA']:
+            diabatic_energies.update({'V_e_2': adiabat_h * 27.2114})
+
         if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'AC']:
             diabatic_energies.update({'V_h': adiabat_h * 27.2114})
+
+        if [state_order[indices[0]], state_order[indices[1]]] == ['01', 'CA']:
+            diabatic_energies.update({'V_h_2': adiabat_h * 27.2114})
+
 
 
 #        if indices == [1, 0]:
@@ -159,6 +173,7 @@ def analyze_diabatic(output, print_data=False, n_at=12, n_mon=6):
             if [indices[0], state_order[indices[1]]] == [e_index, 'AC']:
                 coefficients.update({'S{}_CAC'.format(e_index+1): adiabat_f})
 
+            coefficients.update({'S{}_C{}'.format(*np.array(indices) + 1): adiabat_f})
         #
         # if indices == [0, 0]:
         #     coefficients.update({'S1_C1': adiabat_f})

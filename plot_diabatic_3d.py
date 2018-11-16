@@ -7,7 +7,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 
 # very simple order (for 2 states)
-def get_order_states(transition_moments, epsilon=0.1):
+def get_order_states2(transition_moments, epsilon=0.1):
     order = []
     for i, tm in enumerate(transition_moments):
         if np.linalg.norm(tm) < epsilon:
@@ -17,7 +17,7 @@ def get_order_states(transition_moments, epsilon=0.1):
     return order
 
 
-def correct_order(data_1, data_2, order):
+def correct_order2(data_1, data_2, order):
     data_1_o = []
     data_2_o = []
 
@@ -31,6 +31,28 @@ def correct_order(data_1, data_2, order):
             data_2_o.append(data_2[i])
 
     return data_1_o, data_2_o
+
+
+def get_order_states(states, epsilon=0.1):
+    print(states)
+    exit()
+
+    order = np.argsort([state['total energy'] for state in states]).tolist()
+    for i, tm in enumerate([state['transition moment'] for state in states]):
+        if np.linalg.norm(tm) > epsilon:
+            index = order.pop(i)
+            order = [index] + order
+
+    return order
+
+
+def correct_order(list, order):
+
+    alist = np.array(list)
+    orddered_list = alist[order]
+
+    return orddered_list.tolist()
+
 
 
 def interpolate_data(points, data , y_range, z_range):
@@ -55,12 +77,6 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
     Y, Z = np.meshgrid(z_range, y_range)
 
     plt.figure(1)
-
-    print(Y.shape)
-    print(len(y_range))
-    print(Z.shape)
-    print(len((z_range)))
-    print(data1.shape)
 
     plt.title(label1)
     CS = plt.contourf(Y, Z, np.array(data1).reshape(len(y_range), len(z_range)), levels=zlevels, cmap=cmap)
@@ -178,7 +194,7 @@ def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
 folder = '3d_plot/'
 #############################
 
-with open('my_data_4.7_3b.pkl', 'rb') as input:
+with open('my_data_4.7_3e.pkl', 'rb') as input:
     calculation_data = pickle.load(input)
     print('Loaded data from calculation_data.pkl')
 
@@ -223,8 +239,32 @@ for slide_y in y_range:
             i += 1
 # print(total_data[0])
 
-states_orders = [get_order_states(data['transition_moments'][0:2]) for data in total_data]
+states_orders = [get_order_states(data['transition_states'])[0:2] for data in total_data]
+print(states_orders)
 
+exit()
+
+
+
+print([data['reordering'] for data in total_data])
+
+data_2 = []
+for d in [data['reordering'] for data in total_data]:
+
+    if d != []:
+        if d[0] == [3, 2] or d[0] == [2, 3]:
+            data_2.append(0.19)
+        if d[0] == [1, 0] or d[0] == [0, 1]:
+            data_2.append(-0.19)
+    else:
+        data_2.append(0)
+
+with PdfPages(folder + 'reordering.pdf') as pdf:
+    triplot(data_2, data_2, 'reordering', 'reordering', y_range, z_range, wireframe=False, pdf=pdf)
+
+biplot(data_2, data_2, 'reordering', 'reordering', y_range, z_range)
+
+#exit()
 ###################
 # Z, Y = np.meshgrid(z_range, y_range)
 
@@ -387,7 +427,7 @@ for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data i
     factor2 = coeff['S1_C10'] * coeff['S1_CCA']
 
     #data_1.append(diab['V_e'] * np.sign(factor))
-    data_1.append(diab['V_h_2'] * np.sign(factor2))
+    data_1.append(diab['V_e'] * np.sign(factor))
 
     #factor = coeff['S2_C10'] * coeff['S2_CCA'] + coeff['S2_C01'] * coeff['S2_CAC']
 
@@ -395,7 +435,7 @@ for diab, coeff in [[data['diabatic_energies'], data['coefficients']] for data i
     factor2 = coeff['S2_C10'] * coeff['S2_CCA']
 
     # data_2.append(diab['V_e'] * np.sign(factor))
-    data_2.append(diab['V_h_2'] * np.sign(factor2))
+    data_2.append(diab['V_e'] * np.sign(factor))
 
 
 #data_1, data_2 = correct_order(data_1, data_2, states_orders)
@@ -486,7 +526,7 @@ with PdfPages(folder + 'W_h.pdf') as pdf:
 wh1 = data_1
 wh2 = data_2
 
-exit()
+#exit()
 #######################
 
 
