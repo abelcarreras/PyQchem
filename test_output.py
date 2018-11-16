@@ -7,6 +7,7 @@ from parsers.parser_diabatic import analyze_diabatic
 from parsers.basic import basic_parser_qchem
 # common qchem input parameters
 
+
 def get_order_states(states, epsilon=1):
 
     print([state['total energy'] for state in states])
@@ -121,11 +122,12 @@ for num in points_total:
     #    calculated_adiabatic[i] = np.dot(coefficients[i], np.dot(diabatic_energies, coefficients[i]))
 
 
-    print('diference adiabatic (original - calculated)')
-    print(calculated_adiabatic - adiabatic_energies)
 
     calculated_adiabatic = correct_order(calculated_adiabatic, order)
     adiabatic_energies = correct_order(adiabatic_energies, order)
+
+    print('diference adiabatic (original - calculated)')
+    print(calculated_adiabatic - adiabatic_energies)
 
     dif1.append(calculated_adiabatic - adiabatic_energies)
 
@@ -134,24 +136,22 @@ for num in points_total:
 
     print('-------------------------------------')
 
-
-
     diabatic_energies_2  = np.zeros([4, 4])
 
-    diabatic_energies_2[0, 0] = data['diabatic_energies']['E_LE']
-    diabatic_energies_2[2, 2] = data['diabatic_energies']['E_CT']
+    diabatic_energies_2[0, 0] = data['diabatic_energies']['E_LE'][0]
+    diabatic_energies_2[2, 2] = data['diabatic_energies']['E_CT'][0]
 
     diabatic_energies_2[0, 1] = data['diabatic_energies']['V_DC']
     diabatic_energies_2[2, 3] = data['diabatic_energies']['V_CT']
-    diabatic_energies_2[0, 3] = data['diabatic_energies']['V_e']  # -
-    diabatic_energies_2[1, 3] = data['diabatic_energies']['V_h']  # -
+    diabatic_energies_2[0, 3] = data['diabatic_energies']['V_e'][0]  # -
+    diabatic_energies_2[1, 3] = data['diabatic_energies']['V_h'][0]  # -
 
     # prima
-    diabatic_energies_2[1, 1] = data['diabatic_energies']['E_LE']
-    diabatic_energies_2[3, 3] = data['diabatic_energies']['E_CT']
+    diabatic_energies_2[1, 1] = data['diabatic_energies']['E_LE'][1]
+    diabatic_energies_2[3, 3] = data['diabatic_energies']['E_CT'][1]
 
-    diabatic_energies_2[0, 2] = data['diabatic_energies']['V_h']
-    diabatic_energies_2[1, 2] = data['diabatic_energies']['V_e']
+    diabatic_energies_2[1, 2] = data['diabatic_energies']['V_e'][1]
+    diabatic_energies_2[0, 2] = data['diabatic_energies']['V_h'][1]
 
     for i in range(4):
         for j in range(i):
@@ -167,14 +167,13 @@ for num in points_total:
     print('diabatic_energies_2')
     print(diabatic_energies_2)
 
-    coefficients_2 = []
-    for i in range(4):
-        coefficients_2.append([data['coefficients']['S{}_C10'.format(i+1)],
-                               data['coefficients']['S{}_C01'.format(i+1)],
-                               data['coefficients']['S{}_CAC'.format(i+1)],
-                               data['coefficients']['S{}_CCA'.format(i+1)]])
+    coefficients_2 = [data['coefficients']['S_01'],
+                      data['coefficients']['S_10'],
+                      data['coefficients']['S_CA'],
+                      data['coefficients']['S_AC']]
 
-    coefficients_2 = np.array(coefficients_2)
+    coefficients_2 = np.array(coefficients_2).T
+
 
     print('coefficients_2')
     print(coefficients_2)
@@ -182,10 +181,10 @@ for num in points_total:
     calculated_adiabatic_2 = np.diag(np.dot(coefficients_2, np.dot(diabatic_energies_2, coefficients_2.T)))
     print(calculated_adiabatic_2)
 
-    print('diference adiabatic (original - calculated)')
-    print(calculated_adiabatic_2 - adiabatic_energies)
-
     calculated_adiabatic_2 = correct_order(calculated_adiabatic_2, order)
+
+    print('diference adiabatic_2 (original - calculated)')
+    print(calculated_adiabatic_2 - adiabatic_energies)
 
     dif2.append(calculated_adiabatic_2 - adiabatic_energies)
     ener2.append(calculated_adiabatic_2)
@@ -201,31 +200,32 @@ for num in points_total:
         i = order[j]
         #i = j
 
-        e_le = data['diabatic_energies']['E_LE']
-        e_ct = data['diabatic_energies']['E_CT']
-
-        w_dc = data['diabatic_energies']['V_DC'] * np.sign(data['coefficients']['S{}_C10'.format(i+1)] *
-                                                           data['coefficients']['S{}_C01'.format(i+1)])
-        w_ct = data['diabatic_energies']['V_CT'] * np.sign(data['coefficients']['S{}_CCA'.format(i+1)] *
-                                                           data['coefficients']['S{}_CAC'.format(i+1)])
-
         lmb = data['lambda'][i]
 
-        w_e1 = data['diabatic_energies']['V_e'] * np.sign(data['coefficients']['S{}_C10'.format(i+1)] *
-                                                          data['coefficients']['S{}_CAC'.format(i+1)])
-        w_e2 = data['diabatic_energies']['V_e_2'] * np.sign(data['coefficients']['S{}_C01'.format(i+1)] *
-                                                            data['coefficients']['S{}_CCA'.format(i+1)])
+        e_le = np.average(data['diabatic_energies']['E_LE'])
+        e_ct = np.average(data['diabatic_energies']['E_CT'])
 
-        w_h1 = data['diabatic_energies']['V_h'] * np.sign(data['coefficients']['S{}_C10'.format(i+1)] *
-                                                          data['coefficients']['S{}_CCA'.format(i+1)])
-        w_h2 = data['diabatic_energies']['V_h_2'] * np.sign(data['coefficients']['S{}_C01'.format(i+1)] *
-                                                            data['coefficients']['S{}_CAC'.format(i+1)])
+        w_dc = data['diabatic_energies']['V_DC'] * np.sign(data['coefficients']['S_10'][i] *
+                                                           data['coefficients']['S_01'][i])
+        w_ct = data['diabatic_energies']['V_CT'] * np.sign(data['coefficients']['S_CA'][i] *
+                                                           data['coefficients']['S_AC'][i])
+
+
+        w_e1 = data['diabatic_energies']['V_e'][0] * np.sign(data['coefficients']['S_10'][i] *
+                                                             data['coefficients']['S_AC'][i])
+        w_e2 = data['diabatic_energies']['V_e'][1] * np.sign(data['coefficients']['S_01'][i] *
+                                                             data['coefficients']['S_CA'][i])
+
+        w_h1 = data['diabatic_energies']['V_h'][0] * np.sign(data['coefficients']['S_10'][i] *
+                                                             data['coefficients']['S_CA'][i])
+        w_h2 = data['diabatic_energies']['V_h'][1] * np.sign(data['coefficients']['S_01'][i] *
+                                                             data['coefficients']['S_AC'][i])
 
         w_e = np.average([w_e1, w_e2])
         w_h = np.average([w_h1, w_h2])
 
-        ###### fix ########
-        if False:
+        ###### manual fix ########
+        if True:
             if num < 1.6:
                 kk = -1
             else:
@@ -277,7 +277,6 @@ plt.legend()
 plt.show()
 
 
-
 #exit()
 
 plt.figure()
@@ -286,11 +285,21 @@ for i, k in enumerate(np.array(kill).T[2:]):
     plt.plot(points, k, '-o', label=i)
 plt.legend()
 
+for i, k in enumerate(np.array(kill).T[:2]):
+    plt.plot(points, k, '--', label=i)
+plt.legend()
+
+
 plt.figure()
 plt.title('W_h')
 for i, k in enumerate(np.array(kill2).T[2:]):
     plt.plot(points, k, '-o', label=i)
 plt.legend()
+
+for i, k in enumerate(np.array(kill2).T[:2]):
+    plt.plot(points, k, '--', label=i)
+plt.legend()
+
 plt.show()
 
 #exit()
@@ -305,7 +314,6 @@ ener3 = np.array(ener3).T
 
 ener = np.array(ener).T
 
-print(dif1)
 
 plt.title('diference adiabatic')
 for i, p in enumerate(dif1):
@@ -314,8 +322,8 @@ for i, p in enumerate(dif1):
 for i, p in enumerate(dif2):
     plt.plot(points, p, '-+', label='{}: {}'.format('Separated', i+1))
 
-#for i, p in enumerate(dif3):
-#    plt.plot(points, p, '-x', label='{}: {}'.format('Parts', i+1))
+for i, p in enumerate(dif3):
+    plt.plot(points, p, '-x', label='{}: {}'.format('Parts', i+1))
 
 plt.legend()
 plt.show()
@@ -329,8 +337,8 @@ for i, p in enumerate(ener1):
 for i, p in enumerate(ener2):
     plt.plot(points, p, '-+', label='{}: {}'.format('Separated', i+1))
 
-#for i, p in enumerate(ener3):
-#    plt.plot(points, p, '-x', label='{}: {}'.format('Parts', i+1))
+for i, p in enumerate(ener3):
+    plt.plot(points, p, '-x', label='{}: {}'.format('Parts', i+1))
 
 for i, p in enumerate(ener):
     plt.plot(points, p, '--', label='{}: {}'.format('Reference', i+1))
