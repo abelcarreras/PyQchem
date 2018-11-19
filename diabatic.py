@@ -125,7 +125,7 @@ for slide_y in range_y:
 
         try:
             # parse adiabatic/diabatic data
-            data = get_output_from_qchem(txt_input, processors=4, force_recalculation=True,
+            data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False,
                                          parser=analyze_diabatic)
             data.update({'states_info': states_info})
             total_data['{}_{}'.format(slide_y, slide_z)] = data
