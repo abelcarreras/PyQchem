@@ -34,7 +34,7 @@ def quadriplot(data1, data2, data3, data4, label1, label2, label3, label4,
     return f
 
 
-def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1)):
+def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1), ylabel='Energy [eV]'):
 
     if factor:
         factor_h_to_ev = 27.2116
@@ -51,7 +51,7 @@ def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1))
     plt.ylim(*range_y)
     plt.legend()
     plt.xlabel('Distance X [Å]')
-    plt.ylabel('Energy [eV]')
+    plt.ylabel(ylabel)
 
     plt.show()
     return f

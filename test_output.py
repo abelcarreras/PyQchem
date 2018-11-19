@@ -22,7 +22,8 @@ def get_order_states(states, epsilon=1):
             order = [index] + order
 
     order = np.argsort([np.abs(state['transition moment'][1]) for state in states]).tolist()[::-1]
-    # order[1], order[3] = order[3], order[1]
+    order[1], order[3] = order[3], order[1]
+#    order[1], order[0] = order[0], order[1]
 
     print('--------------order------------\n', order)
     return order
@@ -134,14 +135,14 @@ for num in points_total:
     diabatic_energies_2[0, 1] = data['diabatic_energies']['V_DC']
     diabatic_energies_2[2, 3] = data['diabatic_energies']['V_CT']
 
-    diabatic_energies_2[0, 3] = data['diabatic_energies']['V_e'][1]
+    diabatic_energies_2[1, 2] = data['diabatic_energies']['V_e'][0]
     diabatic_energies_2[1, 3] = data['diabatic_energies']['V_h'][0]
 
     # prima
     diabatic_energies_2[1, 1] = np.average(data['diabatic_energies']['E_LE'])
     diabatic_energies_2[3, 3] = np.average(data['diabatic_energies']['E_CT'])
 
-    diabatic_energies_2[1, 2] = data['diabatic_energies']['V_e'][0]
+    diabatic_energies_2[0, 3] = data['diabatic_energies']['V_e'][1]
     diabatic_energies_2[0, 2] = data['diabatic_energies']['V_h'][1]
 
     # fill lower diagonal matrix
@@ -150,10 +151,10 @@ for num in points_total:
             diabatic_energies_2[i, j] = diabatic_energies_2[j, i]
 
     # Diabatic matrix
-    #   E_LE   V_DC   V_h'   V_e
-    #   V_DC   E_LE'  V_e'   V_h
-    #   V_h'   V_e'   E_CT   V_e
-    #   V_e    V_h    V_e    E_CT'
+    #   E_LE   V_DC   V_h'   V_e'
+    #   V_DC   E_LE'  V_e    V_h
+    #   V_h'   V_e    E_CT   V_e
+    #   V_e'   V_h    V_e    E_CT'
 
     print('diabatic_energies_2')
     print(diabatic_energies_2)
@@ -246,7 +247,7 @@ for num in points_total:
             #    w_h = w_h * kk3
             #    w_e = w_e * kk3
 
-            if i == order[3]:
+            if i == order[1]:
                 lmb = lmb * kk3
                 w_h = w_h * kk3
                 w_e = w_e * kk3
@@ -261,6 +262,7 @@ for num in points_total:
     calculated_adiabatic_3 = correct_order(calculated_adiabatic_3, order)
     w_e_list = correct_order(w_e_list, order)
     w_h_list = correct_order(w_h_list, order)
+    lambda_list = correct_order(lambda_list, order)
 
     kill.append(w_e_list)
     kill2.append(w_h_list)
@@ -299,24 +301,27 @@ plt.legend()
 
 plt.figure()
 plt.title('W_e')
-for i, k in enumerate(np.array(kill).T[2:]):
-    plt.plot(points, k, '-o', label=i)
-plt.legend()
 
 for i, k in enumerate(np.array(kill).T[:2]):
-    plt.plot(points, k, '--', label=i+2)
+    plt.plot(points, k, '--', label=i)
+plt.legend()
+
+for i, k in enumerate(np.array(kill).T[2:]):
+    plt.plot(points, k, '-o', label=i+2)
 plt.legend()
 
 
 plt.figure()
 plt.title('W_h')
-for i, k in enumerate(np.array(kill2).T[2:]):
-    plt.plot(points, k, '-o', label=i)
-plt.legend()
 
 for i, k in enumerate(np.array(kill2).T[:2]):
-    plt.plot(points, k, '--', label=i+2)
+    plt.plot(points, k, '--', label=i)
 plt.legend()
+
+for i, k in enumerate(np.array(kill2).T[2:]):
+    plt.plot(points, k, '-o', label=i+2)
+plt.legend()
+
 
 plt.show()
 

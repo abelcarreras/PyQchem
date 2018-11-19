@@ -28,7 +28,6 @@ parser.add_argument('--zrange', metavar='zrange', type=float, nargs=3,
 parser.add_argument('--force_recalculation', action='store_true',
                    help='force reacalculation of previously parsed data points')
 
-
 parser.add_argument('-n_states', metavar='N', type=int, default=4,
                     help='number of states')
 
@@ -98,8 +97,8 @@ for slide_y in range_y:
 
         coordinates = np.array(coordinates)
 
-        coordinates[:, 1] = coordinates[:, 1] + slide_y
-        coordinates[:, 2] = coordinates[:, 2] + slide_z
+        coordinates[6:, 1] = coordinates[6:, 1] + slide_y
+        coordinates[6:, 2] = coordinates[6:, 2] + slide_z
 
         molecule = Structure(coordinates=coordinates,
                              atomic_elements=['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H'],
