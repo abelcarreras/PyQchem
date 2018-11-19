@@ -9,6 +9,7 @@ parameters = {'jobtype': 'sp',
               'basis': '6-31G',
               # cis
               'cis_n_roots': 20,
+              'cis_convergence': 8,
               'cis_singlets': True,
               'cis_triplets': False,
               'cis_ampl_anal': True,

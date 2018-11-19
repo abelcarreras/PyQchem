@@ -129,10 +129,10 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         if [state_order[indices[0]], state_order[indices[1]]] == ['AC', 'CA']:
             diabatic_energies.update({'V_CT': adiabat_h * 27.2114})
 
-        if [state_order[indices[0]], state_order[indices[1]]] == ['01', 'AC']:
+        if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'CA']:
             diabatic_energies.update({'V_e_1': adiabat_h * 27.2114})
 
-        if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'CA']:
+        if [state_order[indices[0]], state_order[indices[1]]] == ['01', 'AC']:
             diabatic_energies.update({'V_e_2': adiabat_h * 27.2114})
 
         if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'AC']:
@@ -182,7 +182,6 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         indices = [int(i) for i in indices]
         adiabat_f = float(data[2])
 
-
         for e_index in range(4):
             if [indices[0], state_order[indices[1]]] == [e_index, '10']:
                 coefficients.update({'S{}_C10'.format(e_index+1): adiabat_f})
@@ -200,83 +199,37 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     coefficients.update({'S_CA': [coefficients.pop('S{}_CCA'.format(i+1)) for i in range(4)]})
     coefficients.update({'S_AC': [coefficients.pop('S{}_CAC'.format(i+1)) for i in range(4)]})
 
-
-        #
-        # if indices == [0, 0]:
-        #     coefficients.update({'S1_C1': adiabat_f})
-        #
-        # if indices == [0, 1]:
-        #     coefficients.update({'S1_C2': adiabat_f})
-        #
-        # if indices == [3, 0]:
-        #     coefficients.update({'S1_C3': adiabat_f})
-        #
-        # if indices == [3, 1]:
-        #     coefficients.update({'S1_C4': adiabat_f})
-        #
-        # if indices == [1, 0]:
-        #     coefficients.update({'S2_C1': adiabat_f})
-        #
-        # if indices == [1, 1]:
-        #     coefficients.update({'S2_C2': adiabat_f})
-        #
-        # if indices == [2, 0]:
-        #     coefficients.update({'S2_C3': adiabat_f})
-        #
-        # if indices == [2, 1]:
-        #     coefficients.update({'S2_C4': adiabat_f})
-        #
-        # if indices == [0, 2]:
-        #     coefficients.update({'S3_C1': adiabat_f})
-        #
-        # if indices == [0, 3]:
-        #     coefficients.update({'S3_C2': adiabat_f})
-        #
-        # if indices == [3, 2]:
-        #     coefficients.update({'S3_C3': adiabat_f})
-        #
-        # if indices == [3, 3]:
-        #     coefficients.update({'S3_C4': adiabat_f})
-        #
-        # if indices == [1, 2]:
-        #     coefficients.update({'S4_C1': adiabat_f})
-        #
-        # if indices == [1, 3]:
-        #     coefficients.update({'S4_C2': adiabat_f})
-        #
-        # if indices == [2, 2]:
-        #     coefficients.update({'S4_C3': adiabat_f})
-        #
-        # if indices == [2, 3]:
-        #     coefficients.update({'S4_C4': adiabat_f})
-
-
     if print_data:
         for item in sorted(coefficients):
             print('{:5} : {:10.5f}'.format(item, coefficients[item]))
 
     diabatic_contributions = {}
+    w_dc = []
+    w_ct = []
+    w_e = []
+    w_h = []
+
     for i in range(4):
         factor = coefficients['S_10'][i] * coefficients['S_01'][i]
-        w_dc = factor / np.abs(factor) * diabatic_energies['V_DC']
-        diabatic_contributions.update({'W_DC_{}'.format(i+1): w_dc})
+        w_dc.append(diabatic_energies['V_DC'] * np.sign(factor))
 
         factor = coefficients['S_CA'][i] * coefficients['S_AC'][i]
-        w_ct = factor / np.abs(factor) * diabatic_energies['V_CT']
-        diabatic_contributions.update({'W_CT_{}'.format(i+1): w_ct})
+        w_ct.append(diabatic_energies['V_CT'] * np.sign(factor))
 
         factor = [coefficients['S_10'][i] * coefficients['S_AC'][i],
                   coefficients['S_01'][i] * coefficients['S_CA'][i]]
-        w_h = np.average([diabatic_energies['V_h'][0] * factor[0],
-                          diabatic_energies['V_h'][1] * factor[1]])
-        diabatic_contributions.update({'W_h_{}'.format(i+1): w_h})
+        w_h.append(np.average([diabatic_energies['V_h'][0] * np.sign(factor[0]),
+                               diabatic_energies['V_h'][1] * np.sign(factor[1])]))
 
         factor = [coefficients['S_10'][i] * coefficients['S_CA'][i],
                   coefficients['S_01'][i] * coefficients['S_AC'][i]]
-        w_e = np.average([diabatic_energies['V_e'][0] * factor[0],
-                          diabatic_energies['V_e'][1] * factor[1]])
-        diabatic_contributions.update({'W_e_{}'.format(i+1): w_e})
+        w_e.append(np.average([diabatic_energies['V_e'][0] * np.sign(factor[0]),
+                               diabatic_energies['V_e'][1] * np.sign(factor[1])]))
 
+    diabatic_contributions.update({'W_DC': w_dc})
+    diabatic_contributions.update({'W_CT': w_ct})
+    diabatic_contributions.update({'W_h': w_h})
+    diabatic_contributions.update({'W_e': w_e})
 
     if print_data:
         print ('-------------------------------')

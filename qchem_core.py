@@ -158,12 +158,13 @@ def create_qchem_input(molecule,
     return input_file + "\n"
 
 
-def parse_output(function):
+def parse_output(get_output_function):
 
     global calculation_data
 
     def func_wrapper(*args, **kwargs):
         parser = kwargs.pop('parser', None)
+
         force_recalculation = kwargs.pop('force_recalculation', False)
 
         if parser is not None:
@@ -172,7 +173,7 @@ def parse_output(function):
                 print('already calculated. Skip')
                 return calculation_data[hash]
 
-        output, err = function(*args, **kwargs)
+        output, err = get_output_function(*args, **kwargs)
 
         if len(err) > 0:
             print(output[-800:])
