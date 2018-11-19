@@ -6,8 +6,8 @@ import numpy as np
 import pickle
 import argparse
 
-from parsers.parser_diabatic import analyze_diabatic
 from parsers.basic import basic_parser_qchem
+from parsers.parser_diabatic import analyze_diabatic  # parser for 4 states only
 
 
 # Argument parser
@@ -71,8 +71,8 @@ parameters = {'jobtype': 'sp',
 
 # grid parameters
 distance = args.d
-range_y = np.arange(*args.yrange).tolist()
-range_z = np.arange(*args.zrange).tolist()
+range_y = np.arange(args.yrange[0], args.yrange[1]+args.yrange[2], args.yrange[2]).tolist()
+range_z = np.arange(args.zrange[0], args.zrange[1]+args.zrange[2], args.zrange[2]).tolist()
 
 # Start parsing
 total_data = {}
@@ -116,6 +116,7 @@ for slide_y in range_y:
         # store transition moment info
         states_info = [data['excited states cis'][state] for state in list_states]
 
+        # update parameters
         parameters.update({'loc_cis_ov_separate': False,
                            'er_cis_numstate': args.n_states,
                            'cis_diabath_decompose': True,
