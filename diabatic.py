@@ -140,7 +140,7 @@ for slide_y in range_y:
 
         print(data)
 
-total_data.update({'range_y': range_y, 'range_z': range_z})
+total_data.update({'range_y': range_y, 'range_z': range_z, 'distance': distance})
 
 # store data on disk in pickle format
 with open(args.filename, 'wb') as f:
