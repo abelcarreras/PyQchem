@@ -25,6 +25,10 @@ parser.add_argument('--zrange', metavar='zrange', type=float, nargs=3,
                     default=[0, 3, 0.5],
                     help='range: initial, final, step')
 
+parser.add_argument('--force_recalculation', action='store_true',
+                   help='force reacalculation of previously parsed data points')
+
+
 parser.add_argument('-n_states', metavar='N', type=int, default=4,
                     help='number of states')
 
@@ -105,7 +109,8 @@ for slide_y in range_y:
         # print(txt_input)
 
         # parse CIS data
-        data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=basic_parser_qchem)
+        data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
+                                     parser=basic_parser_qchem)
 
         # if closed shell
         ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge)//2
@@ -125,7 +130,7 @@ for slide_y in range_y:
 
         try:
             # parse adiabatic/diabatic data
-            data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False,
+            data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
                                          parser=analyze_diabatic)
             data.update({'states_info': states_info})
             total_data['{}_{}'.format(slide_y, slide_z)] = data
