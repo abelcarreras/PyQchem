@@ -215,6 +215,9 @@ for num in points_total:
         w_e = np.average([w_e1, w_e1])
         w_h = np.average([w_h1, w_h1])
 
+        o_e = 2 * lmb * np.sqrt(1 - lmb ** 2) * w_e
+        o_h = 2 * lmb * np.sqrt(1 - lmb ** 2) * w_h
+
         #w_dc = data['diabatic_contributions']['W_DC'][i]
         #w_ct = data['diabatic_contributions']['W_CT'][i]
 
@@ -253,8 +256,8 @@ for num in points_total:
                 w_e = w_e * kk3
         ###########
 
-        w_e_list.append(w_e)
-        w_h_list.append(w_h)
+        w_e_list.append(o_e)
+        w_h_list.append(o_h)
         lambda_list.append(lmb)
 
         calculated_adiabatic_3.append(e_le + w_dc + 2 * lmb * np.sqrt(1 - lmb ** 2) * (w_e + w_h) + lmb ** 2 * (e_ct - e_le + w_ct - w_dc))

@@ -392,22 +392,42 @@ with PdfPages(folder + 'lambda.pdf') as pdf:
     triplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
     biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, show_plot=args.show_plots)
 
+##########################  OMEGA h  #######################
+
+data_1 = 2 * l1 * np.sqrt(1 - l1**2) * np.array(wh1)
+data_2 = 2 * l2 * np.sqrt(1 - l2**2) * np.array(wh2)
+
+
+with PdfPages(folder + 'omega_h.pdf') as pdf:
+    triplot(data_1, data_2, 'omega_h 1', 'omaga_h 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_h')
+
+##########################  OMEGA e  #######################
+
+data_1 = 2 * l1 * np.sqrt(1 - l1**2) * np.array(we1)
+data_2 = 2 * l2 * np.sqrt(1 - l2**2) * np.array(we2)
+
+
+with PdfPages(folder + 'omega_e.pdf') as pdf:
+    triplot(data_1, data_2, 'omega_e 1', 'omaga_e 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_e')
+
+
 ##########################  SUPEREXCHANGE(E1) #######################
 
 data_1 = 2 * l1 * np.sqrt(1 - l1**2) * (np.array(we1) + np.array(wh1))
 data_2 = 2 * l2 * np.sqrt(1 - l2**2) * (np.array(we2) + np.array(wh2))
 
 
-with PdfPages(folder + 'E1.pdf') as pdf:
-    triplot(data_1, data_2, 'E1-1', 'E1-2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'E1-1', 'E1-2', y_range, z_range, pdf=pdf, show_plot=args.show_plots)
+with PdfPages(folder + 'E1(superexchange).pdf') as pdf:
+    triplot(data_1, data_2, 'omega: state 1', 'omega: state 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='superexchange')
 
 e_11 = np.array(data_1)
 e_12 = np.array(data_2)
 
 
 #######################  diabatic_energies  ######################
-
 
 data_1 = l1**2 * (e_ct - e_le + wct1 - wdc1)
 data_2 = l2**2 * (e_ct - e_le + wct2 - wdc2)
@@ -449,9 +469,10 @@ with PdfPages(folder + 'adiabatic_energies.pdf') as pdf:
     biplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, show_plot=args.show_plots, zrange=None)
 
 
-#######################  test ######################
+#######################  difference test ######################
 
 with PdfPages(folder + 'adiabatic_energies_diff.pdf') as pdf:
+    triplot(data_1-e1, data_2-e2, 'diff e1', 'diff e2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
     biplot(data_1-e1, data_2-e2, 'diff e1', 'diff e2', y_range, z_range, show_plot=args.show_plots,
-           zrange=None,  title='Adiabatic energy diferences (original - calculated)')
+           zrange=None,  title='Adiabatic energy differences (original - calculated)')
 
