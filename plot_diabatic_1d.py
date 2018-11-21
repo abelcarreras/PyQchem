@@ -20,7 +20,8 @@ def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1),
         plt.plot(x_range, dat, label=label)
 
     plt.xlim(3.5, 6.0)
-    plt.ylim(*range_y)
+    if range_y is not None:
+        plt.ylim(*range_y)
     plt.legend()
     plt.xlabel('Distance X [Å]')
     plt.ylabel(ylabel)
@@ -117,8 +118,27 @@ f.savefig(folder + "lambda.pdf", bbox_inches='tight')
 l1 = np.array(data_1)
 l2 = np.array(data_2)
 
-f = multiplot([np.square(data_1), np.square(data_2)], ['lambda^2 1', 'lambda^2 2'], d_coordinate, range_y=[0, 0.6], ylabel='', title='lambda^2')
+f = multiplot([np.square(data_1), np.square(data_2)], ['lambda^2 1', 'lambda^2 2'], d_coordinate, range_y=[0, 0.6],
+              ylabel='', title='lambda^2')
 f.savefig(folder + "lambda2.pdf", bbox_inches='tight')
+
+
+##########################  OMEGA  #######################
+
+
+data_1 = 2 * l1 * np.sqrt(1 - l1**2) * we1
+data_2 = 2 * l2 * np.sqrt(1 - l2**2) * we2
+
+data_3 = 2 * l1 * np.sqrt(1 - l1**2) * wh1
+data_4 = 2 * l2 * np.sqrt(1 - l2**2) * wh2
+
+f = multiplot([data_1, data_2, data_3, data_4], ['Omega_e 1', 'Omega_e 2', 'Omega_h 1', 'Omega_h 2'], d_coordinate,
+              ylabel='', title='Omega')
+f.savefig(folder + "Omega.pdf", bbox_inches='tight')
+
+oe1 = np.array(data_1)
+oe2 = np.array(data_2)
+
 
 ########################## E1 (Superexchange) ###########################
 
@@ -182,6 +202,20 @@ f = multiplot([data_1, data_2,  data_3,  data_4,],
 
 f.savefig(folder + "adiabatic_energies.pdf", bbox_inches='tight')
 
+e1 = np.array(data_1)
+e2 = np.array(data_2)
+e3 = np.array(data_3)
+e4 = np.array(data_4)
+
+#######################  adiabatic_energies (calculated) ######################
+
+e1c = e_le + wdc1 + e_11 + e_21
+e2c = e_le + wdc2 + e_12 + e_22
+
+f = multiplot([e1-e1c, e2-e2c],
+              ['diff 1', 'diff 2'],
+              d_coordinate, title='Adiabatic energies difference\n (original-calculated)', range_y=None)
+f.savefig(folder + "test.pdf", bbox_inches='tight')
 
 
 
