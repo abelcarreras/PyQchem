@@ -104,7 +104,7 @@ for slide_d in distance:
         for slide_z in range_z:
 
             print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
-            symbols, coordinates = get_geometry(args.d, slide_y, slide_z)
+            symbols, coordinates = get_geometry(slide_d, slide_y, slide_z)
 
             molecule = Structure(coordinates=coordinates,
                                  atomic_elements=symbols,
