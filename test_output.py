@@ -212,8 +212,8 @@ for num in points_total:
         w_e2 = data['diabatic_energies']['V_e'][1] * np.sign(data['coefficients']['S_01'][i] *
                                                              data['coefficients']['S_AC'][i])
 
-        w_e = np.average([w_e1, w_e1])
-        w_h = np.average([w_h1, w_h1])
+        w_e = np.average([w_e1, w_e2])
+        w_h = np.average([w_h1, w_h2])
 
         o_e = 2 * lmb * np.sqrt(1 - lmb ** 2) * w_e
         o_h = 2 * lmb * np.sqrt(1 - lmb ** 2) * w_h
@@ -223,6 +223,9 @@ for num in points_total:
 
         #w_e = data['diabatic_contributions']['W_e'][i]
         #w_h = data['diabatic_contributions']['W_h'][i]
+
+        #o_e = data['diabatic_contributions']['Omega_e'][i]
+        #o_h = data['diabatic_contributions']['Omega_h'][i]
 
         ###### manual fix ########
         manual_fix = False
@@ -256,8 +259,8 @@ for num in points_total:
                 w_e = w_e * kk3
         ###########
 
-        w_e_list.append(o_e)
-        w_h_list.append(o_h)
+        w_e_list.append(w_e)
+        w_h_list.append(w_h)
         lambda_list.append(lmb)
 
         calculated_adiabatic_3.append(e_le + w_dc + 2 * lmb * np.sqrt(1 - lmb ** 2) * (w_e + w_h) + lmb ** 2 * (e_ct - e_le + w_ct - w_dc))

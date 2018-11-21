@@ -5,6 +5,7 @@ from qchem_core import get_output_from_qchem, create_qchem_input
 import numpy as np
 import pickle
 import argparse
+import molecules
 
 from parsers.basic import basic_parser_qchem
 from parsers.parser_diabatic import analyze_diabatic  # parser for 4 states only
@@ -17,6 +18,12 @@ parser.add_argument('filename', metavar='filename', type=str,
 parser.add_argument('-d', metavar='distance', type=float, default=4.7,
                     help='intermolecular distance between monomers')
 
+parser.add_argument('-mol', metavar='name', type=str, default='dimer_ethene',
+                    help='molecule name (in molecules.py)', )
+
+parser.add_argument('--charge', metavar='distance', type=int, default=0,
+                    help='molecule charge')
+
 parser.add_argument('--yrange', metavar='yrange', type=float, nargs=3,
                     default=[0, 3, 0.5],
                     help='range: initial, final, step')
@@ -25,15 +32,17 @@ parser.add_argument('--zrange', metavar='zrange', type=float, nargs=3,
                     default=[0, 3, 0.5],
                     help='range: initial, final, step')
 
+parser.add_argument('--drange', metavar='drange', type=float, nargs=3,
+                    default=None,
+                    help='distance range: initial, final, step')
+
 parser.add_argument('--force_recalculation', action='store_true',
                    help='force reacalculation of previously parsed data points')
 
 parser.add_argument('-n_states', metavar='N', type=int, default=4,
                     help='number of states')
 
-
 args = parser.parse_args()
-
 
 # get list of interesting states
 def get_frontier_states(cis_data, n_states=4):
@@ -73,71 +82,70 @@ parameters = {'jobtype': 'sp',
               'gui': 0}
 
 # grid parameters
-distance = args.d
+distance = [args.d]
 range_y = np.arange(args.yrange[0], args.yrange[1]+args.yrange[2], args.yrange[2]).tolist()
 range_z = np.arange(args.zrange[0], args.zrange[1]+args.zrange[2], args.zrange[2]).tolist()
 
-# Start parsing
+# set distance range
+if args.drange is not None:
+    distance = np.arange(args.drange[0], args.drange[1] + args.drange[2], args.drange[2]).tolist()
+    range_y = [0]
+    range_z = [0]
+
+
+# molecule selection
+get_geometry = getattr(molecules, args.mol)
+
+# Start calculation
 total_data = {}
-for slide_y in range_y:
-    for slide_z in range_z:
 
-        coordinates = [[0.0000000,  0.0000000,  0.6660120],
-                       [0.0000000,  0.0000000, -0.6660120],
-                       [0.0000000,  0.9228100,  1.2279200],
-                       [0.0000000, -0.9228100,  1.2279200],
-                       [0.0000000, -0.9228100, -1.2279200],
-                       [0.0000000,  0.9228100, -1.2279200],
-                       [distance,   0.0000000,  0.6660120],
-                       [distance,   0.0000000, -0.6660120],
-                       [distance,   0.9228100,  1.2279200],
-                       [distance,  -0.9228100,  1.2279200],
-                       [distance,  -0.9228100, -1.2279200],
-                       [distance,   0.9228100, -1.2279200]]
+for slide_d in distance:
+    for slide_y in range_y:
+        for slide_z in range_z:
 
-        coordinates = np.array(coordinates)
+            symbols, coordinates = get_geometry(args.d, slide_y, slide_z)
 
-        coordinates[6:, 1] = coordinates[6:, 1] + slide_y
-        coordinates[6:, 2] = coordinates[6:, 2] + slide_z
+            molecule = Structure(coordinates=coordinates,
+                                 atomic_elements=symbols,
+                                 charge=args.charge)
 
-        molecule = Structure(coordinates=coordinates,
-                             atomic_elements=['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H'],
-                             charge=0)
+            txt_input = create_qchem_input(molecule, **parameters)
+            # print(txt_input)
 
-        txt_input = create_qchem_input(molecule, **parameters)
-        # print(txt_input)
-
-        # parse CIS data
-        data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                     parser=basic_parser_qchem)
-
-        # if closed shell
-        ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge)//2
-
-        # get interesting states
-        list_states = get_frontier_states(data['excited states cis'], n_states=args.n_states)
-
-        # store transition moment info
-        states_info = [data['excited states cis'][state] for state in list_states]
-
-        # update parameters
-        parameters.update({'loc_cis_ov_separate': False,
-                           'er_cis_numstate': args.n_states,
-                           'cis_diabath_decompose': True,
-                           'localized_diabatization': list_states})
-        txt_input = create_qchem_input(molecule, **parameters)
-
-        try:
-            # parse adiabatic/diabatic data
+            # parse CIS data
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                         parser=analyze_diabatic)
-            data.update({'states_info': states_info})
-            total_data['{}_{}'.format(slide_y, slide_z)] = data
-            print(data)
-        except:
-            print('Failed!')
+                                         parser=basic_parser_qchem)
 
-        print(data)
+            # if closed shell
+            ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge)//2
+
+            # get interesting states
+            list_states = get_frontier_states(data['excited states cis'], n_states=args.n_states)
+
+            # store transition moment info
+            states_info = [data['excited states cis'][state] for state in list_states]
+
+            # update parameters
+            parameters.update({'loc_cis_ov_separate': False,
+                               'er_cis_numstate': args.n_states,
+                               'cis_diabath_decompose': True,
+                               'localized_diabatization': list_states})
+            txt_input = create_qchem_input(molecule, **parameters)
+
+            try:
+                # parse adiabatic/diabatic data
+                data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
+                                             parser=analyze_diabatic)
+                data.update({'states_info': states_info})
+                if args.drange is None:
+                    total_data['{}_{}'.format(slide_y, slide_z)] = data
+                else:
+                    total_data['{}'.format(slide_d)] = data
+                print(data)
+            except:
+                print('Failed!')
+
+            print(data)
 
 total_data.update({'range_y': range_y, 'range_z': range_z, 'distance': distance})
 

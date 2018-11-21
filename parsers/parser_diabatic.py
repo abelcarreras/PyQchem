@@ -2,7 +2,7 @@ import re
 import numpy as np
 import os
 
-
+# parser for 4 states
 def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
 
     # Coordinates
@@ -11,12 +11,9 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
     coordinates = np.array([ np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-
     n_atoms = len(coordinates)
 
-
     # Diabatic
-
     n = output.find('On the next line, list which excited')
     loc_diab = output[n:n+100].split()[13:17]
 
@@ -208,7 +205,6 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     w_ct = []
     w_e = []
     w_h = []
-
     for i in range(4):
         factor = coefficients['S_10'][i] * coefficients['S_01'][i]
         w_dc.append(diabatic_energies['V_DC'] * np.sign(factor))
@@ -241,13 +237,15 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     for i in range(4):
         l.append(np.sqrt(2) * np.abs(coefficients['S_AC'][i]))
 
-    #l = np.sqrt(2) * coefficients['S1_C3']
-    #l_prima = np.sqrt(2) * coefficients['S2_C3']
-
     if print_data:
         print ('-------------------------------')
         for i, _l in enumerate(l):
-            print ('lambda {}: {:10.5f}'.format(i+1, _l))
+            print ('lambda/lambda^2 {}: {:10.5f} / {:10.5f}'.format(i+1, _l, _l**2))
+
+    diabatic_contributions.update({'Omega_h': [2 * _l * np.sqrt(1 - _l**2) * _wh
+                                               for _l, _wh in zip(l, diabatic_contributions['W_h'])]})
+    diabatic_contributions.update({'Omega_e': [2 * _l * np.sqrt(1 - _l**2) * _we
+                                               for _l, _we in zip(l, diabatic_contributions['W_e'])]})
 
     reordering = []
     for m in re.finditer('Reordering necessary!', output):
@@ -259,132 +257,5 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
             'diabatic_contributions': diabatic_contributions,
             'coefficients': coefficients,
             'lambda': l,
-            'reordering' : reordering}
-
-
-# Start script -------------------------------------------------------------
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-
-    dir_list = os.listdir('data/eclipsed')
-
-    total_data = []
-    for dir in dir_list:
-        try:
-            data = analyze_diabatic('data/eclipsed/{}/diabatic.out'.format(dir), print_data=True)
-            print (data)
-            if data is not None:
-                total_data.append(data)
-        except IOError:
-            pass
-
-    x = [data['c_coordinates'][0] for data in total_data]
-    indices =  np.argsort(x)
-    x = np.array(x)[indices]
-
-    l = np.array([data['lambda'] for data in total_data])[indices].T
-
-
-    plt.figure(1)
-    for i, _l in enumerate(l):
-        plt.plot(x, _l, label='lambda {}'.format(i+1))
-
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-    #plt.show()
-
-
-
-    plt.figure(2)
-    ll = []
-    for i, lam in enumerate(data['lambda']):
-        ll.append(np.array([2*lam * np.sqrt(1 - lam**2) *
-                      (data['diabatic_contributions']['W_e_{}'.format(i+1)] + data['diabatic_contributions']['W_h_{}'.format(i+1)])
-                      for data in total_data])[indices])
-
-    ll = np.array(ll)
-
-    for i, lam in enumerate(ll):
-        plt.plot(x, lam, label='ll {}'.format(i+1))
-    # plt.plot(x, ll2, label='ll2')
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-    #plt.show()
-
-
-    plt.figure(3)
-    for i in range(4):
-        label = 'E_{}'.format(i+1)
-        e = np.array([data['adiabatic_energies'][label] for data in total_data])[indices]
-        plt.plot(x, e, label=label)
-
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-    #plt.show()
-
-    plt.figure(4)
-
-    d = {}
-    for e in np.array([data['diabatic_energies'] for data in total_data])[indices]:
-        for label in e.keys():
-            try:
-                d[label].append(e[label])
-            except:
-                d[label] = [e[label]]
-
-    print(d)
-
-    for label in ['E_LE', 'E_CT']:
-        plt.plot(x, d[label] , label=label)
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-    #plt.show()
-
-    plt.figure(5)
-    d2 = {}
-    for e in np.array([data['diabatic_contributions'] for data in total_data])[indices]:
-        for label in e.keys():
-            try:
-                d2[label].append(e[label])
-            except:
-                d2[label] = [e[label]]
-
-    print(2)
-
-    for label in d2.keys():
-        if label.endswith('_1'):
-            plt.plot(x, d2[label] , label=label)
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-
-
-    plt.figure(6)
-    for label in d2.keys():
-        if label.endswith('_2'):
-            plt.plot(x, d2[label] , label=label)
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-
-
-    plt.figure(7)
-
-    for i, _l in enumerate(l):
-        e2 = np.array(_l)**2 * (np.array(d['E_CT']) - np.array(d['E_LE']) +
-                                 np.array(d2['W_CT_{}'.format(i+1)]) - np.array(d2['W_DC_{}'.format(i+1)]))
-    #       plt.plot(x, e1_, label='E1-')
-        plt.plot(x, np.array(e2), label='E2-{}'.format(i+1))
-
-    plt.xlabel('distance (A)')
-    plt.ylabel('unidades')
-    plt.legend()
-
-    plt.show()
-
+            'reordering': reordering}
 

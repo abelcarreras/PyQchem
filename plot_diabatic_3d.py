@@ -355,10 +355,8 @@ with PdfPages(folder + 'W_h.pdf') as pdf:
 
 #######################  diabatic_energies  ######################
 
-data_1 = [data['diabatic_energies']['E_LE'][0] for data in total_data]
-data_2 = [data['diabatic_energies']['E_CT'][0] for data in total_data]
-
-#data_1, data_2 = correct_order_list([data_1, data_2], states_orders)
+data_1 = [np.average(data['diabatic_energies']['E_LE']) for data in total_data]
+data_2 = [np.average(data['diabatic_energies']['E_CT']) for data in total_data]
 
 if interpolate:
     data_1 = interpolate_data(points, data_1, y_range, z_range)
@@ -392,32 +390,68 @@ with PdfPages(folder + 'lambda.pdf') as pdf:
     triplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
     biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, show_plot=args.show_plots)
 
+with PdfPages(folder + 'lambda2.pdf') as pdf:
+    triplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
+    biplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range, show_plot=args.show_plots)
+
+
 ##########################  OMEGA h  #######################
 
-data_1 = 2 * l1 * np.sqrt(1 - l1**2) * np.array(wh1)
-data_2 = 2 * l2 * np.sqrt(1 - l2**2) * np.array(wh2)
+wh1_ = np.array([data['diabatic_contributions']['W_h'][0] for data in total_data])
+wh2_ = np.array([data['diabatic_contributions']['W_h'][1] for data in total_data])
 
+l1_ = np.array([data['lambda'][0] for data in total_data])
+l2_ = np.array([data['lambda'][1] for data in total_data])
+
+data_1 = 2 * l1_ * np.sqrt(1 - l1_**2) * wh1_
+data_2 = 2 * l2_ * np.sqrt(1 - l2_**2) * wh2_
+
+data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, data_4], states_orders)
+
+if interpolate:
+    data_1 = interpolate_data(points, data_1, y_range, z_range)
+    data_2 = interpolate_data(points, data_2, y_range, z_range)
 
 with PdfPages(folder + 'omega_h.pdf') as pdf:
     triplot(data_1, data_2, 'omega_h 1', 'omaga_h 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
     biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_h')
 
+oh1 = np.array(data_1)
+oh2 = np.array(data_2)
+
+
 ##########################  OMEGA e  #######################
 
-data_1 = 2 * l1 * np.sqrt(1 - l1**2) * np.array(we1)
-data_2 = 2 * l2 * np.sqrt(1 - l2**2) * np.array(we2)
+we1_ = np.array([data['diabatic_contributions']['W_e'][0] for data in total_data])
+we2_ = np.array([data['diabatic_contributions']['W_e'][1] for data in total_data])
+
+l1_ = np.array([data['lambda'][0] for data in total_data])
+l2_ = np.array([data['lambda'][1] for data in total_data])
+
+data_1 = 2 * l1_ * np.sqrt(1 - l1_**2) * we1_
+data_2 = 2 * l2_ * np.sqrt(1 - l2_**2) * we2_
+
+data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, data_4], states_orders)
+
+if interpolate:
+    data_1 = interpolate_data(points, data_1, y_range, z_range)
+    data_2 = interpolate_data(points, data_2, y_range, z_range)
 
 
 with PdfPages(folder + 'omega_e.pdf') as pdf:
     triplot(data_1, data_2, 'omega_e 1', 'omaga_e 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
     biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_e')
 
+oe1 = np.array(data_1)
+oe2 = np.array(data_2)
 
 ##########################  SUPEREXCHANGE(E1) #######################
 
-data_1 = 2 * l1 * np.sqrt(1 - l1**2) * (np.array(we1) + np.array(wh1))
-data_2 = 2 * l2 * np.sqrt(1 - l2**2) * (np.array(we2) + np.array(wh2))
+#data_1 = 2 * l1 * np.sqrt(1 - l1**2) * (np.array(we1) + np.array(wh1))
+#data_2 = 2 * l2 * np.sqrt(1 - l2**2) * (np.array(we2) + np.array(wh2))
 
+data_1 = oh1 + oe1
+data_2 = oh2 + oe2
 
 with PdfPages(folder + 'E1(superexchange).pdf') as pdf:
     triplot(data_1, data_2, 'omega: state 1', 'omega: state 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
