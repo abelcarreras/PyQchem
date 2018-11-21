@@ -146,7 +146,6 @@ for slide_d in distance:
             except:
                 print('Failed!')
 
-            print(data)
 
 total_data.update({'range_y': range_y, 'range_z': range_z, 'distance': distance})
 
