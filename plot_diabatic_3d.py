@@ -141,8 +141,8 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
         plt.show()
 
 
-def biplot2(data1, data2, label1, label2, y_range, z_range, pdf=None,
-            zlabel='Energy [eV]', zrange=(-0.2, 0.2), zp=0.025, show_plot=True):
+def biplot_interpolated(data1, data2, label1, label2, y_range, z_range, pdf=None,
+                        zlabel='Energy [eV]', zrange=(-0.2, 0.2), zp=0.025, show_plot=True):
 
     from scipy import interpolate
 
@@ -461,7 +461,7 @@ e_11 = np.array(data_1)
 e_12 = np.array(data_2)
 
 
-#######################  diabatic_energies  ######################
+#######################  second order term (E2)  ######################
 
 data_1 = l1**2 * (e_ct - e_le + wct1 - wdc1)
 data_2 = l2**2 * (e_ct - e_le + wct2 - wdc2)
