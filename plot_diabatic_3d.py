@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib as mpl
 from matplotlib.backends.backend_pdf import PdfPages
+from order_states import get_order_states_list, correct_order_list
+
 import argparse
 
 # Argument parser
@@ -15,50 +17,16 @@ parser.add_argument('--output_folder', metavar='distance', type=str, default='3d
                     help='folder to store PDF plots')
 
 parser.add_argument('--show_plots', action='store_true',
-                   help='show plots')
+                   help='show plots while running')
 
 parser.add_argument('--full', action='store_true',
-                   help='apply periodicity')
+                   help='apply periodicity (centered at 0,0)')
 
 parser.add_argument('--interpolate', action='store_true',
                    help='interpolate missing points')
 
 
 args = parser.parse_args()
-
-
-# Simple order
-# set higher dipole moment states first if energy gap is lower than eps_energy
-def get_order_states_list(states, eps_moment=0.1, eps_energy=0.05):
-
-    import itertools
-    order = np.arange(len(states))
-
-    for subset in itertools.combinations(range(len(states)), 2):
-        i, j = subset
-
-        if np.abs(states[i]['total energy'] - states[j]['total energy']) < eps_energy:
-            tmi = np.linalg.norm(states[i]['transition moment'])
-            tmj = np.linalg.norm(states[j]['transition moment'])
-            if tmi - tmj < eps_moment:
-                order[i], order[j] = order[j], order[i]
-
-    return order
-
-
-def correct_order_list(list, order):
-
-    if np.array(order).shape != np.array(list).T.shape:
-        print(np.array(order).shape, np.array(list).T.shape)
-        raise Exception('Error in correcting order (not same shape)')
-
-    alist = np.array(list)
-
-    ordered_list = []
-    for l, o in zip(alist.T, order):
-        ordered_list.append(l[o])
-
-    return np.array(ordered_list).T.tolist()
 
 
 def interpolate_data(points, data , y_range, z_range):
