@@ -1,12 +1,25 @@
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib as mpl
+import argparse
+
+# Argument parser
+parser = argparse.ArgumentParser(description='Plot 3D data')
+parser.add_argument('filename', metavar='filename', type=str,
+                    help='filename for input')
+
+parser.add_argument('--output_folder', metavar='distance', type=str, default='1d_plot/',
+                    help='folder to store PDF plots')
+
+parser.add_argument('--show_plots', action='store_true',
+                   help='show plots')
 
 
+args = parser.parse_args()
 
-def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1), ylabel='Energy [eV]'):
+
+def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1),
+              ylabel='Energy [eV]', show_plots=True):
 
     if factor:
         factor_h_to_ev = 27.2116
@@ -26,13 +39,20 @@ def multiplot(data , labels, x_range, title=None, factor=False, range_y=(-1, 1),
     plt.xlabel('Distance X [Å]')
     plt.ylabel(ylabel)
 
-    plt.show()
+    if show_plots:
+        plt.show()
+    else:
+        plt.close()
+
     return f
 
 
-folder = '1d_plot/'
+#############################
+folder = args.output_folder
+#############################
 
-with open('data_1d.pkl', 'rb') as input:
+
+with open(args.filename, 'rb') as input:
     calculation_data = pickle.load(input)
     print('Loaded data from calculation_data.pkl')
 
@@ -51,7 +71,7 @@ for distance in calculation_data['distance']:
 data_1 = [data['diabatic_contributions']['W_DC'][0] for data in total_data]
 data_2 = [data['diabatic_contributions']['W_DC'][1] for data in total_data]
 
-f = multiplot([data_1, data_2], ['W_DC_1', 'W_DC_2'], d_coordinate, title='W_DC')
+f = multiplot([data_1, data_2], ['W_DC_1', 'W_DC_2'], d_coordinate, title='W_DC', show_plots=args.show_plots)
 f.savefig(folder + "W_DC.pdf", bbox_inches='tight')
 
 wdc1 = np.array(data_1)
@@ -62,7 +82,7 @@ wdc2 = np.array(data_2)
 data_1 = [data['diabatic_contributions']['W_CT'][0] for data in total_data]
 data_2 = [data['diabatic_contributions']['W_CT'][1] for data in total_data]
 
-f = multiplot([data_1, data_2], ['W_CT_1', 'W_CT_2'], d_coordinate, title='W_CT')
+f = multiplot([data_1, data_2], ['W_CT_1', 'W_CT_2'], d_coordinate, title='W_CT', show_plots=args.show_plots)
 f.savefig(folder + "W_CT.pdf", bbox_inches='tight')
 
 wct1 = np.array(data_1)
@@ -73,7 +93,7 @@ wct2 = np.array(data_2)
 data_1 = [data['diabatic_contributions']['W_e'][0] for data in total_data]
 data_2 = [data['diabatic_contributions']['W_e'][1] for data in total_data]
 
-f = multiplot([data_1, data_2], ['W_e_1', 'W_e_2'], d_coordinate, title='W_e')
+f = multiplot([data_1, data_2], ['W_e_1', 'W_e_2'], d_coordinate, title='W_e', show_plots=args.show_plots)
 f.savefig(folder + "W_e.pdf", bbox_inches='tight')
 
 we1 = np.array(data_1)
@@ -92,10 +112,12 @@ wh2 = np.array(data_2)
 
 ###################################### W per state ###########################
 
-f = multiplot([wh1, we1, wct1, wdc1], ['W_h', 'W_e', 'W_CT', 'W_DC'], d_coordinate, title='State 1')
+f = multiplot([wh1, we1, wct1, wdc1], ['W_h', 'W_e', 'W_CT', 'W_DC'], d_coordinate,
+              title='State 1', show_plots=args.show_plots)
 f.savefig(folder + "W_1.pdf", bbox_inches='tight')
 
-f = multiplot([wh2, we2, wct2, wdc2], ['W_h', 'W_e', 'W_CT', 'W_DC'], d_coordinate, title='State 2')
+f = multiplot([wh2, we2, wct2, wdc2], ['W_h', 'W_e', 'W_CT', 'W_DC'], d_coordinate,
+              title='State 2', show_plots=args.show_plots)
 f.savefig(folder + "W_2.pdf", bbox_inches='tight')
 
 
@@ -112,14 +134,15 @@ data_2 = [data['lambda'][1] for data in total_data]
 #for i, e in enumerate(np.array([data['lambda'] for data in total_data]).T[1]):
 #    data_2.append(e)
 
-f = multiplot([data_1, data_2], ['lambda 1', 'lambda 2'], d_coordinate, range_y=[0, 0.6], ylabel='', title='lambda')
+f = multiplot([data_1, data_2], ['lambda 1', 'lambda 2'], d_coordinate, range_y=[0, 0.6],
+              ylabel='', title='lambda', show_plots=args.show_plots)
 f.savefig(folder + "lambda.pdf", bbox_inches='tight')
 
 l1 = np.array(data_1)
 l2 = np.array(data_2)
 
-f = multiplot([np.square(data_1), np.square(data_2)], ['lambda^2 1', 'lambda^2 2'], d_coordinate, range_y=[0, 0.6],
-              ylabel='', title='lambda^2')
+f = multiplot([np.square(data_1), np.square(data_2)], ['lambda^2 1', 'lambda^2 2'], d_coordinate,
+              range_y=[0, 0.6], ylabel='', title='lambda^2', show_plots=args.show_plots)
 f.savefig(folder + "lambda2.pdf", bbox_inches='tight')
 
 
@@ -132,8 +155,8 @@ data_2 = 2 * l2 * np.sqrt(1 - l2**2) * we2
 data_3 = 2 * l1 * np.sqrt(1 - l1**2) * wh1
 data_4 = 2 * l2 * np.sqrt(1 - l2**2) * wh2
 
-f = multiplot([data_1, data_2, data_3, data_4], ['Omega_e 1', 'Omega_e 2', 'Omega_h 1', 'Omega_h 2'], d_coordinate,
-              ylabel='', title='Omega')
+f = multiplot([data_1, data_2, data_3, data_4], ['Omega_e 1', 'Omega_e 2', 'Omega_h 1', 'Omega_h 2'],
+              d_coordinate, ylabel='', title='Omega', show_plots=args.show_plots)
 f.savefig(folder + "Omega.pdf", bbox_inches='tight')
 
 oe1 = np.array(data_1)
@@ -145,7 +168,7 @@ oe2 = np.array(data_2)
 data_1 = 2 * l1 * np.sqrt(1 - l1**2) * (we1 + wh1)
 data_2 = 2 * l2 * np.sqrt(1 - l2**2) * (we2 + wh2)
 
-f = multiplot([data_1, data_2], ['E1-1', 'E1-2'], d_coordinate)
+f = multiplot([data_1, data_2], ['E1-1', 'E1-2'], d_coordinate, show_plots=args.show_plots)
 f.savefig(folder + "E1(superexchange).pdf", bbox_inches='tight')
 e_11 = np.array(data_1)
 e_12 = np.array(data_2)
@@ -159,7 +182,8 @@ data_2 = [np.average(data['diabatic_energies']['E_CT']) for data in total_data]
 e_le = np.array(data_1)
 e_ct = np.array(data_2)
 
-f = multiplot([data_1, data_2], ['E_LE', 'E_CT'], d_coordinate, title='Diabatic energies', range_y=[6, 13])
+f = multiplot([data_1, data_2], ['E_LE', 'E_CT'], d_coordinate, title='Diabatic energies',
+              range_y=[6, 13], show_plots=args.show_plots)
 f.savefig(folder + "diabatic_energies.pdf", bbox_inches='tight')
 
 #######################  Second order term  (E2)  #####################
@@ -185,7 +209,7 @@ data_6 = [data['diabatic_energies']['V_h'][1] for data in total_data]
 
 f = multiplot([data_1, data_2,  data_3,  data_4,  data_5, data_6],
               ['V_DC', "V_CT", "V_e", "V_h", "V_e'", "V_h'"],
-              d_coordinate, title='Diabatic energies')
+              d_coordinate, title='Diabatic energies', show_plots=args.show_plots)
 
 f.savefig(folder + "diabatic_energies.pdf", bbox_inches='tight')
 
@@ -198,7 +222,7 @@ data_4 = [data['adiabatic_energies']['E_4'] for data in total_data]
 
 f = multiplot([data_1, data_2,  data_3,  data_4,],
               ['state_1', 'state_2', 'state_3', 'state_4'],
-              d_coordinate, title='Adiabatic energies', range_y=[6, 13])
+              d_coordinate, title='Adiabatic energies', range_y=[6, 13], show_plots=args.show_plots)
 
 f.savefig(folder + "adiabatic_energies.pdf", bbox_inches='tight')
 
@@ -214,7 +238,9 @@ e2c = e_le + wdc2 + e_12 + e_22
 
 f = multiplot([e1-e1c, e2-e2c],
               ['diff 1', 'diff 2'],
-              d_coordinate, title='Adiabatic energies difference\n (original-calculated)', range_y=None)
+              d_coordinate, title='Adiabatic energies difference\n (original-calculated)',
+              range_y=None, show_plots=args.show_plots)
+
 f.savefig(folder + "test.pdf", bbox_inches='tight')
 
 

@@ -139,6 +139,8 @@ def triplot(data1, data2, label1, label2, y_range, z_range, wireframe=False, pdf
 
     if show_plot:
         plt.show()
+    else:
+        plt.close()
 
 
 def biplot_interpolated(data1, data2, label1, label2, y_range, z_range, pdf=None,
@@ -174,6 +176,8 @@ def biplot_interpolated(data1, data2, label1, label2, y_range, z_range, pdf=None
 
     if show_plot:
         plt.show()
+    else:
+        plt.close()
 
 
 def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
@@ -198,6 +202,8 @@ def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
 
     if show_plot:
         plt.show()
+    else:
+        plt.close()
 
 
 #############################
