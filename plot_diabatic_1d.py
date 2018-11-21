@@ -56,7 +56,6 @@ with open(args.filename, 'rb') as input:
     calculation_data = pickle.load(input)
     print('Loaded data from calculation_data.pkl')
 
-
 total_data = []
 d_coordinate = []
 for distance in calculation_data['distance']:
@@ -66,7 +65,7 @@ for distance in calculation_data['distance']:
             total_data.append(data)
             d_coordinate.append(distance)
 
-########################### W_DC ############################
+########################### W_DC ###########################
 
 data_1 = [data['diabatic_contributions']['W_DC'][0] for data in total_data]
 data_2 = [data['diabatic_contributions']['W_DC'][1] for data in total_data]
@@ -77,7 +76,7 @@ f.savefig(folder + "W_DC.pdf", bbox_inches='tight')
 wdc1 = np.array(data_1)
 wdc2 = np.array(data_2)
 
-########################### W_CT ############################
+########################### W_CT ###########################
 
 data_1 = [data['diabatic_contributions']['W_CT'][0] for data in total_data]
 data_2 = [data['diabatic_contributions']['W_CT'][1] for data in total_data]
@@ -110,7 +109,7 @@ f.savefig(folder + "W_h.pdf", bbox_inches='tight')
 wh1 = np.array(data_1)
 wh2 = np.array(data_2)
 
-###################################### W per state ###########################
+###################### W per state ###########################
 
 f = multiplot([wh1, we1, wct1, wdc1], ['W_h', 'W_e', 'W_CT', 'W_DC'], d_coordinate,
               title='State 1', show_plots=args.show_plots)
@@ -242,6 +241,3 @@ f = multiplot([e1-e1c, e2-e2c],
               range_y=None, show_plots=args.show_plots)
 
 f.savefig(folder + "test.pdf", bbox_inches='tight')
-
-
-
