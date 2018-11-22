@@ -164,7 +164,7 @@ def parse_output(get_output_function):
 
     def func_wrapper(*args, **kwargs):
         parser = kwargs.pop('parser', None)
-
+        parser_parameters = kwargs.pop('parser_parameters', {})
         force_recalculation = kwargs.pop('force_recalculation', False)
 
         if parser is not None:
@@ -182,7 +182,7 @@ def parse_output(get_output_function):
         if parser is None:
             return output
 
-        parsed_output = parser(output)
+        parsed_output = parser(output, **parser_parameters)
 
         calculation_data[hash] = parsed_output
         with open('calculation_data.pkl', 'wb') as output:

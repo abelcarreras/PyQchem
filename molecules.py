@@ -1,4 +1,4 @@
-from structure import rotation_matrix
+from structure import rotation_matrix, Structure
 import numpy as np
 
 
@@ -24,7 +24,11 @@ def dimer_ethene(distance, slide_y, slide_z):
     coordinates[6:, 2] = coordinates[6:, 2] + slide_z
     symbols = ['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H']
 
-    return symbols, coordinates
+    molecule = Structure(coordinates=coordinates,
+                         atomic_elements=symbols,
+                         charge=0)
+
+    return molecule, {'state_threshold': 0.2, 'n_mon': 6}
 
 
 # Ethane perpendicular position
@@ -46,4 +50,8 @@ def dimer_ethene_2(distance, slide_y, slide_z):
 
     coordinates = np.vstack([monomer, monomer2])
 
-    return symbols*2, coordinates
+    molecule = Structure(coordinates=coordinates,
+                         atomic_elements=symbols,
+                         charge=0)
+
+    return molecule, {'state_threshold': 0.4, 'n_mon': len(monomer)}

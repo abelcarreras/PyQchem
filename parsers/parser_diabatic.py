@@ -1,6 +1,6 @@
 import re
 import numpy as np
-import os
+
 
 # parser for 4 states
 def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
@@ -18,10 +18,9 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     loc_diab = output[n:n+100].split()[13:17]
 
     if print_data:
-        # Mulliken
         print ('-------------------------------')
-
         print ('Mulliken')
+
     state_order = []
     for m in re.finditer('Mulliken analysis of TDA State', output):
         #print output[m.end():m.end()+800].split()

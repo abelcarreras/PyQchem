@@ -21,9 +21,6 @@ parser.add_argument('-d', metavar='distance', type=float, default=4.7,
 parser.add_argument('-mol', metavar='name', type=str, default='dimer_ethene',
                     help='molecule name (in molecules.py)', )
 
-parser.add_argument('--charge', metavar='distance', type=int, default=0,
-                    help='molecule charge')
-
 parser.add_argument('--yrange', metavar='yrange', type=float, nargs=3,
                     default=[0, 3, 0.5],
                     help='range: initial, final, step')
@@ -94,7 +91,7 @@ if args.drange is not None:
 
 
 # molecule selection
-get_geometry = getattr(molecules, args.mol)
+get_molecule = getattr(molecules, args.mol)
 
 # Start calculation
 total_data = {}
@@ -104,11 +101,8 @@ for slide_d in distance:
         for slide_z in range_z:
 
             print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
-            symbols, coordinates = get_geometry(slide_d, slide_y, slide_z)
 
-            molecule = Structure(coordinates=coordinates,
-                                 atomic_elements=symbols,
-                                 charge=args.charge)
+            molecule, parser_info = get_molecule(slide_d, slide_y, slide_z)
 
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
@@ -136,7 +130,7 @@ for slide_d in distance:
             try:
                 # parse adiabatic/diabatic data
                 data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                             parser=analyze_diabatic)
+                                             parser=analyze_diabatic, parser_parameters=parser_info)
                 data.update({'states_info': states_info})
                 if args.drange is None:
                     total_data['{}_{}'.format(slide_y, slide_z)] = data
