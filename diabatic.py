@@ -164,6 +164,17 @@ for slide_d in distance:
                                'localized_diabatization': list_states})
             txt_input = create_qchem_input(molecule, **parameters)
 
+            # if store outputs
+            if args.store_outputs:
+                if args.store_outputs:
+                    data = get_output_from_qchem(txt_input, processors=4,
+                                                 force_recalculation=True,
+                                                 parser=None)
+
+                    with open('qchemout_{}_{}_{}.out'.format(slide_d, slide_y, slide_z), 'w') as f:
+                        f.write(data)
+                    continue
+
             try:
                 # parse adiabatic/diabatic data
                 data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
@@ -174,10 +185,6 @@ for slide_d in distance:
                 else:
                     total_data['{}'.format(slide_d)] = data
                 print(data)
-
-                if args.store_outputs:
-                    with open('qchemout_{}_{}_{}.out'.format(slide_d, slide_y, slide_z), 'w') as f:
-                        f.write(data)
 
             except:
                 print('Failed!')
