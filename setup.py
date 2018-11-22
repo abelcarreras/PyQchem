@@ -6,4 +6,5 @@ setup(name='pyqchem',
       description='qchem python module',
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
-      packages=['pyqchem', 'pyqchem.parsers'])
+      packages=['pyqchem', 'pyqchem.parsers'],
+      scripts=['scripts/'])
