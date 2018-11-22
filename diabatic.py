@@ -39,14 +39,40 @@ parser.add_argument('--force_recalculation', action='store_true',
 parser.add_argument('-n_states', metavar='N', type=int, default=4,
                     help='number of states')
 
+parser.add_argument('--origin', metavar='distance', type=int, default=None, nargs='*',
+                    help='intermolecular distance between monomers')
+
+parser.add_argument('--target', metavar='distance', type=int, default=None, nargs='*',
+                    help='intermolecular distance between monomers')
+
 args = parser.parse_args()
 
-# get list of interesting states
-def get_frontier_states(cis_data, n_states=4):
+# get list of interesting states from frontier orbitals
+def get_frontier_states(cis_data, ocup_orb, n_states=4):
     interesting_transitions = []
     for i, state in enumerate(cis_data):
         for transition in state['transitions']:
             if transition['origin'] > ocup_orb - n_states // 2 and transition['target'] <= n_states // 2:
+                interesting_transitions.append([i + 1,
+                                                transition['origin'],
+                                                transition['target'],
+                                                transition['amplitude'] ** 2])
+
+    interesting_transitions = np.array(interesting_transitions)
+
+    list_states = interesting_transitions[np.array(interesting_transitions)[:, 3].argsort()]
+    list_states = np.array(list_states[:, 0][::-1], dtype=int)
+    indexes = np.unique(list_states, return_index=True)[1]
+    list_states = np.sort([list_states[index] for index in sorted(indexes)][:n_states])
+    return list_states
+
+
+# get list of interesting states from selected orbitals
+def get_states_from_orbitals(cis_data, origin_orbitals, target_orbitals, n_states=4):
+    interesting_transitions = []
+    for i, state in enumerate(cis_data):
+        for transition in state['transitions']:
+            if transition['origin'] in origin_orbitals and transition['target'] in target_orbitals:
                 interesting_transitions.append([i + 1,
                                                 transition['origin'],
                                                 transition['target'],
@@ -106,6 +132,7 @@ for slide_d in distance:
             for s, c in zip(molecule.get_atomic_elements(), molecule.get_coordinates()):
                 print('{:2} '.format(s) + '{:10.8f} {:10.8f} {:10.8f}'.format(*c))
 
+            continue
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
 
@@ -113,11 +140,16 @@ for slide_d in distance:
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
                                          parser=basic_parser_qchem)
 
-            # if closed shell
-            ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge)//2
-
             # get interesting states
-            list_states = get_frontier_states(data['excited states cis'], n_states=args.n_states)
+            if args.origin is not None and args.target is not None:
+                print('Using defined Orgin-Target orbitals with {} states'.format(args.n_states))
+                list_states = get_states_from_orbitals(data['excited states cis'], n_states=args.n_states,
+                                                       origin_orbitals=args.origin, target_orbitals=args.target)
+            else:
+                # assuming closed shell
+                ocup_orb = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                print('Using {} states from frontier orbitals. Occupied orbitals: {}'.format(args.n_states, ocup_orb))
+                list_states = get_frontier_states(data['excited states cis'], ocup_orb, n_states=args.n_states)
 
             # store transition moment info
             states_info = [data['excited states cis'][state] for state in list_states]
