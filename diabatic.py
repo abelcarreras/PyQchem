@@ -166,19 +166,14 @@ for slide_d in distance:
 
             # if store outputs
             if args.store_outputs:
-                if args.store_outputs:
-                    data = get_output_from_qchem(txt_input, processors=4,
-                                                 force_recalculation=True,
-                                                 parser=None)
-
-                    with open('qchemout_{}_{}_{}.out'.format(slide_d, slide_y, slide_z), 'w') as f:
-                        f.write(data)
-                    continue
+                output_file = 'qchemout_{}_{}_{}.out'.format(slide_d, slide_y, slide_z)
+            else:
+                output_file = None
 
             try:
                 # parse adiabatic/diabatic data
                 data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                             parser=analyze_diabatic, parser_parameters=parser_info)
+                                             parser=analyze_diabatic, parser_parameters=parser_info, store_output=output_file)
                 data.update({'states_info': states_info})
                 if args.drange is None:
                     total_data['{}_{}'.format(slide_y, slide_z)] = data

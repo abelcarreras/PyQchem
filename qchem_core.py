@@ -165,6 +165,8 @@ def parse_output(get_output_function):
     def func_wrapper(*args, **kwargs):
         parser = kwargs.pop('parser', None)
         parser_parameters = kwargs.pop('parser_parameters', {})
+        store_output = kwargs.pop('store_output', None)
+
         force_recalculation = kwargs.pop('force_recalculation', False)
 
         if parser is not None:
@@ -174,6 +176,10 @@ def parse_output(get_output_function):
                 return calculation_data[hash]
 
         output, err = get_output_function(*args, **kwargs)
+
+        if store_output is not None:
+            with open('{}.out'.format(store_output), 'w') as f:
+                f.write(output)
 
         if len(err) > 0:
             print(output[-800:])
