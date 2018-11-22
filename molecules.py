@@ -28,7 +28,8 @@ def dimer_ethene(distance, slide_y, slide_z):
                          atomic_elements=symbols,
                          charge=0)
 
-    return molecule, {'state_threshold': 0.2, 'n_mon': 6}
+    return molecule, {'state_threshold': 0.2,
+                      'n_mon': 6}
 
 
 # Ethane perpendicular position
@@ -54,4 +55,5 @@ def dimer_ethene_2(distance, slide_y, slide_z):
                          atomic_elements=symbols,
                          charge=0)
 
-    return molecule, {'state_threshold': 0.4, 'n_mon': len(monomer)}
+    return molecule, {'state_threshold': 0.4,
+                      'n_mon': len(monomer)}
