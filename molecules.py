@@ -58,3 +58,41 @@ def dimer_tetrachloroethene(distance, slide_y, slide_z):
 
     return molecule, {'state_threshold': 0.2,
                       'n_mon': len(monomer)}
+
+
+# Tetracloroethene
+def dimer_mix(distance, slide_y, slide_z):
+
+    monomer1 = [[ 0.6660120,  0.0000000,  0.0000000,],
+                [-0.6660120,  0.0000000,  0.0000000,],
+                [ 1.2279200,  0.9228100,  0.0000000,],
+                [ 1.2279200, -0.9228100,  0.0000000,],
+                [-1.2279200, -0.9228100,  0.0000000,],
+                [-1.2279200,  0.9228100,  0.0000000,]]
+
+    symbols1 = ['C', 'C', 'H', 'H', 'H', 'H']
+
+    monomer2 = [[ 0.6624670117,  0.0000000000, 0.0000000000],
+                [-0.6624670117,  0.0000000000, 0.0000000000],
+                [ 1.3834661472,  1.0993897934, 0.0000000000],
+                [ 1.3834661472, -1.0993897934, 0.0000000000],
+                [-1.3834661472, -1.0993897934, 0.0000000000],
+                [-1.3834661472,  1.0993897934, 0.0000000000]]
+
+    symbols2 = ['C', 'C', 'F', 'F', 'F', 'F']
+
+    monomer2 = np.array(monomer2)
+
+    monomer2[:, 2] = monomer2[:, 2] + distance
+    monomer2[:, 1] = monomer2[:, 1] + slide_y
+    monomer2[:, 0] = monomer2[:, 0] + slide_z
+
+    coordinates = np.vstack([monomer1, monomer2])
+    symbols = symbols1 + symbols2
+
+    molecule = Structure(coordinates=coordinates,
+                         atomic_elements=symbols,
+                         charge=0)
+
+    return molecule, {'state_threshold': 0.2,
+                      'n_mon': len(monomer1)}
