@@ -32,8 +32,8 @@ def dimer_ethene(distance, slide_y, slide_z):
                       'n_mon': 6}
 
 
-# Ethane perpendicular position
-def dimer_ethene_2(distance, slide_y, slide_z):
+# Tetracloroethene
+def dimer_tetrachloroethene(distance, slide_y, slide_z):
 
     monomer = [[ 0.6624670117,  0.0000000000, 0.0000000000],
                [-0.6624670117,  0.0000000000, 0.0000000000],
@@ -46,14 +46,14 @@ def dimer_ethene_2(distance, slide_y, slide_z):
 
     monomer2 = np.array(monomer)
     #monomer2 = np.dot(monomer, rotation_matrix([0, 1, 0], np.pi / 2))
-    monomer2[:, 1] = monomer2[:, 1] + distance
-    monomer2[:, 2] = monomer2[:, 2] + slide_y
+    monomer2[:, 2] = monomer2[:, 2] + distance
+    monomer2[:, 1] = monomer2[:, 1] + slide_y
     monomer2[:, 0] = monomer2[:, 0] + slide_z
 
     coordinates = np.vstack([monomer, monomer2])
 
     molecule = Structure(coordinates=coordinates,
-                         atomic_elements=symbols,
+                         atomic_elements=symbols*2,
                          charge=0)
 
     return molecule, {'state_threshold': 0.2,

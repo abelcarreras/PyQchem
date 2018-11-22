@@ -61,9 +61,6 @@ def get_frontier_states(cis_data, n_states=4):
     return list_states
 
 
-# monkey patch analyze_diabatic function defaults (change default behavior)
-# analyze_diabatic.__setattr__('__defaults__', (False, 0.2, 6))
-
 # common qchem input parameters
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
@@ -100,9 +97,13 @@ for slide_d in distance:
     for slide_y in range_y:
         for slide_z in range_z:
 
+            print('12')
             print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
 
             molecule, parser_info = get_molecule(slide_d, slide_y, slide_z)
+            for s, c in zip(molecule.get_atomic_elements(), molecule.get_coordinates()):
+                print('{} '.format(s) + '{} {} {}'.format(*c))
+            continue
 
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
