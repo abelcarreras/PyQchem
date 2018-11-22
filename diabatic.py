@@ -139,7 +139,7 @@ for slide_d in distance:
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
 
-            # parse CIS data
+            # calculate and parse CIS data
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
                                          parser=basic_parser_qchem)
 
@@ -170,8 +170,8 @@ for slide_d in distance:
             else:
                 output_file = None
 
+            # calculate and parse adiabatic/diabatic data
             try:
-                # parse adiabatic/diabatic data
                 data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
                                              parser=analyze_diabatic, parser_parameters=parser_info, store_output=output_file)
                 data.update({'states_info': states_info})

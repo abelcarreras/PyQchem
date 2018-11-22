@@ -178,7 +178,7 @@ def parse_output(get_output_function):
         output, err = get_output_function(*args, **kwargs)
 
         if store_output is not None:
-            with open('{}.out'.format(store_output), 'w') as f:
+            with open('{}'.format(store_output), 'w') as f:
                 f.write(output)
 
         if len(err) > 0:
