@@ -132,7 +132,6 @@ for slide_d in distance:
             for s, c in zip(molecule.get_atomic_elements(), molecule.get_coordinates()):
                 print('{:2} '.format(s) + '{:10.8f} {:10.8f} {:10.8f}'.format(*c))
 
-            continue
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
 
