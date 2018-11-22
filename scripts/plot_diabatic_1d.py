@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from order_states import get_order_states_list, correct_order_list
+from pyqchem.order_states import get_order_states_list, correct_order_list
 
 
 

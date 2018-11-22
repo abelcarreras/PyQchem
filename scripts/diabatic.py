@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-from structure import Structure
-from qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 import numpy as np
 import pickle
 import argparse
-import molecules
+from scripts import molecules
 
-from parsers.basic import basic_parser_qchem
-from parsers.parser_diabatic import analyze_diabatic  # parser for 4 states only
+from pyqchem.parsers import basic_parser_qchem
+from pyqchem.parsers import analyze_diabatic  # parser for 4 states only
 
 
 # Argument parser
@@ -50,6 +49,7 @@ parser.add_argument('--target', metavar='distance', type=int, default=None, narg
 
 
 args = parser.parse_args()
+
 
 # get list of interesting states from frontier orbitals
 def get_frontier_states(cis_data, ocup_orb, n_states=4):

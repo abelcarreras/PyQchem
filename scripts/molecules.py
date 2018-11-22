@@ -1,4 +1,4 @@
-from structure import rotation_matrix, Structure
+from pyqchem.structure import Structure
 import numpy as np
 
 

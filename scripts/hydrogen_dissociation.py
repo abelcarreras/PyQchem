@@ -1,6 +1,6 @@
-from structure import Structure
-from qchem_core import get_output_from_qchem, create_qchem_input
-from parsers.basic import basic_parser_qchem
+from pyqchem.structure import Structure
+from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem.parsers import basic_parser_qchem
 import numpy as np
 import matplotlib.pyplot as plt
 
