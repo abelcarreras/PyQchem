@@ -44,7 +44,8 @@ def dimer_ethene_2(distance, slide_y, slide_z):
 
     symbols = ['C', 'C', 'F', 'F', 'F', 'F']
 
-    monomer2 = np.dot(monomer, rotation_matrix([0, 1, 0], np.pi / 2))
+    monomer2 = monomer.copy()
+    #monomer2 = np.dot(monomer, rotation_matrix([0, 1, 0], np.pi / 2))
     monomer2[:, 1] = monomer2[:, 1] + distance
     monomer2[:, 2] = monomer2[:, 2] + slide_y
     monomer2[:, 0] = monomer2[:, 0] + slide_z
