@@ -97,13 +97,14 @@ for slide_d in distance:
     for slide_y in range_y:
         for slide_z in range_z:
 
-            print('12')
-            print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
+            # print('12')
 
             molecule, parser_info = get_molecule(slide_d, slide_y, slide_z)
+
+            print(molecule.get_number_of_atoms())
+            print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
             for s, c in zip(molecule.get_atomic_elements(), molecule.get_coordinates()):
-                print('{} '.format(s) + '{} {} {}'.format(*c))
-            continue
+                print('{:2} '.format(s) + '{:10.8f} {:10.8f} {:10.8f}'.format(*c))
 
             txt_input = create_qchem_input(molecule, **parameters)
             # print(txt_input)
