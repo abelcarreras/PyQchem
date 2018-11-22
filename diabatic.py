@@ -33,6 +33,9 @@ parser.add_argument('--drange', metavar='drange', type=float, nargs=3,
                     default=None,
                     help='distance range: initial, final, step')
 
+parser.add_argument('--store_outputs', action='store_true',
+                   help='store qchem outputs')
+
 parser.add_argument('--force_recalculation', action='store_true',
                    help='force reacalculation of previously parsed data points')
 
@@ -44,6 +47,7 @@ parser.add_argument('--origin', metavar='distance', type=int, default=None, narg
 
 parser.add_argument('--target', metavar='distance', type=int, default=None, nargs='*',
                     help='intermolecular distance between monomers')
+
 
 args = parser.parse_args()
 
@@ -170,6 +174,11 @@ for slide_d in distance:
                 else:
                     total_data['{}'.format(slide_d)] = data
                 print(data)
+
+                if args.store_outputs:
+                    with open('qchemout_{}_{}_{}.out'.format(slide_d, slide_y, slide_z), 'w') as f:
+                        f.write(data)
+
             except:
                 print('Failed!')
 
