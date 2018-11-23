@@ -33,7 +33,7 @@ def dimer_ethene(distance, slide_y, slide_z):
 
 
 # Tetracloroethene
-def dimer_tetrachloroethene(distance, slide_y, slide_z):
+def dimer_tetrafluoroethene(distance, slide_y, slide_z):
 
     monomer = [[ 0.6624670117,  0.0000000000, 0.0000000000],
                [-0.6624670117,  0.0000000000, 0.0000000000],

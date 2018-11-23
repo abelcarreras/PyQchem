@@ -6,8 +6,8 @@ import pickle
 import argparse
 from scripts import molecules
 
-from pyqchem.parsers import basic_parser_qchem
-from pyqchem.parsers import analyze_diabatic  # parser for 4 states only
+from pyqchem.parsers.basic import basic_parser_qchem
+from pyqchem.parsers.parser_diabatic import analyze_diabatic  # parser for 4 states only
 
 
 # Argument parser
@@ -127,10 +127,9 @@ for slide_d in distance:
     for slide_y in range_y:
         for slide_z in range_z:
 
-            # print('12')
-
             molecule, parser_info = get_molecule(slide_d, slide_y, slide_z)
 
+            # print molecule (xyz style)
             print(molecule.get_number_of_atoms())
             print('dist: {}  y: {}  z: {}'.format(slide_d, slide_y, slide_z))
             for s, c in zip(molecule.get_atomic_elements(), molecule.get_coordinates()):
