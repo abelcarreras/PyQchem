@@ -13,18 +13,20 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
     n_atoms = len(coordinates)
 
-    # Diabatic
-    n = output.find('On the next line, list which excited')
-    loc_diab = output[n:n+100].split()[13:17]
+    # Diabatic states
+    for i, line in enumerate(output.split('\n')):
+        if 'adiabatic states' in line.lower():
+            print('x')
+            loc_diab = [int(num) for num in output.split('\n')[i+1].split()]
 
     if print_data:
-        print ('-------------------------------')
-        print ('Mulliken')
+        print('-------------------------------')
+        print('Mulliken')
 
     state_order = []
     for m in re.finditer('Mulliken analysis of TDA State', output):
         #print output[m.end():m.end()+800].split()
-        data = output[m.end():m.end()+800].split()
+        data = output[m.end():m.end()+37*(n_atoms+3)].split()
         state_number = int(data[0])
         state_info = []
         for i in range(n_atoms):
@@ -44,32 +46,36 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         # print ('h_sum', h_sum1, h_sum2)
 
         label = ''
-        if ((np.abs(e_sum1) > 1-state_threshold and np.abs(e_sum2) < state_threshold) or
-            (np.abs(e_sum1) < state_threshold and np.abs(e_sum2) > 1-state_threshold)) and \
-             np.abs(np.abs(e_sum1) - np.abs(h_sum1)) < state_threshold:
+        if state_number in loc_diab:
+            if ((np.abs(e_sum1) > 1-state_threshold and np.abs(e_sum2) < state_threshold) or
+                (np.abs(e_sum1) < state_threshold and np.abs(e_sum2) > 1-state_threshold)) and \
+                 np.abs(np.abs(e_sum1) - np.abs(h_sum1)) < state_threshold:
 
-            if (e_sum1 - e_sum2) > 0:
-                label = '01'
-            else:
-                label = '10'
+                if (e_sum1 - e_sum2) > 0:
+                    label = '01'
+                else:
+                    label = '10'
 
-            state_order.append(label)
+                state_order.append(label)
 
-        if ((np.abs(np.abs(e_sum1)) > 1-state_threshold and np.abs(h_sum1) < state_threshold) or
-            (np.abs(np.abs(e_sum1)) < state_threshold and np.abs(h_sum1) > 1-state_threshold)) and \
-            np.abs(np.abs(e_sum1) - np.abs(h_sum1)) > 1-state_threshold:
+            if ((np.abs(np.abs(e_sum1)) > 1-state_threshold and np.abs(h_sum1) < state_threshold) or
+                (np.abs(np.abs(e_sum1)) < state_threshold and np.abs(h_sum1) > 1-state_threshold)) and \
+                np.abs(np.abs(e_sum1) - np.abs(h_sum1)) > 1-state_threshold:
 
-            if (e_sum1 - e_sum2) > 0:
-                label = 'CA'
-            else:
-                label = 'AC'
-            state_order.append(label)
+                if (e_sum1 - e_sum2) > 0:
+                    label = 'CA'
+                else:
+                    label = 'AC'
+                state_order.append(label)
 
         if print_data:
             print ('state: {}  {}'.format(state_number, label))
 
+    print(state_order)
+    print(loc_diab)
+
     # AdiabatH
-    if len(state_order) < len(loc_diab) or len(state_order) < 4:
+    if len(state_order) < 4:
         raise Exception('Some states not found')
 
     if print_data:
@@ -197,7 +203,10 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
 
     if print_data:
         for item in sorted(coefficients):
-            print('{:5} : {:10.5f}'.format(item, coefficients[item]))
+            try:
+                print('{:5} : {:10.5f}'.format(item, coefficients[item]))
+            except:
+                print('{:5} : '.format(item) + ' '.join(['{:10.5f}'.format(num) for num in coefficients[item]]))
 
     diabatic_contributions = {}
     w_dc = []
@@ -226,24 +235,25 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     diabatic_contributions.update({'W_h': w_h})
     diabatic_contributions.update({'W_e': w_e})
 
-    if print_data:
+    if True:
         print ('-------------------------------')
         for item in ['W_DC', 'W_CT', 'W_h', 'W_e']:
             print('{:5} : {:10.5f} {:10.5f} {:10.5f} {:10.5f}'.format(
-                *[item] + [diabatic_contributions[item+'_{}'.format(i+1)] for i in range(4)] ))
+                *[item] + diabatic_contributions[item] ))
 
     l = []
     for i in range(4):
         l.append(np.sqrt(2) * np.abs(coefficients['S_AC'][i]))
+
 
     if print_data:
         print ('-------------------------------')
         for i, _l in enumerate(l):
             print ('lambda/lambda^2 {}: {:10.5f} / {:10.5f}'.format(i+1, _l, _l**2))
 
-    diabatic_contributions.update({'Omega_h': [2 * _l * np.sqrt(1 - _l**2) * _wh
+    diabatic_contributions.update({'Omega_h': [2 * _l * np.sqrt(np.abs(1 - _l**2)) * _wh
                                                for _l, _wh in zip(l, diabatic_contributions['W_h'])]})
-    diabatic_contributions.update({'Omega_e': [2 * _l * np.sqrt(1 - _l**2) * _we
+    diabatic_contributions.update({'Omega_e': [2 * _l * np.sqrt(np.abs(1 - _l**2)) * _we
                                                for _l, _we in zip(l, diabatic_contributions['W_e'])]})
 
     reordering = []

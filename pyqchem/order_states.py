@@ -28,8 +28,15 @@ def correct_order_list(list, order):
 
     alist = np.array(list)
 
-    ordered_list = []
-    for l, o in zip(alist.T, order):
-        ordered_list.append(l[o])
+    try:
+        ordered_list = []
+        for l, o in zip(alist.T, order):
+            print('l', l, 'o', o)
+            ordered_list.append(l[o])
+    except:
+        ordered_list = []
+        for l, o in zip(alist, order):
+            print('l', l, 'o', o)
+            ordered_list.append(list[o])
 
     return np.array(ordered_list).T.tolist()

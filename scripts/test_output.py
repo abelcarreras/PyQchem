@@ -2,8 +2,8 @@ from pyqchem.qchem_core import parse_output
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyqchem.parsers import analyze_diabatic
-from pyqchem.parsers import basic_parser_qchem
+from pyqchem.parsers.parser_diabatic import analyze_diabatic
+from pyqchem.parsers.basic import basic_parser_qchem
 # common qchem input parameters
 
 
