@@ -16,7 +16,6 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     # Diabatic states
     for i, line in enumerate(output.split('\n')):
         if 'adiabatic states' in line.lower():
-            print('x')
             loc_diab = [int(num) for num in output.split('\n')[i+1].split()]
 
     if print_data:
@@ -111,16 +110,12 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
             # diabatic_energies.append(adiabat_h * 27.2114)
             if state_order[indices[0]] == '10':
                 diabatic_energies.update({'E_10': adiabat_h * 27.2114})
-                print('hei')
             if state_order[indices[0]] == '01':
                 diabatic_energies.update({'E_01': adiabat_h * 27.2114})
-                print('hoi')
             if state_order[indices[0]] == 'AC':
                 diabatic_energies.update({'E_AC': adiabat_h * 27.2114})
-                print('hui')
             if state_order[indices[0]] == 'CA':
                 diabatic_energies.update({'E_CA': adiabat_h * 27.2114})
-                print('hii')
 
         diabatic_energies.update({'E_{}_{}'.format(*np.array(indices) + 1): adiabat_h * 27.2114})
 
@@ -266,7 +261,7 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     diabatic_contributions.update({'W_h': w_h})
     diabatic_contributions.update({'W_e': w_e})
 
-    if True:
+    if print_data:
         print ('-------------------------------')
         for item in ['W_DC', 'W_CT', 'W_h', 'W_e']:
             print('{:5} : {:10.5f} {:10.5f} {:10.5f} {:10.5f}'.format(
