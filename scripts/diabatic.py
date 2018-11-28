@@ -7,7 +7,7 @@ import argparse
 from scripts import molecules
 
 from pyqchem.parsers.basic import basic_parser_qchem
-from pyqchem.parsers.parser_diabatic import analyze_diabatic  # parser for 4 states only
+from pyqchem.parsers.parser_diabatic_general import analyze_diabatic  # parser for 4 states only
 
 
 # Argument parser
