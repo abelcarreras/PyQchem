@@ -9,7 +9,7 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     n = output.find('$molecule')
     n2 = output[n:].find('$end')
     molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    coordinates = np.array([ np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
+    coordinates = np.array([np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
     n_atoms = len(coordinates)
 
@@ -23,6 +23,7 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         print('-------------------------------')
         print('Mulliken')
 
+    # determine diabatic states type
     state_order = []
     for m in re.finditer('Mulliken analysis of TDA State', output):
         #print output[m.end():m.end()+800].split()
@@ -93,7 +94,7 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         for item in sorted(adiabatic_energies):
             print('{:5} : {:10.5f}'.format(item, adiabatic_energies[item]))
 
-        print ('-------------------------------')
+        print('-------------------------------')
 
     if print_data:
         for item in sorted(adiabatic_energies):
@@ -108,25 +109,35 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         adiabat_h = float(data[2])
         if indices[0] == indices[1]:
             # diabatic_energies.append(adiabat_h * 27.2114)
-            if indices[0] == 0:
-                diabatic_energies.update({'E_LE_1': adiabat_h * 27.2114})
-            if indices[0] == 1:
-                diabatic_energies.update({'E_LE_2': adiabat_h * 27.2114})
-            if indices[0] == 2:
-                diabatic_energies.update({'E_CT_1': adiabat_h * 27.2114})
-            if indices[0] == 3:
-                diabatic_energies.update({'E_CT_2': adiabat_h * 27.2114})
+            if state_order[indices[0]] == '10':
+                diabatic_energies.update({'E_10': adiabat_h * 27.2114})
+                print('hei')
+            if state_order[indices[0]] == '01':
+                diabatic_energies.update({'E_01': adiabat_h * 27.2114})
+                print('hoi')
+            if state_order[indices[0]] == 'AC':
+                diabatic_energies.update({'E_AC': adiabat_h * 27.2114})
+                print('hui')
+            if state_order[indices[0]] == 'CA':
+                diabatic_energies.update({'E_CA': adiabat_h * 27.2114})
+                print('hii')
 
         diabatic_energies.update({'E_{}_{}'.format(*np.array(indices) + 1): adiabat_h * 27.2114})
 
         # print ('test_indices:', indices, state_order, loc_diab)
         # print ('test_states:', [state_order[indices[0]], state_order[indices[1]]])
 
+        if [state_order[indices[0]], state_order[indices[1]]] == ['10', '01']:
+            diabatic_energies.update({'V_DC_1': adiabat_h * 27.2114})
+
         if [state_order[indices[0]], state_order[indices[1]]] == ['01', '10']:
-            diabatic_energies.update({'V_DC': adiabat_h * 27.2114})
+            diabatic_energies.update({'V_DC_2': adiabat_h * 27.2114})
 
         if [state_order[indices[0]], state_order[indices[1]]] == ['AC', 'CA']:
-            diabatic_energies.update({'V_CT': adiabat_h * 27.2114})
+            diabatic_energies.update({'V_CT_1': adiabat_h * 27.2114})
+
+        if [state_order[indices[0]], state_order[indices[1]]] == ['CA', 'AC']:
+            diabatic_energies.update({'V_CT_2': adiabat_h * 27.2114})
 
         if [state_order[indices[0]], state_order[indices[1]]] == ['10', 'CA']:
             diabatic_energies.update({'V_e_1': adiabat_h * 27.2114})
@@ -140,16 +151,35 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
         if [state_order[indices[0]], state_order[indices[1]]] == ['01', 'CA']:
             diabatic_energies.update({'V_h_2': adiabat_h * 27.2114})
 
-    # arrange diabatic energies in lists
-    diabatic_energies.update({'E_LE': [diabatic_energies['E_LE_1'],
-                                       diabatic_energies['E_LE_2']]})
-    del diabatic_energies['E_LE_1']
-    del diabatic_energies['E_LE_2']
+    diabatic_energies.update({'V_DC': [diabatic_energies['V_DC_1'],
+                                       diabatic_energies['V_DC_2']]})
+    del diabatic_energies['V_DC_1']
+    del diabatic_energies['V_DC_2']
 
-    diabatic_energies.update({'E_CT': [diabatic_energies['E_CT_1'],
-                                       diabatic_energies['E_CT_2']]})
-    del diabatic_energies['E_CT_1']
-    del diabatic_energies['E_CT_2']
+    diabatic_energies.update({'V_CT': [diabatic_energies['V_CT_1'],
+                                       diabatic_energies['V_CT_2']]})
+    del diabatic_energies['V_CT_1']
+    del diabatic_energies['V_CT_2']
+
+
+    # arrange diabatic energies in lists
+    diabatic_energies.update({'E_LE': (diabatic_energies['E_10'] +
+                                       diabatic_energies['E_01'])/2})
+
+    diabatic_energies.update({'dE_LE': (diabatic_energies['E_10'] -
+                                        diabatic_energies['E_01'])/2})
+
+    #del diabatic_energies['E_LE_1']
+    #del diabatic_energies['E_LE_2']
+
+    diabatic_energies.update({'E_CT': np.average((diabatic_energies['E_AC'] +
+                                                  diabatic_energies['E_CA'])/2)})
+
+    diabatic_energies.update({'dE_CT': (diabatic_energies['E_AC'] -
+                                        diabatic_energies['E_CA'])/2})
+
+    #del diabatic_energies['E_CT_1']
+    #del diabatic_energies['E_CT_2']
 
     diabatic_energies.update({'V_e': [diabatic_energies['V_e_1'],
                                       diabatic_energies['V_e_2']]})
@@ -211,11 +241,15 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
     w_e = []
     w_h = []
     for i in range(4):
-        factor = coefficients['S_10'][i] * coefficients['S_01'][i]
-        w_dc.append(diabatic_energies['V_DC'] * np.sign(factor))
+        factor = [coefficients['S_10'][i] * coefficients['S_01'][i],
+                  coefficients['S_01'][i] * coefficients['S_10'][i]]
+        w_dc.append(np.average([diabatic_energies['V_DC'][0] * np.sign(factor[0]),
+                                diabatic_energies['V_DC'][1] * np.sign(factor[1])]))
 
-        factor = coefficients['S_CA'][i] * coefficients['S_AC'][i]
-        w_ct.append(diabatic_energies['V_CT'] * np.sign(factor))
+        factor = [coefficients['S_AC'][i] * coefficients['S_CA'][i],
+                  coefficients['S_CA'][i] * coefficients['S_AC'][i]]
+        w_ct.append(np.average([diabatic_energies['V_CT'][0] * np.sign(factor[0]),
+                                diabatic_energies['V_CT'][1] * np.sign(factor[1])]))
 
         factor = [coefficients['S_10'][i] * coefficients['S_AC'][i],
                   coefficients['S_01'][i] * coefficients['S_CA'][i]]
@@ -238,20 +272,36 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
             print('{:5} : {:10.5f} {:10.5f} {:10.5f} {:10.5f}'.format(
                 *[item] + diabatic_contributions[item] ))
 
-    l = []
+    l2 = []
+    d2le = []
+    d2ct = []
     for i in range(4):
-        l.append(np.sqrt(2) * np.abs(coefficients['S_AC'][i]))
+        l2.append(coefficients['S_AC'][i]**2 + coefficients['S_CA'][i]**2)
+        d2le.append(coefficients['S_10'][i]**2 - coefficients['S_01'][i]**2)
+        d2ct.append(coefficients['S_AC'][i]**2 - coefficients['S_CA'][i]**2)
 
+    asymmetries = {}
+    asymmetries.update({'lambda2': l2})
+    asymmetries.update({'delta2_le': d2le})
+    asymmetries.update({'delta2_ct': d2ct})
 
     if print_data:
         print ('-------------------------------')
-        for i, _l in enumerate(l):
-            print ('lambda/lambda^2 {}: {:10.5f} / {:10.5f}'.format(i+1, _l, _l**2))
+        for i, _l in enumerate(l2):
+            print ('{}: lambda^2: {:10.5f}  c^2_le: {:10.5f}  c^2_ct: {:10.5f}'.format(i+1, _l, d2le[i], d2ct[i]))
 
-    diabatic_contributions.update({'Omega_h': [2 * _l * np.sqrt(1 - _l**2) * _wh
-                                               for _l, _wh in zip(l, diabatic_contributions['W_h'])]})
-    diabatic_contributions.update({'Omega_e': [2 * _l * np.sqrt(1 - _l**2) * _we
-                                               for _l, _we in zip(l, diabatic_contributions['W_e'])]})
+    omega_e = []
+    for i in range(4):
+        omega_e.append(2 * (coefficients['S_10'][i] * coefficients['S_CA'][i] * diabatic_energies['V_e'][0] +
+                            coefficients['S_01'][i] * coefficients['S_AC'][i] * diabatic_energies['V_e'][1]))
+
+    omega_h = []
+    for i in range(4):
+        omega_h.append(2 * (coefficients['S_10'][i] * coefficients['S_AC'][i] * diabatic_energies['V_h'][0] +
+                            coefficients['S_01'][i] * coefficients['S_CA'][i] * diabatic_energies['V_h'][1]))
+
+    diabatic_contributions.update({'Omega_e': omega_e})
+    diabatic_contributions.update({'Omega_h': omega_h})
 
     reordering = []
     for m in re.finditer('Reordering necessary!', output):
@@ -262,6 +312,6 @@ def analyze_diabatic(output, print_data=False, state_threshold=0.2, n_mon=6):
             'diabatic_energies': diabatic_energies,
             'diabatic_contributions': diabatic_contributions,
             'coefficients': coefficients,
-            'lambda': l,
+            'asymmetries': asymmetries,
             'reordering': reordering}
 

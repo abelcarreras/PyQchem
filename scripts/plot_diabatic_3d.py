@@ -366,8 +366,8 @@ wdc1 = np.array(data_1)
 wdc2 = np.array(data_2)
 
 
-v2_mayavi(data_1, data_2, '$W^{(1)}_{DC}$', '$W^{(2)}_{DC}$',  y_range, z_range)
-exit()
+#v2_mayavi(data_1, data_2, '$W^{(1)}_{DC}$', '$W^{(2)}_{DC}$',  y_range, z_range)
+#exit()
 
 with PdfPages(folder + 'W_DC.pdf') as pdf:
     triplot(data_1, data_2, '$W^{(1)}_{DC}$', '$W^{(2)}_{DC}$', y_range, z_range, pdf=pdf, wireframe=True,
@@ -379,8 +379,6 @@ with PdfPages(folder + 'W_DC.pdf') as pdf:
     biplot(data_1, data_2, '$W^{(1)}_{DC}$', '$W^{(2)}_{DC}$', y_range, z_range, show_plot=args.show_plots,
            direction=1, pdf=pdf)
 
-
-exit()
 
 
 ########################  W_CT  ######################
@@ -400,8 +398,9 @@ wct1 = np.array(data_1)
 wct2 = np.array(data_2)
 
 with PdfPages(folder + 'W_CT.pdf') as pdf:
-    triplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'W_CT_1', 'W_CT_2', y_range, z_range, show_plot=args.show_plots)
+    triplot(data_1, data_2, '$W^{(1)}_{CT}$', '$W^{(2)}_{CT}$', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
+    biplot(data_1, data_2, '$W^{(1)}_{CT}$', '$W^{(2)}_{CT}$', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=0)
+    biplot(data_1, data_2, '$W^{(1)}_{CT}$', '$W^{(2)}_{CT}$', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=1)
 
 
 
@@ -424,7 +423,8 @@ we2 = np.array(data_2)
 
 with PdfPages(folder + 'W_e.pdf') as pdf:
     triplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=0)
+    biplot(data_1, data_2, 'W_e_1', 'W_e_2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=1)
 
 
 #######################  W_h  ######################
@@ -446,7 +446,8 @@ wh2 = np.array(data_2)
 
 with PdfPages(folder + 'W_h.pdf') as pdf:
     triplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=0)
+    biplot(data_1, data_2, 'W_h_1', 'W_h_2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=1)
 
 #######################  diabatic_energies  ######################
 
@@ -461,8 +462,9 @@ e_le = np.array(data_1)
 e_ct = np.array(data_2)
 
 with PdfPages(folder + 'diabatic_energies.pdf') as pdf:
-    triplot(data_1, data_2, 'E_LE', 'E_CT', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
-    biplot(data_1, data_2, 'E_LE', 'E_CT', y_range, z_range, show_plot=args.show_plots, zrange=None)
+    triplot(data_1, data_2, '$E_{LE}$', '$E_{CT}$', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
+    biplot(data_1, data_2, '$E_{LE}$', '$E_{CT}$', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=0)
+    biplot(data_1, data_2, '$E_{LE}$', '$E_{CT}$', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=1)
 
 
 #######################  lambda  ######################
@@ -483,11 +485,17 @@ l2 = np.array(data_2)
 
 with PdfPages(folder + 'lambda.pdf') as pdf:
     triplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, show_plot=args.show_plots)
+    biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=0)
+    biplot(data_1, data_2, 'lambda 1', 'lambda 2', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=1)
 
 with PdfPages(folder + 'lambda2.pdf') as pdf:
-    triplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots)
-    biplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range, show_plot=args.show_plots)
+    triplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range, pdf=pdf, wireframe=True,
+            show_plot=args.show_plots)
+    biplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=0)
+    biplot(np.square(data_1), np.square(data_2), 'lambda^2 1', 'lambda^2 2', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=1)
+
 
 
 ##########################  OMEGA h  #######################
@@ -509,7 +517,8 @@ if interpolate:
 
 with PdfPages(folder + 'omega_h.pdf') as pdf:
     triplot(data_1, data_2, 'omega_h 1', 'omaga_h 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_h')
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_h', direction=0)
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_h', direction=1)
 
 oh1 = np.array(data_1)
 oh2 = np.array(data_2)
@@ -535,7 +544,8 @@ if interpolate:
 
 with PdfPages(folder + 'omega_e.pdf') as pdf:
     triplot(data_1, data_2, 'omega_e 1', 'omaga_e 2', y_range, z_range, wireframe=True, pdf=pdf, show_plot=args.show_plots)
-    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_e')
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_e', direction=0)
+    biplot(data_1, data_2, 'state 1', 'state 2', y_range, z_range, pdf=pdf, show_plot=args.show_plots, title='omega_e', direction=1)
 
 oe1 = np.array(data_1)
 oe2 = np.array(data_2)
@@ -611,7 +621,8 @@ e2 = e_le + wdc2 + e_12 + e_22
 
 with PdfPages(folder + 'adiabatic_energies.pdf') as pdf:
     triplot(e1, e2, 'e1', 'e2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
-    biplot(e1, e2, 'e1', 'e2', y_range, z_range, show_plot=args.show_plots, zrange=None)
+    biplot(e1, e2, 'e1', 'e2', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=0)
+    biplot(e1, e2, 'e1', 'e2', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=1)
 
 
 #######################  adiabatic_energies extracted ######################
@@ -628,8 +639,9 @@ if interpolate:
     data_2 = interpolate_data(points, data_2, y_range, z_range)
 
 with PdfPages(folder + 'adiabatic_energies.pdf') as pdf:
-    triplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
-    biplot(data_1, data_2, 'E_1', 'E_2', y_range, z_range, show_plot=args.show_plots, zrange=None)
+    triplot(data_1, data_2, '$E_1$', '$E_2$', y_range, z_range, pdf=pdf, wireframe=True, show_plot=args.show_plots, zlevels=None)
+    biplot(data_1, data_2, '$E_1$', '$E_2$', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=0)
+    biplot(data_1, data_2, '$E_1$', '$E_2$', y_range, z_range, show_plot=args.show_plots, zrange=None, pdf=pdf, direction=1)
 
 
 #######################  difference test ######################
