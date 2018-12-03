@@ -140,8 +140,10 @@ for slide_d in distance:
 
             # calculate and parse CIS data
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                         parser=basic_parser_qchem)
-
+                                         parser=None)
+            #a = data.find('Molecular Point Group')
+            #print('Point group: {}'.format(data[a:a+50].split()[3]))
+            #continue
             # get interesting states
             if args.origin is not None and args.target is not None:
                 print('Using defined Orgin-Target orbitals with {} states'.format(args.n_states))

@@ -22,7 +22,6 @@ def create_qchem_input(molecule,
                        basis='6-31G',
                        thresh=14,
                        scf_convergence=8,
-                       multiplicity=1,
                        ras_roots=1,
                        ras_do_hole=True,
                        ras_do_part=True,
@@ -64,7 +63,7 @@ def create_qchem_input(molecule,
     # Molecule definition
     input_file += '$molecule\n'
 
-    input_file += '{} {}\n'.format(molecule.charge, multiplicity)
+    input_file += '{} {}\n'.format(molecule.charge, molecule.multiplicity)
 
     atomic_elements = molecule.get_atomic_elements()
 
@@ -183,6 +182,7 @@ def parse_output(get_output_function):
 
         if len(err) > 0:
             print(output[-800:])
+            print(err)
             raise Exception('q-chem calculation finished with error')
 
         if parser is None:
@@ -200,7 +200,7 @@ def parse_output(get_output_function):
 
 
 @parse_output
-def get_output_from_qchem(input_data, processors=1, binary='qchem', use_mpi=False, scratch=None):
+def get_output_from_qchem(input_data, processors=1, binary='qchem', use_mpi=False, scratch=None, read_fchk=False):
 
     if scratch is None:
         scratch = os.environ['QCSCRATCH']
@@ -223,6 +223,14 @@ def get_output_from_qchem(input_data, processors=1, binary='qchem', use_mpi=Fals
     (output, err) = qchem_process.communicate(input=input_data.encode())
     qchem_process.wait()
     os.remove(temp_file_name)
+
+    if os.path.isfile('qchem_temp_{}.fchk'.format(os.getpid())):
+        with open('qchem_temp_{}.fchk'.format(os.getpid())) as f:
+            fchk_txt = f.read()
+        os.remove('qchem_temp_{}.fchk'.format(os.getpid()))
+
+        if read_fchk:
+            return fchk_txt, err.decode()
 
     return output.decode(), err.decode()
 

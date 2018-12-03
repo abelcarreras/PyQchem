@@ -84,7 +84,7 @@ class Structure:
                  connectivity=None,
                  file_name=None,
                  charge=0,
-                 #multiplicity=1,
+                 multiplicity=1,
 
                  #Buscar un lloc millor
                  int_weights=None):
@@ -98,7 +98,7 @@ class Structure:
         self._connectivity = connectivity
         self._atomic_elements = atomic_elements
         self._charge = charge
-        #self._multiplicity = multiplicity
+        self._multiplicity = multiplicity
 
         self._file_name = file_name
         self._int_weights = int_weights
@@ -195,13 +195,13 @@ class Structure:
     def charge(self, charge):
         self._charge = charge
 
-    #@property
-    #def multiplicity(self):
-    #    return self._multiplicity
+    @property
+    def multiplicity(self):
+        return self._multiplicity
 
-    #@multiplicity.setter
-    #def multiplicity(self, multiplicity):
-    #    self._multiplicity = multiplicity
+    @multiplicity.setter
+    def multiplicity(self, multiplicity):
+        self._multiplicity = multiplicity
 
     def get_atom_types(self):
         if self._atom_types is None:
@@ -269,7 +269,6 @@ class Structure:
             self._energy['{}'.format(method.multiplicity)] = energy
         return self._modes
 
-
     def get_atomic_masses(self):
         if self._atomic_masses is None:
 
@@ -279,7 +278,33 @@ class Structure:
             except TypeError:
                 print('Error reading element labels')
                 exit()
-        return  self._atomic_masses
+        return self._atomic_masses
+
+    def get_valence_electrons(self):
+        valence_electrons = 0
+        for number in self.get_atomic_numbers():
+            if 2 >= number > 0:
+                valence_electrons += np.mod(number, 2)
+            if 18 >= number > 2:
+                valence_electrons += np.mod(number-2, 8)
+            if 54 >= number > 18:
+                valence_electrons += np.mod(number-18, 18)
+            if 118 >= number > 54:
+                valence_electrons += np.mod(number-54, 32)
+            if number > 118:
+                raise Exception('Atomic number size not implemented')
+
+        valence_electrons -= self.charge
+
+        return valence_electrons
+
+    def get_xyz(self):
+        txt = '{}\n\n'.format(self.get_number_of_atoms())
+        for s, c in zip(self.get_atomic_elements(), self.get_coordinates()):
+            txt += '{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}\n'.format(*c)
+
+        return txt
+
 
 atom_data = [
     [  0, "X", "X", 0], # 0

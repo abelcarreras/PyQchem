@@ -234,6 +234,61 @@ def multibiplot(data, labels, y_range, z_range, pdf=None,
         plt.close()
 
 
+def multibiplot_2axis(data, labels, data2, labels2, y_range, z_range, pdf=None,
+           zlabel='Energy [eV]', zlabel2=' ', zrange=(-1.5, 1.5), zrange2=(-1.5, 1.5),
+           title=None, show_plot=True, direction=0):
+
+    #plt.figure(3)
+    f, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+
+    if direction == 0:
+        ax1.set_xlabel('X [Å]')
+        for i, dat in enumerate(data):
+            data[i] = np.array(dat).reshape([len(y_range), len(z_range)])[len(z_range)//2]
+        for i, dat in enumerate(data2):
+            data2[i] = np.array(dat).reshape([len(y_range), len(z_range)])[len(z_range)//2]
+
+    if direction == 1:
+        ax1.set_xlabel('Y [Å]')
+        for i, dat in enumerate(data):
+            data[i] = np.array(dat).reshape([len(y_range), len(z_range)])[:,len(y_range)//2]
+            # data2 = np.array(data2).reshape([len(y_range), len(z_range)])[:,len(y_range)//2]
+        for i, dat in enumerate(data2):
+            data2[i] = np.array(dat).reshape([len(y_range), len(z_range)])[:,len(y_range)//2]
+
+    plt.title(title)
+    ax1.set_xlim([-4, 4])
+    if zrange is not None:
+        ax1.set_ylim([zrange[0], zrange[1]])
+        ax1.set_ylabel(zlabel)
+    if zrange2 is not None:
+        ax2.set_ylim([zrange[0], zrange[1]])
+        ax2.set_ylabel(zlabel2)
+
+    lns1 = []
+    for dat, l in zip(data, labels):
+        lns1.append(ax1.plot(z_range, dat, label=l))
+        # plt.plot(z_range, data2, label=label2)
+
+    lns2 = []
+    for dat, l in zip(data2, labels2):
+        lns2.append(ax2.plot(z_range, dat, label=l))
+
+    lns = [j for i in lns1 for j in i] + [j for i in lns2 for j in i]
+    labs = [l.get_label() for l in lns]
+    plt.legend(lns, labs, loc=0)
+
+    if pdf is not None:
+        pdf.savefig()
+
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
+
+
 def v2_mayavi(data1, data2, label1, label2, y_range, z_range,):
     transparency = False
 
@@ -597,21 +652,26 @@ with PdfPages(folder + 'E2.pdf') as pdf:
 e_21 = np.array(data_1)
 e_22 = np.array(data_2)
 with PdfPages(folder + 'figure5.pdf') as pdf:
-    multibiplot([wdc1, e_11, e_21, np.square(l1)],
-                ['$W^{(1)}_{DC}$', '$\Omega^{(1)}$', '$E(\lambda^2_1)$', '$\lambda^2_1$'], y_range, z_range,
-                show_plot=args.show_plots, pdf=pdf, direction=0, title='State 1', zrange=[-1.5, 1.5])
-    multibiplot([wdc1, e_11, e_21, np.square(l1)],
-                ['$W^{(1)}_{DC}$', '$\Omega^{(1)}$', '$E(\lambda^2_1)$', '$\lambda^2_1$'], y_range, z_range,
-                show_plot=args.show_plots, pdf=pdf, direction=1, title='State 1', zrange=[-1.5, 1.5])
 
-    multibiplot([wdc2, e_12, e_22, np.square(l2)],
-                ['$W^{(2)}_{DC}$', '$\Omega^{(2)}$', '$E(\lambda^2_2)$', '$\lambda^2_2$'], y_range, z_range,
-                show_plot=args.show_plots, pdf=pdf, direction=0, title='State 2', zrange=[-1.5, 1.5])
-    multibiplot([wdc2, e_12, e_22, np.square(l2)],
-                ['$W^{(2)}_{DC}$', '$\Omega^{(2)}$', '$E(\lambda^2_2)$', '$\lambda^2_2$'], y_range, z_range,
-                show_plot=args.show_plots, pdf=pdf, direction=1, title='State 2', zrange=[-1.5, 1.5])
+    multibiplot_2axis([wdc1, e_11, e_21], ['$W^{(1)}_{DC}$', '$\Omega^{(1)}$','$E(\lambda^2_1)$'],
+                      [np.square(l1)], [ '$\lambda^2_1$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(-1.5, 1.5), title='State 1',
+                      show_plot=args.show_plots, direction=0)
 
+    multibiplot_2axis([wdc1, e_11, e_21], ['$W^{(1)}_{DC}$', '$\Omega^{(1)}$','$E(\lambda^2_1)$'],
+                      [np.square(l1)], [ '$\lambda^2_1$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(-1.5, 1.5), title='State 1',
+                      show_plot=args.show_plots, direction=1)
 
+    multibiplot_2axis([wdc2, e_12, e_22], ['$W^{(2)}_{DC}$', '$\Omega^{(2)}$','$E(\lambda^2_2)$'],
+                      [np.square(l2)], [ '$\lambda^2_2$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(-1.5, 1.5), title='State 1',
+                      show_plot=args.show_plots, direction=0)
+
+    multibiplot_2axis([wdc2, e_12, e_22], ['$W^{(2)}_{DC}$', '$\Omega^{(2)}$','$E(\lambda^2_2)$'],
+                      [np.square(l2)], [ '$\lambda^2_2$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(-1.5, 1.5), title='State 1',
+                      show_plot=args.show_plots, direction=1)
 
 #######################  adiabatic_energies calculated ######################
 
