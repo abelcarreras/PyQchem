@@ -24,7 +24,7 @@ def basis_format(basis_set_name,
                  c_coefficients,
                  p_c_coefficients):
 
-    print(n_primitives)
+    # print(n_primitives)
 
     typeList = {'0': ['s', 1],
                 '1': ['p', 3],
@@ -36,7 +36,7 @@ def basis_format(basis_set_name,
 
     atomic_numbers = np.array(atomic_numbers, dtype=int)
     atom_map = np.array(atom_map, dtype=int)
-    print(atom_map)
+    # print(atom_map)
     basis_set = {'name': basis_set_name,
                  'primitive_type': 'gaussian'}
 
@@ -44,8 +44,8 @@ def basis_format(basis_set_name,
                                         for s in shell_type]).tolist()
     prim_from_shell_index = [0] + np.cumsum(np.array(n_primitives, dtype=int)).tolist()
 
-    print(shell_type_index)
-    print(prim_from_shell_index)
+    # print(shell_type_index)
+    # print(prim_from_shell_index)
 
     atoms_data = []
     for iatom, atomic_number in enumerate(atomic_numbers):
@@ -54,19 +54,19 @@ def basis_format(basis_set_name,
         shell_from_atom_counts = np.unique(atom_map, return_counts=True)[1]
         shell_from_atom_index = np.unique(atom_map, return_index=True)[1]
         #print(shell_from_atom_counts)
-        print('atom_indexes', shell_from_atom_index)
-        print('atom_number', iatom)
-        print('shells index', shell_from_atom_index[iatom])
-        print('number of shells', shell_from_atom_counts[iatom])
+        #print('atom_indexes', shell_from_atom_index)
+        #print('atom_number', iatom)
+        #print('shells index', shell_from_atom_index[iatom])
+        #print('number of shells', shell_from_atom_counts[iatom])
 
         shells_data = []
         for ishell in range(shell_from_atom_counts[iatom]):
             st = typeList['{}'.format(shell_type[shell_from_atom_index[iatom] + ishell])]
-            print(st, ishell)
+            #print(st, ishell)
             ini_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell]
             fin_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell+1]
-            print(ini_prim)
-            print(fin_prim)
+            #print(ini_prim)
+            #print(fin_prim)
 
             shells_data.append({
                 'shell_type': st[0],
@@ -161,7 +161,7 @@ def get_array_txt(label, type, array, row_size=5):
 
     txt_fchk = '{:40}   {}   N=       {:5}\n'.format(label, type, n_elements)
 
-    print(rows)
+    # print(rows)
     for i in range(rows):
         if (i+1)*row_size > n_elements:
             txt_fchk += (' {:{fmt}}'* (n_elements - i*row_size) + '\n').format(*array[i * row_size:n_elements],
@@ -174,7 +174,7 @@ def get_array_txt(label, type, array, row_size=5):
 
 
 def build_fchk(parsed_data):
-    print('---------------------')
+
     structure = parsed_data['structure']
     basis = parsed_data['basis']
     alpha_mo_coeff = parsed_data['coefficients']['alpha']
@@ -182,22 +182,30 @@ def build_fchk(parsed_data):
     alpha_mo_energies = parsed_data['mo_energies']['alpha']
     beta_mo_energies = parsed_data['mo_energies']['beta']
 
-
     #overlap = parsed_data['overlap']
     #coor_shell = parsed_data['coor_shell']
     #core_hamiltonian = parsed_data['core_hamiltonian']
     #scf_density = parsed_data['scf_density']
 
+    number_of_basis_functions = len(alpha_mo_coeff)
+    number_of_electrons = np.sum(structure.get_atomic_numbers()) - structure.charge
+    if structure.multiplicity > 1:
+        raise Exception('1> multiplicity not yet implemented')
+    alpha_electrons = number_of_electrons // 2
+    beta_electrons = number_of_electrons // 2
+    #print(alpha_electrons)
+    #print(number_of_electrons)
+
     alpha_mo_coeff = np.array(alpha_mo_coeff).flatten().tolist()
     beta_mo_coeff = np.array(beta_mo_coeff).flatten().tolist()
 
-    type_list = {'s': 0,
-                 'p': 1,
-                 'd': 2,
-                 'f': 3,
-                 'sp': -1,
-                 'dc': -2,  # pure
-                 'fc': -3}  # pure
+    shell_type_list = {'s':  {'type':  0, 'angular_momentum': 0},
+                       'p':  {'type':  1, 'angular_momentum': 1},
+                       'd':  {'type':  2, 'angular_momentum': 2},
+                       'f':  {'type':  3, 'angular_momentum': 3},
+                       'sp': {'type': -1, 'angular_momentum': 1},  # hybrid
+                       'dc': {'type': -2, 'angular_momentum': 2},  # pure
+                       'fc': {'type': -3, 'angular_momentum': 3}}  # pure
 
     shell_type = []
     p_exponents = []
@@ -205,12 +213,24 @@ def build_fchk(parsed_data):
     p_c_coefficients = []
     n_primitives = []
     atom_map = []
+
+    largest_degree_of_contraction = 0
+    highest_angular_momentum = 0
+    number_of_contracted_shells = 0
+
     for i, atoms in enumerate(basis['atoms']):
         for shell in atoms['shells']:
+            number_of_contracted_shells += 1
             st = shell['shell_type']
-            shell_type.append(type_list[st])
+            shell_type.append(shell_type_list[st]['type'])
             n_primitives.append(len(shell['p_exponents']))
             atom_map.append(i+1)
+            if highest_angular_momentum < shell_type_list[st]['angular_momentum']:
+                highest_angular_momentum = shell_type_list[st]['angular_momentum']
+
+            if len(shell['con_coefficients']) > largest_degree_of_contraction:
+                    largest_degree_of_contraction = len(shell['con_coefficients'])
+
             for p in shell['p_exponents']:
                 p_exponents.append(p)
             for c in shell['con_coefficients']:
@@ -218,26 +238,27 @@ def build_fchk(parsed_data):
             for pc in shell['p_con_coefficients']:
                 p_c_coefficients.append(pc)
 
-    bohr_to_angstrom = 0.529177249
+    angstrom_to_bohr = 1/0.529177249
+    coordinates_list = angstrom_to_bohr*structure.get_coordinates().flatten()
 
     txt_fchk = '{}\n'.format('filename')
     txt_fchk += 'SP        R                             {}\n'.format('6-31G')
     txt_fchk += 'Number of atoms                            I               {}\n'.format(structure.get_number_of_atoms())
     txt_fchk += 'Charge                                     I               {}\n'.format(structure.charge)
-    txt_fchk += 'Multiplicity                               I               {}\n'.format(1)
-    txt_fchk += 'Number of electrons                        I               {}\n'.format(64)
-    txt_fchk += 'Number of alpha electrons                  I               {}\n'.format(32)
-    txt_fchk += 'Number of beta electrons                   I               {}\n'.format(32)
+    txt_fchk += 'Multiplicity                               I               {}\n'.format(structure.multiplicity)
+    txt_fchk += 'Number of electrons                        I               {}\n'.format(number_of_electrons)
+    txt_fchk += 'Number of alpha electrons                  I               {}\n'.format(alpha_electrons)
+    txt_fchk += 'Number of beta electrons                   I               {}\n'.format(beta_electrons)
 
     txt_fchk += get_array_txt('Atomic numbers', 'I', structure.get_atomic_numbers(), row_size=6)
-    txt_fchk += get_array_txt('Current cartesian coordinates', 'R', 1./bohr_to_angstrom*structure.get_coordinates().flatten())
+    txt_fchk += get_array_txt('Current cartesian coordinates', 'R', coordinates_list)
     txt_fchk += get_array_txt('Nuclear charges', 'R', structure.get_atomic_numbers())
 
-    txt_fchk += 'Number of basis functions                  I               {}\n'.format(80)
-    txt_fchk += 'Number of contracted shells                I               {}\n'.format(32)
-    txt_fchk += 'Number of primitive shells                 I               {}\n'.format(96)
-    txt_fchk += 'Highest angular momentum                   I               {}\n'.format(1)
-    txt_fchk += 'Largest degree of contraction              I               {}\n'.format(6)
+    txt_fchk += 'Number of basis functions                  I               {}\n'.format(number_of_basis_functions)
+    txt_fchk += 'Number of contracted shells                I               {}\n'.format(number_of_contracted_shells)
+    txt_fchk += 'Number of primitive shells                 I               {}\n'.format(np.sum(n_primitives))
+    txt_fchk += 'Highest angular momentum                   I               {}\n'.format(highest_angular_momentum)
+    txt_fchk += 'Largest degree of contraction              I               {}\n'.format(largest_degree_of_contraction)
 
     txt_fchk += get_array_txt('Shell types', 'I', shell_type, row_size=6)
     txt_fchk += get_array_txt('Number of primitives per shell', 'I', n_primitives, row_size=6)

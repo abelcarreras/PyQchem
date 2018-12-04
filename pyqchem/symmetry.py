@@ -62,7 +62,7 @@ def get_wf_symmetry(structure, basis, alpha_mo_coeff, beta_mo_coeff,
                       VAxis=vaxis,
                       VAxis2=vaxis2,
                       iCharge=structure.charge,
-                      iMult=1,
+                      iMult=structure.multiplicity,
                       group='C2h')
     return molsym
 
@@ -90,12 +90,12 @@ def set_zero_coefficients(basis, mo_coeff, range_atoms):
         funtions_to_atom.append(nf)
     funtions_to_atom = funtions_to_atom
 
-    print(funtions_to_atom)
+    # print(funtions_to_atom)
     mo_coeff = np.array(mo_coeff)
     for i in range_atoms:
         ini = np.sum(funtions_to_atom[:i], dtype=int)
         fin = np.sum(funtions_to_atom[:i+1], dtype=int)
-        print('ini', ini, 'fin', fin)
+        # print('ini', ini, 'fin', fin)
         mo_coeff[:, ini: fin] *= 0.0
 
     return mo_coeff.tolist()

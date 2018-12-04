@@ -1,6 +1,7 @@
 import numpy as np
 from pyqchem.structure import Structure
 
+
 def basis_format(basis_set_name,
                  atomic_numbers,
                  atomic_symbols,
@@ -11,7 +12,7 @@ def basis_format(basis_set_name,
                  c_coefficients,
                  p_c_coefficients):
 
-    print(n_primitives)
+    # print(n_primitives)
 
     typeList = {'0': ['s', 1],
                 '1': ['p', 3],
@@ -23,7 +24,7 @@ def basis_format(basis_set_name,
 
     atomic_numbers = np.array(atomic_numbers, dtype=int)
     atom_map = np.array(atom_map, dtype=int)
-    print(atom_map)
+    # print(atom_map)
     basis_set = {'name': basis_set_name,
                  'primitive_type': 'gaussian'}
 
@@ -31,8 +32,8 @@ def basis_format(basis_set_name,
                                         for s in shell_type]).tolist()
     prim_from_shell_index = [0] + np.cumsum(np.array(n_primitives, dtype=int)).tolist()
 
-    print(shell_type_index)
-    print(prim_from_shell_index)
+    # print(shell_type_index)
+    # print(prim_from_shell_index)
 
     atoms_data = []
     for iatom, atomic_number in enumerate(atomic_numbers):
@@ -40,20 +41,20 @@ def basis_format(basis_set_name,
 
         shell_from_atom_counts = np.unique(atom_map, return_counts=True)[1]
         shell_from_atom_index = np.unique(atom_map, return_index=True)[1]
-        #print(shell_from_atom_counts)
-        print('atom_indexes', shell_from_atom_index)
-        print('atom_number', iatom)
-        print('shells index', shell_from_atom_index[iatom])
-        print('number of shells', shell_from_atom_counts[iatom])
+        # print(shell_from_atom_counts)
+        # print('atom_indexes', shell_from_atom_index)
+        # print('atom_number', iatom)
+        # print('shells index', shell_from_atom_index[iatom])
+        # print('number of shells', shell_from_atom_counts[iatom])
 
         shells_data = []
         for ishell in range(shell_from_atom_counts[iatom]):
             st = typeList['{}'.format(shell_type[shell_from_atom_index[iatom] + ishell])]
-            print(st, ishell)
+            # print(st, ishell)
             ini_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell]
             fin_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell+1]
-            print(ini_prim)
-            print(fin_prim)
+            # print(ini_prim)
+            # print(fin_prim)
 
             shells_data.append({
                 'shell_type': st[0],
@@ -129,8 +130,6 @@ def parser_fchk(output):
                     read = True
                     break
 
-        print('multiplicity:', int(input_molecule[1][0]))
-        print('charge:', int(input_molecule[0][0]))
 
         bohr_to_angstrom = 0.529177249
         coordinates = np.array(input_molecule[3], dtype=float).reshape(-1, 3) * bohr_to_angstrom
