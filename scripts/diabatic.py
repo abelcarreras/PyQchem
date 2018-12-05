@@ -140,7 +140,7 @@ for slide_d in distance:
 
             # calculate and parse CIS data
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                         parser=None)
+                                         parser=basic_parser_qchem)
             #a = data.find('Molecular Point Group')
             #print('Point group: {}'.format(data[a:a+50].split()[3]))
             #continue

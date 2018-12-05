@@ -10,12 +10,12 @@ def int_to_xyz(molecule, no_dummy=True):
     coordinates = [[0.0, 0.0, 0.0]]
 
     for line in internal[1:]:
-        bi = int(line[0])  #bond index
-        B = line[1]        #bond value
-        ai = int(line[2])  #Angle index
-        A = line[3]        #Angle value
-        ci = int(line[4])  #Dihedral index
-        C = line[5]        #Dihedral value
+        bi = int(line[0])  # bond index
+        B = line[1]        # bond value
+        ai = int(line[2])  # Angle index
+        A = line[3]        # Angle value
+        ci = int(line[4])  # Dihedral index
+        C = line[5]        # Dihedral value
 
         bond = np.array(coordinates[ai-1]) - np.array(coordinates[bi-1])
         if np.linalg.norm(bond) == 0:
@@ -214,7 +214,8 @@ class Structure:
 
     def get_atomic_numbers(self):
         if self._atomic_numbers is None:
-            self._atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper()) for element in self.get_atomic_elements()]
+            self._atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper())
+                                    for element in self.get_atomic_elements()]
         return self._atomic_numbers
 
     def set_atomic_numbers(self, atomic_numbers):
@@ -273,7 +274,8 @@ class Structure:
         if self._atomic_masses is None:
 
             try:
-                masses_string = np.array(atom_data)[:,3:4][[np.where(np.array(atom_data)==element)[0][0] for element in self.get_atomic_elements()]]
+                masses_string = np.array(atom_data)[:, 3:4][[np.where(np.array(atom_data)==element)[0][0]
+                                                             for element in self.get_atomic_elements()]]
                 self._atomic_masses = np.array(masses_string, dtype=float)
             except TypeError:
                 print('Error reading element labels')
