@@ -50,13 +50,14 @@ def create_qchem_input(molecule,
                        localized_diabatization=None,
                        RPA=False,
                        set_iter=30,
-                       gui=0):
-
-    if ras_elec is not None:
-        ras_occ = np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge
-    else:
-        ras_occ = np.sum(molecule.get_atomic_numbers()) - molecule.charge
-    print('ras_occ = {}'.format(ras_occ))
+                       gui=0,
+                       # optimization
+                       geom_opt_coords=-1,
+                       geom_opt_tol_gradient=300,
+                       geom_opt_tol_displacement=1200,
+                       geom_opt_tol_energy=100,
+                       geom_opt_max_cycles=50
+                       ):
 
     input_file = ''
 
@@ -70,10 +71,7 @@ def create_qchem_input(molecule,
     coordinates = molecule.get_coordinates()
 
     for index, element in enumerate(atomic_elements):
-        input_file += (element + '\t' +
-                       str(coordinates[index][0]) + '\t' +
-                       str(coordinates[index][1]) + '\t' +
-                       str(coordinates[index][2]) + '\n')
+        input_file += (element + '\t' + '{:20.10f} {:20.10f} {:20.10f}\n'.format(*coordinates[index]))
 
     input_file += '$end\n'
 
@@ -94,6 +92,13 @@ def create_qchem_input(molecule,
 
         # RasCI variables
         if correlation.upper() == 'RASCI':
+
+            if ras_elec is not None:
+                ras_occ = np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge
+            else:
+                ras_occ = np.sum(molecule.get_atomic_numbers()) - molecule.charge
+            print('ras_occ = {}'.format(ras_occ))
+
             input_file += 'ras_roots {}\n'.format(ras_roots)
             input_file += 'ras_do_hole {}\n'.format(ras_do_hole)
             input_file += 'ras_do_part {}\n'.format(ras_do_part)
@@ -104,6 +109,7 @@ def create_qchem_input(molecule,
             input_file += 'ras_natorb {}\n'.format(ras_natorb)
             input_file += 'ras_sts_tm {}\n'.format(ras_sts_tm)
             # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
+
             if ras_act is not None:
                 input_file += 'ras_act {}\n'.format(ras_act)
             else:
@@ -153,6 +159,15 @@ def create_qchem_input(molecule,
         input_file += '$localized_diabatization\nadiabatic states\n'
         input_file += ' '.join(np.array(localized_diabatization, dtype=str))
         input_file += '\n$end\n'
+
+    # optimization
+    if jobtype.lower() == 'opt':
+        input_file += 'geom_opt_coords {}\n'.format(geom_opt_coords)
+        input_file += 'geom_opt_tol_gradient {}\n'.format(geom_opt_tol_gradient)
+        input_file += 'geom_opt_tol_displacement {}\n'.format(geom_opt_tol_displacement)
+        input_file += 'geom_opt_tol_energy {}\n'.format(geom_opt_tol_energy)
+        input_file += 'geom_opt_max_cycles {}\n'.format(geom_opt_max_cycles)
+
 
     return input_file + "\n"
 

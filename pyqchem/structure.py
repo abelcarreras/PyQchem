@@ -300,8 +300,8 @@ class Structure:
 
         return valence_electrons
 
-    def get_xyz(self):
-        txt = '{}\n\n'.format(self.get_number_of_atoms())
+    def get_xyz(self, title=''):
+        txt = '{}\n{}\n'.format(self.get_number_of_atoms(), title)
         for s, c in zip(self.get_atomic_elements(), self.get_coordinates()):
             txt += '{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}\n'.format(*c)
 
