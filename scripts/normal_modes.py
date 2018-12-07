@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
