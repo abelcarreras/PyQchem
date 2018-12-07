@@ -17,7 +17,8 @@ except FileNotFoundError:
 
 def create_qchem_input(molecule,
                        jobtype='sp',
-                       exchange='HF',
+                       method='HF',
+                       exchange=None,
                        correlation=None,
                        basis='6-31G',
                        thresh=14,
@@ -78,7 +79,12 @@ def create_qchem_input(molecule,
     # Rem variables
     input_file += '$rem\n'
     input_file += 'jobtype {}\n'.format(jobtype)
-    input_file += 'exchange {}\n'.format(exchange)
+
+    if exchange is not None:
+        input_file += 'exchange {}\n'.format(exchange)
+    else:
+        input_file += 'method {}\n'.format(method)
+
     input_file += 'basis {}\n'.format(basis)
     input_file += 'thresh {}\n'.format(thresh)
     input_file += 'scf_convergence {}\n'.format(scf_convergence)

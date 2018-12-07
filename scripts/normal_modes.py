@@ -4,7 +4,8 @@ from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
 
 import numpy as np
-import matplotlib.pyplot as plt
+
+import argparse
 
 
 def get_rmsd(coor, coor2):
@@ -14,49 +15,54 @@ def get_rmsd(coor, coor2):
     rmsd = np.sqrt(rms)
     return rmsd
 
-coordinatesx = [[ 0.         ,  2.5593592,   -1.2291437],
-                [ 0.         ,  1.2177072,   -0.7388171],
-                [ 0.         ,  1.2539645,    0.6577044],
-                [ 0.         ,  2.5457806,    1.0474186],
-                [ 0.         ,  3.3773954,   -0.1013709],
-                [ 0.         ,  0.       ,    1.5890149],
-                [ 0.         , -1.2539645,    0.6577044],
-                [ 0.         , -1.2177072,   -0.7388171],
-                [ 0.         , -2.5593592,   -1.2291437],
-                [ 0.         , -3.3773954,   -0.1013709],
-                [ 0.         , -2.5457806,    1.0474186],
-                [ 0.         , -2.9786512,   -2.6674481],
-                [ 0.         ,  0.       ,   -1.4142026],
-                [ 0.         , -2.9494503,    2.4837241],
-                [ 0.         ,  2.9494503,    2.4837241],
-                [ 0.         ,  2.9786512,   -2.6674481],
-                [ 1.1494068  ,  0.       ,    2.3950298],
-                [ -1.1494068 ,  0.       ,    2.3950298],
-                [ 0.         ,  0.       ,   -2.5152032],
-                [ 0.         ,  4.4782605,   -0.0840819],
-                [ 0.         , -4.4782605,   -0.0840819],
-                [ 0.         , -4.0761113,   -2.7556685],
-                [ -0.8867106 , -2.6006386,   -3.199612],
-                [ 0.8867106  , -2.6006386,   -3.199612],
-                [ 0.8941856  , -2.5562337,    2.9920521],
-                [ -0.8941856 , -2.5562337,    2.9920521],
-                [ 0.         , -4.0461503,    2.5809354],
-                [ -0.8867106 ,  2.6006386,   -3.199612],
-                [ 0.         ,  4.0761113,   -2.7556685],
-                [ 0.8867106  ,  2.6006386,   -3.199612],
-                [ 0.         ,  4.0461503,    2.5809354],
-                [ -0.8941856 ,  2.5562337,    2.9920521],
-                [ 0.8941856  ,  2.5562337,    2.9920521]]
 
-symbolsx = ['C', 'C', 'N', 'C', 'C', 'B', 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
-            'C', 'F', 'F', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H',
-            'H', 'H', 'H']
+# Argument parser
+parser = argparse.ArgumentParser(description='normal modes')
+parser.add_argument('filename', metavar='filename', type=str,
+                    help='filename for output')
+parser.add_argument('--show_plot', action='store_true',
+                    help='perform test and show plots')
+args = parser.parse_args()
 
-coordinates = [[0.0, 1.0, 0.0],
-               [0.0, 0.0, 1.0],
-               [0.0, 0.0, -1.0]]
 
-symbols = ['O', 'H', 'H']
+coordinates = [[ 0.         ,  2.5593592,   -1.2291437],
+               [ 0.         ,  1.2177072,   -0.7388171],
+               [ 0.         ,  1.2539645,    0.6577044],
+               [ 0.         ,  2.5457806,    1.0474186],
+               [ 0.         ,  3.3773954,   -0.1013709],
+               [ 0.         ,  0.       ,    1.5890149],
+               [ 0.         , -1.2539645,    0.6577044],
+               [ 0.         , -1.2177072,   -0.7388171],
+               [ 0.         , -2.5593592,   -1.2291437],
+               [ 0.         , -3.3773954,   -0.1013709],
+               [ 0.         , -2.5457806,    1.0474186],
+               [ 0.         , -2.9786512,   -2.6674481],
+               [ 0.         ,  0.       ,   -1.4142026],
+               [ 0.         , -2.9494503,    2.4837241],
+               [ 0.         ,  2.9494503,    2.4837241],
+               [ 0.         ,  2.9786512,   -2.6674481],
+               [ 1.1494068  ,  0.       ,    2.3950298],
+               [ -1.1494068 ,  0.       ,    2.3950298],
+               [ 0.         ,  0.       ,   -2.5152032],
+               [ 0.         ,  4.4782605,   -0.0840819],
+               [ 0.         , -4.4782605,   -0.0840819],
+               [ 0.         , -4.0761113,   -2.7556685],
+               [ -0.8867106 , -2.6006386,   -3.199612],
+               [ 0.8867106  , -2.6006386,   -3.199612],
+               [ 0.8941856  , -2.5562337,    2.9920521],
+               [ -0.8941856 , -2.5562337,    2.9920521],
+               [ 0.         , -4.0461503,    2.5809354],
+               [ -0.8867106 ,  2.6006386,   -3.199612],
+               [ 0.         ,  4.0761113,   -2.7556685],
+               [ 0.8867106  ,  2.6006386,   -3.199612],
+               [ 0.         ,  4.0461503,    2.5809354],
+               [ -0.8941856 ,  2.5562337,    2.9920521],
+               [ 0.8941856  ,  2.5562337,    2.9920521]]
+
+symbols = ['C', 'C', 'N', 'C', 'C', 'B', 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
+           'C', 'F', 'F', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H',
+           'H', 'H', 'H']
+
 
 molecule = Structure(coordinates=coordinates,
                      atomic_elements=symbols,
@@ -69,11 +75,12 @@ print('optimize molecule')
 
 txt_input = create_qchem_input(molecule,
                                jobtype='opt',
-                               exchange='hf',
-                               basis='sto-3g',
-                               geom_opt_tol_gradient=10,
-                               geom_opt_coords=0,
-                               geom_opt_tol_displacement=50)
+                               method='b3lyp',
+                               basis='cc-pVDZ',
+                               geom_opt_tol_gradient=300,
+                               geom_opt_coords=-1,
+                               geom_opt_tol_displacement=1200)
+
 
 parsed_data = get_output_from_qchem(txt_input,
                                     processors=4,
@@ -89,8 +96,8 @@ print(opt_molecule.get_xyz())
 print('calculate frequencies')
 txt_input = create_qchem_input(opt_molecule,
                                jobtype='freq',
-                               exchange='hf',
-                               basis='sto-3g',)
+                               method='b3lyp',
+                               basis='cc-pVDZ',)
 
 parsed_data = get_output_from_qchem(txt_input,
                                     processors=4,
@@ -99,8 +106,8 @@ parsed_data = get_output_from_qchem(txt_input,
 
 energy_i = parsed_data['energy']
 
-f = open('test.xyz', 'w')
-f2 = open('test.out', 'w')
+f = open('{}.xyz'.format(args.filename), 'w')
+f2 = open(args.filename, 'w')
 
 # print data info
 
@@ -142,24 +149,28 @@ for mode in range(num_freq):
         mol = Structure(coordinates=disp_coor,
                         atomic_elements=symbols)
 
-        txt_input = create_qchem_input(mol,
-                                       jobtype='freq',
-                                       exchange='hf',
-                                       basis='sto-3g')
-
-        parsed_data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=basic_frequencies)
-        energy = parsed_data['energy']
-
         hartree_to_kcalmol = 627.509474
         # energy2 = 0.5 * freq**2 * red_mass * d**2 * 8.516358951e-5  # kcal/mol
-        energy2 = 0.5 * force_constants * d**2 * 143.9325  # kcal/mol
+        energy2 = 0.5 * force_constants * d ** 2 * 143.9325  # kcal/mol
 
-        data_for_plot.append([d, (energy - energy_i) * hartree_to_kcalmol, energy2]) # kcal/mol
+        if args.show_plot:
+            txt_input = create_qchem_input(mol,
+                                           jobtype='freq',
+                                           method='b3lyp',
+                                           basis='cc-pVDZ')
+
+            parsed_data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=basic_frequencies)
+            energy = parsed_data['energy']
+
+            data_for_plot.append([d, (energy - energy_i) * hartree_to_kcalmol, energy2]) # kcal/mol
+
         f.write(mol.get_xyz(title='{:8.5f} kcal/mol  rmsd: {:10.8f}\n'.format(energy2, rmsd)))
         f2.write(mol.get_xyz(title='{:8.5f} kcal/mol  rmsd: {:10.8f}\n'.format(energy2, rmsd)))
 
-    plt.plot(np.array(data_for_plot)[:, 0], np.array(data_for_plot)[:, 1:])
-    plt.show()
+    if args.show_plot:
+        import matplotlib.pyplot as plt
+        plt.plot(np.array(data_for_plot)[:, 0], np.array(data_for_plot)[:, 1:])
+        plt.show()
 f.close()
 f2.close()
 
