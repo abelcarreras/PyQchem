@@ -88,6 +88,7 @@ txt_input = create_qchem_input(molecule,
 
 parsed_data = get_output_from_qchem(txt_input,
                                     processors=4,
+                                    use_mpi=True,
                                     parser=basic_optimization,
                                     force_recalculation=False)
 
@@ -105,6 +106,7 @@ txt_input = create_qchem_input(opt_molecule,
 
 parsed_data = get_output_from_qchem(txt_input,
                                     processors=4,
+                                    use_mpi=True,
                                     force_recalculation=False,
                                     parser=basic_frequencies)
 
