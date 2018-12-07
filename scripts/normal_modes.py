@@ -83,9 +83,9 @@ txt_input = create_qchem_input(molecule,
                                jobtype='opt',
                                method='b3lyp',
                                basis='cc-pVDZ',
-                               geom_opt_tol_gradient=300,
+                               geom_opt_tol_gradient=50,
                                geom_opt_coords=-1,
-                               geom_opt_tol_displacement=1200)
+                               geom_opt_tol_displacement=800)
 
 
 parsed_data = get_output_from_qchem(txt_input,
