@@ -22,6 +22,10 @@ parser.add_argument('filename', metavar='filename', type=str,
                     help='filename for output')
 parser.add_argument('--show_plot', action='store_true',
                     help='perform test and show plots')
+parser.add_argument('-t', metavar='temperature', type=float, default=300,
+                    help='temperature to calculate normal mode amplitude', )
+
+
 args = parser.parse_args()
 
 
@@ -84,8 +88,8 @@ txt_input = create_qchem_input(molecule,
 
 parsed_data = get_output_from_qchem(txt_input,
                                     processors=4,
-                                    #force_recalculation=True,
-                                    parser=basic_optimization)
+                                    parser=basic_optimization,
+                                    force_recalculation=False)
 
 
 #parsed_data = basic_optimization(data)
@@ -136,9 +140,8 @@ for mode in range(num_freq):
 
     # prediction average displacement
     kb = 0.001987204  # kcal/molK
-    temp = 300
-    max_a = np.sqrt(temp * kb / (force_constants * 143.9325))
-    f2.write('Average Kinetic at {:4} K: {:8.3f} Kcal/mol\n'.format(temp, 0.5 * temp * kb))
+    max_a = np.sqrt(args.t * kb / (force_constants * 143.9325))
+    f2.write('Average Kinetic at {:4} K: {:8.3f} Kcal/mol\n'.format(args.t, 0.5 * args.t * kb))
 
     data_for_plot = []
     for d in np.arange(-max_a, max_a+(max_a/11), max_a/10):
@@ -159,10 +162,12 @@ for mode in range(num_freq):
                                            method='b3lyp',
                                            basis='cc-pVDZ')
 
-            parsed_data = get_output_from_qchem(txt_input, processors=4, force_recalculation=False, parser=basic_frequencies)
+            parsed_data = get_output_from_qchem(txt_input, processors=4,
+                                                force_recalculation=False,
+                                                parser=basic_frequencies)
             energy = parsed_data['energy']
 
-            data_for_plot.append([d, (energy - energy_i) * hartree_to_kcalmol, energy2]) # kcal/mol
+            data_for_plot.append([d, (energy - energy_i) * hartree_to_kcalmol, energy2])  # kcal/mol
 
         f.write(mol.get_xyz(title='{:8.5f} kcal/mol  rmsd: {:10.8f}\n'.format(energy2, rmsd)))
         f2.write(mol.get_xyz(title='{:8.5f} kcal/mol  rmsd: {:10.8f}\n'.format(energy2, rmsd)))
@@ -173,4 +178,3 @@ for mode in range(num_freq):
         plt.show()
 f.close()
 f2.close()
-
