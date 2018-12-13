@@ -4,7 +4,7 @@ from pyqchem.parsers.parser_fchk import parser_fchk
 from pyqchem.symmetry import get_wf_symmetry, get_orbital_type
 from pyqchem.file_io import build_fchk
 
-
+#define coordinates
 benzene_coordinates = [[ 0.00000,  1.40272,  0.00000],
                        [ 0.00000,  2.49029,  0.00000],
                        [-1.21479,  0.70136,  0.00000],
@@ -20,11 +20,13 @@ benzene_coordinates = [[ 0.00000,  1.40272,  0.00000],
 
 symbols = ['C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'F']
 
+# create molecule
 molecule = Structure(coordinates=benzene_coordinates,
                      atomic_elements=symbols,
                      charge=0,
                      multiplicity=1)
 
+# define qchem parameters
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
               'basis': '6-31G',
