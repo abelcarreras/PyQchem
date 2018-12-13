@@ -6,6 +6,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 from mpl_toolkits.mplot3d import axes3d  # necessary !!
 from pyqchem.order_states import get_order_states_list, correct_order_list
 
+mpl.rcParams.update({'font.size': 13})
+
 import argparse
 
 # Argument parser
@@ -43,12 +45,13 @@ def interpolate_data(points, data , y_range, z_range):
 default_range = 0.4
 
 def triplot2(datas, labels, y_range, z_range, wireframe=False, pdf=None, clabels=False,
-            zlabel='Energy [eV]', zlevels=np.arange(-default_range, default_range + 0.025, 0.025), show_plot=True):
+            zlabel='Energy [eV]', zlevels=np.arange(-default_range, default_range + 0.025, 0.025),
+             show_plot=True, colors=('b', 'r', 'y', 'm')):
 
-    colors = ['b', 'r', 'y', 'm']
     # from matplotlib.colors import LinearSegmentedColormap
     # from matplotlib.colors import BoundaryNorm
     # from matplotlib.ticker import MaxNLocator
+
 
     cmap = plt.get_cmap('PiYG')
 
@@ -58,7 +61,18 @@ def triplot2(datas, labels, y_range, z_range, wireframe=False, pdf=None, clabels
         plt.figure(iplot+1)
 
         plt.title(labels[iplot])
+        #zlevels = np.arange(-default_range, default_range + 0.025, 0.025)
         CS = plt.contourf(Y, Z, np.array(data).reshape(len(y_range), len(z_range)), levels=zlevels, cmap=cmap)
+        # print(CS.levels[::1])
+
+        # force symmetry
+        #dist = CS.levels[1] - CS.levels[0]
+        #if np.abs(CS.levels[0]) < (CS.levels[-1]):
+        #    zlevels = np.arange(-CS.levels[-1], CS.levels[-1], dist)
+        #else:
+        #    zlevels = np.arange(CS.levels[0], -CS.levels[0], dist)
+        #CS = plt.contourf(Y, Z, np.array(data).reshape(len(y_range), len(z_range)), levels=zlevels, cmap=cmap)
+
         CS2 = plt.contour(CS, levels=CS.levels[::1], colors='black')
         if clabels:
             plt.clabel(CS2, inline=1, fontsize=10)
@@ -142,7 +156,7 @@ def biplot_interpolated(data1, data2, label1, label2, y_range, z_range, pdf=None
 
 def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
            zlabel='Energy [eV]', zrange=(-default_range, default_range), title=None, show_plot=True,
-           direction=0):
+           direction=0, colors=[None, None]):
 
     plt.figure(3)
 
@@ -162,8 +176,8 @@ def biplot(data1, data2, label1, label2, y_range, z_range, pdf=None,
         plt.ylim([zrange[0], zrange[1]])
     plt.ylabel(zlabel)
 
-    plt.plot(z_range, data1, label=label1)
-    plt.plot(z_range, data2, label=label2)
+    plt.plot(z_range, data1, label=label1, color=colors[0])
+    plt.plot(z_range, data2, label=label2, color=colors[1])
     plt.legend()
 
     if pdf is not None:
@@ -214,8 +228,9 @@ def multibiplot(data, labels, y_range, z_range, pdf=None,
 
 
 def multibiplot_2axis(data, labels, data2, labels2, y_range, z_range, pdf=None,
-                      zlabel='Energy [eV]', zlabel2=' ', zrange=(-default_range, default_range), zrange2=(-default_range, default_range),
-                      title=None, show_plot=True, direction=0):
+                      zlabel='Energy [eV]', zlabel2=' ', zrange=(-default_range, default_range),
+                      zrange2=(-default_range, default_range), title=None, show_plot=True, direction=0,
+                      baseline=None):
 
     #plt.figure(3)
     f, ax1 = plt.subplots()
@@ -242,7 +257,7 @@ def multibiplot_2axis(data, labels, data2, labels2, y_range, z_range, pdf=None,
         ax1.set_ylim([zrange[0], zrange[1]])
         ax1.set_ylabel(zlabel)
     if zrange2 is not None:
-        ax2.set_ylim([zrange[0], zrange[1]])
+        ax2.set_ylim([zrange2[0], zrange2[1]])
         ax2.set_ylabel(zlabel2)
 
     lns1 = []
@@ -252,11 +267,14 @@ def multibiplot_2axis(data, labels, data2, labels2, y_range, z_range, pdf=None,
 
     lns2 = []
     for dat, l in zip(data2, labels2):
-        lns2.append(ax2.plot(z_range, dat, label=l))
+        lns2.append(ax2.plot(z_range, dat, label=l, color='grey'))
 
     lns = [j for i in lns1 for j in i] + [j for i in lns2 for j in i]
     labs = [l.get_label() for l in lns]
     plt.legend(lns, labs, loc=0)
+
+    if baseline is not None:
+        ax1.axhline(baseline, color='k', linestyle=':')
 
     if pdf is not None:
         pdf.savefig()
@@ -338,9 +356,8 @@ for slide_y in y_range:
             i += 1
 
 # define order states
-# states_orders = [get_order_states_list(data['states_info']) for data in total_data]
-states_orders = [get_order_states_list(data['states_info'], eps_energy=0) for data in total_data]
-
+states_orders = [get_order_states_list(data['states_info']) for data in total_data]
+# states_orders = [get_order_states_list(data['states_info'], eps_energy=0) for data in total_data]
 
 
 ########################  D_i  ######################
@@ -386,9 +403,11 @@ di_2 = lmb2[1]*(e_ct - e_le) + d2le[1]*de_le + d2ct[1]*de_ct
 
 with PdfPages(folder + 'delta.pdf') as pdf:
     triplot2([di_1, di_2], ['$\Delta_1$', '$\Delta_2$'], y_range, z_range, pdf=pdf, wireframe=True,
-             show_plot=args.show_plots, zlevels=None)
-    biplot(di_1, di_2, '$\Delta_1$', '$\Delta_2$', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=0, zrange=None)
-    biplot(di_1, di_2, '$\Delta_1$', '$\Delta_2$', y_range, z_range, show_plot=args.show_plots, pdf=pdf, direction=1, zrange=None)
+             show_plot=args.show_plots, zlevels=np.arange(-0.4, 0.4 + 0.02, 0.02))
+    biplot(di_1, di_2, '$\Delta_1$', '$\Delta_2$', y_range, z_range, show_plot=args.show_plots,
+           pdf=pdf, direction=0, zrange=[0.0, 0.35])
+    biplot(di_1, di_2, '$\Delta_1$', '$\Delta_2$', y_range, z_range, show_plot=args.show_plots,
+           pdf=pdf, direction=1, zrange=[0.0, 0.35])
 
 
 ########################  omega_DC  ######################
@@ -403,7 +422,7 @@ o_dc_2 = np.sqrt((1 - lmb2[1])**2 - d2le[1]**2) * w_dc[1]
 
 with PdfPages(folder + 'omega_dc.pdf') as pdf:
     triplot2([o_dc_1, o_dc_2], ['$\Omega_{DC}^{(1)}$', '$\Omega_{DC}^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
-             show_plot=args.show_plots, zlevels=None)
+             show_plot=args.show_plots, zlevels=np.arange(-0.4, 0.4 + 0.05, 0.05))
     biplot(o_dc_1, o_dc_2, '$\Omega_{DC}^{(1)}$', '$\Omega_{DC}^{(2)}$', y_range, z_range,
            show_plot=args.show_plots, pdf=pdf, direction=0)
     biplot(o_dc_1, o_dc_2, '$\Omega_{DC}^{(1)}$', '$\Omega_{DC}^{(2)}$', y_range, z_range,
@@ -422,7 +441,7 @@ o_ct_2 = np.sqrt(lmb2[1]**2 - d2ct[1]**2) * w_ct[1]
 
 with PdfPages(folder + 'omega_ct.pdf') as pdf:
     triplot2([o_ct_1, o_ct_2], ['$\Omega_{CT}^{(1)}$', '$\Omega_{CT}^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
-             show_plot=args.show_plots, zlevels=None)
+             show_plot=args.show_plots, zlevels=np.arange(-0.02, 0.02 + 0.005, 0.005))
     biplot(o_ct_1, o_ct_2, '$\Omega_{CT}^{(1)}$', '$\Omega_{CT}^{(2)}$', y_range, z_range,
            show_plot=args.show_plots, pdf=pdf, direction=0)
     biplot(o_ct_1, o_ct_2, '$\Omega_{CT}^{(1)}$', '$\Omega_{CT}^{(2)}$', y_range, z_range,
@@ -499,6 +518,54 @@ with PdfPages(folder + 'omega_eb.pdf') as pdf:
 
 ######################### adiabatic energies ############################
 
+osx_1 = o_h[0] + o_e[0]
+osx_2 = o_h[1] + o_e[1]
+
+with PdfPages(folder + 'omega_sx.pdf') as pdf:
+    triplot2([osx_1, osx_2], ['$\Omega_{SX}^{(1)}$', '$\Omega_{SX}^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
+             show_plot=args.show_plots, zlevels=np.arange(-1.2, 1.2 + 0.1, 0.1))
+    biplot(osx_1, osx_2, '$\Omega_{SX}^{(1)}$', '$\Omega_{e}^{(2)}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=0, zrange=[-1.5, 1.5])
+    biplot(osx_1, osx_2, '$\Omega_{SX}^{(1)}$', '$\Omega_{e}^{(2)}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=1, zrange=[-1.5, 1.5])
+
+
+with PdfPages(folder + 'omega_sx2.pdf') as pdf:
+    triplot2([osx_1, osx_2], ['$\Omega_{SX}^{(1)}$', '$\Omega_{SX}^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
+             show_plot=args.show_plots, zlevels=np.arange(-0.24, 0.24 + 0.02, 0.02))
+    biplot(osx_1, osx_2, '$\Omega_{SX}^{(1)}$', '$\Omega_{e}^{(2)}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=0, zrange=[-0.2, 0.2])
+    biplot(osx_1, osx_2, '$\Omega_{SX}^{(1)}$', '$\Omega_{e}^{(2)}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=1, zrange=[-0.2, 0.2])
+
+
+######################### figure 6 ############################
+
+
+with PdfPages(folder + 'figure6.pdf') as pdf:
+    multibiplot_2axis([di_1, o_dc_1, o_ct_1, osx_1], ['$\Delta_1$', '$\Omega^{(1)}_{DC}$', '$\Omega_{CT}^{(1)}$', '$\Omega_{SX}^{(1)}$'],
+                      [np.square(lmb2[0])], ['$\lambda^2_1$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(0.0, 0.5), title='State 1',
+                      show_plot=args.show_plots, direction=0, baseline=0.0)
+
+    multibiplot_2axis([di_1, o_dc_1, o_ct_1, osx_1], ['$\Delta_1$', '$\Omega^{(1)}_{DC}$', '$\Omega_{CT}^{(1)}$', '$\Omega_{SX}^{(1)}$'],
+                      [np.square(lmb2[0])], ['$\lambda^2_1$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(0.0, 0.5), title='State 1',
+                      show_plot=args.show_plots, direction=1, baseline=0.0)
+
+    multibiplot_2axis([di_2, o_dc_2, o_ct_2, osx_2], ['$\Delta_2$', '$\Omega^{(2)}_{DC}$', '$\Omega_{CT}^{(2)}$', '$\Omega_{SX}^{(2)}$'],
+                      [np.square(lmb2[1])], ['$\lambda^2_2$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(0.0, 0.01), title='State 2',
+                      show_plot=args.show_plots, direction=0, baseline=0.0)
+
+    multibiplot_2axis([di_2, o_dc_2, o_ct_2, osx_2], ['$\Delta_2$', '$\Omega^{(2)}_{DC}$', '$\Omega_{CT}^{(2)}$', '$\Omega_{SX}^{(2)}$'],
+                      [np.square(lmb2[1])], ['$\lambda^2_2$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
+                      zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(0.0, 0.01), title='State 2',
+                      show_plot=args.show_plots, direction=1, baseline=0.0)
+
+
+######################### adiabatic energies ############################
+
 data_1 = [data['adiabatic_energies']['E_1'] for data in total_data]
 data_2 = [data['adiabatic_energies']['E_2'] for data in total_data]
 data_3 = [data['adiabatic_energies']['E_3'] for data in total_data]
@@ -518,13 +585,13 @@ e_3 = np.array(data_3)
 e_4 = np.array(data_4)
 
 
-with PdfPages(folder + 'adiabatic.pdf') as pdf:
-    triplot2([e_1, e_2], ['$E^{(1)}$', '$E^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
-             show_plot=args.show_plots, zlevels=None)
-    biplot(e_1, e_2, '$E^{(1)}$', '$E^{(2)}$', y_range, z_range,
-           show_plot=args.show_plots, pdf=pdf, direction=0, zrange=None)
-    biplot(e_1, e_2, '$E^{(1)}$', '$E^{(2)}$', y_range, z_range,
-           show_plot=args.show_plots, pdf=pdf, direction=1, zrange=None)
+with PdfPages(folder + 'figure4.pdf') as pdf:
+    triplot2([e_1, e_2], ['$^1A_g$', '$^1B_{3u}$'], y_range, z_range, pdf=pdf, wireframe=True,
+             show_plot=args.show_plots, zlevels=None, colors=['black', 'red'])
+    biplot(e_1, e_2, '$^1A_g$', '$^1B_{3u}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=0, zrange=[7.6, 9.2], colors=['black', 'red'])
+    biplot(e_1, e_2, '$^1A_g$', '$^1B_{3u}$', y_range, z_range,
+           show_plot=args.show_plots, pdf=pdf, direction=1, zrange=[7.6, 9.2], colors=['black', 'red'])
 
 e_1b = e_le + di_1 + o_dc_1 + o_ct_1 + o_h[0] + o_e[0]
 e_2b = e_le + di_2 + o_dc_2 + o_ct_2 + o_h[1] + o_e[1]

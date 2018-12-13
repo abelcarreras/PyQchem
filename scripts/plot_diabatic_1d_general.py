@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from pyqchem.order_states import get_order_states_list, correct_order_list
+import matplotlib
 
-
+matplotlib.rcParams.update({'font.size': 13})
 
 # Argument parser
 parser = argparse.ArgumentParser(description='Plot 3D data')
@@ -21,8 +22,11 @@ parser.add_argument('--show_plots', action='store_true',
 args = parser.parse_args()
 
 
-def multiplot(data , labels, x_range, title=None, factor=None, range_y=(-1, 1),
-              ylabel='Energy [eV]', show_plots=False, colors=None, baseline=None):
+def multiplot(data , labels, x_range, title=None, factor=None, range_y=(-1.0, 1.0),
+              ylabel='Energy [eV]', show_plots=False, colors=None, baseline=None, style=None):
+
+    if style is None:
+        style = [None for i in range(len(data))]
 
     if factor is not None:
         for i, dat in enumerate(data):
@@ -33,9 +37,9 @@ def multiplot(data , labels, x_range, title=None, factor=None, range_y=(-1, 1),
     plt.title(title)
     for i, dat in enumerate(data):
         if colors is not None:
-            plt.plot(x_range, dat, label=labels[i], color=colors[i])
+            plt.plot(x_range, dat, label=labels[i], color=colors[i], linestyle=style[i])
         else:
-            plt.plot(x_range, dat, label=labels[i])
+            plt.plot(x_range, dat, label=labels[i], linestyle=style[i])
 
     plt.xlim(3.5, 6.0)
     if range_y is not None:
@@ -55,7 +59,7 @@ def multiplot(data , labels, x_range, title=None, factor=None, range_y=(-1, 1),
     return f
 
 
-def multiplot_2axis(data , labels, data2, labels2, x_range, title=None, factor=None, range_y=(-1, 1),
+def multiplot_2axis(data , labels, data2, labels2, x_range, title=None, factor=None, range_y=(-1.0, 1.0),
                     ylabel='Energy [eV]', show_plots=False, colors=None, style1=None, style2=None,
                     colors2=None, ylabel2=None, range_y2=(-1, 1), baseline=None):
 
@@ -64,7 +68,6 @@ def multiplot_2axis(data , labels, data2, labels2, x_range, title=None, factor=N
 
     if style2 is None:
         style2 = [None for i in range(len(data2))]
-
 
     if factor is not None:
         for i, dat in enumerate(data):
@@ -107,7 +110,7 @@ def multiplot_2axis(data , labels, data2, labels2, x_range, title=None, factor=N
     plt.legend(lns, labs, loc=0)
 
     if baseline is not None:
-        plt.axhline(baseline, color='k', linestyle=':')
+        ax1.axhline(baseline, color='k', linestyle=':')
 
     ax1.set_xlabel('Z [Å]')
 
@@ -273,7 +276,7 @@ oh_1 = np.array(data_3)
 oh_2 = np.array(data_4)
 
 
-########################## term1 ###########################
+########################## delta ###########################
 
 e_le = np.array([data['diabatic_energies']['E_LE'] for data in total_data])
 e_ct = np.array([data['diabatic_energies']['E_CT'] for data in total_data])
@@ -287,13 +290,13 @@ d2ct1 = np.array([data['asymmetries']['delta2_ct'][0] for data in total_data])
 d2ct2 = np.array([data['asymmetries']['delta2_ct'][1] for data in total_data])
 
 
-data_1 = e_le + d2le1 * de_le + d2ct1 * de_ct + l1 * (e_ct - e_le)
-data_2 = e_le + d2le2 * de_le + d2ct2 * de_ct + l2 * (e_ct - e_le)
+data_1 = d2le1 * de_le + d2ct1 * de_ct + l1 * (e_ct - e_le)
+data_2 = d2le2 * de_le + d2ct2 * de_ct + l2 * (e_ct - e_le)
 
 
-f = multiplot([data_1, data_2], ['state1', 'state2'], d_coordinate, show_plots=args.show_plots, range_y=[None, None],
-              title='term1: e_le + d2le * de_le + d2ct * de_ct + l^2 * (e_ct - e_le)')
-f.savefig(folder + "term_1.pdf", bbox_inches='tight')
+f = multiplot([data_1, data_2], ['$\Delta_1$', '$\Delta_2$'], d_coordinate, show_plots=args.show_plots, #range_y=[None, None],
+              title='$\Delta$')
+f.savefig(folder + "delta.pdf", bbox_inches='tight')
 
 f = multiplot([e_le, e_ct, de_le, de_ct], ['$E_{LE}$', '$E_{CT}$', '$\Delta E_{LE}$', '$\Delta E_{CT}$'],
               d_coordinate, show_plots=args.show_plots, range_y=[None, None], title='term1 pieces')
@@ -305,23 +308,63 @@ f = multiplot([d2le1, d2ct1, d2le2, d2ct2], ['$\delta^{2(1)}_{LE}$', '$\delta^{2
 f.savefig(folder + "diabatic_2.pdf", bbox_inches='tight')
 
 
-t1_1 = np.array(data_1)
-t1_2 = np.array(data_2)
+delta_1 = np.array(data_1)
+delta_2 = np.array(data_2)
 
+#######################  J Coloumb ######################
 
-#######################  Second & third term  #####################
+mu = 1.7528
+angs2au = 1.889725989
+har2ev = 27.2113962
+j_coul = np.array([(mu**2)/(z * angs2au)**3 * har2ev for z in d_coordinate])
+
+#######################  Omega DC  #####################
 
 data_1 = np.sqrt((1-l1)**2 - d2le1**2)*wdc1
 data_2 = np.sqrt((1-l2)**2 - d2le2**2)*wdc2
 
-data_3 = np.sqrt(l1**2 - d2ct1**2)*wct1
-data_4 = np.sqrt(l1**2 - d2ct2**2)*wct2
+add_coul = True
+if add_coul:
+    f = multiplot([data_1, data_2, j_coul, -j_coul],
+                  ['$\Omega_{DC}^{(1)}$', '$\Omega_{DC}^{(2)}$', '$J_{Coul}$', '$J_{Coul}$'],
+                  d_coordinate, title='$\Omega_{DC}$', colors=['#1f77b4', '#ff7f0e', 'grey', 'grey'],
+                  style=['-', '-', '--', '--'])
+else:
+    f = multiplot([data_1, data_2],
+                  ['$\Omega_{DC}^{(1)}$', '$\Omega_{DC}^{(2)}$'],
+                  d_coordinate, title='$\Omega_{DC}$')
 
-f = multiplot([data_1, data_2], ['$t_2^{(1)}$', '$t_2^{(2)}$'], d_coordinate, title='term2: sqrt((1-l^2)^2 - d2le^2)*wdc')
-f.savefig(folder + "term_2.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
+f.savefig(folder + "omega_DC.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
 
-f = multiplot([data_3, data_4], ['$t_3^{(1)}$', '$t_3^{(2)}$'], d_coordinate, title='term3: sqrt(l^4 - d2ct**2)*wct')
-f.savefig(folder + "term_3.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
+o_dc1 = data_1
+o_dc2 = data_2
+
+#######################  Omega CT  #####################
+
+data_1 = np.sqrt(l1**2 - d2ct1**2)*wct1
+data_2 = np.sqrt(l1**2 - d2ct2**2)*wct2
+
+f = multiplot([data_1, data_2], ['$\Omega_{CT}^{(1)}$', '$\Omega_{CT}^{(2)}$'], d_coordinate, title='$\Omega_{CT}$')
+f.savefig(folder + "omega_CT.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
+
+o_ct1 = data_1
+o_ct2 = data_2
+
+###################### Omega h ###########################
+
+o_h1 = np.array([data['diabatic_contributions']['Omega_h'][0] for data in total_data])
+o_h2 = np.array([data['diabatic_contributions']['Omega_h'][1] for data in total_data])
+
+f = multiplot([o_h1, o_h2], ['$\Omega_{h}^{(1)}$', '$\Omega_{h}^{(2)}$'], d_coordinate, title='$\Omega_{h}$')
+f.savefig(folder + "omega_h.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
+
+###################### Omega e ###########################
+
+o_e1 = np.array([data['diabatic_contributions']['Omega_e'][0] for data in total_data])
+o_e2 = np.array([data['diabatic_contributions']['Omega_e'][1] for data in total_data])
+
+f = multiplot([o_e1, o_e2], ['$\Omega_{e}^{(1)}$', '$\Omega_{e}^{(2)}$'], d_coordinate, title='$\Omega_{e}$')
+f.savefig(folder + "omega_e.pdf", bbox_inches='tight', show_plots=args.show_plots, range_y=[None, None])
 
 #######################  diabatic_energies  ######################
 
@@ -331,9 +374,9 @@ data_2 = [np.average(data['diabatic_energies']['E_CT']) for data in total_data]
 e_le = np.array(data_1)
 e_ct = np.array(data_2)
 
-f = multiplot([data_1, data_2], ['$E_{LE}$', '$E_{CT}$'], d_coordinate, title='Diabatic energies',
+f = multiplot([data_1, data_2], ['$E_{LE}$', '$E_{CT}$'], d_coordinate, #title='Diabatic energies',
               range_y=[6, 13], show_plots=args.show_plots)
-f.savefig(folder + "figure1b.pdf", bbox_inches='tight')
+f.savefig(folder + "figure2b.pdf", bbox_inches='tight')
 
 
 ###################### Diabatic energies ##################
@@ -347,7 +390,8 @@ data_6 = [data['diabatic_energies']['V_h'][1] for data in total_data]
 
 f = multiplot([data_1, data_2,  data_3,  data_4,  data_5, data_6],
               ['$V_{DC}$', "$V_{CT}$", "$V_e$", "$V_h$", "$V_e'$", "$V_h'$"],
-              d_coordinate, title='Diabatic energies', show_plots=args.show_plots)
+              d_coordinate, #title='Diabatic energies',
+              show_plots=args.show_plots)
 
 f.savefig(folder + "diabatic_energies.pdf", bbox_inches='tight')
 
@@ -362,12 +406,14 @@ data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, dat
 
 f = multiplot([data_1, data_2,  data_3,  data_4,],
               #['$1 - {}^1A_g$', '$1 - {}^1B_{3u}$', '$2- {}^1B_{3u}$', '$2 - {}^1A_g$'],
-              ['$E_1$', '$E_2$', '$E_3$' , '$E_4$'],
-              d_coordinate, title='Adiabatic energies', range_y=[None, None], show_plots=args.show_plots,
-              #colors=['black', 'red', 'black', 'red']
+              ['${}^1A_g$', '${}^1B_{3u}$', None, None],
+              #['$E_1$', '$E_2$', '$E_3$' , '$E_4$'],
+              d_coordinate, # title='Adiabatic energies',
+              range_y=[6, 13], show_plots=args.show_plots,
+              colors=['black', 'red', 'black', 'red'],
               )
 
-f.savefig(folder + "figure1a.pdf", bbox_inches='tight')
+f.savefig(folder + "figure2a.pdf", bbox_inches='tight')
 
 e1 = np.array(data_1)
 e2 = np.array(data_2)
@@ -375,16 +421,61 @@ e3 = np.array(data_3)
 e4 = np.array(data_4)
 
 
+#######################  Figure 3  #####################
+
+o_sx_1 = o_e1 + o_h1
+o_sx_2 = o_e2 + o_h2
+
+di_1 = l1*(e_ct - e_le) + d2le1*de_le + d2ct1*de_ct
+di_2 = l2*(e_ct - e_le) + d2le2*de_le + d2ct2*de_ct
+
+
+f = multiplot_2axis([o_dc1, o_sx_1, di_1, -j_coul], ['$\Omega^{(1)}_{DC}$', '$\Omega_{SX}^{(1)}$', '$\Delta_1$', '$J_{Coul}$'],
+                    [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    colors=[None, None, None, '#1f77b4'], style1=['-', '-', '-', '--'],
+                    range_y2=[0, 0.04], title='State 1', colors2=['grey'], baseline=0)
+f.savefig(folder + "figure3a.pdf", bbox_inches='tight')
+
+
+f = multiplot_2axis([o_dc2, o_sx_2, l2, j_coul], ['$\Omega^{(2)}_{DC}$', '$\Omega_{SX}^{(2)}$', '$\Delta_2$', '$J_{Coul}$'],
+                    [np.square(l2)], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    colors=[None, None, None, '#1f77b4'], style1=['-', '-', '-', '--'],
+                    range_y2=[0, 0.04], title='State 2', colors2=['grey'], baseline=0)
+
+f.savefig(folder + "figure3b.pdf", bbox_inches='tight')
+
+
+f = multiplot_2axis([oe_1, oh_1, o_sx_1], ['$\Omega_e^{(1)}$', '$\Omega_h^{(1)}$', '$\Omega_{SX}^{(1)}$'],
+                    [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    range_y2=[0.0, 0.04], title='State 1', colors2=['grey'], baseline=0)
+
+f.savefig(folder + "figure3c.pdf", bbox_inches='tight')
+
+f = multiplot_2axis([oe_2, oh_2, o_sx_1], ['$\Omega_e^{(2)}$', '$\Omega_h^{(2)}$', '$\Omega_{SX}^{(2)}$'],
+                    [np.square(l2)], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    range_y2=[0.0, 0.04], title='State 2', colors2=['grey'], baseline=0)
+
+f.savefig(folder + "figure3d.pdf", bbox_inches='tight')
+
 exit()
 
-#######################  J Coloumb ######################
+f = multiplot_2axis([oe_1, oh_1], ['$\Omega_e^{(1)}$', '$\Omega_h^{(1)}$'],
+                    [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    style1=['-', '-.'], colors=['black', 'black'],
+                    range_y2=[-0.3, 0.3], title='State 1', colors2=['grey'], baseline=0)
+
+f.savefig(folder + "figure3c_x.pdf", bbox_inches='tight')
+
+f = multiplot_2axis([oe_2, oh_2], ['$\Omega_e^{(2)}$', '$\Omega_h^{(2)}$'],
+                    [np.square(l2)], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    style1=['-', '-.'], colors=['red', 'red'],
+                    range_y2=[-0.3, 0.3], title='State 2', colors2=['grey'], baseline=0)
+
+f.savefig(folder + "figure2d_x.pdf", bbox_inches='tight')
 
 
-mu = 1.7528
-angs2au = 1.889725989
-har2ev = 27.2113962
-j_coul = np.array([(mu**2)/(z * angs2au)**3 * har2ev for z in d_coordinate])
 
+exit()
 
 #######################  adiabatic_energies (calculated) ######################
 
@@ -398,7 +489,7 @@ f = multiplot([e1-e1c, e2-e2c],
 
 f.savefig(folder + "test.pdf", bbox_inches='tight')
 
-#######################  Figure 2  #####################
+#######################  Figure 3  #####################
 
 f = multiplot_2axis([wdc1, e_11, e_21, -j_coul], ['$W^{(1)}_{DC}$', '$\Omega^{(1)}$', '$E(\lambda^2_1)$', '$J_{Coul}$'],
                     [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
