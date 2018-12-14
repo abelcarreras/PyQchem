@@ -430,30 +430,32 @@ di_1 = l1*(e_ct - e_le) + d2le1*de_le + d2ct1*de_ct
 di_2 = l2*(e_ct - e_le) + d2le2*de_le + d2ct2*de_ct
 
 
-f = multiplot_2axis([o_dc1, o_sx_1, di_1, -j_coul], ['$\Omega^{(1)}_{DC}$', '$\Omega_{SX}^{(1)}$', '$\Delta_1$', '$J_{Coul}$'],
-                    [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
-                    colors=[None, None, None, '#1f77b4'], style1=['-', '-', '-', '--'],
-                    range_y2=[0, 0.04], title='State 1', colors2=['grey'], baseline=0)
+f = multiplot_2axis([o_dc1, o_sx_1, o_ct1, di_1, -j_coul], ['$\Omega^{(1)}_{DC}$', '$\Omega_{SX}^{(1)}$',
+                                                            '$\Omega_{CT}^{(1)}$', '$\Delta_1$', '$J_{Coul}$'],
+                    [l1], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    colors=[None, None, None, None, '#1f77b4'], style1=['-', '-', '-', '-', '--'],
+                    range_y2=[0, 0.2], title='State 1', colors2=['grey'], baseline=0)
 f.savefig(folder + "figure3a.pdf", bbox_inches='tight')
 
 
-f = multiplot_2axis([o_dc2, o_sx_2, l2, j_coul], ['$\Omega^{(2)}_{DC}$', '$\Omega_{SX}^{(2)}$', '$\Delta_2$', '$J_{Coul}$'],
-                    [np.square(l2)], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
-                    colors=[None, None, None, '#1f77b4'], style1=['-', '-', '-', '--'],
-                    range_y2=[0, 0.04], title='State 2', colors2=['grey'], baseline=0)
+f = multiplot_2axis([o_dc2, o_sx_2, o_ct2, di_2, j_coul], ['$\Omega^{(2)}_{DC}$', '$\Omega_{SX}^{(2)}$',
+                                                           '$\Omega_{CT}^{(2)}$', '$\Delta_2$', '$J_{Coul}$'],
+                    [l2], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    colors=[None, None, None, None, '#1f77b4'], style1=['-', '-', '-', '-','--'],
+                    range_y2=[0, 0.2], title='State 2', colors2=['grey'], baseline=0)
 
 f.savefig(folder + "figure3b.pdf", bbox_inches='tight')
 
 
 f = multiplot_2axis([oe_1, oh_1, o_sx_1], ['$\Omega_e^{(1)}$', '$\Omega_h^{(1)}$', '$\Omega_{SX}^{(1)}$'],
-                    [np.square(l1)], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
-                    range_y2=[0.0, 0.04], title='State 1', colors2=['grey'], baseline=0)
+                    [l1], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    range_y2=[0.0, 0.2], title='State 1', colors2=['grey'], baseline=0)
 
 f.savefig(folder + "figure3c.pdf", bbox_inches='tight')
 
 f = multiplot_2axis([oe_2, oh_2, o_sx_1], ['$\Omega_e^{(2)}$', '$\Omega_h^{(2)}$', '$\Omega_{SX}^{(2)}$'],
-                    [np.square(l2)], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
-                    range_y2=[0.0, 0.04], title='State 2', colors2=['grey'], baseline=0)
+                    [l2], ['$\lambda_2^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    range_y2=[0.0, 0.2], title='State 2', colors2=['grey'], baseline=0)
 
 f.savefig(folder + "figure3d.pdf", bbox_inches='tight')
 

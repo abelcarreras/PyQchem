@@ -94,5 +94,5 @@ def dimer_mix(distance, slide_y, slide_z):
                          atomic_elements=symbols,
                          charge=0)
 
-    return molecule, {'state_threshold': 0.2,
+    return molecule, {'state_threshold': 0.4,
                       'n_mon': len(monomer1)}
