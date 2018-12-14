@@ -152,15 +152,13 @@ def parser_fchk(output):
         #beta_mo_coeff = [float(num) for num in input_molecule[11]]
 
         nbas = int(np.sqrt(len(input_molecule[10])))
-        alpha_mo_coeff = np.array(input_molecule[10], dtype=float).reshape(nbas, nbas).tolist()
-        alpha_mo_energy = [float(num) for num in input_molecule[15]]
 
-        if len(input_molecule[11]) == 0:
-            beta_mo_coeff = alpha_mo_coeff
-            beta_mo_energy = alpha_mo_energy
-        else:
-            beta_mo_coeff = np.array(input_molecule[11], dtype=float).reshape(nbas, nbas)
-            beta_mo_energy = [float(num) for num in input_molecule[16]]
+        mo_coeff = {'alpha': np.array(input_molecule[10], dtype=float).reshape(nbas, nbas).tolist()}
+        mo_energy = {'alpha': [float(num) for num in input_molecule[15]]}
+
+        if len(input_molecule[11]) != 0:
+            mo_coeff['beta'] = np.array(input_molecule[11], dtype=float).reshape(nbas, nbas)
+            mo_energy['beta'] = [float(num) for num in input_molecule[16]]
 
         # coor_shell = [float(num) for num in input_molecule[12]]
         # overlap = [float(num) for num in input_molecule[13]]
@@ -169,12 +167,10 @@ def parser_fchk(output):
 
         return {'structure': structure,
                 'basis': basis,
-                'coefficients': {'alpha': alpha_mo_coeff,
-                                 'beta': beta_mo_coeff},
-                'mo_energies': {'alpha': alpha_mo_energy,
-                                'beta': beta_mo_energy},
-                #'overlap': overlap,
-                #'coor_shell': coor_shell,
-                #'core_hamiltonian': core_hamiltonian,
-                #'scf_density': scf_density
+                'coefficients': mo_coeff,
+                'mo_energies': mo_energy,
+                # 'overlap': overlap,
+                # 'coor_shell': coor_shell,
+                # 'core_hamiltonian': core_hamiltonian,
+                # 'scf_density': scf_density
                 }

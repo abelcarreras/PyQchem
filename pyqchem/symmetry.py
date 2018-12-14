@@ -2,8 +2,12 @@ from wfnsympy import WfnSympy
 import numpy as np
 
 
-def get_wf_symmetry(structure, basis, alpha_mo_coeff, beta_mo_coeff,
-                    center=(0., 0., 0.), vaxis=(0., 0., 1.), vaxis2=(0., 1., 0.)):
+def get_wf_symmetry(structure,
+                    basis,
+                    mo_coeff,
+                    center=(0., 0., 0.),
+                    vaxis=(0., 0., 1.),
+                    vaxis2=(0., 1., 0.)):
 
     #print('valence', structure.get_valence_electrons())
 
@@ -36,34 +40,30 @@ def get_wf_symmetry(structure, basis, alpha_mo_coeff, beta_mo_coeff,
             for pc in shell['p_con_coefficients']:
                 p_c_coefficients.append(pc)
 
-
-    alpha_mo_coeff = np.array(alpha_mo_coeff).flatten().tolist()
-    beta_mo_coeff = np.array(beta_mo_coeff).flatten().tolist()
-
-    bohr_to_angstrom = 0.529177249
+    alpha_mo_coeff = np.array(mo_coeff['alpha']).flatten().tolist()
+    if 'beta' in mo_coeff:
+        print(mo_coeff)
+        print('here')
+        exit()
+        beta_mo_coeff = np.array(mo_coeff['beta']).flatten().tolist()
+    else:
+        beta_mo_coeff = None
 
     for s, c in zip(structure.get_atomic_elements(), structure.get_coordinates()):
         print('{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}'.format(*c))
 
-    coordinates = np.array(structure.get_coordinates())/bohr_to_angstrom
-
-    molsym = WfnSympy(NEval=structure.get_valence_electrons(),  # Number of Valence electrons
-                      AtLab=structure.get_atomic_elements(),  # Atomic labels
-                      shell_type=shell_type,
-                      p_exp=p_exponents,
-                      con_coef=c_coefficients,
-                      p_con_coef=p_c_coefficients,
-                      RAt=coordinates,  # atomic coordinates in Bohr
-                      n_prim=n_primitives,
-                      atom_map=atom_map,
-                      Ca=alpha_mo_coeff, Cb=beta_mo_coeff,
-                      RCread=center,
-                      #RCread=[0., 0., 0.],
+    molsym = WfnSympy(coordinates=structure.get_coordinates(),
+                      symbols=structure.get_atomic_elements(),
+                      basis=basis,
+                      center=center,
                       VAxis=vaxis,
                       VAxis2=vaxis2,
-                      iCharge=structure.charge,
-                      iMult=structure.multiplicity,
+                      alpha_mo_coeff=alpha_mo_coeff,
+                      beta_mo_coeff=beta_mo_coeff,
+                      charge=structure.charge,
+                      multiplicity=structure.multiplicity,
                       group='C2h')
+
     return molsym
 
 
@@ -134,10 +134,10 @@ if __name__ == '__main__':
 
     txt_input = create_qchem_input(molecule, **parameters)
 
-    #txt_fchk = get_output_from_qchem(txt_input, processors=4, force_recalculation=True,
-    #                                 parser=None, read_fchk=True)
+    txt_fchk = get_output_from_qchem(txt_input, processors=4, force_recalculation=True,
+                                     parser=None, read_fchk=True)
 
-    txt_fchk = open('qchem_temp_32947.fchk', 'r').read()
+    #txt_fchk = open('qchem_temp_32947.fchk', 'r').read()
     parsed_data = parser_fchk(txt_fchk)
     open('test.fchk', 'w').write(txt_fchk)
 
@@ -145,11 +145,6 @@ if __name__ == '__main__':
                                            parsed_data['coefficients']['alpha'],
                                            range(6, 12))
     parsed_data['coefficients']['alpha'] = alpha_mo_coeff
-
-    beta_mo_coeff = set_zero_coefficients(parsed_data['basis'],
-                                          parsed_data['coefficients']['beta'],
-                                          range(6, 12))
-    parsed_data['coefficients']['beta'] = beta_mo_coeff
 
     structure = parsed_data['structure']
     print(structure.get_xyz())
@@ -161,8 +156,7 @@ if __name__ == '__main__':
 
     molsym = get_wf_symmetry(parsed_data['structure'],
                              parsed_data['basis'],
-                             parsed_data['coefficients']['alpha'],
-                             parsed_data['coefficients']['beta'],
+                             parsed_data['coefficients'],
                              center=[0.0, 0.0, z_dist])
 
     orbital_type = get_orbital_type(molsym)

@@ -46,8 +46,7 @@ open('test_benzene.fchk', 'w').write(txt_fchk)
 # get wavefuntion symmetry data
 sym_data = get_wf_symmetry(parsed_data['structure'],
                            parsed_data['basis'],
-                           parsed_data['coefficients']['alpha'],
-                           parsed_data['coefficients']['beta'],
+                           parsed_data['coefficients'],
                            center=[0.0, 0.0, 0.0])
 # get orbital type
 orbital_type = get_orbital_type(sym_data)

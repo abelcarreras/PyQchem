@@ -178,9 +178,7 @@ def build_fchk(parsed_data):
     structure = parsed_data['structure']
     basis = parsed_data['basis']
     alpha_mo_coeff = parsed_data['coefficients']['alpha']
-    beta_mo_coeff = parsed_data['coefficients']['beta']
     alpha_mo_energies = parsed_data['mo_energies']['alpha']
-    beta_mo_energies = parsed_data['mo_energies']['beta']
 
     #overlap = parsed_data['overlap']
     #coor_shell = parsed_data['coor_shell']
@@ -197,7 +195,12 @@ def build_fchk(parsed_data):
     #print(number_of_electrons)
 
     alpha_mo_coeff = np.array(alpha_mo_coeff).flatten().tolist()
-    beta_mo_coeff = np.array(beta_mo_coeff).flatten().tolist()
+
+    if 'beta' in parsed_data['coefficients']:
+        beta_mo_coeff = parsed_data['coefficients']['beta']
+        beta_mo_coeff = np.array(beta_mo_coeff).flatten().tolist()
+
+        beta_mo_energies = parsed_data['mo_energies']['beta']
 
     shell_type_list = {'s':  {'type':  0, 'angular_momentum': 0},
                        'p':  {'type':  1, 'angular_momentum': 1},
