@@ -20,6 +20,9 @@ parser.add_argument('-d', metavar='distance', type=float, default=4.7,
 parser.add_argument('-mol', metavar='name', type=str, default='dimer_ethene',
                     help='molecule name (in molecules.py)', )
 
+parser.add_argument('-basis', metavar='basis', type=str, default='6-31G',
+                    help='basis set label')
+
 parser.add_argument('--yrange', metavar='yrange', type=float, nargs=3,
                     default=[0, 3, 0.5],
                     help='range: initial, final, step')
@@ -94,7 +97,7 @@ def get_states_from_orbitals(cis_data, origin_orbitals, target_orbitals, n_state
 # common qchem input parameters
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
-              'basis': '6-31G',
+              'basis': args.basis,
               'namd_nsurfaces': 0,
               # cis
               'cis_n_roots': 20,
