@@ -460,6 +460,14 @@ if interpolate:
 e_le = np.array(data_1)
 e_ct = np.array(data_2)
 
+with PdfPages(folder + 'LE_CT.pdf') as pdf:
+    triplot2([e_le, e_ct], ['$E_{LE}$', '$E_{CT}$'], y_range, z_range, pdf=pdf, wireframe=True,
+             show_plot=args.show_plots, zlevels=None)
+    biplot(e_le, e_ct, '$E_{LE}$', '$E_{CT}$', y_range, z_range, show_plot=args.show_plots,
+           pdf=pdf, direction=0, zrange=[8, 14])
+    biplot(e_le, e_ct, '$E_{LE}$', '$E_{CT}$', y_range, z_range, show_plot=args.show_plots,
+           pdf=pdf, direction=1, zrange=[8, 14])
+
 
 de_le, = get_data(total_data, y_range, z_range, points,
                   type='diabatic_energies', property='dE_LE',
@@ -630,7 +638,7 @@ with PdfPages(folder + 'omega_sx2.pdf') as pdf:
 ######################### figure 6 ############################
 
 
-with PdfPages(folder + 'figure6_4.7.pdf') as pdf:
+with PdfPages(folder + 'figure6.pdf') as pdf:
     multibiplot_2axis([o_dc_1, osx_1, o_ct_1, di_1], ['$\Omega^{(1)}_{DC}$', '$\Omega_{SX}^{(1)}$', '$\Omega_{CT}^{(1)}$', '$\Delta_1$'],
                       [lmb2[0]], ['$\lambda^2_1$'], y_range, z_range, pdf=pdf, zlabel2='$\lambda^2$',
                       zlabel='Energy [eV]', zrange=(-1.5, 1.5), zrange2=(0.0, 0.2), title='State 1',
@@ -685,8 +693,8 @@ e_1b = e_le + di_1 + o_dc_1 + o_ct_1 + o_h[0] + o_e[0]
 e_2b = e_le + di_2 + o_dc_2 + o_ct_2 + o_h[1] + o_e[1]
 
 with PdfPages(folder + 'test.pdf') as pdf:
-    triplot2([e_1-e_1b, e_2-e_2b], ['$E^{(1)}$', '$E^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
-             show_plot=args.show_plots, zlevels=None)
+    #triplot2([e_1-e_1b, e_2-e_2b], ['$E^{(1)}$', '$E^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
+    #         show_plot=args.show_plots, zlevels=None)
     biplot(e_1-e_1b, e_2-e_2b, '$E^{(1)}$', '$E^{(2)}$', y_range, z_range,
            show_plot=args.show_plots, pdf=pdf, direction=0)
     biplot(e_1-e_1b, e_2-e_2b, '$E^{(1)}$', '$E^{(2)}$', y_range, z_range,

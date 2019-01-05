@@ -57,7 +57,9 @@ def create_qchem_input(molecule,
                        geom_opt_tol_gradient=300,
                        geom_opt_tol_displacement=1200,
                        geom_opt_tol_energy=100,
-                       geom_opt_max_cycles=50
+                       geom_opt_max_cycles=50,
+                       # other
+                       namd_nsurfaces=None
                        ):
 
     input_file = ''
@@ -100,9 +102,9 @@ def create_qchem_input(molecule,
         if correlation.upper() == 'RASCI':
 
             if ras_elec is not None:
-                ras_occ = np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge
+                ras_occ = (np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge)//2
             else:
-                ras_occ = np.sum(molecule.get_atomic_numbers()) - molecule.charge
+                ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
             print('ras_occ = {}'.format(ras_occ))
 
             input_file += 'ras_roots {}\n'.format(ras_roots)
@@ -157,6 +159,10 @@ def create_qchem_input(molecule,
         input_file += 'loc_cis_ov_separate {}\n'.format(loc_cis_ov_separate)
         input_file += 'er_cis_numstate {}\n'.format(er_cis_numstate)
         input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
+
+    # other
+    if namd_nsurfaces is not None:
+        input_file += 'namd_nsurfaces {}\n'.format(namd_nsurfaces)
 
     input_file += '$end\n'
 

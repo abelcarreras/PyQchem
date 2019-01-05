@@ -95,6 +95,7 @@ def get_states_from_orbitals(cis_data, origin_orbitals, target_orbitals, n_state
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
               'basis': '6-31G',
+              'namd_nsurfaces': 0,
               # cis
               'cis_n_roots': 20,
               'cis_convergence': 8,
@@ -136,7 +137,6 @@ for slide_d in distance:
                 print('{:2} '.format(s) + '{:10.8f} {:10.8f} {:10.8f}'.format(*c))
 
             txt_input = create_qchem_input(molecule, **parameters)
-            # print(txt_input)
 
             # calculate and parse CIS data
             data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
