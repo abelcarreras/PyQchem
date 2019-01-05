@@ -98,7 +98,7 @@ def get_states_from_orbitals(cis_data, origin_orbitals, target_orbitals, n_state
 parameters = {'jobtype': 'sp',
               'exchange': 'hf',
               'basis': args.basis,
-              'namd_nsurfaces': 0,
+              # 'namd_nsurfaces': 0,
               # cis
               'cis_n_roots': 20,
               'cis_convergence': 8,
