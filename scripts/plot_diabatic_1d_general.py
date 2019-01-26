@@ -421,6 +421,19 @@ e3 = np.array(data_3)
 e4 = np.array(data_4)
 
 
+f = multiplot([data_1, data_2,  data_3,  data_4, e_le, e_ct],
+              #['$1 - {}^1A_g$', '$1 - {}^1B_{3u}$', '$2- {}^1B_{3u}$', '$2 - {}^1A_g$'],
+              ['${}^1A_g$', '${}^1B_{3u}$', None, None, '$E_{LE}$', '$E_{CT}$'],
+              #['$E_1$', '$E_2$', '$E_3$' , '$E_4$'],
+              d_coordinate, # title='Adiabatic energies',
+              range_y=[6, 13], show_plots=args.show_plots,
+              colors=['black', 'red', 'black', 'red', None, None],
+              )
+
+f.savefig(folder + "figure2_mix.pdf", bbox_inches='tight')
+
+
+
 #######################  Figure 3  #####################
 
 o_sx_1 = o_e1 + o_h1
@@ -458,6 +471,45 @@ f = multiplot_2axis([oe_2, oh_2, o_sx_1], ['$\Omega_e^{(2)}$', '$\Omega_h^{(2)}$
                     range_y2=[0.0, 0.2], title='State 2', colors2=['grey'], baseline=0)
 
 f.savefig(folder + "figure3d.pdf", bbox_inches='tight')
+
+
+
+# Figure omega
+
+data_1 = [data['diabatic_contributions']['Omega_One_dc'][0] for data in total_data]
+data_2 = [data['diabatic_contributions']['Omega_One_dc'][0] for data in total_data]
+data_3 = [data['diabatic_contributions']['Omega_One_dc'][0] for data in total_data]
+data_4 = [data['diabatic_contributions']['Omega_One_dc'][0] for data in total_data]
+
+data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, data_4], states_orders)
+
+o_one_dc = data_1
+
+data_1 = [data['diabatic_contributions']['Omega_J_dc'][0] for data in total_data]
+data_2 = [data['diabatic_contributions']['Omega_J_dc'][0] for data in total_data]
+data_3 = [data['diabatic_contributions']['Omega_J_dc'][0] for data in total_data]
+data_4 = [data['diabatic_contributions']['Omega_J_dc'][0] for data in total_data]
+
+data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, data_4], states_orders)
+
+o_j_dc = data_1
+
+data_1 = [data['diabatic_contributions']['Omega_K_dc'][0] for data in total_data]
+data_2 = [data['diabatic_contributions']['Omega_K_dc'][0] for data in total_data]
+data_3 = [data['diabatic_contributions']['Omega_K_dc'][0] for data in total_data]
+data_4 = [data['diabatic_contributions']['Omega_K_dc'][0] for data in total_data]
+
+data_1, data_2, data_3, data_4 = correct_order_list([data_1, data_2, data_3, data_4], states_orders)
+
+o_k_dc = data_1
+
+f = multiplot_2axis([o_dc1, o_one_dc, o_j_dc,  o_k_dc, -j_coul],
+                    ['$\Omega_{DC}^{(1)}$', '$\Omega_{DC,1}^{(1)}$', '$\Omega_{DC,J}^{(1)}$', '$\Omega_{DC,K}^{(1)}$', '$J_{Coul}$'],
+                    [l1], ['$\lambda_1^2$'], d_coordinate, ylabel2='$\lambda^2$',
+                    colors=[None, None, None, None, '#2ca02c'], style1=['-', '-', '-', '-', '--'],
+                    range_y2=[0, 0.2], colors2=['grey'], baseline=0)
+
+f.savefig(folder + "omega_other.pdf", bbox_inches='tight')
 
 exit()
 
@@ -532,3 +584,4 @@ f = multiplot_2axis([oe_2, oh_2], ['$\Omega_e^{(2)}$', '$\Omega_h^{(2)}$'],
                     range_y2=[-0.3, 0.3], title='State 2', colors2=['grey'], baseline=0)
 
 f.savefig(folder + "figure2d_x.pdf", bbox_inches='tight')
+

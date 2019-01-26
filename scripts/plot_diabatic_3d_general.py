@@ -702,3 +702,34 @@ with PdfPages(folder + 'test.pdf') as pdf:
 
 
 exit()
+
+########################  omega 1,J,K  ######################
+
+o_one_dc = get_data(total_data, y_range, z_range, points,
+                    type='diabatic_contributions', property='Omega_One_dc',
+                    interpolate=interpolate, average=False,
+                    states_orders=states_orders)
+
+o_j_dc = get_data(total_data, y_range, z_range, points,
+                  type='diabatic_contributions', property='Omega_J_dc',
+                  interpolate=interpolate, average=False,
+                  states_orders=states_orders)
+o_k_dc = get_data(total_data, y_range, z_range, points,
+                  type='diabatic_contributions', property='Omega_K_dc',
+                  interpolate=interpolate, average=False,
+                  states_orders=states_orders)
+
+
+
+with PdfPages(folder + 'omega_other.pdf') as pdf:
+    #triplot2([o_dc_one_1, o_dc_one_2], ['$\Omega_{e}^{(1)}$', '$\Omega_{e}^{(2)}$'], y_range, z_range, pdf=pdf, wireframe=True,
+    #          show_plot=args.show_plots, zlevels=None)
+    multibiplot([o_one_dc[0], o_j_dc[0], o_k_dc[0]],
+                ['$\Omega_{DC,1}^{(1)}$', '$\Omega_{DC,J}^{(1)}$', '$\Omega_{DC,K}^{(1)}$'], y_range, z_range,
+                 show_plot=args.show_plots, pdf=pdf, direction=0)
+    multibiplot([o_one_dc[0], o_j_dc[0], o_k_dc[0]],
+                ['$\Omega_{DC,1}^{(1)}$', '$\Omega_{DC,J}^{(1)}$', '$\Omega_{DC,K}^{(1)}$'], y_range, z_range,
+                 show_plot=args.show_plots, pdf=pdf, direction=1)
+
+
+exit()
