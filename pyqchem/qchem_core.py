@@ -28,7 +28,7 @@ def create_qchem_input(molecule,
                        ras_do_part=True,
                        ras_act=None,
                        ras_elec=None,
-                       # ras_occ=None,
+                       ras_occ=None,
                        ras_spin_mult=1,
                        ras_omega=400,
                        ras_srdft=False,
@@ -48,7 +48,9 @@ def create_qchem_input(molecule,
                        loc_cis_ov_separate=False,
                        er_cis_numstate=0,
                        cis_diabath_decompose=False,
+                       max_cis_cycles=30,
                        localized_diabatization=None,
+                       sts_multi_nroots=None,
                        RPA=False,
                        set_iter=30,
                        gui=0,
@@ -101,11 +103,12 @@ def create_qchem_input(molecule,
         # RasCI variables
         if correlation.upper() == 'RASCI':
 
-            if ras_elec is not None:
-                ras_occ = (np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge)//2
-            else:
-                ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
-            print('ras_occ = {}'.format(ras_occ))
+            if ras_occ is None:
+                if ras_elec is not None:
+                    ras_occ = (np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge)//2
+                else:
+                    ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                print('ras_occ = {}'.format(ras_occ))
 
             input_file += 'ras_roots {}\n'.format(ras_roots)
             input_file += 'ras_do_hole {}\n'.format(ras_do_hole)
@@ -159,10 +162,14 @@ def create_qchem_input(molecule,
         input_file += 'loc_cis_ov_separate {}\n'.format(loc_cis_ov_separate)
         input_file += 'er_cis_numstate {}\n'.format(er_cis_numstate)
         input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
-
+        input_file += 'max_cis_cycles {}\n'.format(max_cis_cycles)
     # other
     if namd_nsurfaces is not None:
         input_file += 'namd_nsurfaces {}\n'.format(namd_nsurfaces)
+    if sts_multi_nroots is not None:
+        input_file += 'sts_multi_nroots {}\n'.format(sts_multi_nroots)
+    if localized_diabatization is not None:
+        input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
 
     input_file += '$end\n'
 
@@ -171,6 +178,7 @@ def create_qchem_input(molecule,
         input_file += '$localized_diabatization\nadiabatic states\n'
         input_file += ' '.join(np.array(localized_diabatization, dtype=str))
         input_file += '\n$end\n'
+
 
     # optimization
     if jobtype.lower() == 'opt':

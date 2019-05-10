@@ -45,6 +45,9 @@ def multiplot(data , labels, x_range, title=None, factor=None, range_y=(-1.0, 1.
     if range_y is not None:
         plt.ylim(*range_y)
     plt.legend()
+    #leg = plt.legend(loc='center right')
+    #leg.get_frame().set_linewidth(0.0)
+
     plt.xlabel('Z [Å]')
     plt.ylabel(ylabel)
 

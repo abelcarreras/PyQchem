@@ -31,34 +31,40 @@ energies_es = []
 
 atoms = ['C', 'O', 'Si']
 
-omegas = [pow(10, i) for i in np.arange(1, 5, 0.25)]
+omegas = [pow(10, i) for i in np.arange(1, 2, 0.25)]
 
 atom_data = {}
 for atom in atoms:
     data_omega = []
+
     for omega in omegas:
-        molecule = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                             atomic_elements=[atom],
-                             charge=0)
+        try:
+            molecule = Structure(coordinates=[[0.0, 0.0, 0.0]],
+                                 atomic_elements=[atom],
+                                 charge=0)
 
-        parameters.update({'ras_omega': int(omega)})
+            parameters.update({'ras_omega': int(omega)})
 
-        gap_list = []
-        for ispin in [True, False]:
-            parameters.update({'ras_srdft_spinpol': ispin})
+            gap_list = []
+            for ispin in [True, False]:
+                print(ispin)
+                parameters.update({'ras_srdft_spinpol': ispin})
 
-            # singlet
-            parameters.update({'ras_spin_mult': 1})
-            txt_input = create_qchem_input(molecule, **parameters)
-            data_singlet = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
+                # singlet
+                parameters.update({'ras_spin_mult': 1})
+                txt_input = create_qchem_input(molecule, **parameters)
+                data_singlet = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
 
-            # triplet
-            parameters.update({'ras_spin_mult': 3})
-            txt_input = create_qchem_input(molecule, **parameters)
-            data_triplet = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
+                # triplet
+                parameters.update({'ras_spin_mult': 3})
+                txt_input = create_qchem_input(molecule, **parameters)
+                data_triplet = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
 
-            gap = data_triplet['excited states'][0]['total energy'] - data_singlet['excited states'][0]['total energy']
-            gap_list.append(gap)
+                gap = data_triplet['excited states'][0]['total energy'] - data_singlet['excited states'][0]['total energy']
+                gap_list.append(gap)
+
+        except:
+            continue
 
         data_omega.append(gap_list[0]-gap_list[1])
 
