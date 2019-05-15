@@ -69,7 +69,7 @@ class HydrogenTest(unittest.TestCase):
 
         print(data_loaded)
 
-        self.assertDictEqual(data, data_loaded)
+        self.assertAlmostEqual(data, data_loaded, places=7)
 
 
     def test_rasci(self):
@@ -105,7 +105,7 @@ class HydrogenTest(unittest.TestCase):
 
         print(data_loaded)
 
-        self.assertDictEqual(data, data_loaded)
+        self.assertAlmostEqual(data, data_loaded, places=7)
 
 
 class WaterTest(unittest.TestCase):
@@ -169,7 +169,7 @@ class WaterTest(unittest.TestCase):
 
         print(data_loaded)
 
-        self.assertDictEqual(data, data_loaded)
+        self.assertAlmostEqual(data, data_loaded, places=7)
 
 
     def test_srdft(self):
@@ -214,5 +214,5 @@ class WaterTest(unittest.TestCase):
 
         print(data_loaded)
 
-        self.assertDictEqual(data, data_loaded)
+        self.assertAlmostEqual(data, data_loaded, places=7)
 
