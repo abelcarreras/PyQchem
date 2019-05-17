@@ -1,0 +1,51 @@
+excited states rasci:
+- amplitudes:
+  - alpha: '10'
+    amplitude: 0.9912416
+    beta: '10'
+    hole: ''
+    part: ''
+  - alpha: '01'
+    amplitude: 0.1107744
+    beta: '01'
+    hole: ''
+    part: ''
+  contributions_fwn:
+    active: 99.48
+    hole: 0.0
+    part: 0.52
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.0
+  excitation_energy: 0.0
+  multiplicity: Singlet
+  total_energy: -1.058011504591
+  transition_moment: null
+- amplitudes:
+  - alpha: '10'
+    amplitude: 0.701437
+    beta: '01'
+    hole: ''
+    part: ''
+  - alpha: '01'
+    amplitude: 0.701437
+    beta: '10'
+    hole: ''
+    part: ''
+  contributions_fwn:
+    active: 98.4
+    hole: 0.0
+    part: 1.6
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.0
+  excitation_energy: 4.1519
+  multiplicity: Triplet
+  total_energy: -0.905430684457
+  transition_moment:
+  - 0.0
+  - 0.0
+  - 0.0
+scf energy: -0.9992415372

@@ -1,0 +1,1215 @@
+excited states rasci:
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.9900876
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0226667
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0312677
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0136468
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.000102
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0226667
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0567316
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0505135
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.000102
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0022246
+    beta: '0011'
+    hole: ''
+    part: ''
+  contributions_fwn:
+    active: 98.82
+    hole: 1.18
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.6133
+  excitation_energy: 0.0
+  multiplicity: Singlet
+  total_energy: -74.994167562465
+  transition_moment: null
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6859353
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.6859353
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0563138
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0549037
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0563138
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0549037
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0325141
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0325141
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1101'
+    amplitude: 0.1031408
+    beta: '1010'
+    hole: '3'
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.1031408
+    beta: '1101'
+    hole: '3'
+    part: ''
+  contributions_fwn:
+    active: 95.55
+    hole: 4.45
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.0023
+  excitation_energy: 11.4705
+  multiplicity: Singlet
+  total_energy: -74.572635860965
+  transition_moment:
+  - 0.0
+  - 0.0821
+  - 0.0
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6855606
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0095823
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0714348
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.6855606
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0618525
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0618525
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0422788
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0714348
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0095823
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0422788
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  contributions_fwn:
+    active: 96.16
+    hole: 3.84
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.1888
+  excitation_energy: 13.1181
+  multiplicity: Singlet
+  total_energy: -74.5120869698
+  transition_moment:
+  - 0.0
+  - 0.0
+  - 0.0
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.052419
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.665164
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.014861
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0207057
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0123477
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.665164
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0895515
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.1005248
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0123477
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0040765
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1101'
+    amplitude: 0.181041
+    beta: '1100'
+    hole: '3'
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.181041
+    beta: '1101'
+    hole: '3'
+    part: ''
+  contributions_fwn:
+    active: 90.67
+    hole: 9.33
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - -0.1009
+  excitation_energy: 15.9926
+  multiplicity: Singlet
+  total_energy: -74.406450985952
+  transition_moment:
+  - 0.0
+  - 0.0
+  - 0.4263
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6244583
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0195275
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.018421
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0195275
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.115897
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.6244583
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.115897
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.018421
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1110'
+    amplitude: 0.2961328
+    beta: '1100'
+    hole: '3'
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.2961328
+    beta: '1110'
+    hole: '3'
+    part: ''
+  contributions_fwn:
+    active: 80.82
+    hole: 19.18
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.0925
+  excitation_energy: 18.0773
+  multiplicity: Singlet
+  total_energy: -74.329838983815
+  transition_moment:
+  - 0.384
+  - 0.0
+  - 0.0
+- amplitudes:
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.2936333
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0233015
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1010'
+    amplitude: 0.0111316
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0233015
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0528322
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.2936333
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0528322
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0101'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0111316
+    beta: '1010'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '1001'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0110'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0101'
+    hole: ''
+    part: ''
+  - alpha: '0011'
+    amplitude: 0.0
+    beta: '0011'
+    hole: ''
+    part: ''
+  - alpha: '1110'
+    amplitude: 0.6326763
+    beta: '1100'
+    hole: '3'
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6326763
+    beta: '1110'
+    hole: '3'
+    part: ''
+  contributions_fwn:
+    active: 17.94
+    hole: 82.06
+    part: 0.0
+  dipole_moment:
+  - 0.0
+  - 0.0
+  - 0.2066
+  excitation_energy: 21.0069
+  multiplicity: Singlet
+  total_energy: -74.222178203307
+  transition_moment:
+  - 1.4135
+  - 0.0
+  - 0.0
+scf energy: -74.9659011913
