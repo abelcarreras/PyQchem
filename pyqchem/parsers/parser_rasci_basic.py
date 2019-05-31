@@ -51,7 +51,9 @@ def basic_rasci(output):
     for m in re.finditer('RAS-CI total energy for state', output):
         # print('ll found', m.start(), m.end())
 
-        section_state = output[m.end():m.end() + 10000]
+        section_state = output[m.end():m.end() + 10000]  # 10000: assumed to max of section
+        section_state = section_state[:section_state.find('********')]
+
         enum = section_state.find('RAS-CI total energy for state')
         section_state = section_state[:enum]
 
@@ -62,16 +64,16 @@ def basic_rasci(output):
 
         # dipole moment
         enum = section_state.find('Dipole Moment')
-        dipole_mom = [float(section_state[enum:enum+100].split()[2]) + 0.0,
-                      float(section_state[enum:enum + 100].split()[4]) + 0.0,
-                      float(section_state[enum:enum + 100].split()[6]) + 0.0]
+        dipole_mom = [float(section_state[enum:].split()[2]) + 0.0,
+                      float(section_state[enum:].split()[4]) + 0.0,
+                      float(section_state[enum:].split()[6]) + 0.0]
 
         # Transition moment
         enum = section_state.find('Trans. Moment')
         if enum > -1:
-            trans_mom = [float(section_state[enum:enum + 100].split()[2]) + 0.0,
-                         float(section_state[enum:enum + 100].split()[4]) + 0.0,
-                         float(section_state[enum:enum + 100].split()[6]) + 0.0]
+            trans_mom = [float(section_state[enum:].split()[2]) + 0.0,
+                         float(section_state[enum:].split()[4]) + 0.0,
+                         float(section_state[enum:].split()[6]) + 0.0]
             trans_mom = standardize_vector(trans_mom)
         else:
             trans_mom = None
@@ -79,7 +81,7 @@ def basic_rasci(output):
         # amplitudes table
         enum = section_state.find('AMPLITUDE')
         enum2 = section_state.find('Contributions')
-        section_table = section_state[enum:enum2].split('\n')[2:-2]
+        section_table = section_state[enum: enum2].split('\n')[2:-2]
 
         # ' HOLE  | ALPHA | BETA  | PART | AMPLITUDE'
 
@@ -92,8 +94,7 @@ def basic_rasci(output):
                           'amplitude': float(row.split('|')[5]) + 0.0})
 
         # Contributions RASCI wfn
-        enum3 = section_state[enum2:enum2+300].find('********') + enum2
-        contributions_section = section_state[enum2: enum3]
+        contributions_section = section_state[enum2:]
         contributions = {'active' : float(contributions_section.split()[4]),
                          'hole': float(contributions_section.split()[6]),
                          'part': float(contributions_section.split()[8])}
