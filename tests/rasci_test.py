@@ -99,7 +99,7 @@ def assertDeepAlmostEqual(test_case, expected, actual, *args, **kwargs):
 class HydrogenTest(unittest.TestCase):
 
     def setUp(self):
-        # self.assertDictEqual.__self__.maxDiff = None
+        self.assertDictEqual.__self__.maxDiff = None
 
         # generate molecule
         self.molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
@@ -136,20 +136,19 @@ class HydrogenTest(unittest.TestCase):
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
-        data = modify_dictionary(data)
-
-        print(data)
 
         filename = self.__class__.__name__ + '_srdft.yaml'
 
         #with open(filename, 'w') as outfile:
         #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
+        data = modify_dictionary(data)
+
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        trunc_dictionary_list(data_loaded)
+        data_loaded = modify_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -175,18 +174,18 @@ class HydrogenTest(unittest.TestCase):
         data = basic_rasci(output)
         print(data)
 
-        data = modify_dictionary(data)
-
         filename = self.__class__.__name__ + '_rasci.yaml'
 
-        #with open(filename, 'w') as outfile:
-        #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        # with open(filename, 'w') as outfile:
+        #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+
+        data = modify_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        trunc_dictionary_list(data_loaded)
+        data_loaded = modify_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -238,20 +237,21 @@ class WaterTest(unittest.TestCase):
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
-        data = modify_dictionary(data)
 
         print(data)
 
         filename = self.__class__.__name__ + '_rasci.yaml'
 
-        #with open(filename, 'w') as outfile:
-        #    yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        # with open(filename, 'w') as outfile:
+        #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+
+        data = modify_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        trunc_dictionary_list(data_loaded)
+        data_loaded = modify_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -284,20 +284,21 @@ class WaterTest(unittest.TestCase):
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
-        data = modify_dictionary(data)
 
         print(data)
 
         filename = self.__class__.__name__ + '_srdft.yaml'
 
-        #with open(filename, 'w') as outfile:
-        #    yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        # with open(filename, 'w') as outfile:
+        #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+
+        data = modify_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        trunc_dictionary_list(data_loaded)
+        data_loaded = modify_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 

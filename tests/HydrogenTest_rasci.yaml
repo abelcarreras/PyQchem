@@ -1,23 +1,23 @@
 excited states rasci:
 - amplitudes:
+  - alpha: '01'
+    amplitude: -0.3554033
+    beta: '01'
+    hole: ''
+    part: ''
+  - alpha: '01'
+    amplitude: 0.0
+    beta: '10'
+    hole: ''
+    part: ''
+  - alpha: '10'
+    amplitude: 0.0
+    beta: '01'
+    hole: ''
+    part: ''
   - alpha: '10'
     amplitude: 0.9347131
     beta: '10'
-    hole: ''
-    part: ''
-  - alpha: '10'
-    amplitude: 0.0
-    beta: '01'
-    hole: ''
-    part: ''
-  - alpha: '01'
-    amplitude: 0.0
-    beta: '10'
-    hole: ''
-    part: ''
-  - alpha: '01'
-    amplitude: 0.3554033
-    beta: '01'
     hole: ''
     part: ''
   contributions_fwn:
@@ -33,8 +33,13 @@ excited states rasci:
   total_energy: -0.998149354622
   transition_moment: null
 - amplitudes:
-  - alpha: '10'
+  - alpha: '01'
     amplitude: 0.0
+    beta: '01'
+    hole: ''
+    part: ''
+  - alpha: '01'
+    amplitude: -0.7071068
     beta: '10'
     hole: ''
     part: ''
@@ -43,14 +48,9 @@ excited states rasci:
     beta: '01'
     hole: ''
     part: ''
-  - alpha: '01'
-    amplitude: 0.7071068
-    beta: '10'
-    hole: ''
-    part: ''
-  - alpha: '01'
+  - alpha: '10'
     amplitude: 0.0
-    beta: '01'
+    beta: '10'
     hole: ''
     part: ''
   contributions_fwn:

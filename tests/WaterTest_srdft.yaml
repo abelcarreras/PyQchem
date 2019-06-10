@@ -18,14 +18,14 @@ excited states rasci:
   total_energy: -75.669000032055
   transition_moment: null
 - amplitudes:
-  - alpha: '1100'
-    amplitude: 0.6956872
-    beta: '1010'
-    hole: ''
-    part: ''
   - alpha: '1010'
     amplitude: 0.6956872
     beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: -0.6956872
+    beta: '1010'
     hole: ''
     part: ''
   contributions_fwn:
@@ -44,14 +44,14 @@ excited states rasci:
   - 0.0
   - 0.0
 - amplitudes:
-  - alpha: '1100'
-    amplitude: 0.6956084
-    beta: '1010'
-    hole: ''
-    part: ''
   - alpha: '1010'
     amplitude: 0.6956084
     beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6956084
+    beta: '1010'
     hole: ''
     part: ''
   contributions_fwn:
@@ -70,14 +70,14 @@ excited states rasci:
   - 0.1959
   - 0.0
 - amplitudes:
-  - alpha: '1100'
-    amplitude: 0.696992
-    beta: '0110'
-    hole: ''
-    part: ''
   - alpha: '0110'
     amplitude: 0.696992
     beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: -0.696992
+    beta: '0110'
     hole: ''
     part: ''
   contributions_fwn:
@@ -96,14 +96,14 @@ excited states rasci:
   - 0.0
   - 0.0
 - amplitudes:
+  - alpha: '1001'
+    amplitude: -0.6917947
+    beta: '1100'
+    hole: ''
+    part: ''
   - alpha: '1100'
     amplitude: 0.6917947
     beta: '1001'
-    hole: ''
-    part: ''
-  - alpha: '1001'
-    amplitude: 0.6917947
-    beta: '1100'
     hole: ''
     part: ''
   contributions_fwn:
@@ -122,14 +122,14 @@ excited states rasci:
   - 0.0
   - 0.0
 - amplitudes:
-  - alpha: '1100'
-    amplitude: 0.6917933
-    beta: '1001'
-    hole: ''
-    part: ''
   - alpha: '1001'
     amplitude: 0.6917933
     beta: '1100'
+    hole: ''
+    part: ''
+  - alpha: '1100'
+    amplitude: 0.6917933
+    beta: '1001'
     hole: ''
     part: ''
   contributions_fwn:

@@ -1,6 +1,7 @@
 __author__ = 'Abel Carreras'
 
 import re
+import operator
 
 
 def standardize_vector(vector):
@@ -90,6 +91,7 @@ def basic_rasci(output):
                           'beta': row.split('|')[3].strip(),
                           'part': row.split('|')[4].strip(),
                           'amplitude': float(row.split('|')[5]) + 0.0})
+        table = sorted(table, key=operator.itemgetter('hole', 'alpha', 'beta', 'part'))
 
         # Contributions RASCI wfn
         enum3 = section_state[enum2:enum2+300].find('********') + enum2
@@ -106,6 +108,7 @@ def basic_rasci(output):
                                'transition_moment': trans_mom,
                                'amplitudes': table,
                                'contributions_fwn': contributions})
+        print(table)
 
     return {'scf energy': scf_energy,
             'excited states rasci': excited_states}
