@@ -60,6 +60,7 @@ def basic_rasci(output):
 
         # energies
         tot_energy = float(section_state.split()[1])
+        exc_energy_units = section_state.split()[4][1:-1]
         exc_energy = float(section_state.split()[6])
         mul = section_state.split()[8]
 
@@ -102,14 +103,16 @@ def basic_rasci(output):
                          'part': float(contributions_section.split()[8])}
 
         # complete dictionary
+        tot_energy_units = 'au'
         excited_states.append({'total_energy': tot_energy,
+                               'total energy units': tot_energy_units,
                                'excitation_energy': exc_energy,
+                               'excitation energy units': exc_energy_units,
                                'multiplicity': mul,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
                                'amplitudes': table,
                                'contributions_fwn': contributions})
-        print(table)
 
     return {'scf energy': scf_energy,
             'excited states rasci': excited_states}

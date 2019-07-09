@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 import numpy as np
 import hashlib
 import pickle
+import warnings
 
 try:
     with open('calculation_data.pkl', 'rb') as input:
@@ -51,6 +52,8 @@ def create_qchem_input(molecule,
                        max_cis_cycles=30,
                        localized_diabatization=None,
                        sts_multi_nroots=None,
+                       cc_state_to_opt=None,
+                       cis_state_deriv=None,
                        RPA=False,
                        set_iter=30,
                        gui=0,
@@ -61,7 +64,8 @@ def create_qchem_input(molecule,
                        geom_opt_tol_energy=100,
                        geom_opt_max_cycles=50,
                        # other
-                       namd_nsurfaces=None
+                       namd_nsurfaces=None,
+                       scf_print=None,
                        ):
 
     input_file = ''
@@ -170,6 +174,13 @@ def create_qchem_input(molecule,
         input_file += 'sts_multi_nroots {}\n'.format(sts_multi_nroots)
     if localized_diabatization is not None:
         input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
+    if cc_state_to_opt is not None:
+        input_file += 'cc_state_to_opt [{},{}]\n'.format(cc_state_to_opt[0], cc_state_to_opt[1])
+    if cis_state_deriv is not None:
+        input_file += 'cis_state_deriv {}\n'.format(cis_state_deriv)
+
+    if scf_print is not None:
+        input_file += 'scf_print {}\n'.format(scf_print)
 
     input_file += '$end\n'
 
