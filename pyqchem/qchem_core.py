@@ -21,14 +21,18 @@ def create_qchem_input(molecule,
                        method='HF',
                        exchange=None,
                        correlation=None,
+                       unrestricted=None,
                        basis='6-31G',
                        thresh=14,
                        scf_convergence=8,
+                       max_scf_cycles=50,
                        ras_roots=1,
                        ras_do_hole=True,
                        ras_do_part=True,
                        ras_act=None,
                        ras_elec=None,
+                       ras_elec_alpha=None,
+                       ras_elec_beta=None,
                        ras_occ=None,
                        ras_spin_mult=1,
                        ras_omega=400,
@@ -64,6 +68,8 @@ def create_qchem_input(molecule,
                        geom_opt_tol_energy=100,
                        geom_opt_max_cycles=50,
                        # other
+                       n_frozen_core=None,
+                       n_frozen_virt=None,
                        namd_nsurfaces=None,
                        scf_print=None,
                        ):
@@ -96,10 +102,12 @@ def create_qchem_input(molecule,
     input_file += 'basis {}\n'.format(basis)
     input_file += 'thresh {}\n'.format(thresh)
     input_file += 'scf_convergence {}\n'.format(scf_convergence)
+    input_file += 'max_scf_cycles {}\n'.format(max_scf_cycles)
     input_file += 'gui {}\n'.format(gui)
     # input_file += 'purecart {}\n'.format(2)
     input_file += 'set_iter {}\n'.format(set_iter)
     input_file += 'RPA {}\n'.format(RPA)
+    input_file += 'unrestricted {}\n'.format(unrestricted)
 
     if correlation is not None:
         input_file += 'correlation {}\n'.format(correlation)
@@ -123,6 +131,7 @@ def create_qchem_input(molecule,
             input_file += 'ras_print {}\n'.format(ras_print)
             input_file += 'ras_natorb {}\n'.format(ras_natorb)
             input_file += 'ras_sts_tm {}\n'.format(ras_sts_tm)
+            input_file += 'max_cis_cycles {}\n'.format(max_cis_cycles)
             # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
 
             if ras_act is not None:
@@ -135,6 +144,11 @@ def create_qchem_input(molecule,
                 input_file += 'ras_elec {}\n'.format(ras_elec)
             else:
                 raise Exception('{} not defined'.format('ras_elec'))
+
+            if ras_elec_alpha is not None:
+                input_file += 'ras_elec_alpha {}\n'.format(ras_elec_alpha)
+            if ras_elec_beta is not None:
+                input_file += 'ras_elec_beta {}\n'.format(ras_elec_beta)
 
             if ras_act is not None:
                 input_file += 'ras_act {}\n'.format(ras_act)
@@ -168,6 +182,10 @@ def create_qchem_input(molecule,
         input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
         input_file += 'max_cis_cycles {}\n'.format(max_cis_cycles)
     # other
+    if n_frozen_core is not None:
+        input_file += 'n_frozen_core {}\n'.format(n_frozen_core)
+    if n_frozen_virt is not None:
+        input_file += 'n_frozen_virtual {}\n'.format(n_frozen_virt)
     if namd_nsurfaces is not None:
         input_file += 'namd_nsurfaces {}\n'.format(namd_nsurfaces)
     if sts_multi_nroots is not None:
