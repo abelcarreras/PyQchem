@@ -6,7 +6,7 @@ import yaml
 import unittest
 
 
-def trunc_dictionary_list(w, decimal=6):
+def trunc_dictionary_list(w, decimal=5):
 
     def round_float(num):
         if isinstance(num, float):
