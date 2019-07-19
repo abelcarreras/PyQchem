@@ -18,7 +18,7 @@ benzene_coordinates = [[ 0.00000,  1.40272,  0.00000],
                        [ 1.21479,  0.70136,  0.00000],
                        [ 2.15666,  1.24515,  0.00000]]
 
-symbols = ['C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'F']
+symbols = ['C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H']
 
 # create molecule
 molecule = Structure(coordinates=benzene_coordinates,
@@ -54,4 +54,4 @@ orbital_type = get_orbital_type(sym_data)
 # print results
 print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))
 for i, ot in enumerate(orbital_type):
-    print('{:5}:  {:5} {:5.2f}'.format(i + 1, ot[0], ot[1]))
+    print('{:5}:  {:5} {:5.3f}'.format(i + 1, ot[0], ot[1]))

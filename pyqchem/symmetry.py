@@ -6,12 +6,10 @@ def get_wf_symmetry(structure,
                     basis,
                     mo_coeff,
                     center=(0., 0., 0.),
-                    vaxis=(0., 0., 1.),
-                    vaxis2=(0., 1., 0.)):
+                    vaxis=(0., 0., 1.)):
 
-    #print('valence', structure.get_valence_electrons())
-
-    print(structure.get_xyz())
+    # print('valence', structure.get_valence_electrons())
+    # print(structure.get_xyz())
 
     type_list = {'s': 0,
                  'p': 1,
@@ -42,22 +40,20 @@ def get_wf_symmetry(structure,
 
     alpha_mo_coeff = np.array(mo_coeff['alpha']).flatten().tolist()
     if 'beta' in mo_coeff:
-        print(mo_coeff)
-        print('here')
+        # print(mo_coeff)
         exit()
         beta_mo_coeff = np.array(mo_coeff['beta']).flatten().tolist()
     else:
         beta_mo_coeff = None
 
-    for s, c in zip(structure.get_atomic_elements(), structure.get_coordinates()):
-        print('{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}'.format(*c))
+    # for s, c in zip(structure.get_atomic_elements(), structure.get_coordinates()):
+    #     print('{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}'.format(*c))
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
                       symbols=structure.get_atomic_elements(),
                       basis=basis,
                       center=center,
                       VAxis=vaxis,
-                      VAxis2=vaxis2,
                       alpha_mo_coeff=alpha_mo_coeff,
                       beta_mo_coeff=beta_mo_coeff,
                       charge=structure.charge,
@@ -80,21 +76,22 @@ def get_orbital_type(molsym):
 
 
 def set_zero_coefficients(basis, mo_coeff, range_atoms):
-    funtions_to_atom = []
+    functions_to_atom = []
     # set 0.0 to coefficients of functions centered in atoms 'range_atoms'
 
-    for i in range(0, 12):
+    nat = len(basis['atoms'])
+    for i in range(0, nat):
         nf = 0
         for shell in basis['atoms'][i]['shells']:
             nf += shell['functions']
-        funtions_to_atom.append(nf)
-    funtions_to_atom = funtions_to_atom
+        functions_to_atom.append(nf)
+    functions_to_atom = functions_to_atom
 
     # print(funtions_to_atom)
     mo_coeff = np.array(mo_coeff)
     for i in range_atoms:
-        ini = np.sum(funtions_to_atom[:i], dtype=int)
-        fin = np.sum(funtions_to_atom[:i+1], dtype=int)
+        ini = np.sum(functions_to_atom[:i], dtype=int)
+        fin = np.sum(functions_to_atom[:i+1], dtype=int)
         # print('ini', ini, 'fin', fin)
         mo_coeff[:, ini: fin] *= 0.0
 
