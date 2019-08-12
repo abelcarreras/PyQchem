@@ -202,7 +202,6 @@ class WaterTest(unittest.TestCase):
                                        ras_srdft_damp=0.5)
 
         # calculate and parse qchem output
-        print(txt_input)
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
