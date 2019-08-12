@@ -107,7 +107,9 @@ def create_qchem_input(molecule,
     # input_file += 'purecart {}\n'.format(2)
     input_file += 'set_iter {}\n'.format(set_iter)
     input_file += 'RPA {}\n'.format(RPA)
-    input_file += 'unrestricted {}\n'.format(unrestricted)
+
+    if unrestricted is not None:
+        input_file += 'unrestricted {}\n'.format(unrestricted)
 
     if correlation is not None:
         input_file += 'correlation {}\n'.format(correlation)

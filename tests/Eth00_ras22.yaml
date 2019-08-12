@@ -1,225 +1,225 @@
 excited states rasci:
 - amplitudes:
   - alpha: '01'
-    amplitude: 196754
+    amplitude: -0.1967542
     beta: '01'
     hole: ''
     part: ''
   - alpha: '10'
-    amplitude: 977233
+    amplitude: 0.9772333
     beta: '10'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 99370000
-    hole: 0
-    part: 630000
+    active: 99.37
+    hole: 0.0
+    part: 0.63
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 0
+  excitation_energy: 0.0
   multiplicity: Singlet
   total energy units: au
-  total_energy: -78066024
+  total_energy: -78.06602454107
   transition_moment: null
 - amplitudes:
   - alpha: '01'
-    amplitude: 699177
+    amplitude: 0.6991779
     beta: '10'
     hole: ''
     part: ''
   - alpha: '10'
-    amplitude: 699177
+    amplitude: -0.6991779
     beta: '01'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 97770000
-    hole: 0
-    part: 2230000
+    active: 97.77
+    hole: 0.0
+    part: 2.23
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 4408000
+  excitation_energy: 4.408
   multiplicity: Triplet
   total energy units: au
-  total_energy: -77904034
+  total_energy: -77.904034855395
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '01'
-    amplitude: 140559
+    amplitude: 0.1405593
     beta: '11'
     hole: '5'
     part: ''
   - alpha: '11'
-    amplitude: 140559
+    amplitude: -0.1405593
     beta: '01'
     hole: '5'
     part: ''
   - alpha: '10'
-    amplitude: 689048
+    amplitude: 0.6890485
     beta: '11'
     hole: '7'
     part: ''
   - alpha: '11'
-    amplitude: 689048
+    amplitude: -0.6890485
     beta: '10'
     hole: '7'
     part: ''
   contributions_fwn:
-    active: 0
-    hole: 98910000
-    part: 1090000
+    active: 0.0
+    hole: 98.91
+    part: 1.09
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9556200
+  excitation_energy: 9.5562
   multiplicity: Unknown
   total energy units: au
-  total_energy: -77714840
+  total_energy: -77.714840102632
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '00'
-    amplitude: 172139
+    amplitude: 0.1721391
     beta: '10'
     hole: ''
     part: '11'
   - alpha: '10'
-    amplitude: 172139
+    amplitude: 0.1721391
     beta: '00'
     hole: ''
     part: '11'
   - alpha: '01'
-    amplitude: 162127
+    amplitude: 0.1621274
     beta: '11'
     hole: '5'
     part: ''
   - alpha: '11'
-    amplitude: 162127
+    amplitude: 0.1621274
     beta: '01'
     hole: '5'
     part: ''
   - alpha: '10'
-    amplitude: 665210
+    amplitude: 0.6652106
     beta: '11'
     hole: '7'
     part: ''
   - alpha: '11'
-    amplitude: 665210
+    amplitude: 0.6652106
     beta: '10'
     hole: '7'
     part: ''
   contributions_fwn:
-    active: 0
-    hole: 93760000
-    part: 6240000
+    active: 0.0
+    hole: 93.76
+    part: 6.24
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9941000
+  excitation_energy: 9.941
   multiplicity: Unknown
   total energy units: au
-  total_energy: -77700699
+  total_energy: -77.70069969508
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '00'
-    amplitude: 693639
+    amplitude: -0.693639
     beta: '10'
     hole: ''
     part: '10'
   - alpha: '10'
-    amplitude: 693639
+    amplitude: 0.693639
     beta: '00'
     hole: ''
     part: '10'
   contributions_fwn:
-    active: 0
-    hole: 840000
-    part: 99160000
+    active: 0.0
+    hole: 0.84
+    part: 99.16
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 10257400
+  excitation_energy: 10.2574
   multiplicity: Unknown
   total energy units: au
-  total_energy: -77689070
+  total_energy: -77.689070206745
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '00'
-    amplitude: 692457
+    amplitude: 0.6924576
     beta: '10'
     hole: ''
     part: '11'
   - alpha: '10'
-    amplitude: 692457
+    amplitude: -0.6924576
     beta: '00'
     hole: ''
     part: '11'
   contributions_fwn:
-    active: 0
-    hole: 1080000
-    part: 98920000
+    active: 0.0
+    hole: 1.08
+    part: 98.92
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 10426500
+  excitation_energy: 10.4265
   multiplicity: Unknown
   total energy units: au
-  total_energy: -77682857
+  total_energy: -77.682857864155
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '01'
-    amplitude: 705780
+    amplitude: 0.7057805
     beta: '10'
     hole: ''
     part: ''
   - alpha: '10'
-    amplitude: 705780
+    amplitude: 0.7057805
     beta: '01'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 99630000
-    hole: 0
-    part: 370000
+    active: 99.63
+    hole: 0.0
+    part: 0.37
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 10488700
+  excitation_energy: 10.4887
   multiplicity: Singlet
   total energy units: au
-  total_energy: -77680572
+  total_energy: -77.680572489433
   transition_moment:
-  - 1534200
-  - 0
-  - 0
-scf energy: -78038605
+  - 1.5342
+  - 0.0
+  - 0.0
+scf energy: -78.0386050196

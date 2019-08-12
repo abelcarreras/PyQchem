@@ -1,245 +1,245 @@
 excited states rasci:
 - amplitudes:
   - alpha: '110100'
-    amplitude: 167255
+    amplitude: -0.1672556
     beta: '110100'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 974499
+    amplitude: 0.9744992
     beta: '111000'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 97970000
-    hole: 290000
-    part: 1740000
+    active: 97.97
+    hole: 0.29
+    part: 1.74
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 0
+  excitation_energy: 0.0
   multiplicity: Singlet
   total energy units: au
-  total_energy: -78091294
+  total_energy: -78.091294320761
   transition_moment: null
 - amplitudes:
   - alpha: '110100'
-    amplitude: 695475
+    amplitude: 0.6954754
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 695475
+    amplitude: -0.6954754
     beta: '110100'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 96960000
-    hole: 330000
-    part: 2710000
+    active: 96.96
+    hole: 0.33
+    part: 2.71
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 4682800
+  excitation_energy: 4.6828
   multiplicity: Triplet
   total energy units: au
-  total_energy: -77919203
+  total_energy: -77.919203728983
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '101100'
-    amplitude: 679249
+    amplitude: 0.6792496
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '110001'
-    amplitude: 104315
+    amplitude: -0.1043152
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 679249
+    amplitude: -0.6792496
     beta: '101100'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 104315
+    amplitude: 0.1043152
     beta: '110001'
     hole: ''
     part: ''
   - alpha: '110100'
-    amplitude: 113202
+    amplitude: 0.1132026
     beta: '111100'
     hole: '5'
     part: ''
   - alpha: '111100'
-    amplitude: 113202
+    amplitude: -0.1132026
     beta: '110100'
     hole: '5'
     part: ''
   contributions_fwn:
-    active: 94650000
-    hole: 2950000
-    part: 2400000
+    active: 94.65
+    hole: 2.95
+    part: 2.4
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9355200
+  excitation_energy: 9.3552
   multiplicity: Triplet
   total energy units: au
-  total_energy: -77747497
+  total_energy: -77.747497481558
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '110100'
-    amplitude: 683866
+    amplitude: 0.6838666
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 683866
+    amplitude: 0.6838666
     beta: '110100'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 93710000
-    hole: 1360000
-    part: 4930000
+    active: 93.71
+    hole: 1.36
+    part: 4.93
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9361500
+  excitation_energy: 9.3615
   multiplicity: Singlet
   total energy units: au
-  total_energy: -77747265
+  total_energy: -77.74726530577
   transition_moment:
-  - 1265200
-  - 0
-  - 0
+  - 1.2652
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '101100'
-    amplitude: 650192
+    amplitude: 0.6501923
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '110001'
-    amplitude: 206684
+    amplitude: 0.2066844
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 650192
+    amplitude: 0.6501923
     beta: '101100'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 206684
+    amplitude: 0.2066844
     beta: '110001'
     hole: ''
     part: ''
   - alpha: '110100'
-    amplitude: 134706
+    amplitude: -0.1347066
     beta: '111100'
     hole: '5'
     part: ''
   - alpha: '111100'
-    amplitude: 134706
+    amplitude: -0.1347066
     beta: '110100'
     hole: '5'
     part: ''
   contributions_fwn:
-    active: 93330000
-    hole: 4080000
-    part: 2590000
+    active: 93.33
+    hole: 4.08
+    part: 2.59
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9726400
+  excitation_energy: 9.7264
   multiplicity: Singlet
   total energy units: au
-  total_energy: -77733853
+  total_energy: -77.733853954443
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '110010'
-    amplitude: 684797
+    amplitude: 0.6847973
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '111000'
-    amplitude: 684797
+    amplitude: -0.6847973
     beta: '110010'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 94230000
-    hole: 1380000
-    part: 4390000
+    active: 94.23
+    hole: 1.38
+    part: 4.39
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 9792900
+  excitation_energy: 9.7929
   multiplicity: Triplet
   total energy units: au
-  total_energy: -77731413
+  total_energy: -77.731413470659
   transition_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
 - amplitudes:
   - alpha: '110000'
-    amplitude: 104665
+    amplitude: 0.1046654
     beta: '110100'
     hole: ''
     part: '12'
   - alpha: '110010'
-    amplitude: 680912
+    amplitude: 0.6809128
     beta: '111000'
     hole: ''
     part: ''
   - alpha: '110100'
-    amplitude: 104665
+    amplitude: 0.1046654
     beta: '110000'
     hole: ''
     part: '12'
   - alpha: '111000'
-    amplitude: 680912
+    amplitude: 0.6809128
     beta: '110010'
     hole: ''
     part: ''
   contributions_fwn:
-    active: 93180000
-    hole: 1580000
-    part: 5230000
+    active: 93.18
+    hole: 1.58
+    part: 5.23
   dipole_moment:
-  - 0
-  - 0
-  - 0
+  - 0.0
+  - 0.0
+  - 0.0
   excitation energy units: eV
-  excitation_energy: 10036300
+  excitation_energy: 10.0363
   multiplicity: Singlet
   total energy units: au
-  total_energy: -77722465
+  total_energy: -77.72246563292
   transition_moment:
-  - 0
-  - 0
-  - 65700
-scf energy: -78038605
+  - 0.0
+  - 0.0
+  - 0.0657
+scf energy: -78.0386050196
