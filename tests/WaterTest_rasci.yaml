@@ -16,7 +16,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0011'
-    amplitude: -0.000102
+    amplitude: 0.000102
     beta: '1001'
     hole: ''
     part: ''
@@ -86,12 +86,12 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: 0.0226667
+    amplitude: -0.0226667
     beta: '1100'
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: -0.000102
+    amplitude: 0.000102
     beta: '0011'
     hole: ''
     part: ''
@@ -161,7 +161,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: 0.0226667
+    amplitude: -0.0226667
     beta: '0110'
     hole: ''
     part: ''
@@ -188,8 +188,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.6133
+  excitation energy units: eV
   excitation_energy: 0.0
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.994167562465
   transition_moment: null
 - amplitudes:
@@ -239,7 +241,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0101'
-    amplitude: -0.0549037
+    amplitude: 0.0549037
     beta: '1001'
     hole: ''
     part: ''
@@ -274,7 +276,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: -0.0563138
+    amplitude: 0.0563138
     beta: '1010'
     hole: ''
     part: ''
@@ -289,7 +291,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: -0.0549037
+    amplitude: 0.0549037
     beta: '0101'
     hole: ''
     part: ''
@@ -324,7 +326,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1010'
-    amplitude: -0.0563138
+    amplitude: 0.0563138
     beta: '0110'
     hole: ''
     part: ''
@@ -391,8 +393,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0023
+  excitation energy units: eV
   excitation_energy: 11.4705
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.572635860965
   transition_moment:
   - 0.0
@@ -425,7 +429,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0011'
-    amplitude: -0.0095823
+    amplitude: 0.0095823
     beta: '1100'
     hole: ''
     part: ''
@@ -450,7 +454,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0101'
-    amplitude: -0.0714348
+    amplitude: 0.0714348
     beta: '1010'
     hole: ''
     part: ''
@@ -475,7 +479,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: -0.0618525
+    amplitude: 0.0618525
     beta: '1001'
     hole: ''
     part: ''
@@ -500,7 +504,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: -0.0618525
+    amplitude: 0.0618525
     beta: '0110'
     hole: ''
     part: ''
@@ -525,7 +529,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1010'
-    amplitude: -0.0714348
+    amplitude: 0.0714348
     beta: '0101'
     hole: ''
     part: ''
@@ -550,7 +554,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: -0.0095823
+    amplitude: 0.0095823
     beta: '0011'
     hole: ''
     part: ''
@@ -587,8 +591,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.1888
+  excitation energy units: eV
   excitation_energy: 13.1181
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.5120869698
   transition_moment:
   - 0.0
@@ -596,7 +602,7 @@ excited states rasci:
   - 0.0
 - amplitudes:
   - alpha: '0011'
-    amplitude: 0.0040765
+    amplitude: -0.0040765
     beta: '0011'
     hole: ''
     part: ''
@@ -631,7 +637,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0101'
-    amplitude: -0.1005248
+    amplitude: 0.1005248
     beta: '0101'
     hole: ''
     part: ''
@@ -666,7 +672,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: -0.0895515
+    amplitude: 0.0895515
     beta: '0110'
     hole: ''
     part: ''
@@ -701,7 +707,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: 0.0207057
+    amplitude: -0.0207057
     beta: '1001'
     hole: ''
     part: ''
@@ -736,7 +742,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1010'
-    amplitude: 0.014861
+    amplitude: -0.014861
     beta: '1010'
     hole: ''
     part: ''
@@ -771,17 +777,17 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: -0.052419
+    amplitude: 0.052419
     beta: '1100'
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: -0.181041
+    amplitude: 0.181041
     beta: '1101'
     hole: '3'
     part: ''
   - alpha: '1101'
-    amplitude: -0.181041
+    amplitude: 0.181041
     beta: '1100'
     hole: '3'
     part: ''
@@ -793,8 +799,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.1009
+  excitation energy units: eV
   excitation_energy: 15.9926
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.406450985952
   transition_moment:
   - 0.0
@@ -842,7 +850,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0101'
-    amplitude: -0.115897
+    amplitude: 0.115897
     beta: '0110'
     hole: ''
     part: ''
@@ -867,7 +875,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: -0.115897
+    amplitude: 0.115897
     beta: '0101'
     hole: ''
     part: ''
@@ -912,7 +920,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: 0.0195275
+    amplitude: -0.0195275
     beta: '1010'
     hole: ''
     part: ''
@@ -937,7 +945,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1010'
-    amplitude: 0.0195275
+    amplitude: -0.0195275
     beta: '1001'
     hole: ''
     part: ''
@@ -982,12 +990,12 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: -0.2961328
+    amplitude: 0.2961328
     beta: '1110'
     hole: '3'
     part: ''
   - alpha: '1110'
-    amplitude: -0.2961328
+    amplitude: 0.2961328
     beta: '1100'
     hole: '3'
     part: ''
@@ -999,8 +1007,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0925
+  excitation energy units: eV
   excitation_energy: 18.0773
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.329838983815
   transition_moment:
   - 0.384
@@ -1048,7 +1058,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0101'
-    amplitude: 0.0528322
+    amplitude: -0.0528322
     beta: '0110'
     hole: ''
     part: ''
@@ -1073,7 +1083,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '0110'
-    amplitude: 0.0528322
+    amplitude: -0.0528322
     beta: '0101'
     hole: ''
     part: ''
@@ -1118,7 +1128,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1001'
-    amplitude: 0.0233015
+    amplitude: -0.0233015
     beta: '1010'
     hole: ''
     part: ''
@@ -1143,7 +1153,7 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1010'
-    amplitude: 0.0233015
+    amplitude: -0.0233015
     beta: '1001'
     hole: ''
     part: ''
@@ -1188,12 +1198,12 @@ excited states rasci:
     hole: ''
     part: ''
   - alpha: '1100'
-    amplitude: -0.6326763
+    amplitude: 0.6326763
     beta: '1110'
     hole: '3'
     part: ''
   - alpha: '1110'
-    amplitude: -0.6326763
+    amplitude: 0.6326763
     beta: '1100'
     hole: '3'
     part: ''
@@ -1205,8 +1215,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.2066
+  excitation energy units: eV
   excitation_energy: 21.0069
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.222178203308
   transition_moment:
   - 1.4135
