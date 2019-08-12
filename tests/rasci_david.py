@@ -5,7 +5,8 @@ from pyqchem.structure import Structure
 import yaml
 import unittest
 
-ctrl_print = True  # set to true to generate reference files
+ctrl_print = False  # set to true to generate reference files
+do_alpha_beta = False # explicitly defining alpha/beta number of electrons?
 
 def trunc_dictionary_list(w, decimal=6):
 
@@ -127,8 +128,6 @@ class Eth00(unittest.TestCase):
                     'correlation': 'rasci',
                     'ras_act': 2,
                     'ras_elec': 2,
-                    'ras_elec_alpha': 1,
-                    'ras_elec_beta': 1,
                     'ras_occ': 7,
                     'ras_spin_mult': 0,
                     'ras_roots': 7,
@@ -152,6 +151,9 @@ class Eth00(unittest.TestCase):
     def test_eth_00_ras22(self):
 
         rasci = dict(self.rem)
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 1,
+                          'ras_elec_beta': 1})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -185,9 +187,11 @@ class Eth00(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 4,
                       'ras_elec': 4,
-                      'ras_elec_alpha': 2,
-                      'ras_elec_beta': 2,
                       'ras_occ': 6})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 2,
+                          'ras_elec_beta': 2})
+
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -220,9 +224,10 @@ class Eth00(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 6,
                       'ras_elec': 6,
-                      'ras_elec_alpha': 3,
-                      'ras_elec_beta': 3,
                       'ras_occ': 5})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 3,
+                          'ras_elec_beta': 3})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -280,8 +285,6 @@ class Eth90(unittest.TestCase):
                     'correlation': 'rasci',
                     'ras_act': 2,
                     'ras_elec': 2,
-                    'ras_elec_alpha': 1,
-                    'ras_elec_beta': 1,
                     'ras_occ': 7,
                     'ras_spin_mult': 0,
                     'ras_roots': 7,
@@ -305,6 +308,9 @@ class Eth90(unittest.TestCase):
     def test_eth_90_ras22(self):
 
         rasci = dict(self.rem)
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 1,
+                          'ras_elec_beta': 1})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -337,9 +343,10 @@ class Eth90(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 4,
                       'ras_elec': 4,
-                      'ras_elec_alpha': 2,
-                      'ras_elec_beta': 2,
                       'ras_occ': 6})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 2,
+                          'ras_elec_beta': 2})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -372,9 +379,10 @@ class Eth90(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 6,
                       'ras_elec': 6,
-                      'ras_elec_alpha': 3,
-                      'ras_elec_beta': 3,
                       'ras_occ': 5})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 3,
+                          'ras_elec_beta': 3})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -432,8 +440,6 @@ class EthDist(unittest.TestCase):
                     'correlation': 'rasci',
                     'ras_act': 2,
                     'ras_elec': 2,
-                    'ras_elec_alpha': 1,
-                    'ras_elec_beta': 1,
                     'ras_occ': 7,
                     'ras_spin_mult': 0,
                     'ras_roots': 7,
@@ -457,6 +463,9 @@ class EthDist(unittest.TestCase):
     def test_eth_dist_ras22(self):
 
         rasci = dict(self.rem)
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 1,
+                          'ras_elec_beta': 1})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -490,9 +499,10 @@ class EthDist(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 4,
                       'ras_elec': 4,
-                      'ras_elec_alpha': 2,
-                      'ras_elec_beta': 2,
                       'ras_occ': 6})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 2,
+                          'ras_elec_beta': 2})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
@@ -525,9 +535,10 @@ class EthDist(unittest.TestCase):
         rasci = dict(self.rem)
         rasci.update({'ras_act': 6,
                       'ras_elec': 6,
-                      'ras_elec_alpha': 3,
-                      'ras_elec_beta': 3,
                       'ras_occ': 5})
+        if do_alpha_beta:
+            rasci.update({'ras_elec_alpha': 3,
+                          'ras_elec_beta': 3})
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule, **rasci)
