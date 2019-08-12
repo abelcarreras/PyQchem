@@ -1,7 +1,7 @@
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.parsers.parser_rasci_basic import basic_rasci
 from pyqchem.structure import Structure
-from pyqchem.test import modify_dictionary
+from pyqchem.test import standardize_dictionary
 
 import yaml
 import unittest
@@ -58,7 +58,6 @@ class Eth00(unittest.TestCase):
                     'n_frozen_core': 0,
                     'n_frozen_virt': 0}
 
-
     def test_eth_00_ras22(self):
 
         rasci = dict(self.rem)
@@ -84,15 +83,14 @@ class Eth00(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         #print(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
-
 
     def test_eth_00_ras44(self):
 
@@ -125,10 +123,10 @@ class Eth00(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -162,10 +160,10 @@ class Eth00(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -218,7 +216,6 @@ class Eth90(unittest.TestCase):
                     'n_frozen_core': 0,
                     'n_frozen_virt': 0}
 
-
     def test_eth_90_ras22(self):
 
         rasci = dict(self.rem)
@@ -246,10 +243,10 @@ class Eth90(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -283,10 +280,10 @@ class Eth90(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -320,10 +317,10 @@ class Eth90(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -376,7 +373,6 @@ class EthDist(unittest.TestCase):
                     'n_frozen_core': 0,
                     'n_frozen_virt': 0}
 
-
     def test_eth_dist_ras22(self):
 
         rasci = dict(self.rem)
@@ -404,13 +400,12 @@ class EthDist(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
-
 
     def test_eth_dist_ras44(self):
 
@@ -442,10 +437,10 @@ class EthDist(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -479,9 +474,9 @@ class EthDist(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)

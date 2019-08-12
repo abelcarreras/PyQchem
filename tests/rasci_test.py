@@ -2,7 +2,7 @@ from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.parsers.parser_rasci_basic import basic_rasci
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
-from pyqchem.test import modify_dictionary
+from pyqchem.test import standardize_dictionary
 import yaml
 import unittest
 
@@ -63,13 +63,13 @@ class HydrogenTest(unittest.TestCase):
         #with open(filename, 'w') as outfile:
         #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -100,13 +100,13 @@ class HydrogenTest(unittest.TestCase):
         # with open(filename, 'w') as outfile:
         #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -166,13 +166,13 @@ class WaterTest(unittest.TestCase):
         # with open(filename, 'w') as outfile:
         #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -214,13 +214,13 @@ class WaterTest(unittest.TestCase):
         # with open(filename, 'w') as outfile:
         #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = modify_dictionary(data)
+        data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = modify_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
