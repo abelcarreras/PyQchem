@@ -108,7 +108,17 @@ class HydrogenTest(unittest.TestCase):
                              charge=0,
                              multiplicity=1)
 
+#        self.rasci = {'jobtype': 'sp',
+#                      'exchange' : 'hf'}
+
+
     def test_srdft(self):
+
+ #       rasci2 = dict(self.rasci)
+ #       rasci2.update({'ras_act': 2,
+ #                      'ras_hole': 4})
+
+ #       txt_input = create_qchem_input(self.molecule, **rasci2)
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
