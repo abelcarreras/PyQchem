@@ -188,8 +188,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.6133
+  excitation energy units: eV
   excitation_energy: 0.0
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.994167562465
   transition_moment: null
 - amplitudes:
@@ -391,8 +393,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0023
+  excitation energy units: eV
   excitation_energy: 11.4705
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.572635860965
   transition_moment:
   - 0.0
@@ -587,8 +591,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.1888
+  excitation energy units: eV
   excitation_energy: 13.1181
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.5120869698
   transition_moment:
   - 0.0
@@ -793,8 +799,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.1009
+  excitation energy units: eV
   excitation_energy: 15.9926
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.406450985952
   transition_moment:
   - 0.0
@@ -999,8 +1007,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0925
+  excitation energy units: eV
   excitation_energy: 18.0773
   multiplicity: Singlet
+  total energy units: au
   total_energy: -74.329838983815
   transition_moment:
   - 0.384
@@ -1205,9 +1215,11 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.2066
+  excitation energy units: eV
   excitation_energy: 21.0069
   multiplicity: Singlet
-  total_energy: -74.222178203308
+  total energy units: au
+  total_energy: -74.222178203307
   transition_moment:
   - 1.4135
   - 0.0
