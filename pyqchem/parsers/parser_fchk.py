@@ -156,11 +156,11 @@ def parser_fchk(output):
 
     nbas = int(np.sqrt(len(data['Alpha MO coefficients'])))
     mo_coeff = {'alpha': np.array(data['Alpha MO coefficients']).reshape(nbas, nbas).tolist()}
-    mo_energy = {'alpha': data['Alpha MO coefficients']}
+    mo_energy = {'alpha': data['Alpha Orbital Energies']}
 
     if 'Beta MO coefficients' in data:
         mo_coeff['beta'] = np.array(data['Beta MO coefficients']).reshape(nbas, nbas).tolist()
-        mo_energy['beta'] = data['Beta MO coefficients']
+        mo_energy['beta'] = data['Beta Orbital Energies']
 
     final_dict = {'structure': structure,
                   'basis': basis,

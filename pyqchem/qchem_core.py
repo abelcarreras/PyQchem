@@ -6,6 +6,7 @@ import numpy as np
 import hashlib
 import pickle
 import warnings
+from pyqchem.qc_input import QchemInput
 
 try:
     with open('calculation_data.pkl', 'rb') as input:
@@ -16,214 +17,18 @@ except FileNotFoundError:
     calculation_data = {}
 
 
-def create_qchem_input(molecule,
-                       jobtype='sp',
-                       method='HF',
-                       exchange=None,
-                       correlation=None,
-                       unrestricted=None,
-                       basis='6-31G',
-                       thresh=14,
-                       scf_convergence=8,
-                       max_scf_cycles=50,
-                       ras_roots=1,
-                       ras_do_hole=True,
-                       ras_do_part=True,
-                       ras_act=None,
-                       ras_elec=None,
-                       ras_elec_alpha=None,
-                       ras_elec_beta=None,
-                       ras_occ=None,
-                       ras_spin_mult=1,
-                       ras_omega=400,
-                       ras_srdft=False,
-                       ras_srdft_damp=0.5,
-                       ras_srdft_exc=None,
-                       ras_srdft_cor=None,
-                       ras_srdft_spinpol=0,
-                       ras_sts_tm=False,
-                       ras_natorb=False,
-                       ras_print=4,
-                       # cis
-                       cis_convergence=6,
-                       cis_n_roots=None,
-                       cis_singlets=False,
-                       cis_triplets=False,
-                       cis_ampl_anal=False,
-                       loc_cis_ov_separate=False,
-                       er_cis_numstate=0,
-                       cis_diabath_decompose=False,
-                       max_cis_cycles=30,
-                       localized_diabatization=None,
-                       sts_multi_nroots=None,
-                       cc_state_to_opt=None,
-                       cis_state_deriv=None,
-                       RPA=False,
-                       set_iter=30,
-                       gui=0,
-                       # optimization
-                       geom_opt_coords=-1,
-                       geom_opt_tol_gradient=300,
-                       geom_opt_tol_displacement=1200,
-                       geom_opt_tol_energy=100,
-                       geom_opt_max_cycles=50,
-                       # other
-                       n_frozen_core=None,
-                       n_frozen_virt=None,
-                       namd_nsurfaces=None,
-                       scf_print=None,
-                       ):
-
-    input_file = ''
-
-    # Molecule definition
-    input_file += '$molecule\n'
-
-    input_file += '{} {}\n'.format(molecule.charge, molecule.multiplicity)
-
-    atomic_elements = molecule.get_atomic_elements()
-
-    coordinates = molecule.get_coordinates()
-
-    for index, element in enumerate(atomic_elements):
-        input_file += (element + '\t' + '{:20.10f} {:20.10f} {:20.10f}\n'.format(*coordinates[index]))
-
-    input_file += '$end\n'
-
-    # Rem variables
-    input_file += '$rem\n'
-    input_file += 'jobtype {}\n'.format(jobtype)
-
-    if exchange is not None:
-        input_file += 'exchange {}\n'.format(exchange)
-    else:
-        input_file += 'method {}\n'.format(method)
-
-    input_file += 'basis {}\n'.format(basis)
-    input_file += 'thresh {}\n'.format(thresh)
-    input_file += 'scf_convergence {}\n'.format(scf_convergence)
-    input_file += 'max_scf_cycles {}\n'.format(max_scf_cycles)
-    input_file += 'gui {}\n'.format(gui)
-    # input_file += 'purecart {}\n'.format(2)
-    input_file += 'set_iter {}\n'.format(set_iter)
-    input_file += 'RPA {}\n'.format(RPA)
-
-    if unrestricted is not None:
-        input_file += 'unrestricted {}\n'.format(unrestricted)
-
-    if correlation is not None:
-        input_file += 'correlation {}\n'.format(correlation)
-
-        # RasCI variables
-        if correlation.upper() == 'RASCI':
-
-            if ras_occ is None:
-                if ras_elec is not None:
-                    ras_occ = (np.sum(molecule.get_atomic_numbers()) - ras_elec - molecule.charge)//2
-                else:
-                    ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
-                print('ras_occ = {}'.format(ras_occ))
-
-            input_file += 'ras_roots {}\n'.format(ras_roots)
-            input_file += 'ras_do_hole {}\n'.format(ras_do_hole)
-            input_file += 'ras_do_part {}\n'.format(ras_do_part)
-            input_file += 'ras_occ {}\n'.format(ras_occ)
-            input_file += 'ras_omega {}\n'.format(ras_omega)
-            input_file += 'ras_spin_mult {}\n'.format(ras_spin_mult)
-            input_file += 'ras_print {}\n'.format(ras_print)
-            input_file += 'ras_natorb {}\n'.format(ras_natorb)
-            input_file += 'ras_sts_tm {}\n'.format(ras_sts_tm)
-            input_file += 'max_cis_cycles {}\n'.format(max_cis_cycles)
-            # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
-
-            if ras_act is not None:
-                input_file += 'ras_act {}\n'.format(ras_act)
-            else:
-                print('test')
-                raise Exception('{} not defined'.format('ras_act'))
-
-            if ras_elec is not None:
-                input_file += 'ras_elec {}\n'.format(ras_elec)
-            else:
-                raise Exception('{} not defined'.format('ras_elec'))
-
-            if ras_elec_alpha is not None:
-                input_file += 'ras_elec_alpha {}\n'.format(ras_elec_alpha)
-            if ras_elec_beta is not None:
-                input_file += 'ras_elec_beta {}\n'.format(ras_elec_beta)
-
-            if ras_act is not None:
-                input_file += 'ras_act {}\n'.format(ras_act)
-            else:
-                raise Exception('{} not defined'.format('ras_act'))
-
-            # Sr-DFT
-            if ras_srdft:
-                input_file += 'ras_srdft {}\n'.format('True')
-                input_file += 'ras_srdft_damp {}\n'.format(ras_srdft_damp)
-                input_file += 'ras_srdft_spinpol {}\n'.format(ras_srdft_spinpol)
-
-                if ras_srdft_exc is not None:
-                    input_file += 'ras_srdft_exc {}\n'.format(ras_srdft_exc)
-                else:
-                    raise Exception('{} not defined'.format('ras_srdft_exc'))
-
-                if ras_srdft_cor is not None:
-                    input_file += 'ras_srdft_cor {}\n'.format(ras_srdft_cor)
-                else:
-                    raise Exception('{} not defined'.format('ras_srdft_cor'))
-    # CIS variables
-    if cis_n_roots is not None:
-        input_file += 'cis_convergence {}\n'.format(cis_convergence)
-        input_file += 'cis_n_roots {}\n'.format(cis_n_roots)
-        input_file += 'cis_singlets {}\n'.format(cis_singlets)
-        input_file += 'cis_triplets {}\n'.format(cis_triplets)
-        input_file += 'cis_ampl_anal {}\n'.format(cis_ampl_anal)
-        input_file += 'loc_cis_ov_separate {}\n'.format(loc_cis_ov_separate)
-        input_file += 'er_cis_numstate {}\n'.format(er_cis_numstate)
-        input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
-        input_file += 'max_cis_cycles {}\n'.format(max_cis_cycles)
-    # other
-    if n_frozen_core is not None:
-        input_file += 'n_frozen_core {}\n'.format(n_frozen_core)
-    if n_frozen_virt is not None:
-        input_file += 'n_frozen_virtual {}\n'.format(n_frozen_virt)
-    if namd_nsurfaces is not None:
-        input_file += 'namd_nsurfaces {}\n'.format(namd_nsurfaces)
-    if sts_multi_nroots is not None:
-        input_file += 'sts_multi_nroots {}\n'.format(sts_multi_nroots)
-    if localized_diabatization is not None:
-        input_file += 'cis_diabath_decompose {}\n'.format(cis_diabath_decompose)
-    if cc_state_to_opt is not None:
-        input_file += 'cc_state_to_opt [{},{}]\n'.format(cc_state_to_opt[0], cc_state_to_opt[1])
-    if cis_state_deriv is not None:
-        input_file += 'cis_state_deriv {}\n'.format(cis_state_deriv)
-
-    if scf_print is not None:
-        input_file += 'scf_print {}\n'.format(scf_print)
-
-    input_file += '$end\n'
-
-    # localized diabatization
-    if localized_diabatization is not None:
-        input_file += '$localized_diabatization\nadiabatic states\n'
-        input_file += ' '.join(np.array(localized_diabatization, dtype=str))
-        input_file += '\n$end\n'
-
-
-    # optimization
-    if jobtype.lower() == 'opt':
-        input_file += 'geom_opt_coords {}\n'.format(geom_opt_coords)
-        input_file += 'geom_opt_tol_gradient {}\n'.format(geom_opt_tol_gradient)
-        input_file += 'geom_opt_tol_displacement {}\n'.format(geom_opt_tol_displacement)
-        input_file += 'geom_opt_tol_energy {}\n'.format(geom_opt_tol_energy)
-        input_file += 'geom_opt_max_cycles {}\n'.format(geom_opt_max_cycles)
-
-
-    return input_file + "\n"
+# Layer of compatibility with old version
+def create_qchem_input(*args, **kwargs):
+    return QchemInput(*args, **kwargs)
 
 
 def parse_output(get_output_function):
+    """
+    to be deprecated
+
+    :param get_output_function:
+    :return:
+    """
 
     global calculation_data
 
@@ -265,40 +70,158 @@ def parse_output(get_output_function):
     return func_wrapper
 
 
-@parse_output
-def get_output_from_qchem(input_data, processors=1, binary='qchem', use_mpi=False, scratch=None, read_fchk=False):
+def get_output_from_qchem(input_qchem,
+                          processors=1,
+                          use_mpi=False,
+                          scratch=None,
+                          read_fchk=False,
+                          parser=None,
+                          parser_parameters={},
+                          force_recalculation=False,
+                          fchk_only=False):
+    """
+    Runs qchem and returns the output in the following format:
+    1) If read_fchk is requested:
+        [output, error, parsed_fchk]
+    2) If read_fchk is not requested:
+        [output, error]
+
+    Note: if parser is set then output contains a dictionary with the parsed info
+          else output contains the q-chem output in plain text
+
+    error: contains the standard error data from the calculation (if all OK, then should contain nothing)
+    read_fchk: contains a dictionary with the parsed info inside fchk file.
+
+    :param input_qchem:
+    :param processors:
+    :param use_mpi:
+    :param scratch:
+    :param read_fchk:
+    :param parser:
+    :param parser_parameters:
+    :param force_recalculation:
+    :param fchk_only:
+    :return output, error[, fchk_dict]:
+    """
+
+    # check gui > 2 if read_fchk
+    if read_fchk:
+        if input_qchem.gui is None or input_qchem.gui < 1:
+            input_qchem.gui = 2
 
     if scratch is None:
         scratch = os.environ['QCSCRATCH']
-    # print('scratch', scratch)
 
-    temp_file_name = scratch + '/qchem_temp_{}'.format(os.getpid())
-    # temp_file_name = tempfile.gettempdir() + '/qchem_temp_{}'.format(os.getpid())
-    qchem_input_file = open(temp_file_name,mode='w')
-    qchem_input_file.write(input_data)
+    scratch_dir = '{}/qchem{}'.format(scratch, os.getpid())
+
+    # check scf_guess if guess
+    if input_qchem.mo_coefficients is not None:
+        guess = input_qchem.mo_coefficients
+        # set guess in place
+        mo_coeffa = np.array(guess['alpha'], dtype=np.float)
+        l = len(mo_coeffa)
+        if 'beta' in guess:
+            mo_coeffb = np.array(guess['beta'], dtype=np.float)
+        else:
+            mo_coeffb = mo_coeffa
+
+        mo_ene = np.zeros(l)
+
+        guess_file = np.vstack([mo_coeffa, mo_ene, mo_coeffb, mo_ene]).flatten()
+        with open(scratch_dir + '53.0', 'w') as f:
+            guess_file.tofile(f, sep='')
+
+    input_txt = input_qchem.get_txt()
+
+    # Check if already calculate
+    hash_fchk = get_input_hash(input_txt + '__fchk__')
+
+    if not force_recalculation:
+
+        data_fchk = None
+        if read_fchk and hash_fchk in calculation_data:
+            # warnings.warn('already fchk calculated. Skip')
+            data_fchk = calculation_data[hash_fchk]
+
+        if parser is not None:
+            hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
+            if hash in calculation_data:
+                # hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
+                # warnings.warn('already calculated. Skip')
+                data = calculation_data[hash]
+                err = ''.encode()
+                if data_fchk is None:
+                    return data, err
+                else:
+                    return data, err, data_fchk
+        else:
+            if fchk_only and data_fchk is not None:
+                return None, None, data_fchk
+
+    temp_file_name = scratch_dir + '/qchem_temp_{}.inp'.format(os.getpid())
+
+    try:
+        os.mkdir(scratch_dir)
+    except FileExistsError:
+        pass
+
+    qchem_input_file = open(temp_file_name, mode='w')
+    qchem_input_file.write(input_txt)
     qchem_input_file.close()
     # print(temp_file_name)
     if use_mpi:
         flag = '-np'
     else:
         flag = '-nt'
-    command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
+        os.environ["QCTHREADS"] = "{}".format(processors)
+        os.environ["OMP_NUM_THREADS"] = "{}".format(processors)
+        os.environ["MKL_NUM_THREADS"] = "1"
+
+    fchk_file = 'qchem_temp_{}.fchk'.format(os.getpid())
+    os.environ["GUIFILE"] = fchk_file
+
+    qc_dir = os.environ['QC']
+
+    binary = "{}/exe/qcprog.exe".format(qc_dir)
+    #command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
+    command = binary + ' {} '.format(temp_file_name) + ' {} '.format(scratch)
+
     # print(command)
 
     qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
-    (output, err) = qchem_process.communicate(input=input_data.encode())
+    (output, err) = qchem_process.communicate(input=input_txt.encode())
     qchem_process.wait()
     os.remove(temp_file_name)
 
-    if os.path.isfile('qchem_temp_{}.fchk'.format(os.getpid())):
+    output = output.decode()
+    err = err.decode()
+
+    if parser is not None:
+        hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
+        output = parser(output, **parser_parameters)
+        calculation_data[hash] = output
+        with open('calculation_data.pkl', 'wb') as f:
+            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
+
+    if read_fchk:
+        from pyqchem.parsers.parser_fchk import parser_fchk
+
+        if not os.path.isfile(fchk_file):
+            warnings.warn('fchk not found! Make sure the input generates it (gui 2)')
+            return output, err
+
         with open('qchem_temp_{}.fchk'.format(os.getpid())) as f:
             fchk_txt = f.read()
         os.remove('qchem_temp_{}.fchk'.format(os.getpid()))
 
-        if read_fchk:
-            return fchk_txt, err.decode()
+        data_fchk = parser_fchk(fchk_txt)
+        calculation_data[hash_fchk] = data_fchk
+        with open('calculation_data.pkl', 'wb') as f:
+            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
-    return output.decode(), err.decode()
+        return output, err, data_fchk
+
+    return output, err
 
 
 def get_input_hash(data):

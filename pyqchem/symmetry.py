@@ -76,8 +76,15 @@ def get_orbital_type(molsym):
 
 
 def set_zero_coefficients(basis, mo_coeff, range_atoms):
+    """
+    set 0.0 to coefficients of functions centered in atoms 'range_atoms'
+
+    :param basis: full basis dictionary
+    :param mo_coeff: full molecular orbitals coefficients to be modiffied
+    :param range_atoms: list containing the atom numbers whose coefficients will be set to zero
+    :return:
+    """
     functions_to_atom = []
-    # set 0.0 to coefficients of functions centered in atoms 'range_atoms'
 
     nat = len(basis['atoms'])
     for i in range(0, nat):

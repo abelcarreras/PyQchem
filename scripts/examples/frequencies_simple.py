@@ -23,18 +23,20 @@ print('Initial structure')
 print(molecule.get_xyz())
 
 # optimization
-txt_input = create_qchem_input(molecule,
-                               jobtype='opt',
-                               exchange='hf',
-                               basis='sto-3g',
-                               geom_opt_tol_gradient=300,
-                               geom_opt_tol_energy=100,
-                               geom_opt_coords=-1,
-                               geom_opt_tol_displacement=1200)
+qc_input = create_qchem_input(molecule,
+                              jobtype='opt',
+                              exchange='hf',
+                              basis='sto-3g',
+                              geom_opt_tol_gradient=300,
+                              geom_opt_tol_energy=100,
+                              geom_opt_coords=-1,
+                              geom_opt_tol_displacement=1200,
+                              gui=2)
 
-parsed_data = get_output_from_qchem(txt_input,
-                                    processors=4,
-                                    parser=basic_optimization)
+parsed_data, err, fchk = get_output_from_qchem(qc_input,
+                                               processors=4,
+                                               parser=basic_optimization,
+                                               read_fchk=True)
 
 
 opt_molecule = parsed_data['optimized_molecule']
@@ -43,15 +45,17 @@ print('Optimized structure')
 print(opt_molecule.get_xyz())
 
 # frequencies calculation
-txt_input = create_qchem_input(opt_molecule,
-                               jobtype='freq',
-                               exchange='hf',
-                               basis='sto-3g',)
+qc_input = create_qchem_input(opt_molecule,
+                              jobtype='freq',
+                              exchange='hf',
+                              basis='sto-3g',
+                              scf_guess=fchk['coefficients'])
 
-parsed_data = get_output_from_qchem(txt_input,
-                                    processors=4,
-                                    force_recalculation=False,
-                                    parser=basic_frequencies)
+parsed_data, err = get_output_from_qchem(qc_input,
+                                         processors=4,
+                                         force_recalculation=False,
+                                         parser=basic_frequencies)
+
 
 # print results
 print('Normal modes\n')

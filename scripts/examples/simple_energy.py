@@ -41,10 +41,12 @@ for dist in distances:
                                    ras_srdft_damp=0.5)
 
     # calculate and parse qchem output
-    data = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
+    data, err = get_output_from_qchem(txt_input, processors=4, parser=basic_parser_qchem)
 
     # store energies of excited states states in list
     energies.append([state['total energy'] for state in data['excited states']])
+
+multiplicity_list = [state['multiplicity'] for state in data['excited states']]
 
 # transform energy list in array
 energies = np.array(energies)
@@ -57,7 +59,7 @@ for d, e in zip(distances, energies):
 
 # plot energies
 for i, state_energy in enumerate(energies.T):
-    plt.plot(distances, state_energy, label='state {}'.format(i+1))
+    plt.plot(distances, state_energy, label='state {} ({})'.format(i+1, multiplicity_list[i]))
 
 plt.title('Dissociation of Hydrogen molecule')
 plt.xlim([0, 3.5])

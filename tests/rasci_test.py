@@ -54,7 +54,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_damp=0.5)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -89,9 +89,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
-        print(output)
-
+        output, error = get_output_from_qchem(txt_input, processors=4)
         data = basic_rasci(output)
         print(data)
 
@@ -134,9 +132,9 @@ class WaterTest(unittest.TestCase):
                                        geom_opt_coords=-1,
                                        geom_opt_tol_displacement=1200)
 
-        parsed_data = get_output_from_qchem(txt_input,
-                                            processors=4,
-                                            parser=basic_optimization)
+        parsed_data, error = get_output_from_qchem(txt_input,
+                                                   processors=4,
+                                                   parser=basic_optimization)
 
         self.molecule = parsed_data['optimized_molecule']
 
@@ -155,7 +153,7 @@ class WaterTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -203,7 +201,7 @@ class WaterTest(unittest.TestCase):
 
         # calculate and parse qchem output
         print(txt_input)
-        output = get_output_from_qchem(txt_input, processors=4)
+        output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
