@@ -1,6 +1,7 @@
 
-def trunc_dictionary_list(w, decimal=5):
-
+def trunc_dictionary_list(dic_data, decimal):
+    # w : dictionary
+    # decimal: number of decimal places to leave after truncation
     def round_float(num):
         if isinstance(num, float):
             return int(num * 10**decimal)
@@ -27,21 +28,22 @@ def trunc_dictionary_list(w, decimal=5):
             else:
                 d[k] = round_float(v)
 
-    if isinstance(w, dict):
-        iterdict(w)
-    elif isinstance(w, list):
-        iterlist(w)
+    if isinstance(dic_data, dict):
+        iterdict(dic_data)
+    elif isinstance(dic_data, list):
+        iterlist(dic_data)
     else:
-        round_float(w)
+        round_float(dic_data)
 
 
-def modify_dictionary(dic_data):
+def standardize_dictionary(dic_data, decimal=5):
+
+    # set all amplitudes to absolute value
     for state in dic_data['excited states rasci']:
         for amp in state['amplitudes']:
             amp['amplitude'] = abs(amp['amplitude'])
 
-
-    trunc_dictionary_list(dic_data)
+    trunc_dictionary_list(dic_data, decimal)
 
     return dic_data
 
