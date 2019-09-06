@@ -8,11 +8,11 @@ import pickle
 import warnings
 from pyqchem.qc_input import QchemInput
 
+__calculation_data_filename__ = 'calculation_data.pkl'
 try:
-    with open('calculation_data.pkl', 'rb') as input:
+    with open(__calculation_data_filename__, 'rb') as input:
         calculation_data = pickle.load(input)
-        print('Loaded data from calculation_data.pkl')
-        # print(calculation_data)
+        print('Loaded data from {}'.format(__calculation_data_filename__))
 except FileNotFoundError:
     calculation_data = {}
 
@@ -62,7 +62,7 @@ def parse_output(get_output_function):
         parsed_output = parser(output, **parser_parameters)
 
         calculation_data[hash] = parsed_output
-        with open('calculation_data.pkl', 'wb') as output:
+        with open(__calculation_data_filename__, 'wb') as output:
             pickle.dump(calculation_data, output, pickle.HIGHEST_PROTOCOL)
 
         return parsed_output
@@ -200,7 +200,7 @@ def get_output_from_qchem(input_qchem,
         hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
         output = parser(output, **parser_parameters)
         calculation_data[hash] = output
-        with open('calculation_data.pkl', 'wb') as f:
+        with open(__calculation_data_filename__, 'wb') as f:
             pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
     if read_fchk:
@@ -216,7 +216,7 @@ def get_output_from_qchem(input_qchem,
 
         data_fchk = parser_fchk(fchk_txt)
         calculation_data[hash_fchk] = data_fchk
-        with open('calculation_data.pkl', 'wb') as f:
+        with open(__calculation_data_filename__, 'wb') as f:
             pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
         return output, err, data_fchk
