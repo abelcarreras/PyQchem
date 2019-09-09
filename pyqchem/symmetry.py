@@ -41,23 +41,21 @@ def get_wf_symmetry(structure,
     return molsym
 
 
-def get_orbital_classification(structure,
-                               basis,
-                               mo_coeff,
+def get_orbital_classification(fchk_data,
                                center=(0., 0., 0.),
                                orientation=(0., 0., 1.)):
     """
     Classify orbitals in sigma/pi in planar molecules
 
-    :param structure: molecular geometry (3xn) array
-    :param basis: dictionary containing the basis
-    :param mo_coeff: molecular orbitals coefficients
-    :param center: center of the molecule
+    :param fchk_data: dictionary containing fchk data
     :param orientation: unit vector perpendicular to the plane of the molecule
     :return: list of labels 'sigma'/'pi' according to the order of the orbitals
     """
-
-    molsym = get_wf_symmetry(structure, basis, mo_coeff, center=center, orientation=orientation)
+    molsym = get_wf_symmetry(fchk_data['structure'],
+                             fchk_data['basis'],
+                             fchk_data['coefficients'],
+                             center=center,
+                             orientation=orientation)
 
     sh_index = molsym.SymLab.index('s_h')
     orbital_type_alpha = []
@@ -67,7 +65,7 @@ def get_orbital_classification(structure,
         else:
             orbital_type_alpha.append(['sigma', np.abs(overlap)])
 
-    if 'beta' in mo_coeff:
+    if 'beta' in fchk_data['coefficients']:
         orbital_type_beta = []
         for i, overlap in enumerate(molsym.mo_SOEVs_b[:, sh_index]):
             if overlap < 0:
@@ -141,29 +139,26 @@ if __name__ == '__main__':
 
     qc_input = create_qchem_input(molecule, **parameters)
 
-    _,_, parsed_data = get_output_from_qchem(qc_input, processors=4, force_recalculation=True,
-                                     read_fchk=True)
+    _, _, fchk_data = get_output_from_qchem(qc_input, processors=4, force_recalculation=True,
+                                            read_fchk=True)
 
     from pyqchem.file_io import build_fchk
-    open('test.fchk', 'w').write(build_fchk(parsed_data))
+    open('test.fchk', 'w').write(build_fchk(fchk_data))
 
-    alpha_mo_coeff = set_zero_coefficients(parsed_data['basis'],
-                                           parsed_data['coefficients']['alpha'],
+    alpha_mo_coeff = set_zero_coefficients(fchk_data['basis'],
+                                           fchk_data['coefficients']['alpha'],
                                            range(6, 12))
-    parsed_data['coefficients']['alpha'] = alpha_mo_coeff
+    fchk_data['coefficients']['alpha'] = alpha_mo_coeff
 
-    structure = parsed_data['structure']
+    structure = fchk_data['structure']
     print(structure.get_xyz())
 
-    txt_fchk = build_fchk(parsed_data)
+    txt_fchk = build_fchk(fchk_data)
     open('test2.fchk', 'w').write(txt_fchk)
 
     z_dist = structure.get_coordinates()[0][2]
 
-    orbital_type = get_orbital_classification(parsed_data['structure'],
-                                              parsed_data['basis'],
-                                              parsed_data['coefficients'],
-                                              center=[0.0, 0.0, z_dist])
+    orbital_type = get_orbital_classification(fchk_data, center=[0.0, 0.0, z_dist])
 
     print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))
     for i, ot in enumerate(orbital_type):

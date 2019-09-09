@@ -47,9 +47,7 @@ txt_fchk = build_fchk(parsed_fchk)
 open('test_benzene.fchk', 'w').write(txt_fchk)
 
 # get orbital type
-orbital_types = get_orbital_classification(parsed_fchk['structure'],
-                                           parsed_fchk['basis'],
-                                           parsed_fchk['coefficients'],
+orbital_types = get_orbital_classification(parsed_fchk,
                                            center=[0.0, 0.0, 0.0],
                                            orientation=[0.0, 0.0, 1.0])
 
