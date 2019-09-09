@@ -68,6 +68,9 @@ class QchemInput:
         # put to arguments self._* (will be written explicitly)
         for name, value in vars().items():
             if name != 'self':
+                # set keywords in lower case
+                if type(value) is str:
+                    value = value.lower()
                 setattr(self, '_' + name, value)
 
         # set ras_occ

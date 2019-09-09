@@ -2,21 +2,25 @@ from wfnsympy import WfnSympy
 import numpy as np
 
 
-def get_orbital_classification(structure,
-                               basis,
-                               mo_coeff,
-                               center=(0., 0., 0.),
-                               orientation=(0., 0., 1.)):
+def get_wf_symmetry(structure,
+                    basis,
+                    mo_coeff,
+                    center=(0., 0., 0.),
+                    orientation=(0., 0., 1.),
+                    group='C2h'):
+
     """
-    Classify orbitals in sigma/pi in planar molecules
+    Simplified interface between pyqchem anf wfnsympy
 
     :param structure: molecular geometry (3xn) array
     :param basis: dictionary containing the basis
     :param mo_coeff: molecular orbitals coefficients
     :param center: center of the molecule
     :param orientation: unit vector perpendicular to the plane of the molecule
-    :return: list of labels 'sigma'/'pi' according to the order of the orbitals
+    :param group: point symmetry group
+    :return molsym: wfnsympy object
     """
+
 
     alpha_mo_coeff = np.array(mo_coeff['alpha']).flatten().tolist()
     if 'beta' in mo_coeff:
@@ -33,7 +37,27 @@ def get_orbital_classification(structure,
                       beta_mo_coeff=beta_mo_coeff,
                       charge=structure.charge,
                       multiplicity=structure.multiplicity,
-                      group='C2h')
+                      group=group)
+    return molsym
+
+
+def get_orbital_classification(structure,
+                               basis,
+                               mo_coeff,
+                               center=(0., 0., 0.),
+                               orientation=(0., 0., 1.)):
+    """
+    Classify orbitals in sigma/pi in planar molecules
+
+    :param structure: molecular geometry (3xn) array
+    :param basis: dictionary containing the basis
+    :param mo_coeff: molecular orbitals coefficients
+    :param center: center of the molecule
+    :param orientation: unit vector perpendicular to the plane of the molecule
+    :return: list of labels 'sigma'/'pi' according to the order of the orbitals
+    """
+
+    molsym = get_wf_symmetry(structure, basis, mo_coeff, center=center, orientation=orientation)
 
     sh_index = molsym.SymLab.index('s_h')
     orbital_type_alpha = []
@@ -64,8 +88,8 @@ def set_zero_coefficients(basis, mo_coeff, range_atoms):
     :param range_atoms: list containing the atom numbers whose coefficients will be set to zero
     :return:
     """
-    functions_to_atom = []
 
+    functions_to_atom = []
     nat = len(basis['atoms'])
     for i in range(0, nat):
         nf = 0

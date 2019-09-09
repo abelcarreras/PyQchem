@@ -208,7 +208,7 @@ def get_output_from_qchem(input_qchem,
 
         if not os.path.isfile(fchk_file):
             warnings.warn('fchk not found! Make sure the input generates it (gui 2)')
-            return output, err
+            return output, err, []
 
         with open('qchem_temp_{}.fchk'.format(os.getpid())) as f:
             fchk_txt = f.read()

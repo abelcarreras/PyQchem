@@ -30,8 +30,7 @@ qc_input = create_qchem_input(molecule,
                               geom_opt_tol_gradient=300,
                               geom_opt_tol_energy=100,
                               geom_opt_coords=-1,
-                              geom_opt_tol_displacement=1200,
-                              gui=2)
+                              geom_opt_tol_displacement=1200)
 
 parsed_data, err, fchk = get_output_from_qchem(qc_input,
                                                processors=4,

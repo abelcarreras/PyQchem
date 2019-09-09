@@ -188,7 +188,8 @@ def build_fchk(parsed_data):
     number_of_basis_functions = len(alpha_mo_coeff)
     number_of_electrons = np.sum(structure.get_atomic_numbers()) - structure.charge
     if structure.multiplicity > 1:
-        raise Exception('1> multiplicity not yet implemented')
+        # raise Exception('1> multiplicity not yet implemented')
+        pass
     alpha_electrons = number_of_electrons // 2
     beta_electrons = number_of_electrons // 2
     #print(alpha_electrons)
