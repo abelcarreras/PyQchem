@@ -1,6 +1,6 @@
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.structure import Structure
-from pyqchem.symmetry import get_wf_symmetry, get_orbital_type
+from pyqchem.symmetry import get_orbital_classification
 from pyqchem.file_io import build_fchk
 
 
@@ -32,10 +32,10 @@ parameters = {'jobtype': 'sp',
               'basis': '6-31G'}
 
 # create Q-Chem input
-txt_input = create_qchem_input(molecule, **parameters)
+qc_input = create_qchem_input(molecule, **parameters)
 
 # get data from Q-Chem calculation
-output, err, parsed_fchk = get_output_from_qchem(txt_input,
+output, err, parsed_fchk = get_output_from_qchem(qc_input,
                                                  processors=4,
                                                  force_recalculation=False,
                                                  read_fchk=True,
@@ -46,15 +46,14 @@ output, err, parsed_fchk = get_output_from_qchem(txt_input,
 txt_fchk = build_fchk(parsed_fchk)
 open('test_benzene.fchk', 'w').write(txt_fchk)
 
-# get wavefunction symmetry data
-sym_data = get_wf_symmetry(parsed_fchk['structure'],
-                           parsed_fchk['basis'],
-                           parsed_fchk['coefficients'],
-                           center=[0.0, 0.0, 0.0])
 # get orbital type
-orbital_type = get_orbital_type(sym_data)
+orbital_types = get_orbital_classification(parsed_fchk['structure'],
+                                           parsed_fchk['basis'],
+                                           parsed_fchk['coefficients'],
+                                           center=[0.0, 0.0, 0.0],
+                                           orientation=[0.0, 0.0, 1.0])
 
 # print results
 print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))
-for i, ot in enumerate(orbital_type):
+for i, ot in enumerate(orbital_types):
     print('{:5}:  {:5} {:5.3f}'.format(i + 1, ot[0], ot[1]))

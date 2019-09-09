@@ -199,6 +199,8 @@ class WaterTest(unittest.TestCase):
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 
+        print(txt_input)
+        exit()
         # calculate and parse qchem output
         output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)

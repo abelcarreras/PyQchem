@@ -2,77 +2,57 @@ from wfnsympy import WfnSympy
 import numpy as np
 
 
-def get_wf_symmetry(structure,
-                    basis,
-                    mo_coeff,
-                    center=(0., 0., 0.),
-                    vaxis=(0., 0., 1.)):
+def get_orbital_classification(structure,
+                               basis,
+                               mo_coeff,
+                               center=(0., 0., 0.),
+                               orientation=(0., 0., 1.)):
+    """
+    Classify orbitals in sigma/pi in planar molecules
 
-    # print('valence', structure.get_valence_electrons())
-    # print(structure.get_xyz())
-
-    type_list = {'s': 0,
-                 'p': 1,
-                 'd': 2,
-                 'f': 3,
-                 'sp': -1,
-                 'dc': -2,  # pure
-                 'fc': -3}  # pure
-
-    shell_type = []
-    p_exponents = []
-    c_coefficients = []
-    p_c_coefficients = []
-    n_primitives = []
-    atom_map = []
-    for i, atoms in enumerate(basis['atoms']):
-        for shell in atoms['shells']:
-            st = shell['shell_type']
-            shell_type.append(type_list[st])
-            n_primitives.append(len(shell['p_exponents']))
-            atom_map.append(i+1)
-            for p in shell['p_exponents']:
-                p_exponents.append(p)
-            for c in shell['con_coefficients']:
-                c_coefficients.append(c)
-            for pc in shell['p_con_coefficients']:
-                p_c_coefficients.append(pc)
+    :param structure: molecular geometry (3xn) array
+    :param basis: dictionary containing the basis
+    :param mo_coeff: molecular orbitals coefficients
+    :param center: center of the molecule
+    :param orientation: unit vector perpendicular to the plane of the molecule
+    :return: list of labels 'sigma'/'pi' according to the order of the orbitals
+    """
 
     alpha_mo_coeff = np.array(mo_coeff['alpha']).flatten().tolist()
     if 'beta' in mo_coeff:
-        # print(mo_coeff)
-        exit()
         beta_mo_coeff = np.array(mo_coeff['beta']).flatten().tolist()
     else:
         beta_mo_coeff = None
-
-    # for s, c in zip(structure.get_atomic_elements(), structure.get_coordinates()):
-    #     print('{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}'.format(*c))
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
                       symbols=structure.get_atomic_elements(),
                       basis=basis,
                       center=center,
-                      VAxis=vaxis,
+                      VAxis=orientation,
                       alpha_mo_coeff=alpha_mo_coeff,
                       beta_mo_coeff=beta_mo_coeff,
                       charge=structure.charge,
                       multiplicity=structure.multiplicity,
                       group='C2h')
 
-    return molsym
-
-
-def get_orbital_type(molsym):
-
     sh_index = molsym.SymLab.index('s_h')
-    orbital_type = []
+    orbital_type_alpha = []
     for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
         if overlap < 0:
-            orbital_type.append(['pi', np.abs(overlap)])
+            orbital_type_alpha.append(['pi', np.abs(overlap)])
         else:
-            orbital_type.append(['sigma', np.abs(overlap)])
-    return orbital_type
+            orbital_type_alpha.append(['sigma', np.abs(overlap)])
+
+    if 'beta' in mo_coeff:
+        orbital_type_beta = []
+        for i, overlap in enumerate(molsym.mo_SOEVs_b[:, sh_index]):
+            if overlap < 0:
+                orbital_type_beta.append(['pi', np.abs(overlap)])
+            else:
+                orbital_type_beta.append(['sigma', np.abs(overlap)])
+        return orbital_type_alpha, orbital_type_beta
+    else:
+        return orbital_type_alpha
 
 
 def set_zero_coefficients(basis, mo_coeff, range_atoms):
@@ -133,17 +113,15 @@ if __name__ == '__main__':
 
     parameters = {'jobtype': 'sp',
                   'exchange': 'hf',
-                  'basis': '6-31G',
-                  'gui': 2}
+                  'basis': '6-31G'}
 
-    txt_input = create_qchem_input(molecule, **parameters)
+    qc_input = create_qchem_input(molecule, **parameters)
 
-    txt_fchk = get_output_from_qchem(txt_input, processors=4, force_recalculation=True,
-                                     parser=None, read_fchk=True)
+    _,_, parsed_data = get_output_from_qchem(qc_input, processors=4, force_recalculation=True,
+                                     read_fchk=True)
 
-    #txt_fchk = open('qchem_temp_32947.fchk', 'r').read()
-    parsed_data = parser_fchk(txt_fchk)
-    open('test.fchk', 'w').write(txt_fchk)
+    from pyqchem.file_io import build_fchk
+    open('test.fchk', 'w').write(build_fchk(parsed_data))
 
     alpha_mo_coeff = set_zero_coefficients(parsed_data['basis'],
                                            parsed_data['coefficients']['alpha'],
@@ -158,12 +136,11 @@ if __name__ == '__main__':
 
     z_dist = structure.get_coordinates()[0][2]
 
-    molsym = get_wf_symmetry(parsed_data['structure'],
-                             parsed_data['basis'],
-                             parsed_data['coefficients'],
-                             center=[0.0, 0.0, z_dist])
+    orbital_type = get_orbital_classification(parsed_data['structure'],
+                                              parsed_data['basis'],
+                                              parsed_data['coefficients'],
+                                              center=[0.0, 0.0, z_dist])
 
-    orbital_type = get_orbital_type(molsym)
     print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))
     for i, ot in enumerate(orbital_type):
         print('{:5}:  {:5} {:5.2f}'.format(i+1, ot[0], ot[1]))
