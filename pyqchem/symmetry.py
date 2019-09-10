@@ -1,6 +1,7 @@
 from wfnsympy import WfnSympy
 import numpy as np
-
+from scipy.optimize import leastsq
+from pyqchem.utils import standardize_vector
 
 def get_wf_symmetry(structure,
                     basis,
@@ -163,3 +164,40 @@ if __name__ == '__main__':
     print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))
     for i, ot in enumerate(orbital_type):
         print('{:5}:  {:5} {:5.2f}'.format(i+1, ot[0], ot[1]))
+
+
+def get_plane(coords, direction=None):
+    """Generate initial guess"""
+
+    coords = np.array(coords)
+    p0 = np.cross(coords[0] - coords[2], coords[0] - coords[-1]) / np.linalg.norm(np.cross(coords[0] - coords[2],
+                                                                                           coords[0] - coords[-1]))
+
+    # Fitting function to a plane
+    def fitfunc(p, coords):
+        average = np.average(coords, axis=0)
+        return np.array([np.dot(p, average - c) for c in coords])
+
+    # Error function (including force norm(normal) = 1)
+    errfunc = lambda p, x: fitfunc(p, x)**2 + (np.linalg.norm(p) - 1.0)**2
+
+    p1, flag = leastsq(errfunc, p0, args=(coords,))
+
+
+    # Check final result
+    point = np.average(coords, axis=0).tolist()
+    normal = np.array(p1)/np.linalg.norm(p1)
+
+    if direction is not None:
+        vector = coords[direction[1]] - coords[direction[0]]
+        # proj = vector - np.dot(vector, normal)*normal
+        projected = np.cross(normal,  np.cross(vector, normal))
+        projected /= np.linalg.norm(projected)
+
+        normal = standardize_vector(normal)
+        projected = standardize_vector(projected)
+
+        return point, normal, projected
+
+    normal = standardize_vector(normal)
+    return point, normal

@@ -4,6 +4,13 @@ import numpy as np
 
 # parser for frequencies calculations
 def basic_frequencies(output, print_data=False):
+    """
+    Parser for frequencies calculations
+
+    :param output:
+    :param print_data:
+    :return:
+    """
 
     # Coordinates
     n = output.find('$molecule')

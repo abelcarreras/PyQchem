@@ -11,6 +11,20 @@ def basis_format(basis_set_name,
                  p_exponents,
                  c_coefficients,
                  p_c_coefficients):
+    """
+    Function to generate standard basis dictionary
+
+    :param basis_set_name:
+    :param atomic_numbers:
+    :param atomic_symbols:
+    :param shell_type:
+    :param n_primitives:
+    :param atom_map:
+    :param p_exponents:
+    :param c_coefficients:
+    :param p_c_coefficients:
+    :return:
+    """
 
     # print(n_primitives)
 
