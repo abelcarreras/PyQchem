@@ -13,3 +13,11 @@ Installation
 ```
 # python setup.py install --user
 ```
+
+Contact info
+------------
+Abel Carreras  
+abelcarreras83@gmail.com
+
+Donostia International Physics Center (DIPC)  
+Donostia-San Sebastian (Spain)
