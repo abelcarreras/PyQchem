@@ -49,7 +49,6 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_cor='srpw92',
                                        ras_srdft_exc='srpbe',
                                        ras_natorb=False,
-                                       ras_print=1,
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 
@@ -195,7 +194,6 @@ class WaterTest(unittest.TestCase):
                                        ras_srdft_cor='srpbe',
                                        ras_srdft_exc='srlsda',
                                        ras_natorb=False,
-                                       ras_print=1,
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 

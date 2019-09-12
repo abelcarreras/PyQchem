@@ -33,7 +33,7 @@ class QchemInput:
                  ras_srdft_spinpol=0,
                  ras_sts_tm=False,
                  ras_natorb=False,
-                 ras_print=4,
+                 ras_print=1,
                  # cis
                  cis_convergence=6,
                  cis_n_roots=None,
