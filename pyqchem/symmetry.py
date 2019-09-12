@@ -61,6 +61,7 @@ def get_orbital_classification(fchk_data,
     sh_index = molsym.SymLab.index('s_h')
     orbital_type_alpha = []
     for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
+        overlap = overlap / molsym.mo_SOEVs_a[i, molsym.SymLab.index('E')]  # normalize
         if overlap < 0:
             orbital_type_alpha.append(['pi', np.abs(overlap)])
         else:
