@@ -21,6 +21,7 @@ def get_custom_orbital_classification(parsed_fchk,
     sh_index = molsym.SymLab.index('i')  # operation used to separate orbitals
     orbital_type = []
     for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
+        overlap = overlap / molsym.mo_SOEVs_a[i, molsym.SymLab.index('E')]  # normalize
         if overlap < 0:
             orbital_type.append([' NOO', np.abs(overlap)])
         else:
@@ -65,6 +66,9 @@ output, err, parsed_fchk = get_output_from_qchem(qc_input,
                                                  force_recalculation=False,
                                                  read_fchk=True,
                                                  fchk_only=True)
+
+# store original fchk info in file
+open('test.fchk', 'w').write(build_fchk(parsed_fchk))
 
 # get partial wf localized in fragment
 alpha_mo_coeff_f1 = set_zero_coefficients(parsed_fchk['basis'],
