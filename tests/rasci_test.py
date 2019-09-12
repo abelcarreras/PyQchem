@@ -49,7 +49,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_cor='srpw92',
                                        ras_srdft_exc='srpbe',
                                        ras_natorb=False,
-                                       ras_print=0,
+                                       ras_print=1,
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 
@@ -195,12 +195,12 @@ class WaterTest(unittest.TestCase):
                                        ras_srdft_cor='srpbe',
                                        ras_srdft_exc='srlsda',
                                        ras_natorb=False,
-                                       ras_print=0,
+                                       ras_print=1,
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 
-        print(txt_input)
-        exit()
+        print(txt_input.get_txt())
+
         # calculate and parse qchem output
         output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)
