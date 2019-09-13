@@ -3,10 +3,11 @@ import numpy as np
 from scipy.optimize import leastsq
 from pyqchem.utils import standardize_vector
 
+
 def get_wf_symmetry(structure,
                     basis,
                     mo_coeff,
-                    center=(0., 0., 0.),
+                    center=None,
                     orientation=(0., 0., 1.),
                     group='C2h'):
 
@@ -22,10 +23,9 @@ def get_wf_symmetry(structure,
     :return molsym: wfnsympy object
     """
 
-
-    alpha_mo_coeff = np.array(mo_coeff['alpha']).flatten().tolist()
+    alpha_mo_coeff = np.array(mo_coeff['alpha']).tolist()
     if 'beta' in mo_coeff:
-        beta_mo_coeff = np.array(mo_coeff['beta']).flatten().tolist()
+        beta_mo_coeff = np.array(mo_coeff['beta']).tolist()
     else:
         beta_mo_coeff = None
 
