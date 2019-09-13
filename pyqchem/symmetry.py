@@ -99,14 +99,24 @@ def set_zero_coefficients(basis, mo_coeff, range_atoms):
     functions_to_atom = functions_to_atom
 
     # print(funtions_to_atom)
-    mo_coeff = np.array(mo_coeff)
+    mo_coeff_a = np.array(mo_coeff['alpha'])
     for i in range_atoms:
         ini = np.sum(functions_to_atom[:i], dtype=int)
         fin = np.sum(functions_to_atom[:i+1], dtype=int)
         # print('ini', ini, 'fin', fin)
-        mo_coeff[:, ini: fin] *= 0.0
+        mo_coeff_a[:, ini: fin] *= 0.0
+    mo_coeff_zero = {'alpha': mo_coeff_a.tolist()}
 
-    return mo_coeff.tolist()
+    if 'beta' in mo_coeff:
+        mo_coeff_b = np.array(mo_coeff['beta'])
+        for i in range_atoms:
+            ini = np.sum(functions_to_atom[:i], dtype=int)
+            fin = np.sum(functions_to_atom[:i + 1], dtype=int)
+            # print('ini', ini, 'fin', fin)
+            mo_coeff_b[:, ini: fin] *= 0.0
+        mo_coeff_zero['beta'] = mo_coeff_b.tolist()
+
+    return mo_coeff_zero
 
 
 if __name__ == '__main__':

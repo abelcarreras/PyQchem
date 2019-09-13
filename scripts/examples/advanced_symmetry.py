@@ -71,16 +71,16 @@ output, err, parsed_fchk = get_output_from_qchem(qc_input,
 open('test.fchk', 'w').write(build_fchk(parsed_fchk))
 
 # get partial wf localized in fragment
-alpha_mo_coeff_f1 = set_zero_coefficients(parsed_fchk['basis'],
-                                          parsed_fchk['coefficients']['alpha'],
-                                          range_f2)
+mo_coeff_f1 = set_zero_coefficients(parsed_fchk['basis'],
+                                    parsed_fchk['coefficients'],
+                                    range_f2)
 
-alpha_mo_coeff_f2 = set_zero_coefficients(parsed_fchk['basis'],
-                                          parsed_fchk['coefficients']['alpha'],
-                                          range_f1)
+mo_coeff_f2 = set_zero_coefficients(parsed_fchk['basis'],
+                                    parsed_fchk['coefficients'],
+                                    range_f1)
 
 # get symmetry classification
-parsed_fchk['coefficients']['alpha'] = alpha_mo_coeff_f1
+parsed_fchk['coefficients'] = mo_coeff_f1
 
 # save test fchk file with new coefficients
 open('test_f1.fchk', 'w').write(build_fchk(parsed_fchk))
@@ -98,7 +98,7 @@ orbital_type_f1 = get_custom_orbital_classification(parsed_fchk,
 coordinates_f2 = np.array(parsed_fchk['structure'].get_coordinates())[range_f2]
 center_f2, normal_f2 = get_plane(coordinates_f2)
 
-parsed_fchk['coefficients']['alpha'] = alpha_mo_coeff_f2
+parsed_fchk['coefficients'] = mo_coeff_f2
 
 # save test fchk file with new coefficients
 open('test_f2.fchk', 'w').write(build_fchk(parsed_fchk))
@@ -107,7 +107,6 @@ open('test_f2.fchk', 'w').write(build_fchk(parsed_fchk))
 orbital_type_f2 = get_custom_orbital_classification(parsed_fchk,
                                                     center=center_f2,
                                                     orientation=normal_f2)
-
 
 # range of orbitals to show
 frontier_orbitals = [12, 13,  14, 15, 16, 17, 18, 19, 20]
