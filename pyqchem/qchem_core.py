@@ -70,6 +70,105 @@ def parse_output(get_output_function):
     return func_wrapper
 
 
+def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1):
+    """
+    Run Q-Chem locally
+
+    :param input_file_name: Q-Chem input file in plain text format
+    :param work_dir:  Scratch directory where calculation run
+    :param fchk_file: filename of fchk
+    :param use_mpi: use mpi instead of openmp
+    :return output, err: Q-Chem standard output and standard error
+    """
+
+    if not use_mpi:
+        os.environ["QCTHREADS"] = "{}".format(processors)
+        os.environ["OMP_NUM_THREADS"] = "{}".format(processors)
+        os.environ["MKL_NUM_THREADS"] = "1"
+
+    os.environ["GUIFILE"] = fchk_file
+    qc_dir = os.environ['QC']
+    binary = "{}/exe/qcprog.exe".format(qc_dir)
+    # command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
+    command = binary + ' {} '.format(os.path.join(work_dir, input_file_name)) + ' {} '.format(work_dir)
+
+    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True, cwd=work_dir)
+    (output, err) = qchem_process.communicate()
+    qchem_process.wait()
+    output = output.decode()
+    err = err.decode()
+
+    return output, err
+
+
+def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=False, processors=1):
+    """
+    Run Q-Chem remotely
+
+    :param input_file: Q-Chem input file in plain text format
+    :param work_dir:  Scratch directory where calculation run
+    :param fchk_file: filename of fchk
+    :param remote_params: connection parameters for paramiko
+    :param use_mpi: use mpi instead of openmp
+    :return output, err: Q-Chem standard output and standard error
+    """
+    import paramiko
+
+    # Setup SSH connection
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(**remote_params)
+
+    ssh.get_transport()
+    sftp = ssh.open_sftp()
+    print('connected..')
+
+    # Define temp remote dir
+    _, stdout, stderr = ssh.exec_command('pwd', get_pty=True)
+    home_dir = stdout.read().decode().strip('\n').strip('\r')
+    remote_dir = '{}/temp_pyqchem_remote/'.format(home_dir)
+
+    # Create temp directory in remote machine
+    try:
+        sftp.mkdir(remote_dir)
+    except OSError:
+        pass
+    sftp.chdir(remote_dir)
+
+    # Copy all files in local workdir to remote machine
+    file_list = os.listdir(work_dir)
+    for file in file_list:
+        sftp.put(os.path.join(work_dir, file), '{}'.format(file))
+
+    flag = '-np' if use_mpi else '-nt'
+
+    # Define commands to run Q-Chem in remote machine
+    commands = ['module load qchem/qchem_group',  # load modules
+                'cd  {}'.format(remote_dir),  # go to remote work dir
+                'qchem {} {} {}'.format(flag, processors, input_file_name)]  # run qchem
+
+    # Execute command in remote machine
+    stdin, stdout, stderr = ssh.exec_command('bash -l -c "{}"'.format(';'.join(commands)), get_pty=True)
+
+    # Reformat output/error files
+    output = ''.join(stdout.readlines())
+    error = ''.join(stderr.readlines())
+
+    # get files and remove them from remote server
+    for file in sftp.listdir():
+        sftp.get(os.path.join(remote_dir, file), os.path.join(work_dir, file))
+        sftp.remove(os.path.join(remote_dir, file))
+    sftp.rmdir(remote_dir)
+
+    sftp.close()
+    ssh.close()
+
+    # Rename fchk file to match expected name
+    os.rename(os.path.join(work_dir, input_file_name + '.fchk'), os.path.join(work_dir, fchk_file))
+
+    return output, error
+
+
 def get_output_from_qchem(input_qchem,
                           processors=1,
                           use_mpi=False,
@@ -78,7 +177,8 @@ def get_output_from_qchem(input_qchem,
                           parser=None,
                           parser_parameters={},
                           force_recalculation=False,
-                          fchk_only=False):
+                          fchk_only=False,
+                          remote=None):
     """
     Runs qchem and returns the output in the following format:
     1) If read_fchk is requested:
@@ -112,7 +212,12 @@ def get_output_from_qchem(input_qchem,
     if scratch is None:
         scratch = os.environ['QCSCRATCH']
 
-    scratch_dir = '{}/qchem{}'.format(scratch, os.getpid())
+    work_dir = '{}/qchem{}/'.format(scratch, os.getpid())
+
+    try:
+        os.mkdir(work_dir)
+    except FileExistsError:
+        pass
 
     # check scf_guess if guess
     if input_qchem.mo_coefficients is not None:
@@ -128,7 +233,7 @@ def get_output_from_qchem(input_qchem,
         mo_ene = np.zeros(l)
 
         guess_file = np.vstack([mo_coeffa, mo_ene, mo_coeffb, mo_ene]).flatten()
-        with open(scratch_dir + '53.0', 'w') as f:
+        with open(work_dir + '53.0', 'w') as f:
             guess_file.tofile(f, sep='')
 
     input_txt = input_qchem.get_txt()
@@ -158,43 +263,17 @@ def get_output_from_qchem(input_qchem,
             if fchk_only and data_fchk is not None:
                 return None, None, data_fchk
 
-    temp_file_name = scratch_dir + '/qchem_temp_{}.inp'.format(os.getpid())
+    fchk_filename = 'qchem_temp_{}.fchk'.format(os.getpid())
+    temp_filename = 'qchem_temp_{}.inp'.format(os.getpid())
 
-    try:
-        os.mkdir(scratch_dir)
-    except FileExistsError:
-        pass
-
-    qchem_input_file = open(temp_file_name, mode='w')
+    qchem_input_file = open(os.path.join(work_dir, temp_filename), mode='w')
     qchem_input_file.write(input_txt)
     qchem_input_file.close()
-    # print(temp_file_name)
-    if use_mpi:
-        flag = '-np'
+
+    if remote is None:
+        output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
     else:
-        flag = '-nt'
-        os.environ["QCTHREADS"] = "{}".format(processors)
-        os.environ["OMP_NUM_THREADS"] = "{}".format(processors)
-        os.environ["MKL_NUM_THREADS"] = "1"
-
-    fchk_file = 'qchem_temp_{}.fchk'.format(os.getpid())
-    os.environ["GUIFILE"] = fchk_file
-
-    qc_dir = os.environ['QC']
-
-    binary = "{}/exe/qcprog.exe".format(qc_dir)
-    #command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
-    command = binary + ' {} '.format(temp_file_name) + ' {} '.format(scratch)
-
-    # print(command)
-
-    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True)
-    (output, err) = qchem_process.communicate(input=input_txt.encode())
-    qchem_process.wait()
-    os.remove(temp_file_name)
-
-    output = output.decode()
-    err = err.decode()
+        output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
     if parser is not None:
         hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
@@ -206,13 +285,13 @@ def get_output_from_qchem(input_qchem,
     if read_fchk:
         from pyqchem.parsers.parser_fchk import parser_fchk
 
-        if not os.path.isfile(fchk_file):
+        if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
             warnings.warn('fchk not found! Make sure the input generates it (gui 2)')
             return output, err, []
 
-        with open('qchem_temp_{}.fchk'.format(os.getpid())) as f:
+        with open(os.path.join(work_dir, fchk_filename)) as f:
             fchk_txt = f.read()
-        os.remove('qchem_temp_{}.fchk'.format(os.getpid()))
+        os.remove(os.path.join(work_dir, fchk_filename))
 
         data_fchk = parser_fchk(fchk_txt)
         calculation_data[hash_fchk] = data_fchk
