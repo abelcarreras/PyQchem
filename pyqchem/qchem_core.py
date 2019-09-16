@@ -114,6 +114,9 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     """
     import paramiko
 
+    # get precommands
+    commands = remote_params.pop('precommand', [])
+
     # Setup SSH connection
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -121,7 +124,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
 
     ssh.get_transport()
     sftp = ssh.open_sftp()
-    print('connected..')
+    print('connected to {}..'.format(remote_params['hostname']))
 
     # Define temp remote dir
     _, stdout, stderr = ssh.exec_command('pwd', get_pty=True)
@@ -143,9 +146,8 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     flag = '-np' if use_mpi else '-nt'
 
     # Define commands to run Q-Chem in remote machine
-    commands = ['module load qchem/qchem_group',  # load modules
-                'cd  {}'.format(remote_dir),  # go to remote work dir
-                'qchem {} {} {}'.format(flag, processors, input_file_name)]  # run qchem
+    commands += ['cd  {}'.format(remote_dir),  # go to remote work dir
+                 'qchem {} {} {}'.format(flag, processors, input_file_name)]  # run qchem
 
     # Execute command in remote machine
     stdin, stdout, stderr = ssh.exec_command('bash -l -c "{}"'.format(';'.join(commands)), get_pty=True)
