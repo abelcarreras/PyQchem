@@ -116,6 +116,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
 
     # get precommands
     commands = remote_params.pop('precommand', [])
+    home_dir = remote_params.pop('remote_scratch', None)
 
     # Setup SSH connection
     ssh = paramiko.SSHClient()
@@ -128,7 +129,10 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
 
     # Define temp remote dir
     _, stdout, stderr = ssh.exec_command('pwd', get_pty=True)
-    home_dir = stdout.read().decode().strip('\n').strip('\r')
+
+    if home_dir is None:
+        home_dir = stdout.read().decode().strip('\n').strip('\r')
+
     remote_dir = '{}/temp_pyqchem_remote/'.format(home_dir)
 
     # Create temp directory in remote machine
