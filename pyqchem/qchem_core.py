@@ -166,7 +166,8 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     ssh.close()
 
     # Rename fchk file to match expected name
-    os.rename(os.path.join(work_dir, input_file_name + '.fchk'), os.path.join(work_dir, fchk_file))
+    if input_file_name + '.fchk' in os.listdir(work_dir):
+        os.rename(os.path.join(work_dir, input_file_name + '.fchk'), os.path.join(work_dir, fchk_file))
 
     return output, error
 
