@@ -6,7 +6,7 @@ from pyqchem.parsers.basic import basic_parser_qchem
 remote_data_pc = {'hostname': '158.227.172.45',
                   'port': 22,
                   'username': 'abel',
-                  'password': 'pi31415pi31415',
+                  'password': '################',
                   'allow_agent': False,
                   'look_for_keys': False,
                   'precommand': ['module load qchem/qchem_group']}
