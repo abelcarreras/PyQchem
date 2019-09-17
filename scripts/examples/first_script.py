@@ -3,7 +3,7 @@ from pyqchem.structure import Structure
 from pyqchem.parsers.basic import basic_parser_qchem
 
 
-remote_data_pc = {'hostname': '158.227.172.45',
+remote_data_pc = {'hostname': '111.222.333.44',
                   'port': 22,
                   'username': 'abel',
                   'password': '################',
