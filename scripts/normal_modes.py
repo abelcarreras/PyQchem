@@ -98,7 +98,7 @@ parsed_data = get_output_from_qchem(txt_input,
 #parsed_data = basic_optimization(data)
 opt_molecule = parsed_data['optimized_molecule']
 
-print(opt_molecule.get_xyz())
+print(opt_molecule)
 
 print('calculate frequencies')
 txt_input = create_qchem_input(opt_molecule,
@@ -120,7 +120,7 @@ f2 = open(args.filename, 'w')
 # print data info
 
 f2.write('OPTIMIZED STRUCTURE\n')
-f2.write(opt_molecule.get_xyz())
+f2.write(opt_molecule)
 f2.write('\n\n')
 f2.write('DISPLACED STRUCTURES\n')
 

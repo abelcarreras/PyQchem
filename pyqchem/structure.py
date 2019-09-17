@@ -6,7 +6,7 @@ import numpy as np
 
 def int_to_xyz(molecule, no_dummy=True):
 
-    internal = molecule.get_full_z_matrix()
+    internal = molecule._get_full_z_matrix()
     coordinates = [[0.0, 0.0, 0.0]]
 
     for line in internal[1:]:
@@ -124,58 +124,58 @@ class Structure:
         self._number_of_atoms = None
         self._energy = {}
 
-    def get_internal(self):
+    def _get_internal(self):
         if self._internal is None:
             print('No internal coordinates available\n Load internal file')
             exit()
         return self._internal.copy()
 
-    def set_internal(self, internal):
+    def _set_internal(self, internal):
         self._internal = internal
         self._energy = None
         self._coordinates = int_to_xyz(self)
         self._full_z_matrix = None
 
-    def get_full_z_matrix(self):
+    def _get_full_z_matrix(self):
         if self._full_z_matrix is None:
-            num_z_atoms = self.get_z_matrix().shape[0]
+            num_z_atoms = self._get_z_matrix().shape[0]
             self._full_z_matrix = np.zeros((num_z_atoms,6))
 
-            for row, i in enumerate(self.get_z_matrix()[1:]):
+            for row, i in enumerate(self._get_z_matrix()[1:]):
                     for col, k in enumerate(i[0]):
                         try:
                             self._full_z_matrix[row+1, col] = float(k)
                         except ValueError:
-                            self._full_z_matrix[row+1, col] = self.get_int_dict()[k]
+                            self._full_z_matrix[row+1, col] = self._get_int_dict()[k]
 
 
         return self._full_z_matrix
 
-    def get_z_matrix(self):
+    def _get_z_matrix(self):
         if self._z_matrix is None:
             print('No Z-matrix available\n Load zmatrix file')
             exit()
         return self._z_matrix
 
-    def set_z_matrix(self, z_matrix):
+    def _set_z_matrix(self, z_matrix):
         self._z_matrix = z_matrix
 
-    def get_int_label(self):
+    def _get_int_label(self):
         return self._int_label
 
-    def set_int_label(self, int_label):
+    def _set_int_label(self, int_label):
         self._int_label = int_label
 
-    def get_int_dict(self):
+    def _get_int_dict(self):
         self._internal_dict = {}
-        for i, label in enumerate(self.get_int_label()[:,0]):
-            self._internal_dict.update({label:self.get_internal()[i, 0]})
+        for i, label in enumerate(self._get_int_label()[:, 0]):
+            self._internal_dict.update({label:self._get_internal()[i, 0]})
         return self._internal_dict
 
-    def get_int_weights(self):
+    def _get_int_weights(self):
         return self._int_weights
 
-    def set_int_weights(self, int_weights):
+    def _set_int_weights(self, int_weights):
         self._int_weights = int_weights
 
     def get_atomic_elements_with_dummy(self):
@@ -206,13 +206,13 @@ class Structure:
     def multiplicity(self, multiplicity):
         self._multiplicity = multiplicity
 
-    def get_atom_types(self):
+    def _get_atom_types(self):
         if self._atom_types is None:
             print('No atom types available')
             exit()
         return self._atom_types
 
-    def set_atom_types(self, atom_types):
+    def _set_atom_types(self, atom_types):
         self._atom_types = atom_types
 
     def get_atomic_numbers(self):
@@ -232,14 +232,14 @@ class Structure:
     def set_atomic_elements(self, atomic_elements):
         self._atomic_elements = atomic_elements
 
-    def get_connectivity(self):
+    def _get_connectivity(self):
         if self._connectivity is None:
             print('No atom connectivity available')
             exit()
 
         return self._connectivity
 
-    def set_connectivity(self, connectivity):
+    def _set_connectivity(self, connectivity):
         self._connectivity = connectivity
 
 #   Real methods
@@ -250,13 +250,13 @@ class Structure:
 
         return self._number_of_atoms
 
-    def get_number_of_internal(self):
+    def _get_number_of_internal(self):
         if self._number_of_internal is None:
-            self._number_of_internal = self.get_internal().shape[0]
+            self._number_of_internal = self._get_internal().shape[0]
 
         return self._number_of_internal
 
-    def get_energy(self, method=None):
+    def _get_energy(self, method=None):
         if method is None:
             if len(self._energy) == 1:
                 return self._energy.values()[0]
@@ -265,7 +265,7 @@ class Structure:
             self._energy['{}'.format(hash(method))] = method.single_point(self)
         return self._energy['{}'.format(hash(method))]
 
-    def get_modes(self, method=None):
+    def _get_modes(self, method=None):
         if self._modes is None:
             if method is None:
                 raise Exception('No method defined')
