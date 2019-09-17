@@ -25,7 +25,7 @@ molecule = Structure(coordinates=coordinates,
                      multiplicity=1)
 
 print('Initial structure')
-print(molecule.get_xyz())
+print(molecule)
 
 # calculation
 qc_input = create_qchem_input(molecule,

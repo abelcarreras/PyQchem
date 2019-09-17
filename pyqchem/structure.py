@@ -111,6 +111,9 @@ class Structure:
 
         self._full_z_matrix = None
 
+    def __str__(self):
+        return self.get_xyz()
+
     def get_coordinates(self):
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
@@ -276,7 +279,7 @@ class Structure:
             try:
                 masses_string = np.array(atom_data)[:, 3:4][[np.where(np.array(atom_data)==element)[0][0]
                                                              for element in self.get_atomic_elements()]]
-                self._atomic_masses = np.array(masses_string, dtype=float)
+                self._atomic_masses = np.array(masses_string, dtype=float).T[0]
             except TypeError:
                 print('Error reading element labels')
                 exit()

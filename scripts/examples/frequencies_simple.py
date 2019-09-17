@@ -20,7 +20,7 @@ molecule = Structure(coordinates=coordinates,
                      multiplicity=1)
 
 print('Initial structure')
-print(molecule.get_xyz())
+print(molecule)
 
 # optimization
 qc_input = create_qchem_input(molecule,
@@ -41,7 +41,7 @@ parsed_data, err, fchk = get_output_from_qchem(qc_input,
 opt_molecule = parsed_data['optimized_molecule']
 
 print('Optimized structure')
-print(opt_molecule.get_xyz())
+print(opt_molecule)
 
 # frequencies calculation
 qc_input = create_qchem_input(opt_molecule,
