@@ -127,7 +127,7 @@ class QchemInput:
         input_file += 'thresh {}\n'.format(self._thresh)
         input_file += 'scf_convergence {}\n'.format(self._scf_convergence)
         input_file += 'max_scf_cycles {}\n'.format(self._max_scf_cycles)
-        input_file += 'gui {}\n'.format(self._gui)
+        input_file += 'gui {}\n'.format(self.gui)
         # input_file += 'purecart {}\n'.format(2)
         input_file += 'set_iter {}\n'.format(self._set_iter)
         input_file += 'RPA {}\n'.format(self._RPA)
@@ -247,10 +247,7 @@ class QchemInput:
 
     @property
     def gui(self):
-        try:
-            return self._gui
-        except:
-            return None
+        return self._gui
 
     @gui.setter
     def gui(self, value):

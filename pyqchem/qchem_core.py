@@ -13,7 +13,7 @@ try:
     with open(__calculation_data_filename__, 'rb') as input:
         calculation_data = pickle.load(input)
         print('Loaded data from {}'.format(__calculation_data_filename__))
-except FileNotFoundError:
+except IOError:
     calculation_data = {}
 
 
@@ -116,7 +116,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
 
     # get precommands
     commands = remote_params.pop('precommand', [])
-    home_dir = remote_params.pop('remote_scratch', None)
+    remote_scratch = remote_params.pop('remote_scratch', None)
 
     # Setup SSH connection
     ssh = paramiko.SSHClient()
@@ -128,12 +128,12 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     print('connected to {}..'.format(remote_params['hostname']))
 
     # Define temp remote dir
-    _, stdout, stderr = ssh.exec_command('pwd', get_pty=True)
+    _, stdout, _ = ssh.exec_command('pwd', get_pty=True)
 
-    if home_dir is None:
-        home_dir = stdout.read().decode().strip('\n').strip('\r')
+    if remote_scratch is None:
+        remote_scratch = stdout.read().decode().strip('\n').strip('\r')
 
-    remote_dir = '{}/temp_pyqchem_remote/'.format(home_dir)
+    remote_dir = '{}/temp_pyqchem_remote/'.format(remote_scratch)
 
     # Create temp directory in remote machine
     try:

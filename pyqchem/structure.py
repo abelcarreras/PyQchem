@@ -89,7 +89,7 @@ class Structure:
                  #Buscar un lloc millor
                  int_weights=None):
 
-        self._coordinates = coordinates
+        self._coordinates = np.array(coordinates)
         self._internal = internal
         self._z_matrix = z_matrix
         self._int_label = int_label
@@ -117,10 +117,10 @@ class Structure:
     def get_coordinates(self):
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
-        return self._coordinates.copy()
+        return self._coordinates.tolist()
 
     def set_coordinates(self, coordinates):
-        self._coordinates = coordinates
+        self._coordinates = np.array(coordinates)
         self._number_of_atoms = None
         self._energy = {}
 
