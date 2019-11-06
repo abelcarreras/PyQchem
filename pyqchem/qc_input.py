@@ -16,6 +16,7 @@ class QchemInput:
                  thresh=14,
                  scf_convergence=8,
                  max_scf_cycles=50,
+                 # RASCI
                  ras_roots=1,
                  ras_do_hole=True,
                  ras_do_part=True,
@@ -25,15 +26,18 @@ class QchemInput:
                  ras_elec_beta=None,
                  ras_occ=None,
                  ras_spin_mult=1,
+                 ras_sts_tm=False,
+                 ras_natorb=False,
+                 ras_print=1,
+                 ras_diabatization_scheme=None,
+                 ras_diabatization_states=None,
+                 # RASCI SrDFT
                  ras_omega=400,
                  ras_srdft=False,
                  ras_srdft_damp=0.5,
                  ras_srdft_exc=None,
                  ras_srdft_cor=None,
                  ras_srdft_spinpol=0,
-                 ras_sts_tm=False,
-                 ras_natorb=False,
-                 ras_print=1,
                  # cis
                  cis_convergence=6,
                  cis_n_roots=None,
@@ -189,6 +193,21 @@ class QchemInput:
                         input_file += 'ras_srdft_cor {}\n'.format(self._ras_srdft_cor)
                     else:
                         raise Exception('{} not defined'.format('ras_srdft_cor'))
+
+                # Diabatization
+                diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3}
+                if self._ras_diabatization_states is not None:
+                    input_file += 'sts_multi_nroots {}\n'.format(len(self._ras_diabatization_states))
+                    input_file += 'cis_diabath_decompose {}\n'.format(len(self._ras_diabatization_scheme))
+
+                    input_file += 'ras_diab_seq_data '
+                    for seq in self._ras_diabatization_scheme:
+                        input_file += '{} \n'.format([num for num in seq['states']] +
+                                                     [diab_methods[seq['method']]] +
+                                                     [seq['parameters'] if 'parameters' in seq else 0]).replace(' ', '')
+
+                    input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
+
         # CIS variables
         if self._cis_n_roots is not None:
             input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
@@ -237,6 +256,13 @@ class QchemInput:
             input_file += 'geom_opt_tol_displacement {}\n'.format(self._geom_opt_tol_displacement)
             input_file += 'geom_opt_tol_energy {}\n'.format(self._geom_opt_tol_energy)
             input_file += 'geom_opt_max_cycles {}\n'.format(self._geom_opt_max_cycles)
+
+        # Diabatization section
+        if self._ras_diabatization_states is not None:
+            input_file += '$localized_diabatization\n'
+            input_file += 'adiabatic states\n'
+            input_file += ' '.join([str(num) for num in self._ras_diabatization_states])
+            input_file += '\n$end\n'
 
         return input_file + "\n"
 
