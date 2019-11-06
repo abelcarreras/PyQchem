@@ -117,7 +117,7 @@ class Structure:
     def get_coordinates(self):
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
-        return self._coordinates.tolist()
+        return list(self._coordinates)
 
     def set_coordinates(self, coordinates):
         self._coordinates = np.array(coordinates)
