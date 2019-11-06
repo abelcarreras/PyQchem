@@ -243,7 +243,7 @@ def build_fchk(parsed_data):
                 p_c_coefficients.append(pc)
 
     angstrom_to_bohr = 1/0.529177249
-    coordinates_list = angstrom_to_bohr*structure.get_coordinates().flatten()
+    coordinates_list = angstrom_to_bohr*np.array(structure.get_coordinates()).flatten()
 
     txt_fchk = '{}\n'.format('filename')
     txt_fchk += 'SP        R                             {}\n'.format('6-31G')

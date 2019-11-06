@@ -1,3 +1,4 @@
+import numpy as np
 
 def trunc_dictionary_list(dic_data, decimal):
     # w : dictionary
@@ -40,10 +41,19 @@ def standardize_dictionary(dic_data, decimal=5):
 
     # set all amplitudes to absolute value
     for state in dic_data['excited states rasci']:
-        for amp in state['amplitudes']:
-            amp['amplitude'] = abs(amp['amplitude'])
+        for configuration in state['amplitudes']:
+            configuration['amplitude'] = abs(configuration['amplitude'])
 
     trunc_dictionary_list(dic_data, decimal)
+
+    # delete zero amplitude configurations
+    for state in dic_data['excited states rasci']:
+        delete_list = []
+        for i, configuration in enumerate(state['amplitudes']):
+            if configuration['amplitude'] == 0:
+                delete_list.append(i)
+        for i in reversed(delete_list):
+            del state['amplitudes'][i]
 
     return dic_data
 

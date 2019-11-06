@@ -89,6 +89,7 @@ class HydrogenTest(unittest.TestCase):
 
         # calculate and parse qchem output
         output, error = get_output_from_qchem(txt_input, processors=4)
+        print(output)
         data = basic_rasci(output)
         print(data)
 
@@ -163,13 +164,13 @@ class WaterTest(unittest.TestCase):
         # with open(filename, 'w') as outfile:
         #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = standardize_dictionary(data)
+        data = standardize_dictionary(data, decimal=3)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded, decimal=3)
 
         self.assertDictEqual(data, data_loaded)
 

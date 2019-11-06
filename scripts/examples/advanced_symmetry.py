@@ -8,7 +8,7 @@ from pyqchem.file_io import build_fchk
 
 # Define custom classification function
 def get_custom_orbital_classification(parsed_fchk,
-                                      center=(0.0, 0.0, 0.0),
+                                      center=None,
                                       orientation=(0, 0, 1)
                                       ):
 
