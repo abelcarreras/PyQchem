@@ -65,8 +65,8 @@ def basic_rasci(output):
             section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
 
             mulliken.append({'attach': [float(l.split()[1]) for l in section_attachment],
-                             'detach': [float(l.split()[1]) for l in section_attachment],
-                             'total': [float(l.split()[1]) for l in section_attachment]})
+                             'detach': [float(l.split()[2]) for l in section_attachment],
+                             'total': [float(l.split()[3]) for l in section_attachment]})
 
         data_dict['diabatization'] = {'rot_matrix': rot_matrix,
                                       'adiabatic_matrix': adiabatic_matrix,
