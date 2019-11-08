@@ -84,6 +84,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_elec=2,
                                        ras_spin_mult=0,
                                        ras_roots=2,
+                                       ras_print=5,
                                        ras_do_hole=True,
                                        ras_sts_tm=True)
 
@@ -91,7 +92,6 @@ class HydrogenTest(unittest.TestCase):
         output, error = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
-        print(data)
 
         filename = self.__class__.__name__ + '_rasci.yaml'
 

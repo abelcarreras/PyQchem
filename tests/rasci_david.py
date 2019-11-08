@@ -280,10 +280,10 @@ class Eth90(unittest.TestCase):
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
-        data = standardize_dictionary(data, decimal=4)
+        data = standardize_dictionary(data, decimal=3)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded, decimal=4)
+        data_loaded = standardize_dictionary(data_loaded, decimal=3)
 
         self.assertDictEqual(data, data_loaded)
 

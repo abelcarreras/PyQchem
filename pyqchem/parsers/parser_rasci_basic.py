@@ -37,10 +37,12 @@ def basic_rasci(output):
     coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
     n_atoms = len(symbols)
-    data_dict['structure'] = Structure(coordinates=coordinates,
-                                       atomic_elements=symbols,
-                                       charge=charge,
-                                       multiplicity=multiplicity)
+
+    # structure not stored
+    structure = Structure(coordinates=coordinates,
+                          atomic_elements=symbols,
+                          charge=charge,
+                          multiplicity=multiplicity)
 
     # scf energy
     enum = output.find('SCF   energy in the final basis set')
