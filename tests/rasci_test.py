@@ -149,6 +149,7 @@ class WaterTest(unittest.TestCase):
                                        ras_elec=4,
                                        ras_spin_mult=1,
                                        ras_roots=6,
+                                       ras_print=5,
                                        ras_do_hole=True,
                                        ras_sts_tm=True)
 
@@ -164,13 +165,13 @@ class WaterTest(unittest.TestCase):
         # with open(filename, 'w') as outfile:
         #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = standardize_dictionary(data, decimal=3)
+        data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded, decimal=3)
+        data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
 
