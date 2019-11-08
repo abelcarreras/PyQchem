@@ -1,7 +1,7 @@
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
-from pyqchem.parsers.parser_rasci_basic import basic_rasci
+from pyqchem.parsers.parser_rasci import rasci as rasci_parser
 from pyqchem.structure import Structure
 
 import numpy as np
@@ -61,6 +61,8 @@ print(dimer)
 # sequential diabatization
 diabatization_scheme = [{'method': 'ER',
                          'states': [1, 2, 3, 4]},
+                        {'method': 'Boys',
+                         'states': [1, 2]}
                         ]
 
 # create qchem input
@@ -85,18 +87,21 @@ qc_input = QchemInput(dimer,
 parsed_data, _ = get_output_from_qchem(qc_input,
                                        processors=14,
                                        force_recalculation=False,
-                                       parser=basic_rasci
+                                       parser=rasci_parser
                                        )
 
 
 # print(parsed_data)
-# parsed_data = basic_rasci(parsed_data)
+# parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
-
+print('Adiabatic states\n--------------------')
 for i, state in enumerate(parsed_data['excited states rasci']):
-    print('\nState {}'.format(i))
+    print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
+    print(' Alpha  Beta   Amplitude')
+    for conf in state['amplitudes']:
+        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
 diabatization = parsed_data['diabatization']
 
@@ -109,17 +114,23 @@ print(np.array(diabatization['adiabatic_matrix']))
 print('\nDiabatic Matrix')
 print(np.array(diabatization['diabatic_matrix']))
 
+print('Diabatic states\n--------------------')
 for i, state in enumerate(diabatization['mulliken_analysis']):
     print('\nMulliken analysis - state', i+1)
     print('         Attach    Detach    Total ')
     for i_atom, (at, det) in enumerate(zip(state['attach'], state['detach'])):
         print('{:5}  {:8.4f}  {:8.4f}  {:8.4f}'.format(i_atom+1, at, det, at+det))
 
+    bars = range(1, dimer.get_number_of_atoms()+1)
     plt.figure(i+1)
+    plt.suptitle('Mulliken analysis')
     plt.title('State {}'.format(i+1))
-    plt.plot(state['attach'], label='Attachment')
-    plt.plot(state['detach'], label='Detachment')
-    plt.plot(state['total'], label='Total')
+    plt.bar(bars, state['attach'], label='Attachment')
+    plt.bar(bars, state['detach'], label='Detachment')
+    plt.plot(bars, state['total'], label='Total', color='r')
+    plt.xlabel('Atoms')
+    plt.ylabel('Charge [e-]')
+    plt.axvline((monomer.get_number_of_atoms()+0.5), color='black')
     plt.legend()
 
 plt.show()

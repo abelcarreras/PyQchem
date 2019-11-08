@@ -6,18 +6,78 @@ from pyqchem.utils import standardize_vector
 from pyqchem.structure import Structure
 
 
+def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
+    matrix_list = []
+    for m in re.finditer(header, output):
+        section_state = output[m.end():m.end() + maxchar]  # 10000: assumed to max of section
+        section_state = section_state[:section_state.find(foot)]
+        dim = len(section_state.split('\n')[1].split())
+        matrix = section_state.split('\n')[1:dim + 1]
+        matrix = [[float(n) for n in l.split()] for l in matrix]
+        matrix_list.append(matrix)
 
-def basic_rasci(output):
+    return matrix_list
+
+
+def rasci(output):
     """
-    Basic Parser for RAS-CI calculations
+    Parser for RAS-CI calculations
+    Include:
+    - Diabatization scheme data
+    - Structure
+    - Adiabatic states
 
     :param output:
     :return:
     """
 
+    data_dict = {}
+    # Molecule
+    n = output.find('$molecule')
+    n2 = output[n:].find('$end')
+
+    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
+    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
+    coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
+    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
+    n_atoms = len(symbols)
+
+    # structure not stored
+    data_dict['structure'] = Structure(coordinates=coordinates,
+                                       atomic_elements=symbols,
+                                       charge=charge,
+                                       multiplicity=multiplicity)
+
     # scf energy
     enum = output.find('SCF   energy in the final basis set')
     scf_energy = float(output[enum:enum+100].split()[8])
+
+    # total energy
+    # enum = output.find('Total energy in the final basis set')
+    # total_energy = float(output[enum:enum+100].split()[8])
+
+    # Diabatization scheme
+    done_diabat = bool(output.find('RASCI DIABATIZATION')+1)
+    if done_diabat:
+        rot_matrix = _read_simple_matrix('showmatrix final adiabatic -> diabatic', output)[-1]
+        adiabatic_matrix = _read_simple_matrix('showing H in adiabatic representation: NO coupling elements', output)[-1]
+        diabatic_matrix = _read_simple_matrix('showing H in diabatic representation: WITH coupling elements', output)[-1]
+
+        mulliken = []
+        enum = output.find('showing H in diabatic representation')
+        for m in re.finditer('Mulliken Analysis of Diabatic State', output[enum:]):
+            section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
+            section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
+            section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
+
+            mulliken.append({'attach': [float(l.split()[1]) for l in section_attachment],
+                             'detach': [float(l.split()[2]) for l in section_attachment],
+                             'total': [float(l.split()[3]) for l in section_attachment]})
+
+        data_dict['diabatization'] = {'rot_matrix': rot_matrix,
+                                      'adiabatic_matrix': adiabatic_matrix,
+                                      'diabatic_matrix': diabatic_matrix,
+                                      'mulliken_analysis': mulliken}
 
     # excited states data
     excited_states = []
@@ -86,5 +146,7 @@ def basic_rasci(output):
                                'amplitudes': table,
                                'contributions_fwn': contributions})
 
-    return {'scf energy': scf_energy,
-            'excited states rasci': excited_states}
+    data_dict.update({'scf energy': scf_energy,
+                      'excited states rasci': excited_states})
+
+    return data_dict

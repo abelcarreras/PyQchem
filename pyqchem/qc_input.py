@@ -204,7 +204,7 @@ class QchemInput:
                     for seq in self._ras_diabatization_scheme:
                         input_file += '{} '.format([num for num in seq['states']] +
                                                    [diab_methods[seq['method']]] +
-                                                   [seq['parameters'] if 'parameters' in seq else 0]).replace(' ', '')[1:-1]
+                                                   [seq['parameters'] if 'parameters' in seq else 0.0]).replace(' ', '')[1:-1]
                         input_file += ','
                     input_file = input_file[:-1] + ']\n'
                     input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
