@@ -45,7 +45,7 @@ print(opt_monomer)
 
 
 coor_monomer2 = np.array(opt_monomer.get_coordinates())
-coor_monomer2[:, 2] += 3.5
+coor_monomer2[:, 2] += 4.0  # monomer separation
 
 coordinates = opt_monomer.get_coordinates() + coor_monomer2.tolist()
 symbols_dimer = symbols_monomer * 2
@@ -82,7 +82,7 @@ qc_input = QchemInput(dimer,
                       ras_diabatization_scheme=diabatization_scheme,
                       set_iter=30)
 
-print(qc_input.get_txt())
+# print(qc_input.get_txt())
 
 parsed_data, _ = get_output_from_qchem(qc_input,
                                        processors=14,
