@@ -62,7 +62,7 @@ print(dimer)
 diabatization_scheme = [{'method': 'ER',
                          'states': [1, 2, 3, 4]},
                         {'method': 'Boys',
-                         'states': [1, 2]}
+                         'states': [3, 4]}
                         ]
 
 # create qchem input
@@ -71,18 +71,18 @@ qc_input = QchemInput(dimer,
                       exchange='hf',
                       correlation='rasci',
                       basis='sto-3g',
-                      ras_act=4,
+                      ras_act=6,
                       ras_elec=4,
                       ras_spin_mult=1,
-                      ras_roots=4,
+                      ras_roots=12,
                       ras_do_hole=False,
                       ras_do_part=False,
                       # ras_sts_tm=True,
-                      ras_diabatization_states=[1, 2, 3, 4],
+                      ras_diabatization_states=[3, 4, 5, 6],
                       ras_diabatization_scheme=diabatization_scheme,
                       set_iter=30)
 
-# print(qc_input.get_txt())
+print(qc_input.get_txt())
 
 parsed_data, _ = get_output_from_qchem(qc_input,
                                        processors=14,
