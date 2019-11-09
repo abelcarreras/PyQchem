@@ -94,14 +94,28 @@ parsed_data, _ = get_output_from_qchem(qc_input,
 # print(parsed_data)
 # parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
+from pyqchem.plots import plot_state
 print('Adiabatic states\n--------------------')
 for i, state in enumerate(parsed_data['excited states rasci']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
     print(' Alpha  Beta   Amplitude')
-    for conf in state['amplitudes']:
+
+    plt.figure()
+    plt.title('Adiabatic State {}'.format(i+1))
+    amplitude_list = []
+    for j, conf in enumerate(state['amplitudes']):
         print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
+        plot_state(conf['alpha'], conf['beta'], index=j)
+        amplitude_list.append(conf['amplitude'])
+
+    plt.plot(range(1, len(amplitude_list)+1), np.abs(amplitude_list)*len(state['amplitudes'][0]['alpha']), label='amplitudes')
+    plt.xlabel('Configurations')
+    plt.ylabel('Amplitude')
+    plt.legend()
+
+plt.show()
 
 diabatization = parsed_data['diabatization']
 
