@@ -74,7 +74,7 @@ qc_input = QchemInput(dimer,
                       ras_act=6,
                       ras_elec=4,
                       ras_spin_mult=1,
-                      ras_roots=12,
+                      ras_roots=8,
                       ras_do_hole=False,
                       ras_do_part=False,
                       # ras_sts_tm=True,
@@ -113,6 +113,7 @@ for i, state in enumerate(parsed_data['excited states rasci']):
     plt.plot(range(1, len(amplitude_list)+1), np.abs(amplitude_list)*len(state['amplitudes'][0]['alpha']), label='amplitudes')
     plt.xlabel('Configurations')
     plt.ylabel('Amplitude')
+    plt.axis('off')
     plt.legend()
 
 plt.show()
