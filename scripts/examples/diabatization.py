@@ -57,12 +57,12 @@ dimer = Structure(coordinates=coordinates,
 print('Dimer structure')
 print(dimer)
 
-# sequential diabatization scheme
-diabatization_scheme = [{'method': 'ER',
+# sequential diabatization scheme (2 steps)
+diabatization_scheme = [{'method': 'ER', # first step
                          'states': [1, 2, 3, 4]},  # in order with respect to selected states
-                        {'method': 'Boys',
-                         'states': [3, 4]}  # in energy order (low->high) with respect to diabatic states in previous step
-                        ]
+                        {'method': 'DQ', # Note: This second step is not really needed in this case, just for demostration
+                         'states': [3, 4],  # in energy order (low->high) with respect to diabatic states in previous step
+                         'parameters': 0.0}]
 
 # RASCI qchem input
 qc_input = QchemInput(dimer,
