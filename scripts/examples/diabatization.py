@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# define molecule
+# define monomer
 coor_monomer = [[ 0.6695,  0.0000,  0.0000],
                 [-0.6695,  0.0000,  0.0000],
                 [ 1.2321,  0.9289,  0.0000],
@@ -23,7 +23,7 @@ monomer = Structure(coordinates=coor_monomer,
                     charge=0,
                     multiplicity=1)
 
-# optimization
+# optimization qchem input
 qc_input = QchemInput(monomer,
                       jobtype='opt',
                       exchange='hf',
@@ -33,19 +33,18 @@ qc_input = QchemInput(monomer,
                       geom_opt_coords=-1,
                       geom_opt_tol_displacement=1200)
 
-parsed_data, err, fchk = get_output_from_qchem(qc_input,
-                                               processors=4,
-                                               parser=basic_optimization,
-                                               read_fchk=True)
+parsed_data, _ = get_output_from_qchem(qc_input,
+                                       processors=4,
+                                       parser=basic_optimization)
 
 opt_monomer = parsed_data['optimized_molecule']
 
 print('Optimized monomer structure')
 print(opt_monomer)
 
-
+# Build dimer from monomer
 coor_monomer2 = np.array(opt_monomer.get_coordinates())
-coor_monomer2[:, 2] += 4.0  # monomer separation
+coor_monomer2[:, 2] += 4.0  # monomers separation
 
 coordinates = opt_monomer.get_coordinates() + coor_monomer2.tolist()
 symbols_dimer = symbols_monomer * 2
@@ -58,14 +57,14 @@ dimer = Structure(coordinates=coordinates,
 print('Dimer structure')
 print(dimer)
 
-# sequential diabatization
+# sequential diabatization scheme
 diabatization_scheme = [{'method': 'ER',
-                         'states': [1, 2, 3, 4]},
+                         'states': [1, 2, 3, 4]},  # in order with respect to selected states
                         {'method': 'Boys',
-                         'states': [3, 4]}
+                         'states': [3, 4]}  # in energy order (low->high) with respect to diabatic states in previous step
                         ]
 
-# create qchem input
+# RASCI qchem input
 qc_input = QchemInput(dimer,
                       jobtype='sp',
                       exchange='hf',
@@ -73,12 +72,11 @@ qc_input = QchemInput(dimer,
                       basis='sto-3g',
                       ras_act=6,
                       ras_elec=4,
-                      ras_spin_mult=1,
-                      ras_roots=8,
+                      ras_spin_mult=1,  # singlets only
+                      ras_roots=8,      # calculate 8 states
                       ras_do_hole=False,
                       ras_do_part=False,
-                      # ras_sts_tm=True,
-                      ras_diabatization_states=[3, 4, 5, 6],
+                      ras_diabatization_states=[3, 4, 5, 6],  # adiabatic states selected for diabatization
                       ras_diabatization_scheme=diabatization_scheme,
                       set_iter=30)
 
@@ -94,19 +92,23 @@ parsed_data, _ = get_output_from_qchem(qc_input,
 # print(parsed_data)
 # parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
-from pyqchem.plots import plot_state
+
 print('Adiabatic states\n--------------------')
 for i, state in enumerate(parsed_data['excited states rasci']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
     print(' Alpha  Beta   Amplitude')
+    for j, conf in enumerate(state['amplitudes']):
+        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
+# plot diabatic states
+from pyqchem.plots import plot_state
+for i, state in enumerate(parsed_data['excited states rasci']):
     plt.figure()
     plt.title('Adiabatic State {}'.format(i+1))
     amplitude_list = []
     for j, conf in enumerate(state['amplitudes']):
-        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
         plot_state(conf['alpha'], conf['beta'], index=j)
         amplitude_list.append(conf['amplitude'])
 
@@ -118,6 +120,7 @@ for i, state in enumerate(parsed_data['excited states rasci']):
 
 plt.show()
 
+# diabatization analysis
 diabatization = parsed_data['diabatization']
 
 print('\nRotation Matrix')
@@ -139,7 +142,7 @@ for i, state in enumerate(diabatization['mulliken_analysis']):
     bars = range(1, dimer.get_number_of_atoms()+1)
     plt.figure(i+1)
     plt.suptitle('Mulliken analysis')
-    plt.title('State {}'.format(i+1))
+    plt.title('Diabatic state {}'.format(i+1))
     plt.bar(bars, state['attach'], label='Attachment')
     plt.bar(bars, state['detach'], label='Detachment')
     plt.plot(bars, state['total'], label='Total', color='r')
