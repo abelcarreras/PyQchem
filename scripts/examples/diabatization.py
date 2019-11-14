@@ -105,7 +105,7 @@ for i, state in enumerate(parsed_data['excited states rasci']):
 # plot diabatic states
 from pyqchem.plots import plot_state
 for i, state in enumerate(parsed_data['excited states rasci']):
-    plt.figure()
+    plt.figure(figsize=(len(state['amplitudes']), 5))
     plt.title('Adiabatic State {}'.format(i+1))
     amplitude_list = []
     for j, conf in enumerate(state['amplitudes']):

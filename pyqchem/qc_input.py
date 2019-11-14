@@ -166,7 +166,8 @@ class QchemInput:
                 if self._ras_elec is not None:
                     input_file += 'ras_elec {}\n'.format(self._ras_elec)
                 else:
-                    raise Exception('{} not defined'.format('ras_elec'))
+                    if self._ras_elec_alpha is None and self._ras_elec_beta is None:
+                        raise Exception('{} not defined'.format('ras_elec'))
 
                 if self._ras_elec_alpha is not None:
                     input_file += 'ras_elec_alpha {}\n'.format(self._ras_elec_alpha)
