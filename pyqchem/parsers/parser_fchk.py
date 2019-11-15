@@ -178,12 +178,14 @@ def parser_fchk(output):
 
     final_dict = {'structure': structure,
                   'basis': basis,
-                  'overlap': vect_to_mat(data['Overlap Matrix']).tolist(),
                   'coefficients': mo_coeff,
                   'mo_energies': mo_energy,
                   'number_of_electrons': {'alpha': data['Number of alpha electrons'],
                                           'beta': data['Number of beta electrons']}
                   }
+
+    if 'Overlap Matrix' in data:
+        final_dict['overlap'] = vect_to_mat(data['Overlap Matrix']).tolist()
 
     if 'Alpha NATO coefficients' in data:
         final_dict['nato_coefficients'] = {'alpha': np.array(data['Alpha NATO coefficients']).reshape(nbas, nbas).tolist()}
