@@ -112,7 +112,7 @@ for i, state in enumerate(parsed_data['excited states rasci']):
         plot_state(conf['alpha'], conf['beta'], index=j)
         amplitude_list.append(conf['amplitude'])
 
-    plt.plot(range(1, len(amplitude_list)+1), np.abs(amplitude_list)*len(state['amplitudes'][0]['alpha']), label='amplitudes')
+    plt.plot(range(1, len(amplitude_list)+1), np.square(amplitude_list)*len(state['amplitudes'][0]['alpha']), label='amplitudes')
     plt.xlabel('Configurations')
     plt.ylabel('Amplitude')
     plt.axis('off')
