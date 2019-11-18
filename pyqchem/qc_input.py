@@ -83,6 +83,9 @@ class QchemInput:
                 if ras_elec is not None:
                     self._ras_occ = (np.sum(
                         molecule.get_atomic_numbers()) - ras_elec - molecule.charge) // 2
+                elif ras_elec_alpha is not None or ras_elec_beta is not None:
+                    self._ras_occ = (np.sum(
+                        molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
                 print('ras_occ = {}'.format(self._ras_occ))
