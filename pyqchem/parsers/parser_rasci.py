@@ -109,8 +109,10 @@ def rasci(output):
                          float(section_state[enum:].split()[4]) + 0.0,
                          float(section_state[enum:].split()[6]) + 0.0]
             trans_mom = standardize_vector(trans_mom)
+            strength = float(section_state[enum:].split()[10])
         else:
             trans_mom = None
+            strength = None
 
         # amplitudes table
         enum = section_state.find('AMPLITUDE')
@@ -143,6 +145,7 @@ def rasci(output):
                                'multiplicity': mul,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
+                               'oscillator_strength': strength,
                                'amplitudes': table,
                                'contributions_fwn': contributions})
 

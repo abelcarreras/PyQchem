@@ -33,7 +33,7 @@ class QchemInput:
                  ras_diabatization_states=None,
                  # RASCI SrDFT
                  ras_omega=400,
-                 ras_srdft=False,
+                 ras_srdft=None,
                  ras_srdft_damp=0.5,
                  ras_srdft_exc=None,
                  ras_srdft_cor=None,
@@ -98,6 +98,15 @@ class QchemInput:
         else:
             self._mo_coefficients = None
 
+        if self._ras_srdft is not None:
+            from warnings import warn
+            warn('Warning! ras_srdft keyword is deprecated, this will be automatically '
+                 'activated when using ras_srdft_exc and ras_srdft_cor')
+        if ras_srdft_exc is not None or ras_srdft_cor is not None:
+           self._ras_srdft = True
+        else:
+            self._ras_srdft = False
+
     def get_txt(self):
         """
         get qchem input in plain text
@@ -157,7 +166,7 @@ class QchemInput:
                 input_file += 'ras_print {}\n'.format(self._ras_print)
                 input_file += 'ras_natorb {}\n'.format(self._ras_natorb)
                 input_file += 'ras_sts_tm {}\n'.format(self._ras_sts_tm)
-                input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
+                # input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
                 # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
 
                 if self._ras_act is not None:

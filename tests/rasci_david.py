@@ -47,16 +47,17 @@ class Eth00(unittest.TestCase):
                     'ras_sts_tm': True,
                     'ras_natorb': True,
                     # rasci sr-dft
-                    'ras_srdft': False,
-                    'ras_omega': 400,
-                    'ras_srdft_cor': 'srpw92',
-                    'ras_srdft_exc': 'srpbe',
-                    'ras_srdft_damp': 0.5,
-                    # rasci print level
+                    # 'ras_srdft': False,
+                    # 'ras_omega': 400,
+                    # 'ras_srdft_cor': 'srpw92',
+                    # 'ras_srdft_exc': 'srpbe',
+                    # 'ras_srdft_damp': 0.5,
+                    #  rasci print level
                     'ras_print': 2,
                     # Frozen
                     'n_frozen_core': 0,
-                    'n_frozen_virt': 0}
+                    'n_frozen_virt': 0,
+                    'set_iter': 60}
 
     def test_eth_00_ras22(self):
 
@@ -205,16 +206,17 @@ class Eth90(unittest.TestCase):
                     'ras_sts_tm': True,
                     'ras_natorb': True,
                     # rasci sr-dft
-                    'ras_srdft': False,
-                    'ras_omega': 400,
-                    'ras_srdft_cor': 'srpw92',
-                    'ras_srdft_exc': 'srpbe',
-                    'ras_srdft_damp': 0.5,
+                    # 'ras_srdft': False,
+                    # 'ras_omega': 400,
+                    # 'ras_srdft_cor': 'srpw92',
+                    # 'ras_srdft_exc': 'srpbe',
+                    # 'ras_srdft_damp': 0.5,
                     # rasci print level
                     'ras_print': 2,
                     # Frozen
                     'n_frozen_core': 0,
-                    'n_frozen_virt': 0}
+                    'n_frozen_virt': 0,
+                    'set_iter': 60}
 
     def test_eth_90_ras22(self):
 
@@ -362,16 +364,17 @@ class EthDist(unittest.TestCase):
                     'ras_sts_tm': True,
                     'ras_natorb': True,
                     # rasci sr-dft
-                    'ras_srdft': False,
-                    'ras_omega': 400,
-                    'ras_srdft_cor': 'srpw92',
-                    'ras_srdft_exc': 'srpbe',
-                    'ras_srdft_damp': 0.5,
+                    # 'ras_srdft': False,
+                    # 'ras_omega': 400,
+                    # 'ras_srdft_cor': 'srpw92',
+                    # 'ras_srdft_exc': 'srpbe',
+                    # 'ras_srdft_damp': 0.5,
                     # rasci print level
                     'ras_print': 2,
                     # Frozen
                     'n_frozen_core': 0,
-                    'n_frozen_virt': 0}
+                    'n_frozen_virt': 0,
+                    'set_iter': 60}
 
     def test_eth_dist_ras22(self):
 
