@@ -93,7 +93,7 @@ parsed_data, _ = get_output_from_qchem(qc_input,
 # parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
 
-print('Adiabatic states\n--------------------')
+print('Adiabatic states dimer\n--------------------')
 for i, state in enumerate(parsed_data['excited states rasci']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
@@ -132,7 +132,7 @@ print(np.array(diabatization['adiabatic_matrix']))
 print('\nDiabatic Matrix')
 print(np.array(diabatization['diabatic_matrix']))
 
-print('Diabatic states\n--------------------')
+print('Diabatic states dimer\n--------------------')
 for i, state in enumerate(diabatization['mulliken_analysis']):
     print('\nMulliken analysis - state', i+1)
     print('         Attach    Detach    Total ')
@@ -152,3 +152,32 @@ for i, state in enumerate(diabatization['mulliken_analysis']):
     plt.legend()
 
 plt.show()
+
+# Monomer adiabatic states (extra test)
+qc_input = QchemInput(opt_monomer,
+                      jobtype='sp',
+                      exchange='hf',
+                      correlation='rasci',
+                      basis='sto-3g',
+                      ras_act=6,
+                      ras_elec=4,
+                      ras_spin_mult=1,  # singlets only
+                      ras_roots=4,      # calculate 8 states
+                      ras_do_hole=False,
+                      ras_do_part=False,
+                      set_iter=30)
+
+parsed_data, _ = get_output_from_qchem(qc_input,
+                                       processors=14,
+                                       force_recalculation=False,
+                                       parser=rasci_parser
+                                       )
+
+print('\nAdiabatic states monomer\n--------------------')
+for i, state in enumerate(parsed_data['excited states rasci']):
+    print('\nState {}'.format(i+1))
+    print('Transition DM: ', state['transition_moment'])
+    print('Energy: ', state['excitation_energy'])
+    print(' Alpha  Beta   Amplitude')
+    for j, conf in enumerate(state['amplitudes']):
+        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))

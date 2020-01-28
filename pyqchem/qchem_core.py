@@ -185,6 +185,7 @@ def get_output_from_qchem(input_qchem,
                           parser_parameters={},
                           force_recalculation=False,
                           fchk_only=False,
+                          store_full_output=False,
                           remote=None):
     """
     Runs qchem and returns the output in the following format:
@@ -245,6 +246,10 @@ def get_output_from_qchem(input_qchem,
 
     input_txt = input_qchem.get_txt()
 
+    # check if full output is stored
+    hash_fullout = get_input_hash(input_txt + '__fullout__')
+    output, err = calculation_data[hash_fullout] if hash_fullout in calculation_data else [None, None]
+
     # Check if already calculate
     hash_fchk = get_input_hash(input_txt + '__fchk__')
 
@@ -277,10 +282,17 @@ def get_output_from_qchem(input_qchem,
     qchem_input_file.write(input_txt)
     qchem_input_file.close()
 
-    if remote is None:
-        output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
-    else:
-        output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
+    # Q-Chem calculation
+    if output is None:
+        if remote is None:
+            output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
+        else:
+            output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
+
+    if store_full_output:
+        calculation_data[hash_fullout] = output, err
+        with open(__calculation_data_filename__, 'wb') as f:
+            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
     if parser is not None:
         hash = get_input_hash(input_txt + '{}'.format(parser.__name__))

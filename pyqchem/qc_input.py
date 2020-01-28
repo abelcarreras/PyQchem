@@ -161,7 +161,6 @@ class QchemInput:
                 input_file += 'ras_do_hole {}\n'.format(self._ras_do_hole)
                 input_file += 'ras_do_part {}\n'.format(self._ras_do_part)
                 input_file += 'ras_occ {}\n'.format(self._ras_occ)
-                input_file += 'ras_omega {}\n'.format(self._ras_omega)
                 input_file += 'ras_spin_mult {}\n'.format(self._ras_spin_mult)
                 input_file += 'ras_print {}\n'.format(self._ras_print)
                 input_file += 'ras_natorb {}\n'.format(self._ras_natorb)
@@ -196,6 +195,7 @@ class QchemInput:
                     input_file += 'ras_srdft {}\n'.format('True')
                     input_file += 'ras_srdft_damp {}\n'.format(self._ras_srdft_damp)
                     input_file += 'ras_srdft_spinpol {}\n'.format(self._ras_srdft_spinpol)
+                    input_file += 'ras_omega {}\n'.format(self._ras_omega)
 
                     if self._ras_srdft_exc is not None:
                         input_file += 'ras_srdft_exc {}\n'.format(self._ras_srdft_exc)
