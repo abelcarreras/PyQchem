@@ -120,6 +120,16 @@ for i, state in enumerate(parsed_data['excited states rasci']):
 
 plt.show()
 
+
+# Analysis of diabatic states to use in diabatization
+from pyqchem.utils import is_transition, get_ratio_of_condition
+print('\nAdiabatic states to use in diabatization (1e, max_jump 4)')
+for i, state in enumerate(parsed_data['excited states rasci']):
+    ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)
+    mark = 'X' if ratio > 0.5 else ''
+    print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
+
+
 # diabatization analysis
 diabatization = parsed_data['diabatization']
 
@@ -132,7 +142,7 @@ print(np.array(diabatization['adiabatic_matrix']))
 print('\nDiabatic Matrix')
 print(np.array(diabatization['diabatic_matrix']))
 
-print('Diabatic states dimer\n--------------------')
+print('\nDiabatic states dimer\n--------------------')
 for i, state in enumerate(diabatization['mulliken_analysis']):
     print('\nMulliken analysis - state', i+1)
     print('         Attach    Detach    Total ')
