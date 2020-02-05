@@ -182,7 +182,7 @@ def get_output_from_qchem(input_qchem,
                           scratch=None,
                           read_fchk=False,
                           parser=None,
-                          parser_parameters={},
+                          parser_parameters=None,
                           force_recalculation=False,
                           fchk_only=False,
                           store_full_output=False,
@@ -246,6 +246,10 @@ def get_output_from_qchem(input_qchem,
 
     input_txt = input_qchem.get_txt()
 
+    # check if parameters is None
+    if parser_parameters is None:
+        parser_parameters = {}
+
     # check if full output is stored
     hash_fullout = get_input_hash(input_txt + '__fullout__')
     output, err = calculation_data[hash_fullout] if hash_fullout in calculation_data else [None, None]
@@ -253,7 +257,7 @@ def get_output_from_qchem(input_qchem,
     # Check if already calculate
     hash_fchk = get_input_hash(input_txt + '__fchk__')
 
-    if not force_recalculation:
+    if not force_recalculation and not store_full_output:
 
         data_fchk = None
         if read_fchk and hash_fchk in calculation_data:
@@ -283,7 +287,7 @@ def get_output_from_qchem(input_qchem,
     qchem_input_file.close()
 
     # Q-Chem calculation
-    if output is None:
+    if output is None or force_recalculation is True:
         if remote is None:
             output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
         else:

@@ -42,7 +42,17 @@ def rasci(output):
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
     n_atoms = len(symbols)
 
-    # structure not stored
+    # structure
+    structure_input = Structure(coordinates=coordinates,
+                                atomic_elements=symbols,
+                                charge=charge,
+                                multiplicity=multiplicity)
+
+    enum = output.find('Standard Nuclear Orientation')
+    section_structure = output[enum:enum + 100*structure_input.get_number_of_atoms()].split('\n')
+    section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
+    coordinates = [ [float(num) for num in s.split()[2:]] for s in section_structure]
+
     data_dict['structure'] = Structure(coordinates=coordinates,
                                        atomic_elements=symbols,
                                        charge=charge,
@@ -63,21 +73,33 @@ def rasci(output):
         adiabatic_matrix = _read_simple_matrix('showing H in adiabatic representation: NO coupling elements', output)[-1]
         diabatic_matrix = _read_simple_matrix('showing H in diabatic representation: WITH coupling elements', output)[-1]
 
-        mulliken = []
+        mulliken_adiabatic = []
+        enum = output.find('Mulliken analysis of Adiabatic State')
+        for m in re.finditer('Mulliken analysis of Adiabatic State', output[enum:]):
+            section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
+            section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
+            section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
+
+            mulliken_adiabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
+                                       'detach': [float(l.split()[2]) for l in section_attachment],
+                                       'total': [float(l.split()[3]) for l in section_attachment]})
+
+        mulliken_diabatic = []
         enum = output.find('showing H in diabatic representation')
         for m in re.finditer('Mulliken Analysis of Diabatic State', output[enum:]):
             section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
             section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
             section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
 
-            mulliken.append({'attach': [float(l.split()[1]) for l in section_attachment],
+            mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
                              'detach': [float(l.split()[2]) for l in section_attachment],
                              'total': [float(l.split()[3]) for l in section_attachment]})
 
         data_dict['diabatization'] = {'rot_matrix': rot_matrix,
                                       'adiabatic_matrix': adiabatic_matrix,
                                       'diabatic_matrix': diabatic_matrix,
-                                      'mulliken_analysis': mulliken}
+                                      'mulliken_analysis': mulliken_diabatic,
+                                      'mulliken_adiabatic': mulliken_adiabatic}
 
     # excited states data
     excited_states = []
