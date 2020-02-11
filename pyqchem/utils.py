@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from scipy.optimize import leastsq
 
 
 def standardize_vector(vector):
@@ -92,6 +93,122 @@ def get_ratio_of_condition(state, n_electron=1, max_jump=10):
             p += configuration['amplitude']**2
 
     return p
+
+
+def set_zero_coefficients(basis, mo_coeff, range_atoms):
+    """
+    set 0.0 to coefficients of functions centered in atoms 'range_atoms'
+
+    :param basis: full basis dictionary
+    :param mo_coeff: full molecular orbitals coefficients to be modiffied
+    :param range_atoms: list containing the atom numbers whose coefficients will be set to zero
+    :return:
+    """
+
+    functions_to_atom = []
+    nat = len(basis['atoms'])
+    for i in range(0, nat):
+        nf = 0
+        for shell in basis['atoms'][i]['shells']:
+            nf += shell['functions']
+        functions_to_atom.append(nf)
+    functions_to_atom = functions_to_atom
+
+    # print(funtions_to_atom)
+    mo_coeff_a = np.array(mo_coeff['alpha'])
+    for i in range_atoms:
+        ini = np.sum(functions_to_atom[:i], dtype=int)
+        fin = np.sum(functions_to_atom[:i+1], dtype=int)
+        # print('ini', ini, 'fin', fin)
+        mo_coeff_a[:, ini: fin] *= 0.0
+    mo_coeff_zero = {'alpha': mo_coeff_a.tolist()}
+
+    if 'beta' in mo_coeff:
+        mo_coeff_b = np.array(mo_coeff['beta'])
+        for i in range_atoms:
+            ini = np.sum(functions_to_atom[:i], dtype=int)
+            fin = np.sum(functions_to_atom[:i + 1], dtype=int)
+            # print('ini', ini, 'fin', fin)
+            mo_coeff_b[:, ini: fin] *= 0.0
+        mo_coeff_zero['beta'] = mo_coeff_b.tolist()
+
+    return mo_coeff_zero
+
+
+def get_plane(coords, direction=None):
+    """Generate initial guess"""
+
+    coords = np.array(coords)
+    p0 = np.cross(coords[0] - coords[2], coords[0] - coords[-1]) / np.linalg.norm(np.cross(coords[0] - coords[2],
+                                                                                           coords[0] - coords[-1]))
+
+    # Fitting function to a plane
+    def fitfunc(p, coords):
+        average = np.average(coords, axis=0)
+        return np.array([np.dot(p, average - c) for c in coords])
+
+    # Error function (including force norm(normal) = 1)
+    errfunc = lambda p, x: fitfunc(p, x)**2 + (np.linalg.norm(p) - 1.0)**2
+
+    p1, flag = leastsq(errfunc, p0, args=(coords,))
+
+
+    # Check final result
+    point = np.average(coords, axis=0).tolist()
+    normal = np.array(p1)/np.linalg.norm(p1)
+
+    if direction is not None:
+        vector = coords[direction[1]] - coords[direction[0]]
+        # proj = vector - np.dot(vector, normal)*normal
+        projected = np.cross(normal,  np.cross(vector, normal))
+        projected /= np.linalg.norm(projected)
+
+        normal = standardize_vector(normal)
+        projected = standardize_vector(projected)
+
+        return point, normal, projected
+
+    normal = standardize_vector(normal)
+    return point, normal
+
+
+def reorder_coefficients(occupations, coefficients):
+    """
+    Reorder the coefficients according to occupations. Occupated orbitals will be grouped at the beginning
+    non occupied will be attached at the end
+
+    :param occupations: list on integers (0 or 1) or list of Boolean
+    :param coefficients:  dictionary containing the molecular orbitals coefficients {'alpha': coeff, 'beta:' coeff}.
+                          coeff should be a list of lists (Norb x NBas)
+    :return:
+    """
+
+    alpha_coefficients = []
+    non_occupied = []
+    for occ, coeff in zip(occupations['alpha'], coefficients['alpha']):
+        if occ:
+            alpha_coefficients.append(coeff)
+        else:
+            non_occupied.append(coeff)
+
+    # non occupated attached at the end
+    alpha_coefficients += non_occupied
+
+    if not 'beta' in coefficients:
+        coefficients['beta'] = coefficients['alpha']
+
+    beta_coefficients = []
+    non_occupied = []
+    for occ, coeff in zip(occupations['beta'], coefficients['beta']):
+        if occ:
+            beta_coefficients.append(coeff)
+        else:
+            non_occupied.append(coeff)
+
+    # non occupated attached at the end
+    beta_coefficients += non_occupied
+
+    return {'alpha': alpha_coefficients, 'beta': beta_coefficients}
 
 
 if __name__ == '__main__':

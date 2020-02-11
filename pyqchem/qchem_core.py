@@ -211,6 +211,7 @@ def get_output_from_qchem(input_qchem,
     :param fchk_only:
     :return output, error[, fchk_dict]:
     """
+    from pyqchem.parsers.parser_fchk import parser_fchk
 
     # check gui > 2 if read_fchk
     if read_fchk:
@@ -306,7 +307,10 @@ def get_output_from_qchem(input_qchem,
             pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
     if read_fchk:
-        from pyqchem.parsers.parser_fchk import parser_fchk
+
+        if hash_fchk in calculation_data:
+            data_fchk = calculation_data[hash_fchk]
+            return output, err, data_fchk
 
         if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
             warnings.warn('fchk not found! Make sure the input generates it (gui 2)')

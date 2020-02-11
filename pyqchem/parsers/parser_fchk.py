@@ -129,7 +129,8 @@ def parser_fchk(output):
                 'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha MO coefficients',
                 'Beta MO coefficients', 'Coordinates of each shell', 'Overlap Matrix',
                 'Core Hamiltonian Matrix', 'Alpha Orbital Energies', 'Beta Orbital Energies',
-                'Total SCF Density', 'Alpha NATO coefficients', 'Alpha Natural Orbital occupancies'
+                'Total SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
+                'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies'
                 ]
 
     basis_set = output.split('\n')[1].split()[-1]
@@ -190,4 +191,10 @@ def parser_fchk(output):
     if 'Alpha NATO coefficients' in data:
         final_dict['nato_coefficients'] = {'alpha': np.array(data['Alpha NATO coefficients']).reshape(nbas, nbas).tolist()}
         final_dict['nato_occupancies'] = {'alpha': data['Alpha Natural Orbital occupancies']}
+
+    if 'Beta NATO coefficients' in data:
+        final_dict['nato_coefficients'].update({
+            'beta': np.array(data['Beta NATO coefficients']).reshape(nbas, nbas).tolist()})
+        final_dict['nato_occupancies'].update({'beta': data['Beta Natural Orbital occupancies']})
+
     return final_dict

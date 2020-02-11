@@ -111,6 +111,8 @@ class Structure:
 
         self._full_z_matrix = None
 
+        # get electrons
+
     def __str__(self):
         return self.get_xyz()
 
@@ -205,6 +207,19 @@ class Structure:
     @multiplicity.setter
     def multiplicity(self, multiplicity):
         self._multiplicity = multiplicity
+
+    @property
+    def number_of_electrons(self):
+        return np.sum(self.get_atomic_numbers()) + self.charge
+
+    @property
+    def alpha_electrons(self):
+        alpha_unpaired = self.multiplicity // 2 + 1 if (self.number_of_electrons % 2) else self.multiplicity // 2
+        return self.number_of_electrons // 2 + alpha_unpaired
+
+    @property
+    def beta_electrons(self):
+        return self.number_of_electrons - self.alpha_electrons
 
     def _get_atom_types(self):
         if self._atom_types is None:

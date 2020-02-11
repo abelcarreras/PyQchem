@@ -28,6 +28,7 @@ class QchemInput:
                  ras_spin_mult=1,
                  ras_sts_tm=False,
                  ras_natorb=False,
+                 ras_natorb_state=None,
                  ras_print=1,
                  ras_diabatization_scheme=None,
                  ras_diabatization_states=None,
@@ -156,6 +157,10 @@ class QchemInput:
 
             # RasCI variables
             if self._correlation.upper() == 'RASCI':
+
+                if self._ras_natorb_state is not None:
+                    input_file += 'ras_natorb_state {}\n'.format(self._ras_natorb_state)
+                    self._ras_natorb = True
 
                 input_file += 'ras_roots {}\n'.format(self._ras_roots)
                 input_file += 'ras_do_hole {}\n'.format(self._ras_do_hole)
