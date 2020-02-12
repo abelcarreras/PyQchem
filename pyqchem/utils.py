@@ -77,7 +77,7 @@ def is_transition(configuration, reference, n_electron=1, max_jump=10):
 def get_ratio_of_condition(state, n_electron=1, max_jump=10):
     # reference = {'hole': '', 'alpha': '111000', 'beta': '111000', 'part': '', 'amplitude': 0.9777044}
 
-    alpha_int = [int(i) for i in state['amplitudes'][0]['alpha']]
+    alpha_int = [int(i) for i in state['configurations'][0]['alpha']]
     ref_alpha = ''
     for i in range(len(alpha_int)):
         if i < np.sum(alpha_int):
@@ -88,7 +88,7 @@ def get_ratio_of_condition(state, n_electron=1, max_jump=10):
     reference = {'hole': '', 'alpha': ref_alpha, 'beta': ref_alpha, 'part': ''}
 
     p = 0
-    for configuration in state['amplitudes']:
+    for configuration in state['configurations']:
         if is_transition(configuration, reference, n_electron, max_jump):
             p += configuration['amplitude']**2
 
@@ -212,6 +212,6 @@ def reorder_coefficients(occupations, coefficients):
 
 
 if __name__ == '__main__':
-    state = {'amplitudes': [{'hole': '', 'alpha': '110100', 'beta': '111000', 'part': '', 'amplitude': 0.5}]}
+    state = {'configurations': [{'hole': '', 'alpha': '110100', 'beta': '111000', 'part': '', 'amplitude': 0.5}]}
     b = get_ratio_of_condition(state)
     print('test', b)

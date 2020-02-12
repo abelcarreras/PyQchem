@@ -117,10 +117,10 @@ if __name__ == '__main__':
     from pyqchem.file_io import build_fchk
     open('test.fchk', 'w').write(build_fchk(fchk_data))
 
-    alpha_mo_coeff = set_zero_coefficients(fchk_data['basis'],
+    mo_coeff = set_zero_coefficients(fchk_data['basis'],
                                            fchk_data['coefficients'],
                                            range(6, 12))
-    fchk_data['coefficients']['alpha'] = alpha_mo_coeff
+    fchk_data['coefficients'] = mo_coeff
 
     structure = fchk_data['structure']
     print(structure.get_xyz())

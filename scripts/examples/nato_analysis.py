@@ -192,13 +192,13 @@ center_f1, normal_f1 = get_plane(coordinates_f1)
 # get_state_classification(electronic_structure,
 #                          center=center_f1,
 #                          orientation=normal_f1,
-#                          configurations=output['excited states rasci'][n_state]['amplitudes'],
+#                          configurations=output['excited states rasci'][n_state]['configurations'],
 #                          occupied=qc_input._ras_occ)
 
 wfsym = get_state_symmetry(electronic_structure,
                    center=center_f1,
                    orientation=normal_f1,
-                   configurations=output['excited states rasci'][n_state]['amplitudes'],
+                   configurations=output['excited states rasci'][n_state]['configurations'],
                    occupied=qc_input._ras_occ)
 
 print(wfsym)

@@ -136,7 +136,7 @@ def rasci(output):
             trans_mom = None
             strength = None
 
-        # amplitudes table
+        # configurations table
         enum = section_state.find('AMPLITUDE')
         enum2 = section_state.find('Contributions')
         section_table = section_state[enum: enum2].split('\n')[2:-2]
@@ -168,7 +168,7 @@ def rasci(output):
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
                                'oscillator_strength': strength,
-                               'amplitudes': table,
+                               'configurations': table,
                                'contributions_fwn': contributions})
 
     data_dict.update({'scf energy': scf_energy,

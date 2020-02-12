@@ -31,7 +31,6 @@ for dist in distances:
                                   ras_do_hole=True,
                                   ras_sts_tm=True,
                                   # rasci sr-dft
-                                  ras_srdft=True,
                                   ras_omega=400,
                                   ras_srdft_cor='srpw92',
                                   ras_srdft_exc='srpbe',

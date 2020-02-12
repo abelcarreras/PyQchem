@@ -1,7 +1,7 @@
 from pyqchem.structure import atom_data, Structure
 
 import numpy as np
-
+angstrom_to_bohr = 1/0.529177249
 
 def get_array_txt(label, type, array, row_size=5):
 
@@ -94,7 +94,6 @@ def build_fchk(parsed_data):
             for pc in shell['p_con_coefficients']:
                 p_c_coefficients.append(pc)
 
-    angstrom_to_bohr = 1/0.529177249
     coordinates_list = angstrom_to_bohr*np.array(structure.get_coordinates()).flatten()
 
     txt_fchk = '{}\n'.format('filename')

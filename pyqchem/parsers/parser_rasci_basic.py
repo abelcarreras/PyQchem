@@ -86,7 +86,7 @@ def basic_rasci(output):
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
                                # 'oscillator_strength': strength,
-                               'amplitudes': table,
+                               'configurations': table,
                                'contributions_fwn': contributions})
 
     return {'scf energy': scf_energy,
