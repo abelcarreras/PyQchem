@@ -211,6 +211,13 @@ def reorder_coefficients(occupations, coefficients):
     return {'alpha': alpha_coefficients, 'beta': beta_coefficients}
 
 
+def get_occupied_electrons(configuration, structure):
+    # not working for particle, hole enabled configurations!
+    alpha_e = np.sum([int(c) for c in configuration['alpha']])
+    beta_e = np.sum([int(c) for c in configuration['beta']])
+    return (structure.number_of_electrons + structure.charge - (alpha_e + beta_e))//2
+
+
 if __name__ == '__main__':
     state = {'configurations': [{'hole': '', 'alpha': '110100', 'beta': '111000', 'part': '', 'amplitude': 0.5}]}
     b = get_ratio_of_condition(state)

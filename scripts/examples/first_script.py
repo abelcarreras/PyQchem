@@ -49,6 +49,5 @@ output, err = get_output_from_qchem(qc_input,
 # Get data
 print('OUTPUT')
 print(output)
-print('ERROR')
 
 print('the energy is: ', output['scf energy'])
