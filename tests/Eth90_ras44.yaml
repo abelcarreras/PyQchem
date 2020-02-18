@@ -1,5 +1,5 @@
 excited states rasci:
-- amplitudes:
+- configurations:
   - alpha: '1010'
     amplitude: -0.7055592
     beta: '1100'
@@ -24,7 +24,7 @@ excited states rasci:
   total energy units: au
   total_energy: -77.9476752955
   transition_moment: null
-- amplitudes:
+- configurations:
   - alpha: '1010'
     amplitude: 0.7054181
     beta: '1100'
@@ -52,7 +52,7 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0
-- amplitudes:
+- configurations:
   - alpha: '1010'
     amplitude: -0.6529671
     beta: '1010'
@@ -100,7 +100,7 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0
-- amplitudes:
+- configurations:
   - alpha: '1010'
     amplitude: 0.6491334
     beta: '1010'
@@ -148,7 +148,7 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.0
-- amplitudes:
+- configurations:
   - alpha: '0110'
     amplitude: 0.3395608
     beta: '1100'
@@ -206,7 +206,7 @@ excited states rasci:
   - 0.1231
   - 0.0
   - 0.0
-- amplitudes:
+- configurations:
   - alpha: '0110'
     amplitude: -0.3395614
     beta: '1010'
@@ -264,7 +264,7 @@ excited states rasci:
   - 0.0
   - 0.1231
   - 0.0
-- amplitudes:
+- configurations:
   - alpha: '0110'
     amplitude: -0.5939445
     beta: '1100'
