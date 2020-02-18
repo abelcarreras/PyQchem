@@ -112,6 +112,37 @@ def vect_to_mat(vector):
     return matrix
 
 
+def _get_all_nato(output):
+    import re
+
+    nato_coefficients_list = []
+    nato_occupancies_list = []
+
+    for m in re.finditer('Alpha NATO coefficients', output):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nato_coefficients_list.append({'alpha': np.array(data, dtype=float).reshape(nbas, nbas).tolist()})
+
+    for m in re.finditer('Alpha Natural Orbital occupancies', output):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nato_occupancies_list.append({'alpha': np.array(data, dtype=float).tolist()})
+
+    for i, m in enumerate(re.finditer('Beta NATO coefficients', output)):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nato_coefficients_list[i]['beta'] = np.array(data, dtype=float).reshape(nbas, nbas).tolist()
+
+    for i, m in enumerate(re.finditer('Beta Natural Orbital occupancies', output)):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nato_occupancies_list[i]['beta'] = np.array(data, dtype=float).tolist()
+
+    return nato_coefficients_list, nato_occupancies_list
+
+
 def parser_fchk(output):
 
     def convert_to_type(item_type, item):
@@ -196,5 +227,12 @@ def parser_fchk(output):
         final_dict['nato_coefficients'].update({
             'beta': np.array(data['Beta NATO coefficients']).reshape(nbas, nbas).tolist()})
         final_dict['nato_occupancies'].update({'beta': data['Beta Natural Orbital occupancies']})
+
+    # check multiple NATO (may be improved)
+    if 'Alpha NATO coefficients' in data:
+        nato_coefficients_list, nato_occupancies_list = _get_all_nato(output)
+        if len(nato_occupancies_list) > 1:
+            final_dict['nato_coefficients_multi'] = nato_coefficients_list
+            final_dict['nato_occupancies_multi'] = nato_occupancies_list
 
     return final_dict

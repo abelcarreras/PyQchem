@@ -308,7 +308,7 @@ def get_output_from_qchem(input_qchem,
 
     if read_fchk:
 
-        if hash_fchk in calculation_data:
+        if hash_fchk in calculation_data and not force_recalculation:
             data_fchk = calculation_data[hash_fchk]
             return output, err, data_fchk
 
