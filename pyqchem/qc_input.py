@@ -1,5 +1,7 @@
 import numpy as np
 from copy import deepcopy
+from pyqchem.basis import basis_to_txt
+
 
 class QchemInput:
     """
@@ -90,6 +92,12 @@ class QchemInput:
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
                 print('ras_occ = {}'.format(self._ras_occ))
+
+        # Handle custom basis set
+        if type(basis) is not str:
+            self._basis = 'gen'
+            self._custom_basis = basis
+
 
         # handle explicit guess (from MO coefficients)
         if scf_guess is not None and type(scf_guess) is not str:
@@ -282,6 +290,12 @@ class QchemInput:
             input_file += 'adiabatic states\n'
             input_file += ' '.join([str(num) for num in self._ras_diabatization_states])
             input_file += '\n$end\n'
+
+        # custom basis section
+        if self._basis == 'gen':
+            input_file += '$basis\n'
+            input_file += basis_to_txt(self._custom_basis)
+            input_file += '$end\n'
 
         return input_file + "\n"
 

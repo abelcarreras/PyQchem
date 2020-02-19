@@ -18,8 +18,6 @@ ethene = [[0.0,  0.0000,   0.65750],
 
 symbols = ['C', 'C', 'H', 'H', 'H', 'H']
 
-range_f1 = range(0, 6)
-
 # create molecule
 molecule = Structure(coordinates=ethene,
                      atomic_elements=symbols,
@@ -54,7 +52,7 @@ output, err, electronic_structure = get_output_from_qchem(qc_input,
 open('test.fchk', 'w').write(build_fchk(electronic_structure))
 
 # get plane from coordinates
-coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[range_f1]
+coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())
 center_f1, normal_f1 = get_plane(coordinates_f1)
 
 

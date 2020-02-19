@@ -2,11 +2,55 @@ import requests as req
 from lxml import html
 import unicodedata
 import re
+import numpy as np
+
+def _txt_to_basis_dict(basis_txt):
+    # read basis in gaussian/qchem format
+
+    symbol = basis_txt[0].split()[0]
+
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    basis_pure = basis_txt[2:]
+
+    section_marks = []
+    for i, line in enumerate(basis_pure):
+        if not is_number(line.split()[0]):
+            section_marks.append(i)
+
+    shells = []
+    for i in section_marks[:-1]:
+        type, n_func, _  = basis_pure[i].split()
+        n_func = int(n_func)
+
+        if type.upper() in ['SP']:
+            p_exponent, con_coefficients, p_con_coefficients = np.array([line.split()
+                                                                         for line in basis_pure[i + 1:i + n_func + 1]],
+                                                                        dtype=float).T
+        else:
+            p_exponent, con_coefficients = np.array([line.split()
+                                                     for line in basis_pure[i + 1:i + n_func + 1]],
+                                                    dtype=float).T
+            p_con_coefficients = np.zeros_like(p_exponent)
 
 
-def get_basis_from_ccRepo(element,
-                          program='Gaussian',
-                          basis='cc-pVDZ'):
+        shells.append({'shell_type': type,
+                       'p_exponents': list(p_exponent),
+                       'con_coefficients': list(con_coefficients),
+                       'p_con_coefficients': list(p_con_coefficients)})
+
+    return {'symbol': symbol,
+            'shells': shells}
+
+
+def get_basis_element_from_ccRepo(element,
+                                  program='Gaussian',
+                                  basis='cc-pVDZ'):
 
     # Check main page element list
     with req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/") as resp:
@@ -19,7 +63,8 @@ def get_basis_from_ccRepo(element,
     element_dict = {'H': 'hydrogen',
                     'C': 'carbon',
                     'N': 'nitrogen',
-                    'O': 'oxygen'}
+                    'O': 'oxygen',
+                    'Se': 'selenium'}
 
     resp = req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/{}".format(element_dict[element]))
     n_ini = resp.text.find('form-inline')
@@ -42,18 +87,80 @@ def get_basis_from_ccRepo(element,
 
     basis_data = tree.xpath('/html/body/div/nobr/text()')
     basis_clean = [unicodedata.normalize('NFKC', line).strip() for line in basis_data]
+    # basis_name = basis_clean[1].split('"')[1]
 
-    return citation, description, basis_clean
+    return citation, description, basis_clean[2:]
+
+
+def get_basis_from_ccRepo(structure, basis, full=False):
+
+    symbols = structure.get_atomic_elements()
+    if not full:
+        symbols = np.unique(symbols)
+
+    atoms = []
+    for symbol in symbols:
+        citation, description, basis_data = get_basis_element_from_ccRepo(symbol,
+                                                                          program='Gaussian',
+                                                                          basis=basis)
+
+        atoms.append(_txt_to_basis_dict(basis_data))
+
+    basis_set = {'name': basis,
+                 'primitive_type': 'gaussian',
+                 'atoms': atoms}
+
+    return basis_set
+
+
+def basis_to_txt(basis):
+    # write basis in qchem/gaussian format
+    basis_txt = ''
+
+    for atom in basis['atoms']:
+        basis_txt += atom['symbol'] + '\n'
+        for shell in atom['shells']:
+            basis_txt += '{} {} {}\n'.format(shell['shell_type'].upper(), len(shell['p_exponents']), 1.00)
+            for p, c, pc in zip(shell['p_exponents'], shell['con_coefficients'], shell['p_con_coefficients']):
+                if shell['shell_type'].upper() in ['SP']:
+                    basis_txt += '{:15.10e} {:15.10e} {:15.10e} \n'.format(p, c, pc)
+                else:
+                    basis_txt += '{:15.10e} {:15.10e} \n'.format(p, c)
+
+        basis_txt += '****\n'
+    return basis_txt
+
+
 
 
 if __name__ == '__main__':
 
-    citation, description, basis = get_basis_from_ccRepo('O',
-                                                         program='Gaussian',
-                                                         basis='cc-pVTZ')
+    citation, description, basis = get_basis_element_from_ccRepo('C',
+                                                                 program='Gaussian',
+                                                                 basis='cc-pVTZ')
 
     print(citation)
     print(description)
     print('-----------------------')
     for line in basis:
         print(line)
+
+    basis = _txt_to_basis_dict(basis)
+    print(basis)
+
+
+    from pyqchem.structure import Structure
+
+
+    # create molecule
+    molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
+                                      [0.0, 0.0, 1.5811]],
+                         atomic_elements=['Se', 'H'],
+                         charge=-1,
+                         multiplicity=1)
+
+    basis = get_basis_from_ccRepo(molecule,
+                                  basis='cc-pVTZ',
+                                  full=False)
+
+    print(basis_to_txt(basis))

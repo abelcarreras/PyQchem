@@ -190,6 +190,9 @@ def parser_fchk(output):
                           multiplicity=data['Multiplicity'],
                           charge=data['Charge'])
 
+    if not 'P(S=P) Contraction coefficients' in data:
+        data['P(S=P) Contraction coefficients'] = np.zeros_like(data['Contraction coefficients']).tolist()
+
     basis = basis_format(basis_set_name=basis_set,
                          atomic_numbers=structure.get_atomic_numbers(),
                          atomic_symbols=structure.get_atomic_elements(),
