@@ -4,7 +4,7 @@ import re
 import operator
 from pyqchem.utils import standardize_vector
 from pyqchem.structure import Structure
-
+from pyqchem.utils import search_bars
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
     matrix_list = []
@@ -17,6 +17,21 @@ def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
         matrix_list.append(matrix)
 
     return matrix_list
+
+
+def _read_soc_matrix(lines, dimensions):
+    matrix = []
+    for ib in range(dimensions[0]):
+        real = []
+        complex = []
+        for j in range((dimensions[1] + 1) // 2):
+            real += lines[j*3 + 2 + ib].split()[1:][0::2]
+            complex += lines[j*3 +2+ib].split()[1:][1::2]
+
+        row = [float(r) + float(c) * 1j for r, c in zip(real, complex)]
+        matrix.append(row)
+
+    return matrix
 
 
 def rasci(output):
@@ -62,6 +77,7 @@ def rasci(output):
     enum = output.find('SCF   energy in the final basis set')
     scf_energy = float(output[enum:enum+100].split()[8])
 
+    data_dict['scf energy'] = scf_energy
     # total energy
     # enum = output.find('Total energy in the final basis set')
     # total_energy = float(output[enum:enum+100].split()[8])
@@ -171,7 +187,58 @@ def rasci(output):
                                'configurations': table,
                                'contributions_fwn': contributions})
 
-    data_dict.update({'scf energy': scf_energy,
-                      'excited states rasci': excited_states})
+    data_dict.update({'excited states rasci': excited_states})
+
+    # Interstate transition properties
+    done_interstate = bool(output.find('Interstate Transition Properties')+1)
+    if done_interstate:
+        ini_section = output.find('Interstate Transition Properties')
+        end_section = search_bars(output, from_position=ini_section)[1]
+        interstate_section = output[ini_section: end_section]
+
+        interstate_dict = {}
+        for m in re.finditer('State A: Root', interstate_section):
+            section_pair = interstate_section[m.start():m.start() + 10000]
+            section_pair = section_pair[:section_pair.find('********')]
+            # print(section_pair)
+            lines = section_pair.split('\n')
+
+            state_a = int(lines[0].split()[-1])
+            state_b = int(lines[1].split()[-1])
+
+            pair_dict = {'state_a': state_a,
+                         'state_b': state_b}
+
+            s_a = s_b = 0
+            for i, line in enumerate(lines):
+                # RAS-CI SOC section
+                if '||gamma^AB||_total' in line:
+                    pair_dict['gamma_total'] = float(lines[i+0].split()[-1])
+                    pair_dict['gamma_sym'] = float(lines[i+1].split()[-1])
+                    pair_dict['gamma_anti_sym'] = float(lines[i+2].split()[-1])
+
+                if 'KET: S,Sz' in line:
+                    s_a = float(lines[i].split()[-2])
+                    s_b = float(lines[i+1].split()[-2])
+                if '1-elec SOC matrix (cm-1)' in line:
+                    pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [int(2*s_b + 1), int(2*s_a+1)])
+                if '2e-SOMF Reduced matrix elements (cm-1)' in line:
+                    r, c = lines[i+1].split()[-2:]
+                    pair_dict['hso_l-'] = float(r) + float(c) * 1j
+                    r, c = lines[i+2].split()[-2:]
+                    pair_dict['hso_l0'] = float(r) + float(c) * 1j
+                    r, c = lines[i+3].split()[-2:]
+                    pair_dict['hso_l+'] = float(r) + float(c) * 1j
+
+                if '2-elec mean-field SOC matrix (cm-1)' in line:
+                    pair_dict['2e_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
+                if 'Total mean-field SOC matrix (cm-1' in line:
+                    pair_dict['total_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
+                if 'Mean-Field SOCC' in line:
+                    pair_dict['mf_socc'] = float(line.split()[-2])
+                    pair_dict['units'] = line.split()[-1]
+
+            interstate_dict[(state_a, state_b)] = pair_dict
+        data_dict.update({'interstate_properties': interstate_dict})
 
     return data_dict

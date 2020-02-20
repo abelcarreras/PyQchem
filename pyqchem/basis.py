@@ -3,6 +3,8 @@ from lxml import html
 import unicodedata
 import re
 import numpy as np
+from copy import deepcopy
+
 
 def _txt_to_basis_dict(basis_txt):
     # read basis in gaussian/qchem format
@@ -131,7 +133,20 @@ def basis_to_txt(basis):
     return basis_txt
 
 
+def trucate_basis(basis, shells=()):
 
+    basis_trunc = deepcopy(basis)
+    for check_shell in shells:
+        for atom in basis_trunc['atoms']:
+            delete_list = []
+            for i, shell in enumerate(atom['shells']):
+                if shell['shell_type'].upper() == check_shell.upper():
+                    del shell
+                    delete_list.append(i)
+            for i in sorted(delete_list, reverse=True):
+                del atom['shells'][i]
+
+    return basis_trunc
 
 if __name__ == '__main__':
 

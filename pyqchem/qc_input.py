@@ -18,6 +18,7 @@ class QchemInput:
                  thresh=14,
                  scf_convergence=8,
                  max_scf_cycles=50,
+                 purecart=None,
                  # RASCI
                  ras_roots=1,
                  ras_do_hole=True,
@@ -41,6 +42,8 @@ class QchemInput:
                  ras_srdft_exc=None,
                  ras_srdft_cor=None,
                  ras_srdft_spinpol=0,
+                 # SOC
+                 calc_soc=False,
                  # cis
                  cis_convergence=6,
                  cis_n_roots=None,
@@ -160,6 +163,9 @@ class QchemInput:
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
 
+        if self._purecart is not None:
+            input_file += 'purecart {}\n'.format(self._purecart)
+
         if self._correlation is not None:
             input_file += 'correlation {}\n'.format(self._correlation)
 
@@ -234,6 +240,9 @@ class QchemInput:
                         input_file += ','
                     input_file = input_file[:-1] + ']\n'
                     input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
+        # SOC
+        if self._calc_soc is not False:
+            input_file += 'calc_soc {}\n'.format(self._calc_soc)
 
         # CIS variables
         if self._cis_n_roots is not None:

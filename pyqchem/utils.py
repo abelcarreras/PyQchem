@@ -24,11 +24,11 @@ def standardize_vector(vector):
     return vector
 
 
-def search_bars(output, from_position=0):
+def search_bars(output, from_position=0, bar_type='---'):
     output = output[from_position:]
     positions = []
     previous = 0
-    for m in re.finditer('---', output):
+    for m in re.finditer(bar_type, output):
         if m.start() > previous + 1:
             positions.append(m.start() + from_position)
         previous = m.end()
