@@ -1,10 +1,9 @@
-import numpy as np
-
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
-from pyqchem.parsers.parser_rasci import rasci as rasci_parser
+from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.basis import get_basis_from_ccRepo
+
 
 # create molecule
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
@@ -13,69 +12,54 @@ molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
                      charge=-1,
                      multiplicity=1)
 
-
-# create Q-Chem input
+# Standard input using 6-31G basis
 qc_input = QchemInput(molecule,
                       jobtype='sp',
                       exchange='hf',
-                      correlation='rasci',
-                      ras_act=3,
-                      ras_elec=2,
-                      ras_occ=16,
-                      basis='sto-3g',
-                      ras_roots=2,
-                      ras_do_hole=False,
-                      ras_do_part=False)
+                      basis='6-31G')
 
+# print input
 print(qc_input.get_txt())
 
-
-# get data from Q-Chem calculation
 output, err, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
-                                                          force_recalculation=False,
+                                                          force_recalculation=True,
                                                           read_fchk=True,
-                                                          parser=rasci_parser,
-                                                          store_full_output=True)
+                                                          parser=basic_parser_qchem,
+                                                          store_full_output=False)
 
 
-energies = [state['excitation_energy'] for state in output['excited states rasci']]
+print('scf_energy 6-31G: ', output['scf energy'])
 
-print('scf_energy: ', output['scf energy'])
-print(energies)
-# print(electronic_structure['basis'])
+basis_custom = electronic_structure['basis']
 
-basis_set = get_basis_from_ccRepo(molecule, 'cc-pVTZ')
-
-# create Q-Chem input
+# Standard input using a custom basis obtained from previous calculation
 qc_input = QchemInput(molecule,
                       jobtype='sp',
                       exchange='hf',
-                      correlation='rasci',
-                      ras_act=3,
-                      ras_elec=2,
-                      ras_occ=16,
-                      # basis='6-31g',
-                      basis=basis_set,
-                      ras_roots=2,
-                      ras_do_hole=False,
-                      ras_do_part=False)
+                      basis=basis_custom)
 
-print('---------------')
-#print(qc_input.get_txt())
+output, _ = get_output_from_qchem(qc_input,
+                                    processors=4,
+                                    force_recalculation=False,
+                                    parser=basic_parser_qchem
+                                    )
 
+print('scf_energy (custom basis: 6-31G): ', output['scf energy'])
 
-output, err, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=4,
-                                                          force_recalculation=False,
-                                                          read_fchk=True,
-                                                          parser=rasci_parser,
-                                                          store_full_output=True
-                                                          )
-print(output)
+# Get custom basis from ccRepo online repository
+basis_custom_repo = get_basis_from_ccRepo(molecule, 'cc-pVTZ')
+
+qc_input = QchemInput(molecule,
+                      jobtype='sp',
+                      exchange='hf',
+                      basis=basis_custom_repo)
 
 
-energies = [state['excitation_energy'] for state in output['excited states rasci']]
+output, _ = get_output_from_qchem(qc_input,
+                                  processors=4,
+                                  force_recalculation=False,
+                                  parser=basic_parser_qchem
+                                  )
 
-print('scf_energy: ', output['scf energy'])
-print(energies)
+print('scf_energy (custom basis: cc-pVTZ): ', output['scf energy'])

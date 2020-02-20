@@ -52,7 +52,6 @@ def build_fchk(parsed_data):
     if 'beta' in parsed_data['coefficients']:
         beta_mo_coeff = parsed_data['coefficients']['beta']
         beta_mo_coeff = np.array(beta_mo_coeff).flatten().tolist()
-
         beta_mo_energies = parsed_data['mo_energies']['beta']
 
     shell_type_list = {'s':  {'type':  0, 'angular_momentum': 0},
