@@ -1,6 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from pyqchem.basis import basis_to_txt
+import hashlib
 
 
 class QchemInput:
@@ -72,7 +73,9 @@ class QchemInput:
                  n_frozen_virt=None,
                  namd_nsurfaces=None,
                  scf_print=None,
-                 scf_guess=None
+                 scf_guess=None,
+                 mem_total=2000,
+                 mem_static=64
                  ):
 
         # put to arguments self._* (will be written explicitly)
@@ -119,6 +122,12 @@ class QchemInput:
         else:
             self._ras_srdft = False
 
+    def __hash__(self):
+        input_copy = self.get_copy()
+        # remove values that does not affect results
+        input_copy.update_input({'mem_total': None, 'mem_static': None, 'gui': None})
+        return hashlib.md5(input_copy.get_txt().encode()).hexdigest()
+
     def get_txt(self):
         """
         get qchem input in plain text
@@ -156,9 +165,10 @@ class QchemInput:
         input_file += 'scf_convergence {}\n'.format(self._scf_convergence)
         input_file += 'max_scf_cycles {}\n'.format(self._max_scf_cycles)
         input_file += 'gui {}\n'.format(self.gui)
-        # input_file += 'purecart {}\n'.format(2)
         input_file += 'set_iter {}\n'.format(self._set_iter)
         input_file += 'RPA {}\n'.format(self._RPA)
+        input_file += 'mem_total {}\n'.format(self._mem_total)
+        input_file += 'mem_static {}\n'.format(self._mem_static)
 
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)

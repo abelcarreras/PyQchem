@@ -266,11 +266,11 @@ def get_output_from_qchem(input_qchem,
             data_fchk = calculation_data[hash_fchk]
 
         if parser is not None:
-            hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
-            if hash in calculation_data:
-                # hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
+            hash_parser = get_input_hash(input_txt + '{}'.format(parser.__name__))
+            if hash_parser in calculation_data:
+                # hash_parser = get_input_hash(input_txt + '{}'.format(parser.__name__))
                 # warnings.warn('already calculated. Skip')
-                data = calculation_data[hash]
+                data = calculation_data[hash_parser]
                 err = ''.encode()
                 if data_fchk is None:
                     return data, err
@@ -300,9 +300,9 @@ def get_output_from_qchem(input_qchem,
             pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
     if parser is not None:
-        hash = get_input_hash(input_txt + '{}'.format(parser.__name__))
+        hash_parser = get_input_hash(input_txt + '{}'.format(parser.__name__))
         output = parser(output, **parser_parameters)
-        calculation_data[hash] = output
+        calculation_data[hash_parser] = output
         with open(__calculation_data_filename__, 'wb') as f:
             pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
 
