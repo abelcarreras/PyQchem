@@ -106,6 +106,9 @@ def get_basis_from_ccRepo(structure, basis, full=False):
                                                                           program='Gaussian',
                                                                           basis=basis)
 
+        if len(basis_data) == 0:
+            raise Exception('Basis {} not found for atom {}'.format(basis, symbol))
+
         atoms.append(_txt_to_basis_dict(basis_data))
 
     basis_set = {'name': basis,
