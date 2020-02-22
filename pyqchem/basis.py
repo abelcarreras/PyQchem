@@ -94,7 +94,7 @@ def get_basis_element_from_ccRepo(element,
     return citation, description, basis_clean[2:]
 
 
-def get_basis_from_ccRepo(structure, basis, full=False):
+def get_basis_from_ccRepo(structure, basis, full=False, if_missing=None):
 
     symbols = structure.get_atomic_elements()
     if not full:
@@ -107,8 +107,17 @@ def get_basis_from_ccRepo(structure, basis, full=False):
                                                                           basis=basis)
 
         if len(basis_data) == 0:
-            raise Exception('Basis {} not found for atom {}'.format(basis, symbol))
+            if if_missing is not None:
+                citation, description, basis_data = get_basis_element_from_ccRepo(symbol,
+                                                                                  program='Gaussian',
+                                                                                  basis=if_missing)
+                if len(basis_data) == 0:
+                    raise Exception('Basis {}, {} not found for atom {}'.format(basis, if_missing, symbol))
+            else:
+                raise Exception('Basis {} not found for atom {}'.format(basis, symbol))
 
+        # print(description)
+        # print(citation)
         atoms.append(_txt_to_basis_dict(basis_data))
 
     basis_set = {'name': basis,
