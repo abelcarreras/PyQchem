@@ -85,7 +85,8 @@ def get_state_symmetry(parsed_fchk,
                        center=None,
                        orientation=(0, 0, 1),
                        group='C2h',
-                       extra_print=False
+                       extra_print=False,
+                       amplitude_cutoff=0.0
                        ):
 
     sym_states = {}
@@ -112,6 +113,9 @@ def get_state_symmetry(parsed_fchk,
         # print(configurations)
         occupations_list = []
         for configuration in state['configurations']:
+            if np.abs(configuration['amplitude']) < amplitude_cutoff:
+                continue
+
             occupied_orbitals = get_occupied_electrons(configuration, structure)
             n_extra = total_orbitals - occupied_orbitals - len(configuration['alpha'])
             vector_alpha = [1] * occupied_orbitals + [int(c) for c in configuration['alpha']] + [0] * n_extra
@@ -152,6 +156,9 @@ def get_state_symmetry(parsed_fchk,
             if extra_print:
                 print([molsym.IRLab[np.argmax(molsym.wf_IRd)], np.max(molsym.wf_IRd)])
             state_symmetry_list.append([molsym.IRLab[np.argmax(molsym.wf_IRd)], np.max(molsym.wf_IRd)])
+
+        if extra_print:
+            print(state_symmetry_list)
 
         # Make sure symmetry of all configurations is the same
         assert len(np.unique([a[0] for a in state_symmetry_list])) == 1

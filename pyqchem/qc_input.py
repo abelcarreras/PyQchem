@@ -1,7 +1,7 @@
 import numpy as np
 from copy import deepcopy
 from pyqchem.basis import basis_to_txt
-import hashlib
+import hashlib, json
 
 
 class QchemInput:
@@ -123,10 +123,19 @@ class QchemInput:
             self._ras_srdft = False
 
     def __hash__(self):
-        input_copy = self.get_copy()
-        # remove values that does not affect results
-        input_copy.update_input({'mem_total': None, 'mem_static': None, 'gui': None})
-        return hashlib.md5(input_copy.get_txt().encode()).hexdigest()
+
+        # take all keywords defined in input
+        keywords = dict(self.__dict__)
+
+        # remove keywords that not affect the results
+        for key in ['_mem_total', '_mem_static', '_gui']:
+            keywords.pop(key, None)
+
+        # Change molecule object by molecule coordinates (Structure class too complex for JSON)
+        keywords['_molecule'] = keywords['_molecule'].get_xyz()
+
+        digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
+        return int(digest, 16)
 
     def get_txt(self):
         """

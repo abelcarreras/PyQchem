@@ -21,7 +21,6 @@ for s1 in ['cc-pV_Z', 'cc-pCV_Z']:
 
 for calc_soc in [1, 2]:
     for basis_name in basis_name_list:
-        print('basis:', basis_name)
         for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9]]:
             basis_custom_repo = get_basis_from_ccRepo(molecule, 
                                                       basis_name,
@@ -45,10 +44,8 @@ for calc_soc in [1, 2]:
                                   ras_occ=active_space[2],
                                   ras_spin_mult=0,
                                   ras_roots=2,      # calculate 8 states
-                                  ras_do_hole=False,
-                                  ras_do_part=False,
                                   calc_soc=calc_soc,
-                                  set_iter=30,
+                                  set_iter=60,
                                   mem_total=15000,
                                   # mem_static=900
                                   )
@@ -69,6 +66,10 @@ for calc_soc in [1, 2]:
                 soc_1e = np.array(output['interstate_properties'][(1, 2)]['1e_soc_mat'])[0, 0]
                 soc_2e = np.array(output['interstate_properties'][(1, 2)]['2e_soc_mat'])[0, 0]
                 soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])[0, 0]
+
+                energy_1 = output['excited states rasci'][0]['total_energy']
+                energy_2 = output['excited states rasci'][1]['total_energy']
+
             except:
                 print('---------------------------------------------')
                 print('basis: {}'.format(basis_name))
@@ -82,6 +83,8 @@ for calc_soc in [1, 2]:
             print('Active space (ele, act, occ): {}'.format(active_space))
             print('calc_soc: {}'.format(calc_soc))
             print('gamma_tot: {}'.format(gamma_total))
-            print('soc_1e  {0.real: 10.3f} + {0.imag: 10.8f}i'.format(soc_1e))
-            print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f}i'.format(soc_2e))
-            print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f}i'.format(soc_tot))
+            print('Energy state1:  {: 18.12f} au'.format(energy_1))
+            print('Energy state2:  {: 18.12f} au'.format(energy_2))
+            print('soc_1e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_1e))
+            print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_2e))
+            print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_tot))

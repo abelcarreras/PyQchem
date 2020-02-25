@@ -36,7 +36,7 @@ def basis_format(basis_set_name,
                 '-2': ['d', 5],
                 '-3': ['f', 7]}
 
-    atomic_numbers = np.array(atomic_numbers, dtype=int)
+    atomic_numbers = [int(an) for an in atomic_numbers]
     atom_map = np.array(atom_map, dtype=int)
     # print(atom_map)
     basis_set = {'name': basis_set_name,
