@@ -85,6 +85,7 @@ class Structure:
                  file_name=None,
                  charge=0,
                  multiplicity=1,
+                 name=None,
 
                  #Buscar un lloc millor
                  int_weights=None):
@@ -99,6 +100,7 @@ class Structure:
         self._atomic_elements = atomic_elements
         self._charge = charge
         self._multiplicity = multiplicity
+        self._name = name
 
         self._file_name = file_name
         self._int_weights = int_weights
@@ -183,6 +185,10 @@ class Structure:
     def get_atomic_elements_with_dummy(self):
        # print([i for i in self._atomic_elements if i != "X"])
        return self._atomic_elements
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def file_name(self):

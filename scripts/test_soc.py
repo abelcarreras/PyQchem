@@ -21,7 +21,7 @@ for s1 in ['cc-pV_Z', 'cc-pCV_Z']:
 
 for calc_soc in [1, 2]:
     for basis_name in basis_name_list:
-        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9]]:
+        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]:
             basis_custom_repo = get_basis_from_ccRepo(molecule, 
                                                       basis_name,
                                                       if_missing=basis_name.replace('cc-pC', 'cc-p'))
@@ -47,7 +47,7 @@ for calc_soc in [1, 2]:
                                   calc_soc=calc_soc,
                                   set_iter=60,
                                   mem_total=15000,
-                                  # mem_static=900
+                                  mem_static=200
                                   )
 
             # print(qc_input.get_txt())

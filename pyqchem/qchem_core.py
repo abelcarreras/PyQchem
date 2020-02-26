@@ -17,6 +17,21 @@ except IOError:
     calculation_data = {}
 
 
+def redefine_calculation_data_filename(filename):
+    global __calculation_data_filename__
+    global calculation_data
+
+    __calculation_data_filename__ = filename
+    print('Set data file to {}'.format(__calculation_data_filename__))
+
+    try:
+        with open(__calculation_data_filename__, 'rb') as input:
+            calculation_data = pickle.load(input)
+            print('Loaded data from {}'.format(__calculation_data_filename__))
+    except IOError:
+        calculation_data = {}
+
+
 # Check if calculation finished ok
 def finish_ok(output):
     return output[-1000:].find('Thank you very much for using Q-Chem') != -1

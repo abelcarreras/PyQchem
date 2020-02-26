@@ -63,10 +63,20 @@ def get_basis_element_from_ccRepo(element,
 
     # define symbol to element dictionary (more should be added)
     element_dict = {'H': 'hydrogen',
+                    'He': 'helum',
+                    'Li': 'lithium',
+                    'Be': 'beryllium',
+                    'B': 'boron',
                     'C': 'carbon',
                     'N': 'nitrogen',
                     'O': 'oxygen',
-                    'Se': 'selenium'}
+                    'F': 'fluorine',
+                    'S': 'sulfur',
+                    'Cl': 'chlorine',
+                    'Se': 'selenium',
+                    'Br': 'bromine',
+                    'I': 'iodine'
+                    }
 
     resp = req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/{}".format(element_dict[element]))
     n_ini = resp.text.find('form-inline')
