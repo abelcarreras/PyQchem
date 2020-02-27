@@ -101,20 +101,19 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
                                   ras_spin_mult=0,
                                   ras_roots=2,  # calculate 8 states
                                   calc_soc=1,
-                                  set_iter=60,
+                                  set_iter=1000,
                                   mem_total=15000,
                                   mem_static=900
                                   )
 
             # print(qc_input.get_txt())
-            output, _ = get_output_from_qchem(qc_input,
-                                              processors=10,
-                                              force_recalculation=False,
-                                              parser=parser_rasci,
-                                              store_full_output=True
-                                              )
+            output, error = get_output_from_qchem(qc_input,
+                                                  processors=10,
+                                                  force_recalculation=False,
+                                                  parser=parser_rasci,
+                                                  store_full_output=True
+                                                  )
 
-            # print(output)
             # print(_)
             # print(output['interstate_properties'])
             try:
@@ -129,10 +128,10 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
 
             except:
                 print('---------------------------------------------')
+                print('Molecule: {}'.format(molecule.name))
                 print('basis: {}'.format(basis_name))
                 print('Active space (ele, act, occ): {}'.format(active_space))
-                print('Molecule: {}'.format(molecule.name))
-                print(output)
+                print(error)
                 print('calculation_failed')
                 continue
 

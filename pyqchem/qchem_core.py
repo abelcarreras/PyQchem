@@ -196,6 +196,21 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
+def store_calculation_data(input_qchem, keyword, data, status=True, protocol=pickle.HIGHEST_PROTOCOL):
+    # input_qchem.__dict__.pop('_set_iter', None)
+    # not store data if not finished OK
+    if status is False:
+        return
+
+    calculation_data[(hash(input_qchem), keyword)] = data
+    with open(__calculation_data_filename__, 'wb') as f:
+        pickle.dump(calculation_data, f, protocol)
+
+
+def retrieve_calculation_data(input_qchem, keyword):
+    return calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem), keyword) in calculation_data else None
+
+
 def get_output_from_qchem(input_qchem,
                           processors=1,
                           use_mpi=False,
@@ -206,7 +221,8 @@ def get_output_from_qchem(input_qchem,
                           force_recalculation=False,
                           fchk_only=False,
                           store_full_output=False,
-                          remote=None):
+                          remote=None,
+                          strict_policy=False):
     """
     Runs qchem and returns the output in the following format:
     1) If read_fchk is requested:
@@ -229,6 +245,8 @@ def get_output_from_qchem(input_qchem,
     :param parser_parameters:
     :param force_recalculation:
     :param fchk_only:
+    :param remote:
+    :param strict_policy:
     :return output, error[, fchk_dict]:
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
@@ -274,25 +292,20 @@ def get_output_from_qchem(input_qchem,
     # check if full output is stored
     # print('input:', input_qchem)
     output, err = calculation_data[(hash(input_qchem), 'fullout')] if (hash(input_qchem), 'fullout') in calculation_data else [None, None]
+    # output, err = retrieve_calculation_data(input_qchem, 'fullout') if retrieve_calculation_data(input_qchem, 'fullout') is not None else [None, None]
 
     if not force_recalculation and not store_full_output:
 
-        data_fchk = None
-        if read_fchk and (hash(input_qchem), 'fchk') in calculation_data:
-            # warnings.warn('already fchk calculated. Skip')
-            data_fchk = calculation_data[(hash(input_qchem), 'fchk')]
+        data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
 
         if parser is not None:
 
-            if (hash(input_qchem), parser.__name__) in calculation_data:
-                # hash_parser = get_input_hash(input_txt + '{}'.format(parser.__name__))
-                # warnings.warn('already calculated. Skip')
-                data = calculation_data[(hash(input_qchem), parser.__name__)]
-                err = ''.encode()
-                if data_fchk is None:
-                    return data, err
-                else:
-                    return data, err, data_fchk
+            data = retrieve_calculation_data(hash(input_qchem), parser.__name__)
+            if data_fchk is None:
+                return data, err
+            else:
+                return data, err, data_fchk
+
         else:
             if fchk_only and data_fchk is not None:
                 return None, None, data_fchk
@@ -311,21 +324,23 @@ def get_output_from_qchem(input_qchem,
         else:
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
-    if store_full_output and finish_ok(output):
-        calculation_data[(hash(input_qchem), 'fullout')] = output, err
-        with open(__calculation_data_filename__, 'wb') as f:
-            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
+    if finish_ok(output):
+        finished_ok = True
+    else:
+        err += '\n'.join(output.split('\n')[-10:])
+        finished_ok = False
+
+    if store_full_output:
+        store_calculation_data(input_qchem, 'fullout', [output, err], status=finished_ok)
 
     if parser is not None:
         output = parser(output, **parser_parameters)
-        calculation_data[(hash(input_qchem), parser.__name__)] = output
-        with open(__calculation_data_filename__, 'wb') as f:
-            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
+        store_calculation_data(input_qchem, parser.__name__, output, status=finished_ok)
 
     if read_fchk:
 
-        if (hash(input_qchem), 'fchk') in calculation_data and not force_recalculation:
-            data_fchk = calculation_data[(hash(input_qchem), 'fchk')]
+        data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
+        if data_fchk is not None and not force_recalculation:
             return output, err, data_fchk
 
         if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
@@ -337,9 +352,7 @@ def get_output_from_qchem(input_qchem,
         os.remove(os.path.join(work_dir, fchk_filename))
 
         data_fchk = parser_fchk(fchk_txt)
-        calculation_data[(hash(input_qchem), 'fchk')] = data_fchk
-        with open(__calculation_data_filename__, 'wb') as f:
-            pickle.dump(calculation_data, f, pickle.HIGHEST_PROTOCOL)
+        store_calculation_data(input_qchem, 'fchk', data_fchk, status=finished_ok)
 
         return output, err, data_fchk
 
