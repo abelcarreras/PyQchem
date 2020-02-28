@@ -2,7 +2,7 @@ __author__ = 'Abel Carreras'
 import tempfile
 import os
 import numpy as np
-
+import hashlib, json
 
 def int_to_xyz(molecule, no_dummy=True):
 
@@ -118,6 +118,11 @@ class Structure:
     def __str__(self):
         return self.get_xyz()
 
+    def __hash__(self):
+        digest = hashlib.md5(json.dumps((self.get_xyz(), self.alpha_electrons, self.beta_electrons),
+                                        sort_keys=True).encode()).hexdigest()
+        return int(digest, 16)
+
     def get_coordinates(self):
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
@@ -216,7 +221,7 @@ class Structure:
 
     @property
     def number_of_electrons(self):
-        return np.sum(self.get_atomic_numbers()) + self.charge
+        return int(np.sum(self.get_atomic_numbers()) + self.charge)
 
     @property
     def alpha_electrons(self):
@@ -327,7 +332,7 @@ class Structure:
     def get_xyz(self, title=''):
         txt = '{}\n{}\n'.format(self.get_number_of_atoms(), title)
         for s, c in zip(self.get_atomic_elements(), self.get_coordinates()):
-            txt += '{:2} '.format(s) + '{:10.5f} {:10.5f} {:10.5f}\n'.format(*c)
+            txt += '{:2} '.format(s) + '{:15.10f} {:15.10f} {:15.10f}\n'.format(*c)
 
         return txt
 

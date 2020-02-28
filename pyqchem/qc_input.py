@@ -133,7 +133,7 @@ class QchemInput:
             keywords.pop(key, None)
 
         # Change molecule object by molecule coordinates (Structure class too complex for JSON)
-        keywords['_molecule'] = keywords['_molecule'].get_xyz()
+        keywords['_molecule'] = hash(keywords['_molecule'])
 
         digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
         return int(digest, 16)
