@@ -97,6 +97,7 @@ class QchemInput:
                         molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                self._ras_occ = int(self._ras_occ)
                 print('ras_occ = {}'.format(self._ras_occ))
 
         # Handle custom basis set
