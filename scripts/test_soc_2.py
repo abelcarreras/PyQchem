@@ -66,7 +66,7 @@ as_cccl = [[3, 2, 13], [5, 3, 12], [11, 6, 9], [15, 8, 7]]
 mol_cccl = Structure(coordinates=[[0.0, 0.0, 1.2964],
                                   [0.0, 0.0, 0.000],
                                   [0.0, 0.0,-1.6224]],
-                     atomic_elements=['C', 'C', 'F'],
+                     atomic_elements=['C', 'C', 'Cl'],
                      charge=-1,
                      multiplicity=1,
                      name='CCCl')
@@ -99,7 +99,7 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
                                   ras_act=active_space[1],
                                   ras_occ=active_space[2],
                                   ras_spin_mult=0,
-                                  ras_roots=2,  # calculate 8 states
+                                  ras_roots=2,  # calculate 2 states
                                   calc_soc=1,
                                   set_iter=1000,
                                   mem_total=15000,
@@ -118,9 +118,9 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             # print(output['interstate_properties'])
             try:
                 gamma_total = output['interstate_properties'][(1, 2)]['gamma_total']
-                soc_1e = np.array(output['interstate_properties'][(1, 2)]['1e_soc_mat'])[0, 0]
-                soc_2e = np.array(output['interstate_properties'][(1, 2)]['2e_soc_mat'])[0, 0]
-                soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])[0, 0]
+                soc_1e = np.array(output['interstate_properties'][(1, 2)]['1e_soc_mat'])
+                soc_2e = np.array(output['interstate_properties'][(1, 2)]['2e_soc_mat'])
+                soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])
                 socc = output['interstate_properties'][(1, 2)]['mf_socc']
 
                 energy_1 = output['excited states rasci'][0]['total_energy']
@@ -142,7 +142,13 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             print('gamma_tot: {}'.format(gamma_total))
             print('Energy state1:  {: 18.12f} au'.format(energy_1))
             print('Energy state2:  {: 18.12f} au'.format(energy_2))
-            print('soc_1e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_1e))
-            print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_2e))
-            print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_tot))
+            print('soc_1e (cm-1)')
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_1e[0]))
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_1e[1]))
+            print('soc_2e (cm-1)')
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_2e[0]))
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_2e[1]))
+            print('soc_tot (cm-1)')
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_tot[0]))
+            print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_tot[1]))
             print('SOCC: {: 18.12f} cm-1'.format(socc))

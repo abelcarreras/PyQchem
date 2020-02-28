@@ -73,6 +73,7 @@ def get_basis_element_from_ccRepo(element,
                     'F': 'fluorine',
                     'S': 'sulfur',
                     'Cl': 'chlorine',
+                    'Si': 'silicon',
                     'Se': 'selenium',
                     'Br': 'bromine',
                     'I': 'iodine'
