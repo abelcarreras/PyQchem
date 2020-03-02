@@ -9,6 +9,7 @@ from pyqchem.file_io import build_fchk
 from copy import deepcopy
 from pyqchem.parsers.parser_rasci import rasci as rasci_parser
 from pyqchem.utils import reorder_coefficients
+from pyqchem.symmetry import get_state_symmetry
 
 def inverse_cummulative(vector):
     vector = np.array(vector)
@@ -25,104 +26,103 @@ sym_matrix = {'Ag': np.diag([1, 1]),
               'Bu': np.diag([-1, -1])}
 
 
-# Define custom classification function
-def get_state_classification(parsed_fchk,
-                             center=None,
-                             orientation=(0, 0, 1),
-                             configurations=None,
-                             occupied=0
-                             ):
+def get_location(occupancies, coefficients, overlap_matrix, error=0.2):
+    # For singlets only
+    alpha_list = []
+    beta_list = []
+    mul = 1
+    i = 0
+    for orbital in coefficients['alpha']:
+        occ = occupancies['alpha'][i]
+        dot = np.dot(np.dot(orbital, overlap_matrix), orbital)
+        print('dot->',i+1,  dot)
+        if dot < error:
+            alpha_list.append(0)
+            beta_list.append(0)
+        else:
+            if occ < error:
+                # print('0')
+                alpha_list.append(0)
+                beta_list.append(0)
+            elif 1+error > occ > error:
+                # print('1')
+                if mul == 1:
+                    alpha_list.append(1)
+                    beta_list.append(0)
 
-    structure = parsed_fchk['structure']
+                    mul += 1
+                else:
+                    alpha_list.append(0)
+                    beta_list.append(1)
+                    mul -= 1
+            elif occ > 2-error:
+                # print('2')
+                alpha_list.append(1)
+                beta_list.append(1)
+            i +=1
 
-    occupations_list = []
-    for conf in configurations:
-        vector_alpha = [1 for _ in range(occupied)] + [int(c) for c in conf['alpha']]
-        vector_beta = [1 for _ in range(occupied)] + [int(c) for c in conf['beta']]
-        occupations_list.append({'alpha': vector_alpha, 'beta': vector_beta})
-        print(conf['alpha'], conf['beta'])
-    # exit()
+    print(alpha_list)
+    print(beta_list)
+
+    return {'alpha': alpha_list, 'beta': beta_list}
+
+
+def orbital_localization2(coefficients, overlap_matrix):
+    n = 1
+    for a_orbital, b_orbital in zip(coefficients['alpha'], coefficients['beta']):
+        a_dot = np.dot(np.dot(a_orbital, overlap_matrix), a_orbital)
+        b_dot = np.dot(np.dot(b_orbital, overlap_matrix), b_orbital)
+
+        print('dot', n, a_dot, b_dot)
+        n += 1
+    return
+
+def get_state_classification(structure,
+                             basis,
+                             nato_coeff,
+                             nato_occup,
+                             center,
+                             orientation,
+                             orbitals,
+                             overlap_matrix):
+
+    occupations = get_location(nato_occup, nato_coeff, overlap_matrix)
+
+    reordered_coefficients = reorder_coefficients(occupations, nato_coeff)
+
+    orbital_localization2(reordered_coefficients,overlap_matrix)
 
     molsym = get_wf_symmetry(structure,
-                             parsed_fchk['basis'],
-                             parsed_fchk['nato_coefficients'],
+                             basis,
+                             reordered_coefficients,
                              center=center,
                              orientation=orientation,
-                             group='C2h')
+                             group='D2h')
 
-    molsym.print_alpha_mo_IRD()
-    molsym.print_beta_mo_IRD()
+    # molsym.print_alpha_mo_IRD()
+    # molsym.print_beta_mo_IRD()
     molsym.print_wf_mo_IRD()
+    print('  wf' + '  '.join(['{:7.3f}'.format(s) for s in molsym.wf_IRd]))
 
-    for occupations in occupations_list:
-        print(occupations)
-        cumm_symmat = np.identity(2)
-        print(occupations['alpha'])
+    print('\nAlpha MOs: Irred. Rep. Decomposition')
+    print('     ' + '  '.join(['{:^7}'.format(s) for s in molsym.IRLab]))
+    for i, line in zip(orbitals, molsym.mo_IRd_a[orbitals]):
+        print('{:4d}'.format(i + 1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
-        for i, occup in enumerate(occupations['alpha']):
-            if occup == 1:
-                symmat = np.zeros_like(cumm_symmat)
-                for symlab, contribution in zip(molsym.IRLab, molsym.mo_IRd_a[i]):
-                    symmat += np.dot(contribution, sym_matrix[symlab])
+    print('\nBeta MOs: Irred. Rep. Decomposition')
+    print('     ' + '  '.join(['{:^7}'.format(s) for s in molsym.IRLab]))
+    for i, line in zip(orbitals, molsym.mo_IRd_b[orbitals]):
+        print('{:4d}'.format(i + 1) + '  '.join(['{:7.3f}'.format(s) for s in line]))
 
-                cumm_symmat = np.dot(cumm_symmat, symmat)
-                # print('alpha: ', i+1, cumm_symmat)
-        for i, occup in enumerate(occupations['beta']):
-            if occup == 1:
-
-                symmat = np.zeros_like(cumm_symmat)
-                for symlab, contribution in zip(molsym.IRLab, molsym.mo_IRd_b[i]):
-                    symmat += np.dot(contribution, sym_matrix[symlab])
-
-                cumm_symmat = np.dot(cumm_symmat, symmat)
-                # print('beta: ', i+1, cumm_symmat)
-
-        print('fin', cumm_symmat)
-
-    print('------')
+    print('occupations')
+    print('alpha', np.array(nato_occup['alpha'])[orbitals])
+    print('beta ', np.array(nato_occup['beta'])[orbitals])
 
 
-def get_state_symmetry(parsed_fchk,
-                       center=None,
-                       orientation=(0, 0, 1),
-                       configurations=None,
-                       occupied=0
-                       ):
 
-    structure = parsed_fchk['structure']
-    n_orbitals = len(parsed_fchk['coefficients']['alpha'])
 
-    print(configurations)
-    occupations_list = []
-    for conf in configurations:
-        n_extra = n_orbitals - occupied - len(conf['alpha'])
-        vector_alpha = [1 for _ in range(occupied)] + [int(c) for c in conf['alpha']] + [0] * n_extra
-        vector_beta = [1 for _ in range(occupied)] + [int(c) for c in conf['beta']] + [0] * n_extra
-        occupations_list.append({'alpha': vector_alpha, 'beta': vector_beta})
-        print(conf['alpha'], conf['beta'], )
 
-    for occupations in occupations_list:
-        print('occupations', occupations)
 
-        reordered_coefficients = reorder_coefficients(occupations, parsed_fchk['coefficients'])
-
-        molsym = get_wf_symmetry(structure,
-                                 parsed_fchk['basis'],
-                                 reordered_coefficients,
-                                 center=center,
-                                 orientation=orientation,
-                                 group='C2h')
-
-        molsym.print_alpha_mo_IRD()
-        molsym.print_beta_mo_IRD()
-        molsym.print_wf_mo_IRD()
-
-        state_symmetry = {}
-        for label, measure in zip(molsym.IRLab, molsym.wf_IRd):
-            state_symmetry[label] = measure
-
-        # return maximum symmetry and value
-        return [molsym.IRLab[np.argmax(molsym.wf_IRd)], np.max(molsym.wf_IRd)]
 
 
 ethene = [[0.0,  0.0000,   0.65750],
@@ -134,9 +134,6 @@ ethene = [[0.0,  0.0000,   0.65750],
 
 symbols = ['C', 'C', 'H', 'H', 'H', 'H']
 
-range_f1 = range(0, 6)
-
-n_state = 1  # First excited state
 
 # create molecule
 molecule = Structure(coordinates=ethene,
@@ -144,18 +141,51 @@ molecule = Structure(coordinates=ethene,
                      charge=0,
                      multiplicity=1)
 
+
+print('Optimized monomer structure')
+print(molecule)
+
+# Build dimer from monomer
+coor_monomer2 = np.array(ethene)
+
+from kimonet.utils.rotation import rotate_vector
+coor_monomer2 = np.array([rotate_vector(coor, [0.0, 0.0, 0.0]) for coor in coor_monomer2])
+
+
+coor_monomer2[:, 0] += 4.0  # monomers separation
+coor_monomer2[:, 1] += 0.0  # monomers separation
+coor_monomer2[:, 2] += 0.0  # monomers separation
+
+coordinates = ethene + coor_monomer2.tolist()
+symbols_dimer = symbols * 2
+
+dimer = Structure(coordinates=coordinates,
+                  atomic_elements=symbols_dimer,
+                  charge=0,
+                  multiplicity=1)
+
+print(dimer.get_xyz())
+
+diabatization_scheme = [
+                        # {'method': 'ER', 'states': [1, 2, 3, 4]},  # in order with respect to selected states
+                        {'method': 'DQ', 'states': [1, 2, 3, 4], 'parameters': 0.0}
+                        ]
+
 # create Q-Chem input
-qc_input = QchemInput(molecule,
+qc_input = QchemInput(dimer,
                       jobtype='sp',
                       exchange='hf',
                       correlation='rasci',
                       ras_act=6,
-                      ras_elec=6,
+                      ras_elec=4,
                       basis='sto-3g',
-                      ras_roots=10,
+                      ras_spin_mult=1,  # singlets only
+                      ras_roots=8,
                       ras_do_hole=False,
                       ras_do_part=False,
-                      ras_natorb_state=n_state)
+                      ras_diabatization_states=[3, 4, 5, 6],  # adiabatic states selected for diabatization
+                      ras_diabatization_scheme=diabatization_scheme,
+                      )
 
 print(qc_input.get_txt())
 
@@ -168,19 +198,75 @@ output, err, electronic_structure = get_output_from_qchem(qc_input,
                                                           parser=rasci_parser,
                                                           store_full_output=True)
 
+
+def is_equal(conf1, conf2):
+    lv = []
+    for prop in ['alpha', 'beta', 'hole', 'part']:
+        lv.append(conf1[prop] == conf2[prop])
+    return np.all(lv)
+
+
+def unify_configurations(configurations_list):
+    new_configurations= []
+
+    for conf in configurations_list:
+        skip = False
+        for n_conf in new_configurations:
+            if is_equal(n_conf, conf):
+                n_conf['amplitude'] += conf['amplitude']
+                skip = True
+        if not skip:
+            new_configurations.append(conf)
+
+    return new_configurations
+
+
 print(output)
 print(output['excited states rasci'])
 
+
+print('++++++++')
+
+print(len(electronic_structure['nato_coefficients_multi']))
+
+
+
+
 # Just for testing
-print(electronic_structure['nato_coefficients'])
 # electronic_structure['coefficients'] = electronic_structure['nato_coefficients']
 # electronic_structure['mo_energies'] = electronic_structure['nato_occupancies']
 
+print(len(electronic_structure['nato_coefficients_multi']))
+print(len(electronic_structure['nato_occupancies_multi']))
+print(electronic_structure['nato_occupancies_multi'])
+
 # store original fchk info in file
-open('test.fchk', 'w').write(build_fchk(electronic_structure))
+es = deepcopy(electronic_structure)
+es['coefficients'] = electronic_structure['nato_coefficients_multi'][1]
+es['mo_energies'] = electronic_structure['nato_occupancies_multi'][1]
+
+open('test.fchk', 'w').write(build_fchk(es))
 
 
 # print(electronic_structure['nato_coefficients'])
+
+range_f1 = range(0, 6)
+range_f2 = range(6, 12)
+
+
+
+mo_coeff_f1 = set_zero_coefficients(electronic_structure['basis'],
+                                    electronic_structure['nato_coefficients_multi'][1],
+                                    range_f2)
+
+
+
+# get symmetry classification
+electronic_structure['coefficients'] = mo_coeff_f1
+electronic_structure['mo_energies'] = electronic_structure['nato_occupancies']
+
+# save test fchk file with new coefficients
+open('test_f1.fchk', 'w').write(build_fchk(electronic_structure))
 
 
 # get plane from coordinates
@@ -188,17 +274,31 @@ coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[r
 center_f1, normal_f1 = get_plane(coordinates_f1)
 
 
+mulliken = output['diabatization']['mulliken_analysis'][1]
+a = np.sum(np.array(mulliken['attach'])[range_f1])
+print(a)
+print(electronic_structure['overlap'])
+
+print(mulliken)
+
+def orbital_localization(coefficients, overlap_matrix):
+    for a_orbital, b_orbital in zip(coefficients['alpha'], coefficients['beta']):
+        a_dot = np.dot(np.dot(a_orbital, overlap_matrix), a_orbital)
+        b_dot = np.dot(np.dot(b_orbital, overlap_matrix), b_orbital)
+
+        print('dot', a_dot, b_dot)
+    return
+
+# orbital_localization(mo_coeff_f1, electronic_structure['overlap'])
+
+
 # get classified orbitals
-# get_state_classification(electronic_structure,
-#                          center=center_f1,
-#                          orientation=normal_f1,
-#                          configurations=output['excited states rasci'][n_state]['configurations'],
-#                          occupied=qc_input._ras_occ)
+get_state_classification(electronic_structure['structure'],
+                         electronic_structure['basis'],
+                         mo_coeff_f1,
+                         electronic_structure['nato_occupancies_multi'][1],
+                         center=center_f1,
+                         orientation=normal_f1,
+                         orbitals=[10, 11, 12, 13, 14, 15],
+                         overlap_matrix=electronic_structure['overlap'])
 
-wfsym = get_state_symmetry(electronic_structure,
-                   center=center_f1,
-                   orientation=normal_f1,
-                   configurations=output['excited states rasci'][n_state]['configurations'],
-                   occupied=qc_input._ras_occ)
-
-print(wfsym)

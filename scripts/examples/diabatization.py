@@ -33,9 +33,9 @@ qc_input = QchemInput(monomer,
                       geom_opt_coords=-1,
                       geom_opt_tol_displacement=1200)
 
-parsed_data, _ = get_output_from_qchem(qc_input,
-                                       processors=4,
-                                       parser=basic_optimization)
+parsed_data = get_output_from_qchem(qc_input,
+                                    processors=4,
+                                    parser=basic_optimization)
 
 opt_monomer = parsed_data['optimized_molecule']
 
@@ -82,12 +82,11 @@ qc_input = QchemInput(dimer,
 
 # print(qc_input.get_txt())
 
-parsed_data, _ = get_output_from_qchem(qc_input,
-                                       processors=14,
-                                       force_recalculation=False,
-                                       parser=rasci_parser
-                                       )
-
+parsed_data = get_output_from_qchem(qc_input,
+                                    processors=14,
+                                    force_recalculation=False,
+                                    parser=rasci_parser
+                                    )
 
 # parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
@@ -176,11 +175,11 @@ qc_input = QchemInput(opt_monomer,
                       ras_do_part=False,
                       set_iter=30)
 
-parsed_data, _ = get_output_from_qchem(qc_input,
-                                       processors=14,
-                                       force_recalculation=False,
-                                       parser=rasci_parser
-                                       )
+parsed_data = get_output_from_qchem(qc_input,
+                                    processors=14,
+                                    force_recalculation=False,
+                                    parser=rasci_parser
+                                    )
 
 print('\nAdiabatic states monomer\n--------------------')
 for i, state in enumerate(parsed_data['excited states rasci']):

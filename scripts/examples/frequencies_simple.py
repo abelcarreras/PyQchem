@@ -32,10 +32,14 @@ qc_input = create_qchem_input(molecule,
                               geom_opt_coords=-1,
                               geom_opt_tol_displacement=1200)
 
-parsed_data, err, fchk = get_output_from_qchem(qc_input,
-                                               processors=4,
-                                               parser=basic_optimization,
-                                               read_fchk=True)
+from pyqchem.errors import OutputError
+
+
+parsed_data, electronic_structure = get_output_from_qchem(qc_input,
+                                                          processors=4,
+                                                          parser=basic_optimization,
+                                                          force_recalculation=False,
+                                                          read_fchk=True)
 
 
 opt_molecule = parsed_data['optimized_molecule']
@@ -48,9 +52,9 @@ qc_input = create_qchem_input(opt_molecule,
                               jobtype='freq',
                               exchange='hf',
                               basis='sto-3g',
-                              scf_guess=fchk['coefficients'])
+                              scf_guess=electronic_structure['coefficients'])
 
-parsed_data, err = get_output_from_qchem(qc_input,
+parsed_data = get_output_from_qchem(qc_input,
                                          processors=4,
                                          force_recalculation=False,
                                          parser=basic_frequencies)

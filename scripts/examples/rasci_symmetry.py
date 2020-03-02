@@ -40,12 +40,12 @@ print(qc_input.get_txt())
 
 
 # get data from Q-Chem calculation
-output, err, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=4,
-                                                          force_recalculation=False,
-                                                          read_fchk=True,
-                                                          parser=rasci_parser,
-                                                          store_full_output=True)
+output, electronic_structure = get_output_from_qchem(qc_input,
+                                                     processors=4,
+                                                     force_recalculation=False,
+                                                     read_fchk=True,
+                                                     parser=rasci_parser,
+                                                     store_full_output=True)
 
 
 # store original fchk info in file

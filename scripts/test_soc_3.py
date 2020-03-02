@@ -4,6 +4,8 @@ from pyqchem.structure import Structure
 from pyqchem.parsers.parser_rasci import rasci as parser_rasci
 from pyqchem.basis import get_basis_from_ccRepo, trucate_basis, basis_to_txt
 import numpy as np
+from pyqchem.errors import OutputError
+
 
 redefine_calculation_data_filename('test_soc3.pkl')
 
@@ -55,19 +57,28 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
                                   ras_act=active_space[1],
                                   ras_occ=active_space[2],
                                   ras_spin_mult=0,
-                                  ras_roots=5,  # calculate 5 states
+                                  ras_roots=8,  # calculate 5 states
                                   calc_soc=1,
                                   set_iter=1000,
                                   mem_total=15000,
                                   mem_static=900
                                   )
 
-            output, error = get_output_from_qchem(qc_input,
-                                                  processors=10,
-                                                  force_recalculation=False,
-                                                  parser=parser_rasci,
-                                                  store_full_output=True
-                                                  )
+            try:
+                output = get_output_from_qchem(qc_input,
+                                               processors=10,
+                                               force_recalculation=False,
+                                               parser=parser_rasci,
+                                               store_full_output=True
+                                               )
+            except OutputError as e:
+                print('---------------------------------------------')
+                print('Atom: {}'.format(atom.name))
+                print('basis: {}'.format(basis_name))
+                print('Active space (ele, act, occ): {}'.format(active_space))
+                print(e.error_lines)
+                print('calculation_failed')
+                continue
 
             print('\n---------------------------------------------')
             print('Atom: {}'.format(atom.name))
@@ -76,7 +87,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
             print('---------------------------------------------')
 
             for i, state in enumerate(output['excited states rasci']):
-                print('Energy state {}:  {: 18.12f} au'.format(i+1, state['total_energy']))
+                print('Energy state {} ({}):  {: 18.12f} au'.format(i+1, state['multiplicity'], state['total_energy']))
                 print(' Alpha  Beta   Amplitude')
                 for j, conf in enumerate(state['configurations']):
                     print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
@@ -84,7 +95,6 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
             for i in range(1, 6):
                 for j in range(1, 6):
                     try:
-
                         gamma_total = output['interstate_properties'][(i, j)]['gamma_total']
                         soc_1e = np.array(output['interstate_properties'][(i, j)]['1e_soc_mat'])[0, 0]
                         soc_2e = np.array(output['interstate_properties'][(i, j)]['2e_soc_mat'])[0, 0]

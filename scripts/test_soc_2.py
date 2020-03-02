@@ -3,6 +3,7 @@ from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
 from pyqchem.parsers.parser_rasci import rasci as parser_rasci
 from pyqchem.basis import get_basis_from_ccRepo, trucate_basis, basis_to_txt
+from pyqchem.errors import OutputError
 import numpy as np
 
 # import pyqchem.qchem_core
@@ -107,33 +108,32 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
                                   )
 
             # print(qc_input.get_txt())
-            output, error = get_output_from_qchem(qc_input,
-                                                  processors=10,
-                                                  force_recalculation=False,
-                                                  parser=parser_rasci,
-                                                  store_full_output=True
-                                                  )
-
-            # print(_)
-            # print(output['interstate_properties'])
             try:
-                gamma_total = output['interstate_properties'][(1, 2)]['gamma_total']
-                soc_1e = np.array(output['interstate_properties'][(1, 2)]['1e_soc_mat'])
-                soc_2e = np.array(output['interstate_properties'][(1, 2)]['2e_soc_mat'])
-                soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])
-                socc = output['interstate_properties'][(1, 2)]['mf_socc']
-
-                energy_1 = output['excited states rasci'][0]['total_energy']
-                energy_2 = output['excited states rasci'][1]['total_energy']
-
-            except:
+                output = get_output_from_qchem(qc_input,
+                                               processors=10,
+                                               force_recalculation=False,
+                                               parser=parser_rasci,
+                                               store_full_output=True
+                                               )
+            except OutputError as e:
                 print('---------------------------------------------')
                 print('Molecule: {}'.format(molecule.name))
                 print('basis: {}'.format(basis_name))
                 print('Active space (ele, act, occ): {}'.format(active_space))
-                print(error)
+                print(e.error_lines)
                 print('calculation_failed')
                 continue
+            # print(_)
+            # print(output['interstate_properties'])
+
+            gamma_total = output['interstate_properties'][(1, 2)]['gamma_total']
+            soc_1e = np.array(output['interstate_properties'][(1, 2)]['1e_soc_mat'])
+            soc_2e = np.array(output['interstate_properties'][(1, 2)]['2e_soc_mat'])
+            soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])
+            socc = output['interstate_properties'][(1, 2)]['mf_socc']
+
+            energy_1 = output['excited states rasci'][0]['total_energy']
+            energy_2 = output['excited states rasci'][1]['total_energy']
 
             print('---------------------------------------------')
             print('molecule: {}'.format(molecule.name))

@@ -59,53 +59,54 @@ molecule = Structure(coordinates=dimer_ethene,
 qc_input = create_qchem_input(molecule,
                               jobtype='sp',
                               exchange='hf',
-                              basis='sto-3g')
+                              basis='6-31G')
 
+print(qc_input.get_txt())
 # get data from Q-Chem calculation
-output, err, parsed_fchk = get_output_from_qchem(qc_input,
-                                                 processors=4,
-                                                 force_recalculation=False,
-                                                 read_fchk=True,
-                                                 fchk_only=True)
+output, electronic_structure = get_output_from_qchem(qc_input,
+                                                     processors=4,
+                                                     force_recalculation=False,
+                                                     read_fchk=True,
+                                                     fchk_only=True)
 
 # store original fchk info in file
-open('test.fchk', 'w').write(build_fchk(parsed_fchk))
+open('test.fchk', 'w').write(build_fchk(electronic_structure))
 
 # get partial wf localized in fragment
-mo_coeff_f1 = set_zero_coefficients(parsed_fchk['basis'],
-                                    parsed_fchk['coefficients'],
+mo_coeff_f1 = set_zero_coefficients(electronic_structure['basis'],
+                                    electronic_structure['coefficients'],
                                     range_f2)
 
-mo_coeff_f2 = set_zero_coefficients(parsed_fchk['basis'],
-                                    parsed_fchk['coefficients'],
+mo_coeff_f2 = set_zero_coefficients(electronic_structure['basis'],
+                                    electronic_structure['coefficients'],
                                     range_f1)
 
 # get symmetry classification
-parsed_fchk['coefficients'] = mo_coeff_f1
+electronic_structure['coefficients'] = mo_coeff_f1
 
 # save test fchk file with new coefficients
-open('test_f1.fchk', 'w').write(build_fchk(parsed_fchk))
+open('test_f1.fchk', 'w').write(build_fchk(electronic_structure))
 
 # get plane from coordinates
-coordinates_f1 = np.array(parsed_fchk['structure'].get_coordinates())[range_f1]
+coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[range_f1]
 center_f1, normal_f1 = get_plane(coordinates_f1)
 
 # get classified orbitals
-orbital_type_f1 = get_custom_orbital_classification(parsed_fchk,
+orbital_type_f1 = get_custom_orbital_classification(electronic_structure,
                                                     center=center_f1,
                                                     orientation=normal_f1)
 
 # get plane from coordinates
-coordinates_f2 = np.array(parsed_fchk['structure'].get_coordinates())[range_f2]
+coordinates_f2 = np.array(electronic_structure['structure'].get_coordinates())[range_f2]
 center_f2, normal_f2 = get_plane(coordinates_f2)
 
-parsed_fchk['coefficients'] = mo_coeff_f2
+electronic_structure['coefficients'] = mo_coeff_f2
 
 # save test fchk file with new coefficients
-open('test_f2.fchk', 'w').write(build_fchk(parsed_fchk))
+open('test_f2.fchk', 'w').write(build_fchk(electronic_structure))
 
 # get classified orbitals
-orbital_type_f2 = get_custom_orbital_classification(parsed_fchk,
+orbital_type_f2 = get_custom_orbital_classification(electronic_structure,
                                                     center=center_f2,
                                                     orientation=normal_f2)
 

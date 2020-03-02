@@ -7,6 +7,7 @@ import hashlib
 import pickle
 import warnings
 from pyqchem.qc_input import QchemInput
+from pyqchem.errors import ParserError, OutputError
 
 __calculation_data_filename__ = 'calculation_data.pkl'
 try:
@@ -196,11 +197,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-def store_calculation_data(input_qchem, keyword, data, status=True, protocol=pickle.HIGHEST_PROTOCOL):
-    # input_qchem.__dict__.pop('_set_iter', None)
-    # not store data if not finished OK
-    if status is False:
-        return
+def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL):
 
     calculation_data[(hash(input_qchem), keyword)] = data
     with open(__calculation_data_filename__, 'wb') as f:
@@ -304,13 +301,13 @@ def get_output_from_qchem(input_qchem,
 
             if data is not None:
                 if read_fchk is False:
-                    return data, err
+                    return data
                 elif data_fchk is not None:
-                    return data, err, data_fchk
+                    return data, data_fchk
 
         else:
             if fchk_only and data_fchk is not None:
-                return None, None, data_fchk
+                return None, data_fchk
 
     fchk_filename = 'qchem_temp_{}.fchk'.format(os.getpid())
     temp_filename = 'qchem_temp_{}.inp'.format(os.getpid())
@@ -326,39 +323,42 @@ def get_output_from_qchem(input_qchem,
         else:
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
-    if finish_ok(output):
-        finished_ok = True
-    else:
+    if not finish_ok(output):
         err += '\n'.join(output.split('\n')[-10:])
-        finished_ok = False
+        raise OutputError(output, err)
 
     if store_full_output:
-        store_calculation_data(input_qchem, 'fullout', [output, err], status=finished_ok)
+        store_calculation_data(input_qchem, 'fullout', [output, err])
 
     if parser is not None:
-        output = parser(output, **parser_parameters)
-        store_calculation_data(input_qchem, parser.__name__, output, status=finished_ok)
+        try:
+            output = parser(output, **parser_parameters)
+        # minimum functionality for error capture
+        except:
+            raise ParserError(parser.__name__, 'general')
+
+        store_calculation_data(input_qchem, parser.__name__, output)
 
     if read_fchk:
 
         data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
         if data_fchk is not None and not force_recalculation:
-            return output, err, data_fchk
+            return output, data_fchk
 
         if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
             warnings.warn('fchk not found! Make sure the input generates it (gui 2)')
-            return output, err, []
+            return output, []
 
         with open(os.path.join(work_dir, fchk_filename)) as f:
             fchk_txt = f.read()
         os.remove(os.path.join(work_dir, fchk_filename))
 
         data_fchk = parser_fchk(fchk_txt)
-        store_calculation_data(input_qchem, 'fchk', data_fchk, status=finished_ok)
+        store_calculation_data(input_qchem, 'fchk', data_fchk)
 
-        return output, err, data_fchk
+        return output, data_fchk
 
-    return output, err
+    return output
 
 
 def get_input_hash(data):

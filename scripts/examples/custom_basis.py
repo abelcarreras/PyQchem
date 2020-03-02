@@ -21,12 +21,12 @@ qc_input = QchemInput(molecule,
 # print input
 print(qc_input.get_txt())
 
-output, err, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=4,
-                                                          force_recalculation=False,
-                                                          read_fchk=True,
-                                                          parser=basic_parser_qchem,
-                                                          store_full_output=False)
+output, electronic_structure = get_output_from_qchem(qc_input,
+                                                     processors=4,
+                                                     force_recalculation=False,
+                                                     read_fchk=True,
+                                                     parser=basic_parser_qchem,
+                                                     store_full_output=False)
 
 
 print('scf_energy 6-31G: ', output['scf energy'])
@@ -39,11 +39,11 @@ qc_input = QchemInput(molecule,
                       exchange='hf',
                       basis=basis_custom)
 
-output, _ = get_output_from_qchem(qc_input,
-                                    processors=4,
-                                    force_recalculation=False,
-                                    parser=basic_parser_qchem
-                                    )
+output = get_output_from_qchem(qc_input,
+                               processors=4,
+                               force_recalculation=True,
+                               parser=basic_parser_qchem
+                               )
 
 print('scf_energy (custom basis: 6-31G): ', output['scf energy'])
 
@@ -56,10 +56,10 @@ qc_input = QchemInput(molecule,
                       basis=basis_custom_repo)
 
 
-output, _ = get_output_from_qchem(qc_input,
-                                  processors=4,
-                                  force_recalculation=False,
-                                  parser=basic_parser_qchem
-                                  )
+output = get_output_from_qchem(qc_input,
+                               processors=4,
+                               force_recalculation=True,
+                               parser=basic_parser_qchem
+                               )
 
 print('scf_energy (custom basis: cc-pVTZ): ', output['scf energy'])

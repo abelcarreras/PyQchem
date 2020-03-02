@@ -1,4 +1,5 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem.qchem_core import get_output_from_qchem
+from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.structure import Structure
 
@@ -19,29 +20,31 @@ for dist in distances:
                          multiplicity=1)
 
     # create qchem input
-    qc_input = create_qchem_input(molecule,
-                                  jobtype='sp',
-                                  exchange='hf',
-                                  correlation='rasci',
-                                  basis='6-31G(d,p)',
-                                  ras_act=2,
-                                  ras_elec=2,
-                                  ras_spin_mult=0,
-                                  ras_roots=2,
-                                  ras_do_hole=True,
-                                  ras_sts_tm=True,
-                                  # rasci sr-dft
-                                  ras_omega=400,
-                                  ras_srdft_cor='srpw92',
-                                  ras_srdft_exc='srpbe',
-                                  ras_natorb=False,
-                                  ras_print=0,
-                                  set_iter=30,
-                                  ras_srdft_damp=0.5)
+    qc_input = QchemInput(molecule,
+                          jobtype='sp',
+                          exchange='hf',
+                          correlation='rasci',
+                          basis='6-31G(d,p)',
+                          ras_act=2,
+                          ras_elec=2,
+                          ras_spin_mult=0,
+                          ras_roots=2,
+                          ras_do_hole=True,
+                          ras_sts_tm=True,
+                          # rasci sr-dft
+                          ras_omega=400,
+                          ras_srdft_cor='srpw92',
+                          ras_srdft_exc='srpbe',
+                          ras_natorb=False,
+                          ras_print=0,
+                          set_iter=30,
+                          ras_srdft_damp=0.5)
 
     # calculate and parse qchem output
 
-    data, err = get_output_from_qchem(qc_input, processors=4, parser=basic_parser_qchem)
+    data = get_output_from_qchem(qc_input,
+                                 processors=4,
+                                 parser=basic_parser_qchem)
 
     # store energies of excited states states in list
     energies.append([state['total energy'] for state in data['excited states']])

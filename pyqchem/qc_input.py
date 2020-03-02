@@ -2,6 +2,8 @@ import numpy as np
 from copy import deepcopy
 from pyqchem.basis import basis_to_txt
 import hashlib, json
+import warnings
+from pyqchem.errors import QchemInputWarning
 
 
 class QchemInput:
@@ -98,7 +100,7 @@ class QchemInput:
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
                 self._ras_occ = int(self._ras_occ)
-                print('ras_occ = {}'.format(self._ras_occ))
+                warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
 
         # Handle custom basis set
         if type(basis) is not str:

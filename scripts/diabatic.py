@@ -177,7 +177,7 @@ for slide_d in distance:
             # calculate and parse adiabatic/diabatic data
             try:
                 data = get_output_from_qchem(txt_input, processors=4, force_recalculation=args.force_recalculation,
-                                             parser=analyze_diabatic, parser_parameters=parser_info, store_output=output_file)
+                                             parser=analyze_diabatic, parser_parameters=parser_info)
                 data.update({'states_info': states_info})
                 if args.drange is None:
                     total_data['{}_{}'.format(slide_y, slide_z)] = data

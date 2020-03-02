@@ -35,11 +35,11 @@ parameters = {'jobtype': 'sp',
 qc_input = create_qchem_input(molecule, **parameters)
 
 # get data from Q-Chem calculation
-output, err, parsed_fchk = get_output_from_qchem(qc_input,
-                                                 processors=4,
-                                                 force_recalculation=False,
-                                                 read_fchk=True,
-                                                 fchk_only=True)
+output, parsed_fchk = get_output_from_qchem(qc_input,
+                                            processors=4,
+                                            force_recalculation=False,
+                                            read_fchk=True,
+                                            fchk_only=True)
 
 
 # write .fchk file copy on disk (for checking purpose)

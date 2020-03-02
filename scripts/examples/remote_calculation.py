@@ -38,7 +38,7 @@ print(qc_input.get_txt())
 
 
 # get data from Q-Chem calculation
-output, err = get_output_from_qchem(qc_input,
+output = get_output_from_qchem(qc_input,
                                     processors=1,
                                     force_recalculation=True,
                                     remote=remote_data_pc,
