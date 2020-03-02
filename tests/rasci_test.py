@@ -53,7 +53,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_damp=0.5)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -89,7 +89,7 @@ class HydrogenTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -132,7 +132,7 @@ class WaterTest(unittest.TestCase):
                                        geom_opt_coords=-1,
                                        geom_opt_tol_displacement=1200)
 
-        parsed_data, error = get_output_from_qchem(txt_input,
+        parsed_data = get_output_from_qchem(txt_input,
                                                    processors=4,
                                                    parser=basic_optimization)
 
@@ -154,7 +154,7 @@ class WaterTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -202,7 +202,7 @@ class WaterTest(unittest.TestCase):
         print(txt_input.get_txt())
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -222,4 +222,3 @@ class WaterTest(unittest.TestCase):
         data_loaded = standardize_dictionary(data_loaded)
 
         self.assertDictEqual(data, data_loaded)
-

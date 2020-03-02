@@ -70,7 +70,7 @@ class Eth00(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -108,7 +108,7 @@ class Eth00(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -145,7 +145,7 @@ class Eth00(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -229,7 +229,7 @@ class Eth90(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -266,7 +266,7 @@ class Eth90(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -303,7 +303,7 @@ class Eth90(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -387,7 +387,7 @@ class EthDist(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -424,7 +424,7 @@ class EthDist(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
@@ -461,7 +461,7 @@ class EthDist(unittest.TestCase):
         txt_input = create_qchem_input(self.molecule, **rasci)
 
         # calculate and parse qchem output
-        output, error = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input, processors=4)
         print(output)
         data = basic_rasci(output)
 
