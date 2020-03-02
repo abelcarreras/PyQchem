@@ -301,10 +301,12 @@ def get_output_from_qchem(input_qchem,
         if parser is not None:
 
             data = retrieve_calculation_data(hash(input_qchem), parser.__name__)
-            if data_fchk is None:
-                return data, err
-            else:
-                return data, err, data_fchk
+
+            if data is not None:
+                if read_fchk is False:
+                    return data, err
+                elif data_fchk is not None:
+                    return data, err, data_fchk
 
         else:
             if fchk_only and data_fchk is not None:

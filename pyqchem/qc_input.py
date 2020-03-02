@@ -97,6 +97,7 @@ class QchemInput:
                         molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                self._ras_occ = int(self._ras_occ)
                 print('ras_occ = {}'.format(self._ras_occ))
 
         # Handle custom basis set
@@ -132,7 +133,7 @@ class QchemInput:
             keywords.pop(key, None)
 
         # Change molecule object by molecule coordinates (Structure class too complex for JSON)
-        keywords['_molecule'] = keywords['_molecule'].get_xyz()
+        keywords['_molecule'] = hash(keywords['_molecule'])
 
         digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
         return int(digest, 16)
