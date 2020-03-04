@@ -1,11 +1,18 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename
 from pyqchem.parsers.parser_rasci_basic import basic_rasci
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
 from pyqchem.test import standardize_dictionary
 import yaml
 import unittest
+import os
 
+redefine_calculation_data_filename('test_data.pkl')
+
+if 'USER' in os.environ and os.environ['USER'] == 'travis':
+    recalculate = False
+else:
+    recalculate = True
 
 class HydrogenTest(unittest.TestCase):
 
@@ -15,21 +22,11 @@ class HydrogenTest(unittest.TestCase):
         # generate molecule
         self.molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                                [0.0, 0.0, 1.5]],
-                             atomic_elements=['H', 'H'],
-                             charge=0,
-                             multiplicity=1)
-
-#        self.rasci = {'jobtype': 'sp',
-#                      'exchange' : 'hf'}
-
+                                  atomic_elements=['H', 'H'],
+                                  charge=0,
+                                  multiplicity=1)
 
     def test_srdft(self):
-
- #       rasci2 = dict(self.rasci)
- #       rasci2.update({'ras_act': 2,
- #                      'ras_hole': 4})
-
- #       txt_input = create_qchem_input(self.molecule, **rasci2)
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
@@ -53,7 +50,10 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_damp=0.5)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input,
+                                       processors=4,
+                                       force_recalculation=recalculate,
+                                       store_full_output=True)
         print(output)
         data = basic_rasci(output)
 
@@ -89,7 +89,10 @@ class HydrogenTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input,
+                                       processors=4,
+                                       force_recalculation=recalculate,
+                                       store_full_output=True)
         print(output)
         data = basic_rasci(output)
 
@@ -133,8 +136,10 @@ class WaterTest(unittest.TestCase):
                                        geom_opt_tol_displacement=1200)
 
         parsed_data = get_output_from_qchem(txt_input,
-                                                   processors=4,
-                                                   parser=basic_optimization)
+                                            processors=4,
+                                            parser=basic_optimization,
+                                            force_recalculation=recalculate,
+                                            store_full_output=True)
 
         self.molecule = parsed_data['optimized_molecule']
 
@@ -154,7 +159,10 @@ class WaterTest(unittest.TestCase):
                                        ras_sts_tm=True)
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input,
+                                       processors=4,
+                                       force_recalculation=recalculate,
+                                       store_full_output=True)
         print(output)
         data = basic_rasci(output)
 
@@ -202,7 +210,11 @@ class WaterTest(unittest.TestCase):
         print(txt_input.get_txt())
 
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input, processors=4)
+        output = get_output_from_qchem(txt_input,
+                                       processors=4,
+                                       force_recalculation=recalculate,
+                                       store_full_output=True)
+
         print(output)
         data = basic_rasci(output)
 
