@@ -41,6 +41,6 @@ deploy:
        secure:  "pxYhTh5waug3Uw9RXT1kwEAsGJyynY1JvgfGXSjD6wF34QCCWysEPsCMAjiU6C8a4asVazVGVTNgzlS7QqFVVFjJw1BTwbpxxvMU0sLgPLK4R9j87yXSUih/chgAQ7q0v1SZ/Nkfcc0y81DjKl9BDFqld/OFOv2AYwG+yvwezWQbgNuE08mpwUH+UFN72EaGTBmBD7Sus+KadYiwVNGjRcSTLA+4YjjloXIr3GeTqrtZnt9m0u022hBCJ6SJfDpPuAconiTizT1t5t7eOHWa11GtB63DMlayR2BD9j2DkLQO8EXNhT1eKt/ByqroRsi1uXU9UPfNIXP3NkkP2Ar/aQyHxZYessI3mggOI+dQ3IG9QwjIrMy9L84mCj2ccvj2eQl1oVWUxGGJNDEBBJiFAkYjimlH73GvwQgel1hFQhXZQoD2/9j19Ge0gOaa6GH6U+jFId3HbDv0cj8VMAlESNTOnfwUC+30KZOIMIufQQACOYqmqWK57440Ln6Xuo6Hvb6JYA5Pp8z7EcUjZA6/f3o7UHvuugJBUSEzmqEmFMdSbJs2vDPTXrJcrROWy6nV5n18Xt9veUpG76/vvEdJG4Tf//t5En7jQFqZaqVv06xH3HZlf9RKlsUcxpwUV93m8I3b9SlpGv3BVSm6uvGKpeDI8CyXOz73ap90gB/JjVc="
     skip_existing: true
     on:
-        # branch: master
-        branch: development
+        branch: master
+        # branch: development
         tags: False
