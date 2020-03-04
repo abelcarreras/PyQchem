@@ -22,8 +22,8 @@ Requirements
 - requests
 - lxml
 ------------
-```
-# python setup.py install --user
+```shell
+python setup.py install --user
 ```
 
 
@@ -31,7 +31,10 @@ Interface
 ---------
 **Simple pythonic API to define your input**
 
-```
+```python
+from pyqchem import Structure, QchemInput, get_output_from_qchem
+from pyqchem.parsers.basic import basic_parser_qchem
+
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                   [0.0, 0.0, 0.9]],
                      atomic_elements=['H', 'H'],
@@ -53,7 +56,12 @@ print('Energy: ', data['scf energy'])
 
 **Link calculations in powerful workflows**
 
-```
+```python
+from pyqchem import QchemInput, get_output_from_qchem
+from pyqchem.parsers.parser_optimization import basic_optimization
+from pyqchem.parsers.parser_frequencies import basic_frequencies
+
+
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           parser=basic_optimization,
@@ -62,11 +70,11 @@ parsed_data, electronic_structure = get_output_from_qchem(qc_input,
 opt_molecule = parsed_data['optimized_molecule']
 
 
-qc_input = create_qchem_input(opt_molecule,
-                              jobtype='freq',
-                              exchange='hf',
-                              basis='sto-3g',
-                              scf_guess=electronic_structure['coefficients'])
+qc_input = QchemInput(opt_molecule,
+                      jobtype='freq',
+                      exchange='hf',
+                      basis='sto-3g',
+                      scf_guess=electronic_structure['coefficients'])
 
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
@@ -76,7 +84,11 @@ parsed_data = get_output_from_qchem(qc_input,
 
 **Handle qchem errors like a pro!**
 
-```
+```python
+from pyqchem import get_output_from_qchem
+from pyqchem.errors import OutputError, ParserError
+from pyqchem.parsers.parser_rasci import rasci as parser_rasci
+
 try:
     parsed_data = get_output_from_qchem(qc_input,
                                         processors=4,
@@ -89,7 +101,7 @@ except OutputError as e:
     
     # Try to parse your output anyway
     try: 
-        parsed_data = parser_rasci(e.output)
+        parsed_data = parser_rasci(e.full_output)
     except ParserError:
         print('Failed parsing')
         exit()
