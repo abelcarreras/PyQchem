@@ -23,7 +23,7 @@ install:
     - pip install -e .
 
 script:
-    - cd unittest
+    - cd tests
     - coverage run --source=../pyqchem -m unittest discover . "rasci_t*.py"
 
 after_success:
