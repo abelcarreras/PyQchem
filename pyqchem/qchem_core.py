@@ -1,5 +1,3 @@
-__author__ = 'Abel Carreras'
-
 import os
 from subprocess import Popen, PIPE
 import numpy as np
