@@ -10,7 +10,9 @@ def get_version_number():
 # Make python package
 setup(name='pyqchem',
       version=get_version_number(),
-      description='qchem python module',
+      description='Python wrapper for Q-Chem',
+      long_description=open('README.md').read(),
+      long_description_content_type='text/markdown',
       install_requires=['numpy', 'scipy', 'lxml', 'requests', 'matplotlib', 'PyYAML'],
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
