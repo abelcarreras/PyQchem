@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/abelcarreras/PyQchem.svg?branch=master)](https://travis-ci.com/abelcarreras/PyQchem)
+[![PyPI version](https://badge.fury.io/py/pyqchem.svg)](https://badge.fury.io/py/pyqchem)
+
+
 PyQchem
 =======
 Python wrapper for Q-Chem
