@@ -27,8 +27,8 @@ python setup.py install --user
 ```
 
 
-Interface 
----------
+Examples 
+--------
 **Simple pythonic API to define your input**
 
 ```python
@@ -44,7 +44,7 @@ molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
 qc_input = QchemInput(molecule,
                       jobtype='sp',
                       exchange='hf',
-                      basis='6-31G(d,p)')
+                      basis='6-31G')
 
 data = get_output_from_qchem(qc_input,
                              processors=4,
@@ -79,6 +79,15 @@ qc_input = QchemInput(opt_molecule,
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
                                     parser=basic_frequencies)
+
+
+for mode, freq in enumerate(parsed_data['frequencies']):
+
+    force_constants = parsed_data['force_constants'][mode]
+
+    print('mode:                      {}'.format(mode+1))
+    print('frequency (cm-1):          {:10.2f}'.format(freq))
+    print('force constant (mdyne/A):  {:10.5f}\n'.format(force_constants))
 
 ```
 
