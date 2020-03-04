@@ -32,3 +32,15 @@ script:
 after_success:
     - coveralls
     - cd ..
+
+deploy:
+  - provider: pypi
+    # distributions: sdist
+    user: abelcarreras83
+    password:
+       secure:  "kojE270QtL5omGQIuMJR5f4wXvBtgq04UluBiTtorGz7O0mns9f7vQn9LeevEW0jfj3FkxNTvaI/63qM2Cc3/FW5h9sFMlLgMLAhcdMOs2yBoJJ/xzS+gZAoyYWwb9smGm/Y+ufsirKb2waKMPNgm3yt4vQ1iQKzLpZTrhXZfcPX7p/lnk1ZD2iEv1ZKGEc9Xnv93zUcEh94u9jatQwXV+Z6DVgxZSgheWD+YofP5mHGAJIaj+P1cA8eZBycrSJnJmrhkQXt/QGC2XRosGryq5Q6gQgoAcaL2RSRkFr55E/BQg9N2Z1jyN0+9B5CwtKwjmsd9tjNk73ShQhRS7ReghL/p5j+9Q/UrrmB0bs64MJbYVEdTqZMsHDwlWr+abihIppje9a7+8W6NedLE/oWb91m2OhyyQwC1JduYk6KXDf2wPPJuumijYF5I2NTDpsYkLuLRMbd2tUT/1esl+J6I00nSgEwG7XiOr6r/nzxO+y9pVVZcu8YRUruT/2wb3exxahGq8LjL3rprh+xJUuz5SLGES3aDXrUTHnazXFrl2X9W0YcjMgqzi6vx3VW/veLRM9veLeqyugjbdc1bQGK3X0wEVq6ppKdRnKKU1F14AuLGvhm9b4CoAE662PPRlrjNh3l7Hhr0LWzt1zl2G06p8cxsoE4Geo0Yg4+ZNeg+j0="
+    skip_existing: true
+    on:
+        # branch: master
+        branch: development
+        tags: False
