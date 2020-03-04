@@ -16,6 +16,9 @@ notifications:
   email:
   - abelcarreras83@gmail.com
 
+env:
+  - QCSCRATCH=.
+
 install:
     - pip install coverage
     - pip install coveralls
