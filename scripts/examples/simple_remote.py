@@ -11,7 +11,6 @@ remote_data = {'hostname': '111.222.333.44', # the remote machine host
                'look_for_keys': False,
                'precommand': ['module load qchem']}  # some prepend lines you may need to load qchem
 
-
 # define molecule
 coordinates = [[0.0,  1.0,  0.0],
                [0.0,  0.0,  1.0],
@@ -33,16 +32,16 @@ qc_input = create_qchem_input(molecule,
                               exchange='hf',
                               basis='sto-3g')
 
-out, err, fchk = get_output_from_qchem(qc_input,
-                                       processors=4,
-                                       read_fchk=True,
-                                       force_recalculation=True,
-                                       remote=remote_data,       # Set remote data
-                                       parser=basic_frequencies
-                                       )
+out, electronic_structure = get_output_from_qchem(qc_input,
+                                                  processors=4,
+                                                  read_fchk=True,
+                                                  force_recalculation=True,
+                                                  remote=remote_data,  # Set remote data
+                                                  parser=basic_frequencies
+                                                  )
 
 # Show output
 print(out)
 
-# Show fCHK
-print(fchk)
+# Show Electronic structure data
+print(electronic_structure)

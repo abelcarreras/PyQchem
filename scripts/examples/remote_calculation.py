@@ -1,4 +1,4 @@
-from pyqchem.qchem_core import create_qchem_input, get_output_from_qchem
+from pyqchem import get_output_from_qchem, QchemInput
 from pyqchem.structure import Structure
 from pyqchem.parsers.basic import basic_parser_qchem
 
@@ -29,22 +29,22 @@ molecule = Structure(coordinates=ethene,
                      multiplicity=1)
 
 # create Q-Chem input
-qc_input = create_qchem_input(molecule,
-                              jobtype='sp',
-                              exchange='hf',
-                              basis='sto-3g')
+qc_input = QchemInput(molecule,
+                      jobtype='sp',
+                      exchange='hf',
+                      basis='sto-3g')
 
 print(qc_input.get_txt())
 
 
 # get data from Q-Chem calculation
 output = get_output_from_qchem(qc_input,
-                                    processors=1,
-                                    force_recalculation=True,
-                                    remote=remote_data_pc,
-                                    scratch='/Users/abel/Scratch/export/',
-                                    parser=basic_parser_qchem
-                                    )
+                               processors=1,
+                               force_recalculation=True,
+                               remote=remote_data_pc,
+                               scratch='/Users/abel/Scratch/export/',
+                               parser=basic_parser_qchem
+                               )
 
 # Get data
 print('OUTPUT')

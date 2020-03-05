@@ -61,16 +61,20 @@ from pyqchem import QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 
+qc_input = QchemInput(molecule,
+                      jobtype='opt',
+                      exchange='hf',
+                      basis='sto-3g',
+                      geom_opt_tol_gradient=300,
+                      geom_opt_tol_energy=100,
+                      geom_opt_tol_displacement=1200)
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           parser=basic_optimization,
                                                           read_fchk=True)
 
-opt_molecule = parsed_data['optimized_molecule']
-
-
-qc_input = QchemInput(opt_molecule,
+qc_input = QchemInput(parsed_data['optimized_molecule'],
                       jobtype='freq',
                       exchange='hf',
                       basis='sto-3g',
@@ -90,8 +94,30 @@ for mode, freq in enumerate(parsed_data['frequencies']):
     print('force constant (mdyne/A):  {:10.5f}\n'.format(force_constants))
 
 ```
+**Custom basis without pain**
+
+```python
+from pyqchem import QchemInput, Structure
+from pyqchem.basis import get_basis_from_ccRepo
+
+
+molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
+                                  [0.0, 0.0, 1.5811]],
+                     atomic_elements=['Se', 'H'],
+                     charge=-1,
+                     multiplicity=1)
+
+basis_custom = get_basis_from_ccRepo(molecule, 'cc-pVTZ')
+
+qc_input = QchemInput(molecule,
+                      jobtype='sp',
+                      exchange='hf',
+                      basis=basis_custom)
+
+```
 
 **Handle qchem errors like a pro!**
+
 
 ```python
 from pyqchem import get_output_from_qchem
