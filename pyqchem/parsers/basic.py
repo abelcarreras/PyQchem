@@ -1,91 +1,77 @@
 __author__ = 'Abel Carreras'
+from pyqchem.utils import search_bars
 
-import re
 
+def _get_orbital_energies(orbitals_section):
+    occupied = orbitals_section.find('-- Occupied --')
+    virtual = orbitals_section.find('-- Virtual --')
 
-def search_bars(output, from_position=0):
-    output = output[from_position:]
-    positions = []
-    previous = 0
-    for m in re.finditer('---', output):
-        if m.start() > previous + 1:
-            positions.append(m.start() + from_position)
-        previous = m.end()
+    occupied_section = orbitals_section[occupied:virtual]
+    virtual_section = orbitals_section[virtual:]
 
-    return positions
+    occupied_energies = [float(energy) for energy in occupied_section.split()[3:]]
+    virtual_energies = [float(energy) for energy in virtual_section.split()[3:]]
+
+    return {'occupied': occupied_energies, 'virtual': virtual_energies}
 
 
 def basic_parser_qchem(output):
 
+    data_dict = {}
+
     # scf energy
     enum = output.find('Total energy in the final basis set')
-    scf_energy = float(output[enum:enum+100].split()[8])
+    data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
 
-    # excited states data
-    excited_states = []
-    for m in re.finditer('RAS-CI total energy for state', output):
-        # print('ll found', m.start(), m.end())
-        tot_energy = float(output[m.end():m.end() + 100].split()[1])
-        exc_energy = float(output[m.end():m.end() + 100].split()[6])
-        mul = output[m.end():m.end() + 100].split()[8]
+    # Orbitals energy
+    enum = output.find('Orbital Energies (a.u.)')
+    bars = search_bars(output, from_position=enum, bar_type='----')
+    orbitals_section = output[enum:bars[1]]
 
-        excited_states.append({'total energy': tot_energy,
-                               'excitation energy': exc_energy,
-                               'multiplicity': mul})
+    alpha_mos = orbitals_section.find('Alpha MOs')
+    beta_mos = orbitals_section.find('Beta MOs')
 
-    # CIS Excitation energies
-    enum = output.find('CIS Excitation Energies')
-    excited_states_cis = []
-    if enum > 0:
-        bars = search_bars(output, from_position=enum)
+    if beta_mos > 0:
+        alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:beta_mos])
+        beta_energies = _get_orbital_energies(orbitals_section[beta_mos:])
+    else:
+        alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:])
+        beta_energies = alpha_energies
 
-        output_cis = output[bars[0]:bars[1]]
+    data_dict['orbital_energies'] = {'alpha': alpha_energies, 'beta': beta_energies, 'units': 'au'}
 
-        for m in re.finditer('Excited state ', output_cis):
-            state_cis_words = output_cis[m.end():].split()
+    # Mulliken Net Atomic Charges
+    enum = output.find('Ground-State Mulliken Net Atomic Charges')
+    bars = search_bars(output, from_position=enum, bar_type='----')
+    mulliken_section = output[bars[0]:bars[1]]
+    data_dict['mulliken_charges'] = [float(line.split()[2]) for line in mulliken_section.split('\n')[1:-1]]
 
-            exc_energy = float(state_cis_words[5])
-            exc_energy_units = state_cis_words[3][1:-1]
-            tot_energy = float(state_cis_words[11])
-            try:
-                tot_energy_units = state_cis_words[12]
-                mul = state_cis_words[14]
-                trans_mom = [float(mom) for mom in [state_cis_words[17],
-                                                    state_cis_words[19],
-                                                    state_cis_words[21]]]
-                strength = float(state_cis_words[25])
-            except ValueError:
-                # old version of qchem (< 5.01)
-                tot_energy_units = 'au'
-                mul = state_cis_words[13]
-                trans_mom = [float(mom) for mom in [state_cis_words[16],
-                                                    state_cis_words[18],
-                                                    state_cis_words[20]]]
-                strength = float(state_cis_words[24])
+    # Multipole Moments
+    enum = output.find('Cartesian Multipole Moments')
+    bars = search_bars(output, from_position=enum, bar_type='----')
+    multipole_section = output[bars[0]: bars[1]]
+    multipole_lines =  multipole_section.split('\n')[1:-1]
 
-            transitions = []
-            for i, word in enumerate(state_cis_words):
-                if word == '-->':
-                    origin = int(state_cis_words[i-1][:-1])
-                    target = int(state_cis_words[i+2][:-1])
-                    amplitude = float(state_cis_words[i+5])
+    multipole_dict = {}
 
-                    transitions.append({'origin': origin,
-                                        'target': target,
-                                        'amplitude': amplitude})
-                if word == 'Excited':
-                    break
+    multipole_dict['charge'] = float(multipole_lines[1])
+    multipole_dict['charge_units'] = 'ESU x 10^10'
 
-            excited_states_cis.append({'total energy': tot_energy,
-                                       'total energy units': tot_energy_units,
-                                       'excitation energy': exc_energy,
-                                       'excitation energy units': exc_energy_units,
-                                       'multiplicity': mul,
-                                       'transition moment': trans_mom,
-                                       'strength': strength,
-                                       'transitions': transitions})
+    multipole_dict['dipole_moment'] = [float(val) for val in multipole_lines[3].split()[1::2]]
+    multipole_dict['dipole_units'] = 'Debye'
 
-    return {'scf energy': scf_energy,
-            'excited states': excited_states,
-            'excited states cis': excited_states_cis}
+    multipole_dict['quadrupole_moment'] = [float(val) for val in multipole_lines[6].split()[1::2]] + \
+                                          [float(val) for val in multipole_lines[7].split()[1::2]]
+    multipole_dict['quadrupole_units'] = 'Debye-Ang'
+
+    multipole_dict['octopole_moment'] = [float(val) for val in multipole_lines[9].split()[1::2]] + \
+                                        [float(val) for val in multipole_lines[10].split()[1::2]] + \
+                                        [float(val) for val in multipole_lines[11].split()[1::2]] + \
+                                        [float(val) for val in multipole_lines[12].split()[1::2]]
+    multipole_dict['octopole_units'] = 'Debye-Ang^2'
+
+    data_dict['multipole'] = multipole_dict
+
+    return data_dict
+
 
