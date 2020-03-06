@@ -5,9 +5,13 @@ from pyqchem.structure import Structure
 from pyqchem.test import standardize_dictionary
 import yaml
 import unittest
-import os
+import os, sys
 
-redefine_calculation_data_filename('test_data.pkl')
+
+if sys.version_info[0] == 2:
+    redefine_calculation_data_filename('test_data_py2.pkl')
+else:
+    redefine_calculation_data_filename('test_data_py3.pkl')
 
 if 'USER' in os.environ and os.environ['USER'] == 'travis':
     recalculate = False
