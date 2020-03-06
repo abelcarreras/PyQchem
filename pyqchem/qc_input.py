@@ -131,8 +131,8 @@ class QchemInput:
         # take all keywords defined in input
         keywords = dict(self.__dict__)
 
-        # remove keywords that not affect the results
-        for key in ['_mem_total', '_mem_static', '_gui', '_set_iter']:
+        # remove keywords that not affect the results (these keywords will be ignored in hash)
+        for key in ['_mem_total', '_mem_static', '_gui', '_set_iter', '_max_scf_cycles', '_geom_opt_max_cycles']:
             keywords.pop(key, None)
 
         # Change molecule object by molecule coordinates (Structure class too complex for JSON)
