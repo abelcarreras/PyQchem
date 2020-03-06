@@ -1,10 +1,12 @@
-from pyqchem.qchem_core import get_output_from_qchem
+from pyqchem.qchem_core import get_output_from_qchem, redefine_calculation_data_filename
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
 from pyqchem.parsers.parser_rasci import rasci as parser_rasci
 from pyqchem.basis import get_basis_from_ccRepo, trucate_basis, basis_to_txt
 import numpy as np
 from pyqchem.errors import OutputError
+
+redefine_calculation_data_filename('test_soc.pkl')
 
 # create molecule
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
@@ -22,8 +24,10 @@ for s1 in ['cc-pV_Z', 'cc-pCV_Z']:
 
 for calc_soc in [1, 2]:
     for basis_name in basis_name_list:
-        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]:
-            basis_custom_repo = get_basis_from_ccRepo(molecule, 
+#        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]:
+        for active_space in [[25, 13, 5]]:
+
+            basis_custom_repo = get_basis_from_ccRepo(molecule,
                                                       basis_name,
                                                       if_missing=basis_name.replace('cc-pC', 'cc-p'))
             basis_custom_repo = trucate_basis(basis_custom_repo,
@@ -88,3 +92,4 @@ for calc_soc in [1, 2]:
             print('soc_1e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_1e))
             print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_2e))
             print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_tot))
+            print('SOCC: {: 18.12f} cm-1'.format(socc))

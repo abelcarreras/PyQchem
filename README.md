@@ -9,11 +9,13 @@ Python wrapper for Q-Chem (https://www.q-chem.com)
 Main features
 -------------
 - Easy to use clean python interface for Q-Chem
-- No special q-chem compilation needed
-- Output parser support 
+- No special q-chem compilation needed (reads Q-Chem environment)
+- Output parser support
 
-Requirements
-------------
+Installation instructions
+-------------------------
+1. Requirements
+
 - Python 2.7.x/3.5+
 - numpy
 - scipy
@@ -21,11 +23,18 @@ Requirements
 - wfnsympy
 - requests
 - lxml
-------------
+- wfnsympy (optional)
+
+2a. Manual installation 
+
 ```shell
 python setup.py install --user
 ```
 
+2b. From pypi repository 
+```shell
+pip install pyqchem --user
+```
 
 Examples 
 --------

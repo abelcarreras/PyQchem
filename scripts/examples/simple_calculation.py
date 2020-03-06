@@ -12,14 +12,13 @@ qc_input = QchemInput(molecule,
                       jobtype='sp',
                       exchange='hf',
                       basis='6-31G',
-                      unrestricted=False)
+                      unrestricted=True)
 
 # calculate and parse qchem output
 
 data = get_output_from_qchem(qc_input,
                              processors=4,
                              parser=basic_parser_qchem,
-                             store_full_output=True
                              )
 
 print(data)
