@@ -1,8 +1,7 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
-from pyqchem.structure import Structure
 import matplotlib.pyplot as plt
-
+from pyqchem.errors import OutputError
 
 # define molecule
 coordinates = [[0.0,  1.0,  0.0],
@@ -20,21 +19,18 @@ print('Initial structure')
 print(molecule)
 
 # optimization
-qc_input = create_qchem_input(molecule,
-                              jobtype='opt',
-                              exchange='hf',
-                              basis='sto-3g',
-                              geom_opt_tol_gradient=300,
-                              geom_opt_tol_energy=100,
-                              geom_opt_coords=-1,
-                              geom_opt_tol_displacement=1200)
+qc_input = QchemInput(molecule,
+                      jobtype='opt',
+                      exchange='hf',
+                      basis='sto-3g',
+                      geom_opt_tol_gradient=300,
+                      geom_opt_tol_energy=100,
+                      geom_opt_tol_displacement=1200)
 
-
-parsed_data, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=4,
-                                                          parser=basic_optimization,
-                                                          force_recalculation=False,
-                                                          read_fchk=True)
+parsed_data = get_output_from_qchem(qc_input,
+                                    processors=4,
+                                    parser=basic_optimization,
+                                    force_recalculation=False)
 
 
 opt_molecule = parsed_data['optimized_molecule']
