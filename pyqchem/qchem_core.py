@@ -258,7 +258,7 @@ def get_output_from_qchem(input_qchem,
 
     try:
         os.mkdir(work_dir)
-    except FileExistsError:
+    except OSError:
         pass
 
     # check scf_guess if guess

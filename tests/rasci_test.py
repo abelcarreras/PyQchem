@@ -14,6 +14,7 @@ if 'USER' in os.environ and os.environ['USER'] == 'travis':
 else:
     recalculate = True
 
+
 class HydrogenTest(unittest.TestCase):
 
     def setUp(self):
