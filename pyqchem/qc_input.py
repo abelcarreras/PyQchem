@@ -70,6 +70,7 @@ class QchemInput:
                  geom_opt_tol_displacement=1200,
                  geom_opt_tol_energy=100,
                  geom_opt_max_cycles=50,
+                 geom_opt_constrains=None,
                  # other
                  n_frozen_core=None,
                  n_frozen_virt=None,
@@ -299,6 +300,14 @@ class QchemInput:
         if self._scf_guess is not None:
             input_file += 'scf_guess {}\n'.format(self._scf_guess)
 
+        # optimization
+        if self._jobtype.lower() == 'opt':
+            input_file += 'geom_opt_coords {}\n'.format(self._geom_opt_coords)
+            input_file += 'geom_opt_tol_gradient {}\n'.format(self._geom_opt_tol_gradient)
+            input_file += 'geom_opt_tol_displacement {}\n'.format(self._geom_opt_tol_displacement)
+            input_file += 'geom_opt_tol_energy {}\n'.format(self._geom_opt_tol_energy)
+            input_file += 'geom_opt_max_cycles {}\n'.format(self._geom_opt_max_cycles)
+
         input_file += '$end\n'
 
         # localized diabatization
@@ -307,13 +316,19 @@ class QchemInput:
             input_file += ' '.join(np.array(self._localized_diabatization, dtype=str))
             input_file += '\n$end\n'
 
-        # optimization
-        if self._jobtype.lower() == 'opt':
-            input_file += 'geom_opt_coords {}\n'.format(self._geom_opt_coords)
-            input_file += 'geom_opt_tol_gradient {}\n'.format(self._geom_opt_tol_gradient)
-            input_file += 'geom_opt_tol_displacement {}\n'.format(self._geom_opt_tol_displacement)
-            input_file += 'geom_opt_tol_energy {}\n'.format(self._geom_opt_tol_energy)
-            input_file += 'geom_opt_max_cycles {}\n'.format(self._geom_opt_max_cycles)
+
+        # Constrains section
+        if self._geom_opt_constrains is not None:
+            input_file += '$opt\n'
+            input_file += 'CONSTRAINT\n'
+            for type, constrains in self._geom_opt_constrains.items():
+                for constrain in constrains:
+                    input_file += '{} {} {:15.6f}\n'.format(type,
+                                                      ' '.join([str(num) for num in constrain['atoms']]),
+                                                      constrain['value'])
+            input_file += 'ENDCONSTRAINT\n'
+            input_file += '$end\n'
+
 
         # Diabatization section
         if self._ras_diabatization_states is not None:

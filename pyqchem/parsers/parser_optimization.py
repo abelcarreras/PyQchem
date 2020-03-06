@@ -5,6 +5,7 @@ import re
 
 def basic_optimization(output, print_data=False):
 
+    data_dict = {}
     # Molecule
     n = output.find('$molecule')
     n2 = output[n:].find('$end')
@@ -31,9 +32,9 @@ def basic_optimization(output, print_data=False):
 
         enum = step_section.find('Energy is')
         step_energy = float(step_section[enum: enum+50].split()[2])
-        enum = step_section.find('Gradient')
+        enum = step_section.find('      Gradient')
         step_gradient = float(step_section[enum: enum+50].split()[1])
-        enum = step_section.find('Displacement')
+        enum = step_section.find('      Displacement')
         step_displacement = float(step_section[enum: enum+50].split()[1])
 
         optimization_steps.append({'molecule': step_molecule,
@@ -41,22 +42,26 @@ def basic_optimization(output, print_data=False):
                                    'gradient': step_gradient,
                                    'displacement': step_displacement})
 
+    data_dict['optimization_steps'] = optimization_steps
+
     # Optimization Convergence
-    n = output.find('**  OPTIMIZATION CONVERGED  **')
-    ne = output[n-200:n].find('Final energy')
+    enum = output.find('**  OPTIMIZATION CONVERGED  **')
+    if enum > 0:
+        ne = output[enum-200:enum].find('Final energy')
 
-    final_energy = float(output[ne+n-200: n].split()[3])
-    optimization_section = output[n:]
-    coordinates_section = optimization_section.split('\n')
-    coordinates_final = [line.split()[2:5] for line in coordinates_section[5:5+n_atoms]]
+        final_energy = float(output[ne+enum-200: enum].split()[3])
+        optimization_section = output[enum:]
+        coordinates_section = optimization_section.split('\n')
+        coordinates_final = [line.split()[2:5] for line in coordinates_section[5:5+n_atoms]]
 
-    optimized_molecule = Structure(coordinates=np.array(coordinates_final, dtype=float).tolist(),
-                                   atomic_elements=symbols,
-                                   charge=charge,
-                                   multiplicity=multiplicity)
+        optimized_molecule = Structure(coordinates=np.array(coordinates_final, dtype=float).tolist(),
+                                       atomic_elements=symbols,
+                                       charge=charge,
+                                       multiplicity=multiplicity)
 
-    return {'optimization_steps': optimization_steps,
-            'optimized_molecule': optimized_molecule,
-            'energy': final_energy}
+        data_dict['optimized_molecule'] = optimized_molecule
+        data_dict['energy'] = final_energy
+
+    return data_dict
 
 
