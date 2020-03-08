@@ -3,7 +3,7 @@ from copy import deepcopy
 from pyqchem.basis import basis_to_txt
 import hashlib, json
 import warnings
-from pyqchem.errors import QchemInputWarning
+from pyqchem.errors import QchemInputWarning, QchemInputError
 
 
 class QchemInput:
@@ -210,17 +210,11 @@ class QchemInput:
                 # input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
                 # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
 
-                if self._ras_act is not None:
-                    input_file += 'ras_act {}\n'.format(self._ras_act)
-                else:
-                    print('test')
-                    raise Exception('{} not defined'.format('ras_act'))
-
                 if self._ras_elec is not None:
                     input_file += 'ras_elec {}\n'.format(self._ras_elec)
                 else:
                     if self._ras_elec_alpha is None and self._ras_elec_beta is None:
-                        raise Exception('{} not defined'.format('ras_elec'))
+                        raise QchemInputError('{} not defined'.format('ras_elec'))
 
                 if self._ras_elec_alpha is not None:
                     input_file += 'ras_elec_alpha {}\n'.format(self._ras_elec_alpha)
@@ -230,7 +224,7 @@ class QchemInput:
                 if self._ras_act is not None:
                     input_file += 'ras_act {}\n'.format(self._ras_act)
                 else:
-                    raise Exception('{} not defined'.format('ras_act'))
+                    raise QchemInputError('{} not defined'.format('ras_act'))
 
                 # Sr-DFT
                 if self._ras_srdft:
@@ -242,12 +236,12 @@ class QchemInput:
                     if self._ras_srdft_exc is not None:
                         input_file += 'ras_srdft_exc {}\n'.format(self._ras_srdft_exc)
                     else:
-                        raise Exception('{} not defined'.format('ras_srdft_exc'))
+                        raise QchemInputError('{} not defined'.format('ras_srdft_exc'))
 
                     if self._ras_srdft_cor is not None:
                         input_file += 'ras_srdft_cor {}\n'.format(self._ras_srdft_cor)
                     else:
-                        raise Exception('{} not defined'.format('ras_srdft_cor'))
+                        raise QchemInputError('{} not defined'.format('ras_srdft_cor'))
 
                 # Diabatization
                 diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3}
