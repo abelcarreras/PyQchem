@@ -4,7 +4,7 @@ class ParserError(Exception):
         self.message = message
 
     def __str__(self):
-        return 'Error found while parsing output using parser {}: {}'.format(self.parser_name, self.message)
+        return 'Error found while parsing output using "{}" parser: {}'.format(self.parser_name, self.message)
 
 
 class OutputError(Exception):

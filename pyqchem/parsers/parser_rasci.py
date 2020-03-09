@@ -25,8 +25,8 @@ def _read_soc_matrix(lines, dimensions):
         real = []
         complex = []
         for j in range((dimensions[1] + 1) // 2):
-            real += lines[j*3 + 2 + ib].split()[1:][0::2]
-            complex += lines[j*3 +2+ib].split()[1:][1::2]
+            real += lines[j*dimensions[0] + 2 * (j+1) + ib].split()[1:][0::2]
+            complex += lines[j*dimensions[0] + 2 * (j+1) +ib].split()[1:][1::2]
 
         row = [float(r) + float(c) * 1j for r, c in zip(real, complex)]
         matrix.append(row)
@@ -132,7 +132,7 @@ def rasci(output):
         tot_energy = float(section_state.split()[1])
         exc_energy_units = section_state.split()[4][1:-1]
         exc_energy = float(section_state.split()[6])
-        mul = section_state.split()[8]
+        state_multiplicity = section_state.split()[8] if section_state.split()[8] != ':' else section_state.split()[9]
 
         # dipole moment
         enum = section_state.find('Dipole Moment')
@@ -180,7 +180,7 @@ def rasci(output):
                                'total energy units': tot_energy_units,
                                'excitation_energy': exc_energy,
                                'excitation energy units': exc_energy_units,
-                               'multiplicity': mul,
+                               'multiplicity': state_multiplicity,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
                                'oscillator_strength': strength,

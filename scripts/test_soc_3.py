@@ -9,35 +9,33 @@ from pyqchem.errors import OutputError
 
 redefine_calculation_data_filename('test_soc3.pkl')
 
-as_c = [[4, 4, 1]]
+as_c = [[[3, 1], 4, 1]]
 atom_c = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    atomic_elements=['C'],
                    charge=-1,
                    multiplicity=4,
                    name='C')
 
-as_o = [[6, 4, 1]]
+as_o = [[[4, 2], 4, 1]]
 atom_o = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    atomic_elements=['O'],
                    charge=-2,
                    multiplicity=1,
                    name='O')
 
-as_si = [[4, 4, 5], [10, 7, 2]]
+as_si = [[[3, 1], 4, 5], [10, 7, 2]]
 atom_si = Structure(coordinates=[[0.0, 0.0, 0.0]],
                     atomic_elements=['Si'],
                     charge=-1,
                     multiplicity=4,
                     name='Si')
 
-as_s = [[6, 4, 5], [12, 7, 2]]
+as_s = [[[4, 2], 4, 5], [12, 7, 2]]
 atom_s = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    atomic_elements=['S'],
                    charge=0,
                    multiplicity=1,
                    name='S')
-
-basis_name = 'cc-pVDZ'
 
 for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), (atom_si, as_si)]:
     for basis_name in ['cc-pVDZ', 'cc-pCVTZ', 'cc-pCVQZ']:
@@ -52,8 +50,11 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
                                   thresh=14,
                                   scf_convergence=8,
                                   max_cis_cycles=150,
+                                  max_scf_cycles=100,
                                   basis=basis_custom_repo,
-                                  ras_elec=active_space[0],
+                                  # ras_elec=active_space[0],
+                                  ras_elec_alpha=active_space[0][0],
+                                  ras_elec_beta=active_space[0][1],
                                   ras_act=active_space[1],
                                   ras_occ=active_space[2],
                                   ras_spin_mult=0,
@@ -75,7 +76,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
                 print('---------------------------------------------')
                 print('Atom: {}'.format(atom.name))
                 print('basis: {}'.format(basis_name))
-                print('Active space (ele, act, occ): {}'.format(active_space))
+                print('Active space ([alpha, beta], act, occ): {}'.format(active_space))
                 print(e.error_lines)
                 print('calculation_failed')
                 continue
@@ -92,22 +93,57 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
                 for j, conf in enumerate(state['configurations']):
                     print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
-            for i in range(1, 6):
-                for j in range(1, 6):
+            print('\ngamma_tot')
+            print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
+            for i in range(1, 9):
+                line = '{:3}'.format(i)
+                for j in range(1, 9):
                     try:
-                        gamma_total = output['interstate_properties'][(i, j)]['gamma_total']
-                        soc_1e = np.array(output['interstate_properties'][(i, j)]['1e_soc_mat'])[0, 0]
-                        soc_2e = np.array(output['interstate_properties'][(i, j)]['2e_soc_mat'])[0, 0]
-                        soc_tot = np.array(output['interstate_properties'][(i, j)]['total_soc_mat'])[0, 0]
-                        socc = output['interstate_properties'][(i, j)]['mf_socc']
+                        line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['gamma_total'])
+                    except KeyError:
+                        line += '        -         '
+                print(line)
 
-                        print('******* interstate: {}, {} *************'.format(i, j))
-                        print('gamma_tot: {}'.format(gamma_total))
-                        print('soc_1e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_1e))
-                        print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_2e))
-                        print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_tot))
-                        print('SOCC: {: 18.12f} cm-1'.format(socc))
+            print('\nsoc_1e (cm-1) [imaginary part]')
+            print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
+            for i in range(1, 9):
+                line = '{:3}'.format(i)
+                for j in range(1, 9):
+                    try:
+                        line += '{:18.12f}'.format(np.array(output['interstate_properties'][(i, j)]['1e_soc_mat'])[0, 0].imag)
+                    except KeyError:
+                        line += '        -         '
+                print(line)
 
-                    except:
-                        pass
+            print('\nsoc_2e (cm-1) [imaginary part]')
+            print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
+            for i in range(1, 9):
+                line = '{:3}'.format(i)
+                for j in range(1, 9):
+                    try:
+                        line += '{:18.12f}'.format(np.array(output['interstate_properties'][(i, j)]['2e_soc_mat'])[0, 0].imag)
+                    except KeyError:
+                        line += '        -         '
+                print(line)
 
+            print('\nsoc_tot (cm-1) [imaginary part]')
+            print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
+            for i in range(1, 9):
+                line = '{:3}'.format(i)
+                for j in range(1, 9):
+                    try:
+                        line += '{:18.12f}'.format(np.array(output['interstate_properties'][(i, j)]['total_soc_mat'])[0, 0].imag)
+                    except KeyError:
+                        line += '        -         '
+                print(line)
+
+            print('\nSOCC (cm-1)')
+            print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
+            for i in range(1, 9):
+                line = '{:3}'.format(i)
+                for j in range(1, 9):
+                    try:
+                        line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['mf_socc'])
+                    except KeyError:
+                        line += '        -         '
+                print(line)

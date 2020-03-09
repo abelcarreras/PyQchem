@@ -333,7 +333,7 @@ def get_output_from_qchem(input_qchem,
             output = parser(output, **parser_parameters)
         # minimum functionality for error capture
         except:
-            raise ParserError(parser.__name__, 'general')
+            raise ParserError(parser.__name__, 'Undefined error')
 
         store_calculation_data(input_qchem, parser.__name__, output)
 
