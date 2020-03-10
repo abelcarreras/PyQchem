@@ -72,8 +72,8 @@ class QchemInput:
                  geom_opt_max_cycles=50,
                  geom_opt_constrains=None,
                  # other
-                 n_frozen_core=None,
-                 n_frozen_virt=None,
+                 n_frozen_core='fc',
+                 n_frozen_virt=0,
                  namd_nsurfaces=None,
                  scf_print=None,
                  scf_guess=None,
@@ -182,6 +182,8 @@ class QchemInput:
         input_file += 'RPA {}\n'.format(self._RPA)
         input_file += 'mem_total {}\n'.format(self._mem_total)
         input_file += 'mem_static {}\n'.format(self._mem_static)
+        input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
+        input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
 
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
@@ -273,10 +275,6 @@ class QchemInput:
             input_file += 'cis_diabath_decompose {}\n'.format(self._cis_diabath_decompose)
             input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
         # other
-        if self._n_frozen_core is not None:
-            input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
-        if self._n_frozen_virt is not None:
-            input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
         if self._namd_nsurfaces is not None:
             input_file += 'namd_nsurfaces {}\n'.format(self._namd_nsurfaces)
         if self._sts_multi_nroots is not None:

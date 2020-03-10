@@ -23,21 +23,21 @@ atom_o = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    multiplicity=1,
                    name='O')
 
-as_si = [[[3, 1], 4, 5], [10, 7, 2]]
+as_si = [[[3, 1], 4, 5], [[6, 4], 7, 2]]
 atom_si = Structure(coordinates=[[0.0, 0.0, 0.0]],
                     atomic_elements=['Si'],
                     charge=-1,
                     multiplicity=4,
                     name='Si')
 
-as_s = [[[4, 2], 4, 5], [12, 7, 2]]
+as_s = [[[4, 2], 4, 5], [[7, 5], 7, 2]]
 atom_s = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    atomic_elements=['S'],
                    charge=0,
                    multiplicity=1,
                    name='S')
 
-for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), (atom_si, as_si)]:
+for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si), (atom_s, as_s)]:
     for basis_name in ['cc-pVDZ', 'cc-pCVTZ', 'cc-pCVQZ']:
         for active_space in active_space_list:
             basis_custom_repo = get_basis_from_ccRepo(atom, basis_name)
@@ -60,6 +60,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o), (atom_s, as_s), 
                                   ras_spin_mult=0,
                                   ras_roots=8,  # calculate 5 states
                                   calc_soc=1,
+                                  n_frozen_core=0,
                                   set_iter=1000,
                                   mem_total=15000,
                                   mem_static=900
