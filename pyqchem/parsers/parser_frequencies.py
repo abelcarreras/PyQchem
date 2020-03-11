@@ -27,16 +27,12 @@ def basic_frequencies(output, print_data=False):
     n = output.find('VIBRATIONAL ANALYSIS')
     vibration_section = output[n:]
 
-    modes = []
     frequencies = []
     force_constants = []
     red_mass = []
     ir_active = []
     ir_intens = []
     raman_active = []
-    for m in re.finditer('Mode:', vibration_section):
-        end_line = vibration_section[m.end():].find('\n')
-        modes += vibration_section[m.end():m.end()+end_line].split()[:3]
 
     for m in re.finditer('Frequency:', vibration_section):
         end_line = vibration_section[m.end():].find('\n')
@@ -62,7 +58,6 @@ def basic_frequencies(output, print_data=False):
         end_line = vibration_section[m.end():].find('\n')
         raman_active += vibration_section[m.end():m.end()+end_line].split()[:3]
 
-    modes = [int(n) for n in modes]
     frequencies = [float(n) for n in frequencies]
     force_constants = [float(n) for n in force_constants]
     red_mass = [float(n) for n in red_mass]
@@ -70,25 +65,32 @@ def basic_frequencies(output, print_data=False):
     ir_intens = [float(n) for n in ir_intens]
     raman_active = [bool(n) for n in raman_active]
 
-    nm_coordinates = []
+    displacements = []
     for i, line in enumerate(vibration_section.split('\n')):
         if 'X      Y      Z' in line:
-            nm_coordinate = []
+            disp_coordinate = []
             for j in range(n_atoms):
                 coor_lines = vibration_section.split('\n')[j+ i+ 1]
-                nm_coordinate.append(coor_lines.split()[1:])
+                disp_coordinate.append(coor_lines.split()[1:])
 
-            nm_coordinate = np.array(nm_coordinate, dtype=float)#.reshape(n_atoms, -1)
+            disp_coordinate = np.array(disp_coordinate, dtype=float)#.reshape(n_atoms, -1)
             # print(nm_coordinate.shape[1], nm_coordinate.shape[1]//3)
 
-            nm_coordinates += [nm_coordinate[:, i*3:(i+1)*3].tolist() for i in range(nm_coordinate.shape[1]//3)]
+            displacements += [disp_coordinate[:, i*3:(i+1)*3].tolist() for i in range(disp_coordinate.shape[1]//3)]
+
+    modes = []
+    for i in range(len(frequencies)):
+        modes.append({'frequency': frequencies[i],
+                      'frequency_units': 'cm-1',
+                      'force_constant': force_constants[i],
+                      'force_constant_units': 'mDyn/Angs',
+                      'reduced_mass': red_mass[i],
+                      'reduced_mass_units': 'AMU',
+                      'ir_active': ir_active[i],
+                      'ir_intensity': ir_intens[i],
+                      'ir_intensity_units': 'KM/mol',
+                      'raman_active': raman_active[i],
+                      'displacement': displacements[i]})
 
     return {'modes': modes,
-            'frequencies': frequencies,
-            'force_constants': force_constants,
-            'red_mass': red_mass,
-            'ir_active': ir_active,
-            'ir_intens': ir_intens,
-            'raman_active': raman_active,
-            'coordinates': nm_coordinates,
-            'energy': energy}
+            'scf_energy': energy}

@@ -94,13 +94,10 @@ parsed_data = get_output_from_qchem(qc_input,
                                     parser=basic_frequencies)
 
 
-for mode, freq in enumerate(parsed_data['frequencies']):
-
-    force_constants = parsed_data['force_constants'][mode]
-
-    print('mode:                      {}'.format(mode+1))
-    print('frequency (cm-1):          {:10.2f}'.format(freq))
-    print('force constant (mdyne/A):  {:10.5f}\n'.format(force_constants))
+for i, mode in enumerate(parsed_data['modes']):
+    print('mode:                      {}'.format(i+1))
+    print('frequency (cm-1):          {:10.2f}'.format(mode['frequency']))
+    print('force constant (mdyne/A):  {:10.5f}\n'.format(mode['force_constant']))
 
 ```
 **Custom basis without pain**

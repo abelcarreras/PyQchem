@@ -36,7 +36,6 @@ qc_input = create_qchem_input(molecule,
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           parser=basic_optimization,
-                                                          force_recalculation=False,
                                                           read_fchk=True)
 
 
@@ -53,21 +52,18 @@ qc_input = create_qchem_input(opt_molecule,
                               scf_guess=electronic_structure['coefficients'])
 
 parsed_data = get_output_from_qchem(qc_input,
-                                         processors=4,
-                                         force_recalculation=False,
-                                         parser=basic_frequencies)
+                                    processors=4,
+                                    parser=basic_frequencies,
+                                    store_full_output=True)
 
 
 # print results
 print('Normal modes\n')
 
-for mode, freq in enumerate(parsed_data['frequencies']):
-
-    force_constants = parsed_data['force_constants'][mode]
-
-    print('mode:                      {}'.format(mode+1))
-    print('frequency (cm-1):          {:10.2f}'.format(freq))
-    print('force constant (mdyne/A):  {:10.5f}\n'.format(force_constants))
+for i, mode in enumerate(parsed_data['modes']):
+    print('mode:                      {}'.format(i+1))
+    print('frequency (cm-1):          {:10.2f}'.format(mode['frequency']))
+    print('force constant (mdyne/A):  {:10.5f}\n'.format(mode['force_constant']))
 
 
 # Thermodynamics
@@ -81,8 +77,8 @@ def get_thermodynamics(T):
     free_energy = 0
     entropy = 0
     total_energy = 0
-    for mode, freq in enumerate(parsed_data['frequencies']):
-        freq_hz = freq * cm_to_hz
+    for mode in parsed_data['modes']:
+        freq_hz = mode['frequency'] * cm_to_hz
         fact = np.exp(-h_bar * freq_hz / (kb * T))
         free_energy += freq_hz * h_bar / 2 + kb * T * np.log(1.0 - fact)
         entropy += -kb * np.log(1.0 - fact) + h_bar * freq_hz / T * fact/(1-fact)
