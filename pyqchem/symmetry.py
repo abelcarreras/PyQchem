@@ -42,7 +42,7 @@ def get_wf_symmetry(structure,
 
 
 def get_orbital_classification(fchk_data,
-                               center=(0., 0., 0.),
+                               center=None,
                                orientation=(0., 0., 1.)):
     """
     Classify orbitals in sigma/pi in planar molecules

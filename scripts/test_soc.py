@@ -24,8 +24,7 @@ for s1 in ['cc-pV_Z', 'cc-pCV_Z']:
 
 for calc_soc in [1, 2]:
     for basis_name in basis_name_list:
-#        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]:
-        for active_space in [[25, 13, 5]]:
+        for active_space in [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]:
 
             basis_custom_repo = get_basis_from_ccRepo(molecule,
                                                       basis_name,
@@ -51,7 +50,7 @@ for calc_soc in [1, 2]:
                                   ras_roots=2,      # calculate 2 states
                                   calc_soc=calc_soc,
                                   set_iter=60,
-                                  n_frozen_core='FC',
+                                  n_frozen_core=0,
                                   mem_total=15000,
                                   mem_static=200
                                   )
@@ -94,3 +93,5 @@ for calc_soc in [1, 2]:
             print('soc_2e  {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_2e))
             print('soc_tot {0.real: 10.3f} + {0.imag: 10.8f} cm-1'.format(soc_tot))
             print('SOCC: {: 18.12f} cm-1'.format(socc))
+            print('Frozen occupied: {} / virtual: {}'.format(output['rasci_dimensions']['frozen_occupied'],
+                                                             output['rasci_dimensions']['frozen_virtual']))

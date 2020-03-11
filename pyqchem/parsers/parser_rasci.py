@@ -82,6 +82,40 @@ def rasci(output):
     # enum = output.find('Total energy in the final basis set')
     # total_energy = float(output[enum:enum+100].split()[8])
 
+    # RASCI dimensions
+    ini_section = output.find('RAS-CI Dimensions')
+    end_section = search_bars(output, from_position=enum, bar_type='\*\*\*')[1]
+    dimension_section = output[ini_section: end_section]
+
+    enum = dimension_section.find('Doubly Occ')
+    doubly_occ = int(dimension_section[enum: enum+50].split()[3])
+    enum = dimension_section.find('Doubly Vir')
+    doubly_vir = int(dimension_section[enum: enum+50].split()[2])
+    enum = dimension_section.find('Frozen Occ')
+    frozen_occ = int(dimension_section[enum: enum+50].split()[3])
+    enum = dimension_section.find('Frozen Vir')
+    frozen_vir = int(dimension_section[enum: enum+50].split()[2])
+
+    enum = dimension_section.find('Total CI configurations')
+    total_conf = int(dimension_section[enum: enum+50].split()[3])
+    enum = dimension_section.find('Active configurations')
+    active_conf = int(dimension_section[enum: enum+50].split()[2])
+    enum = dimension_section.find('Hole configurations')
+    hole_conf = int(dimension_section[enum: enum+50].split()[2])
+    enum = dimension_section.find('Particle configurations')
+    particle_conf = int(dimension_section[enum: enum+50].split()[2])
+
+    rasci_dimensions = {'doubly_occupied': doubly_occ,
+                        'doubly_virtual': doubly_vir,
+                        'frozen_occupied': frozen_occ,
+                        'frozen_virtual': frozen_vir,
+                        'total_configurations': total_conf,
+                        'active_configurations': active_conf,
+                        'hole_configurations': hole_conf,
+                        'particle_configurations': particle_conf}
+
+    data_dict.update({'rasci_dimensions': rasci_dimensions})
+
     # Diabatization scheme
     done_diabat = bool(output.find('RASCI DIABATIZATION')+1)
     if done_diabat:

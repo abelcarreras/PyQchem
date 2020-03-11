@@ -42,6 +42,9 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
         for active_space in active_space_list:
             basis_custom_repo = get_basis_from_ccRepo(atom, basis_name)
 
+            basis_custom_repo = trucate_basis(basis_custom_repo,
+                                              shells=['G', 'H', 'I', 'J', 'K'])
+
             qc_input = QchemInput(atom,
                                   jobtype='sp',
                                   exchange='hf',
