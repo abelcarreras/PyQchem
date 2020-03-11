@@ -73,11 +73,11 @@ def rasci(output):
                                        charge=charge,
                                        multiplicity=multiplicity)
 
-    # scf energy
+    # scf_energy
     enum = output.find('SCF   energy in the final basis set')
     scf_energy = float(output[enum:enum+100].split()[8])
 
-    data_dict['scf energy'] = scf_energy
+    data_dict['scf_energy'] = scf_energy
     # total energy
     # enum = output.find('Total energy in the final basis set')
     # total_energy = float(output[enum:enum+100].split()[8])
@@ -177,9 +177,9 @@ def rasci(output):
         # complete dictionary
         tot_energy_units = 'au'
         excited_states.append({'total_energy': tot_energy,
-                               'total energy units': tot_energy_units,
+                               'total_energy_units': tot_energy_units,
                                'excitation_energy': exc_energy,
-                               'excitation energy units': exc_energy_units,
+                               'excitation_energy_units': exc_energy_units,
                                'multiplicity': state_multiplicity,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
@@ -187,7 +187,7 @@ def rasci(output):
                                'configurations': table,
                                'contributions_fwn': contributions})
 
-    data_dict.update({'excited states rasci': excited_states})
+    data_dict.update({'excited_states_rasci': excited_states})
 
     # Interstate transition properties
     done_interstate = bool(output.find('Interstate Transition Properties')+1)

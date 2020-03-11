@@ -6,19 +6,23 @@ from pyqchem.utils import search_bars, standardize_vector
 
 def basic_cis(output):
     """
-    Parser for CIS calculations
+    Parser for CIS/TD-DFT calculations
 
     :param output:
     :return:
     """
 
-    # scf energy
+    # scf_energy
     enum = output.find('Total energy in the final basis set')
     scf_energy = float(output[enum:enum+100].split()[8])
 
     # CIS excited states
     # enum = output.find('CIS Excitation Energies')
-    enum = list(re.finditer('CIS Excitation Energies', output))[-1].end()
+    try:
+        enum = list(re.finditer('CIS Excitation Energies', output))[-1].end()
+    except IndexError:
+        enum = list(re.finditer('TDDFT/TDA Excitation Energies', output))[-1].end()
+
     excited_states_cis = []
     if enum > 0:
         bars = search_bars(output, from_position=enum)
@@ -60,15 +64,15 @@ def basic_cis(output):
                 if word == 'Excited':
                     break
 
-            excited_states_cis.append({'total energy': tot_energy,
-                                       'total energy units': tot_energy_units,
-                                       'excitation energy': exc_energy,
-                                       'excitation energy units': exc_energy_units,
+            excited_states_cis.append({'total_energy': tot_energy,
+                                       'total_energy_units': tot_energy_units,
+                                       'excitation_energy': exc_energy,
+                                       'excitation_energy_units': exc_energy_units,
                                        'multiplicity': mul,
-                                       'transition moment': standardize_vector(trans_mom),
+                                       'transition_moment': standardize_vector(trans_mom),
                                        'strength': strength,
                                        'transitions': transitions})
 
-    return {'scf energy': scf_energy,
-            'excited states cis': excited_states_cis}
+    return {'scf_energy': scf_energy,
+            'excited_states': excited_states_cis}
 

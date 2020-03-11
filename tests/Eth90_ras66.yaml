@@ -1,4 +1,4 @@
-excited states rasci:
+excited_states_rasci:
 - configurations:
   - alpha: '110100'
     amplitude: 0.7010399
@@ -18,10 +18,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.0299
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 0.0
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.962468116621
   transition_moment: null
 - configurations:
@@ -43,10 +43,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.0226
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 0.0209
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.961701141797
   transition_moment:
   - 0.0
@@ -76,10 +76,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.7705
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 2.8591
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.857398701229
   transition_moment:
   - 0.0
@@ -109,10 +109,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.729
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 3.091
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.848877659331
   transition_moment:
   - 0.0
@@ -167,10 +167,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 0.8784
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 7.7027
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.679400603666
   transition_moment:
   - 0.1457
@@ -215,10 +215,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -1.0267
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 7.8842
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.672727493447
   transition_moment:
   - 0.0
@@ -263,13 +263,13 @@ excited states rasci:
   - 0.0
   - 0.0
   - 1.1594
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 8.1779
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -77.66193636779
   transition_moment:
   - 0.0
   - 0.0
   - 0.0
-scf energy: -77.942732
+scf_energy: -77.942732

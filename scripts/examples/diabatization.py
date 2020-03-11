@@ -92,7 +92,7 @@ parsed_data = get_output_from_qchem(qc_input,
 # print(parsed_data)
 
 print('Adiabatic states dimer\n--------------------')
-for i, state in enumerate(parsed_data['excited states rasci']):
+for i, state in enumerate(parsed_data['excited_states_rasci']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
@@ -102,7 +102,7 @@ for i, state in enumerate(parsed_data['excited states rasci']):
 
 # plot diabatic states
 from pyqchem.plots import plot_state
-for i, state in enumerate(parsed_data['excited states rasci']):
+for i, state in enumerate(parsed_data['excited_states_rasci']):
     plt.figure(figsize=(len(state['configurations']), 5))
     plt.title('Adiabatic State {}'.format(i+1))
     amplitude_list = []
@@ -122,7 +122,7 @@ plt.show()
 # Analysis of diabatic states to use in diabatization
 from pyqchem.utils import is_transition, get_ratio_of_condition
 print('\nAdiabatic states to use in diabatization (1e, max_jump 4)')
-for i, state in enumerate(parsed_data['excited states rasci']):
+for i, state in enumerate(parsed_data['excited_states_rasci']):
     ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)
     mark = 'X' if ratio > 0.5 else ''
     print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
@@ -182,7 +182,7 @@ parsed_data = get_output_from_qchem(qc_input,
                                     )
 
 print('\nAdiabatic states monomer\n--------------------')
-for i, state in enumerate(parsed_data['excited states rasci']):
+for i, state in enumerate(parsed_data['excited_states_rasci']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])

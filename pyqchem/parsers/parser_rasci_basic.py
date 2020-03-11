@@ -15,7 +15,7 @@ def basic_rasci(output):
     :return:
     """
 
-    # scf energy
+    # scf_energy
     enum = output.find('SCF   energy in the final basis set')
     scf_energy = float(output[enum:enum+100].split()[8])
 
@@ -79,9 +79,9 @@ def basic_rasci(output):
         # complete dictionary
         tot_energy_units = 'au'
         excited_states.append({'total_energy': tot_energy,
-                               'total energy units': tot_energy_units,
+                               'total_energy_units': tot_energy_units,
                                'excitation_energy': exc_energy,
-                               'excitation energy units': exc_energy_units,
+                               'excitation_energy_units': exc_energy_units,
                                'multiplicity': mul,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
@@ -89,5 +89,5 @@ def basic_rasci(output):
                                'configurations': table,
                                'contributions_fwn': contributions})
 
-    return {'scf energy': scf_energy,
-            'excited states rasci': excited_states}
+    return {'scf_energy': scf_energy,
+            'excited_states_rasci': excited_states}

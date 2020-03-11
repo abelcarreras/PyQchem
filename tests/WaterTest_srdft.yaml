@@ -1,4 +1,4 @@
-excited states rasci:
+excited_states_rasci:
 - configurations:
   - alpha: '1100'
     amplitude: 0.9929192
@@ -13,10 +13,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - 1.0862
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 0.0
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.669000145812
   transition_moment: null
 - configurations:
@@ -38,10 +38,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.2991
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 10.0599
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.299305107478
   transition_moment:
   - 0.0
@@ -66,10 +66,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.2992
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 10.0664
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.299067413014
   transition_moment:
   - 0.0
@@ -94,10 +94,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.4571
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 11.675
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.239952602624
   transition_moment:
   - 0.0
@@ -122,10 +122,10 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.129
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 12.1456
   multiplicity: Triplet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.222657248536
   transition_moment:
   - 0.0
@@ -150,13 +150,13 @@ excited states rasci:
   - 0.0
   - 0.0
   - -0.1292
-  excitation energy units: eV
+  excitation_energy_units: eV
   excitation_energy: 12.1465
   multiplicity: Singlet
-  total energy units: au
+  total_energy_units: au
   total_energy: -75.222625092855
   transition_moment:
   - 0.0
   - 0.0
   - 0.0
-scf energy: -76.0188313554
+scf_energy: -76.0188313554

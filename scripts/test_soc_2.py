@@ -132,8 +132,8 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])
             socc = output['interstate_properties'][(1, 2)]['mf_socc']
 
-            energy_1 = output['excited states rasci'][0]['total_energy']
-            energy_2 = output['excited states rasci'][1]['total_energy']
+            energy_1 = output['excited_states_rasci'][0]['total_energy']
+            energy_2 = output['excited_states_rasci'][1]['total_energy']
 
             print('---------------------------------------------')
             print('molecule: {}'.format(molecule.name))

@@ -60,7 +60,7 @@ data = get_output_from_qchem(qc_input,
                              parser=basic_parser_qchem)
 
 # obtain a python dictionary
-print('Energy: ', data['scf energy'])
+print('Energy: ', data['scf_energy'])
 ```
 
 **Link calculations in powerful workflows**
@@ -151,7 +151,7 @@ except OutputError as e:
         exit()
 
 
-print('Energy: ', parsed_data['scf energy'])
+print('Energy: ', parsed_data['scf_energy'])
 ```
 
 Contact info

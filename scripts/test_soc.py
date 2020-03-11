@@ -51,6 +51,7 @@ for calc_soc in [1, 2]:
                                   ras_roots=2,      # calculate 2 states
                                   calc_soc=calc_soc,
                                   set_iter=60,
+                                  n_frozen_core='FC',
                                   mem_total=15000,
                                   mem_static=200
                                   )
@@ -79,8 +80,8 @@ for calc_soc in [1, 2]:
             soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])[0, 0]
             socc = output['interstate_properties'][(1, 2)]['mf_socc']
 
-            energy_1 = output['excited states rasci'][0]['total_energy']
-            energy_2 = output['excited states rasci'][1]['total_energy']
+            energy_1 = output['excited_states_rasci'][0]['total_energy']
+            energy_2 = output['excited_states_rasci'][1]['total_energy']
 
             print('---------------------------------------------')
             print('basis: {}'.format(basis_name))

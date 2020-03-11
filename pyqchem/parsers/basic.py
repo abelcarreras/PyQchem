@@ -19,7 +19,7 @@ def basic_parser_qchem(output):
 
     data_dict = {}
 
-    # scf energy
+    # scf_energy
     enum = output.find('Total energy in the final basis set')
     data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
 

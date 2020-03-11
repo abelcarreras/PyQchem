@@ -50,4 +50,4 @@ output = get_output_from_qchem(qc_input,
 print('OUTPUT')
 print(output)
 
-print('the energy is: ', output['scf energy'])
+print('the energy is: ', output['scf_energy'])

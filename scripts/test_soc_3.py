@@ -88,7 +88,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
             print('Active space (ele, act, occ): {}'.format(active_space))
             print('---------------------------------------------')
 
-            for i, state in enumerate(output['excited states rasci']):
+            for i, state in enumerate(output['excited_states_rasci']):
                 print('Energy state {} ({}):  {: 18.12f} au'.format(i+1, state['multiplicity'], state['total_energy']))
                 print(' Alpha  Beta   Amplitude')
                 for j, conf in enumerate(state['configurations']):

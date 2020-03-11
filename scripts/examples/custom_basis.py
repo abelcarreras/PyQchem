@@ -29,7 +29,7 @@ output, electronic_structure = get_output_from_qchem(qc_input,
                                                      store_full_output=False)
 
 
-print('scf_energy 6-31G: ', output['scf energy'])
+print('scf_energy 6-31G: ', output['scf_energy'])
 
 basis_custom = electronic_structure['basis']
 
@@ -45,7 +45,7 @@ output = get_output_from_qchem(qc_input,
                                parser=basic_parser_qchem
                                )
 
-print('scf_energy (custom basis: 6-31G): ', output['scf energy'])
+print('scf_energy (custom basis: 6-31G): ', output['scf_energy'])
 
 # Get custom basis from ccRepo online repository
 basis_custom_repo = get_basis_from_ccRepo(molecule, 'cc-pVTZ')
@@ -62,4 +62,4 @@ output = get_output_from_qchem(qc_input,
                                parser=basic_parser_qchem
                                )
 
-print('scf_energy (custom basis: cc-pVTZ): ', output['scf energy'])
+print('scf_energy (custom basis: cc-pVTZ): ', output['scf_energy'])
