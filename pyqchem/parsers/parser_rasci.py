@@ -266,7 +266,7 @@ def rasci(output):
 
                 if '2-elec mean-field SOC matrix (cm-1)' in line:
                     pair_dict['2e_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
-                if 'Total mean-field SOC matrix (cm-1' in line:
+                if 'Total mean-field SOC matrix (cm-1)' in line:
                     pair_dict['total_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
                 if 'Mean-Field SOCC' in line:
                     pair_dict['mf_socc'] = float(line.split()[-2])

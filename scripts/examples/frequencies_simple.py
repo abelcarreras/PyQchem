@@ -61,9 +61,9 @@ parsed_data = get_output_from_qchem(qc_input,
 print('Normal modes\n')
 
 for i, mode in enumerate(parsed_data['modes']):
-    print('mode:                      {}'.format(i+1))
-    print('frequency (cm-1):          {:10.2f}'.format(mode['frequency']))
-    print('force constant (mdyne/A):  {:10.5f}\n'.format(mode['force_constant']))
+    print('mode:            {:10}'.format(i+1))
+    print('frequency:       {:10.5f} {}'.format(mode['frequency'], mode['frequency_units']))
+    print('force constant:  {:10.5f} {}\n'.format(mode['force_constant'], mode['force_constant_units']))
 
 
 # Thermodynamics

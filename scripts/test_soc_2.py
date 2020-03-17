@@ -156,3 +156,6 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             # print('{0.real: 8.3e} + {0.imag: 10.8e}i    {1.real: 8.3e} + {1.imag: 10.8e}i'.format(*soc_tot[1]))
 
             print('SOCC: {: 18.12f} cm-1'.format(socc))
+
+            print('Frozen occupied: {} / virtual: {}'.format(output['rasci_dimensions']['frozen_occupied'],
+                                                             output['rasci_dimensions']['frozen_virtual']))

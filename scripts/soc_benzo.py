@@ -2,9 +2,11 @@ from pyqchem import Structure, QchemInput, get_output_from_qchem
 from pyqchem.qchem_core import redefine_calculation_data_filename
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_cis_basic import basic_cis
-from pyqchem.basis import get_basis_from_ccRepo, trucate_basis
+from pyqchem.parsers.parser_rasci import rasci
+from pyqchem.basis import get_basis_from_ccRepo
 from pyqchem.file_io import build_fchk
 from pyqchem.symmetry import get_orbital_classification
+from pyqchem.errors import OutputError
 
 redefine_calculation_data_filename('soc_benzo.pkl')
 
@@ -54,7 +56,7 @@ qc_input = QchemInput(molecule,
                       )
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=10,
+                                                          processors=4,
                                                           parser=basic_optimization,
                                                           read_fchk=True,
                                                           store_full_output=True
@@ -85,12 +87,45 @@ qc_input = QchemInput(opt_molecule,
                       )
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
-                                                          processors=10,
-                                                          parser=basic_cis,
+                                                          processors=4,
+                                                          # parser=basic_cis,
                                                           read_fchk=True,
                                                           store_full_output=True
                                                           )
 
-print(parsed_data)
+# print(parsed_data)
+data = basic_cis(parsed_data)
+
+print([state['multiplicity'] for state in data['excited_states']])
+import numpy as np
+j = 4
+for i in range(1, 11):
+    mat = data['interstate_properties'][(i, j)]['soc']
+    print('{} {}'.format(data['excited_states'][i-1]['multiplicity'], data['excited_states'][j-1]['multiplicity']))
+    print('i: ', np.linalg.norm(mat))
+
 
 open('benzo.fchk', 'w').write(build_fchk(electronic_structure))
+
+qc_input = QchemInput(opt_molecule,
+                      jobtype='sp',
+                      exchange='hf',
+                      correlation='rasci',
+                      basis='sto-3g',
+                      ras_elec=4,
+                      ras_act=4,
+                      ras_spin_mult=0,
+                      ras_roots=6,  # calculate 2 states
+                      calc_soc=1,
+                      set_iter=60,
+                      n_frozen_core=0,
+                      )
+
+parsed_data = get_output_from_qchem(qc_input,
+                                    processors=4,
+                                    parser=rasci,
+                                    store_full_output=True
+                                    )
+
+
+print(parsed_data)

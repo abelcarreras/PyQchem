@@ -63,7 +63,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
                                   ras_spin_mult=0,
                                   ras_roots=8,  # calculate 5 states
                                   calc_soc=1,
-                                  n_frozen_core=0,
+                                  # n_frozen_core=0,
                                   set_iter=1000,
                                   mem_total=15000,
                                   mem_static=900
@@ -151,3 +151,6 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
                     except KeyError:
                         line += '        -         '
                 print(line)
+
+            print('Frozen occupied: {} / virtual: {}'.format(output['rasci_dimensions']['frozen_occupied'],
+                                                             output['rasci_dimensions']['frozen_virtual']))
