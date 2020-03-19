@@ -18,7 +18,7 @@ def _txt_to_basis_dict(basis_txt):
         except ValueError:
             return False
 
-    basis_pure = basis_txt[2:]
+    basis_pure = basis_txt[1:]
 
     section_marks = []
     for i, line in enumerate(basis_pure):
