@@ -193,7 +193,7 @@ if __name__ == '__main__':
     # create molecule
     molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                       [0.0, 0.0, 1.5811]],
-                         atomic_elements=['Se', 'H'],
+                         symbols=['Se', 'H'],
                          charge=-1,
                          multiplicity=1)
 

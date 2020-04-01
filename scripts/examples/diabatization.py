@@ -19,7 +19,7 @@ coor_monomer = [[ 0.6695,  0.0000,  0.0000],
 symbols_monomer = ['C', 'C', 'H', 'H', 'H', 'H']
 
 monomer = Structure(coordinates=coor_monomer,
-                    atomic_elements=symbols_monomer,
+                    symbols=symbols_monomer,
                     charge=0,
                     multiplicity=1)
 
@@ -50,7 +50,7 @@ coordinates = opt_monomer.get_coordinates() + coor_monomer2.tolist()
 symbols_dimer = symbols_monomer * 2
 
 dimer = Structure(coordinates=coordinates,
-                  atomic_elements=symbols_dimer,
+                  symbols=symbols_dimer,
                   charge=0,
                   multiplicity=1)
 

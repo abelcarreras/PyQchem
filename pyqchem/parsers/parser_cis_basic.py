@@ -30,7 +30,8 @@ def basic_cis(output):
 
     # scf_energy
     enum = output.find('Total energy in the final basis set')
-    data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
+    if output[enum:enum+100].find('scf_energy') > 0:
+        data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
 
     # CIS excited states
     # enum = output.find('CIS Excitation Energies')

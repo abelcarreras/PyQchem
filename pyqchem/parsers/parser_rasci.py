@@ -59,7 +59,7 @@ def rasci(output):
 
     # structure
     structure_input = Structure(coordinates=coordinates,
-                                atomic_elements=symbols,
+                                symbols=symbols,
                                 charge=charge,
                                 multiplicity=multiplicity)
 
@@ -69,7 +69,7 @@ def rasci(output):
     coordinates = [ [float(num) for num in s.split()[2:]] for s in section_structure]
 
     data_dict['structure'] = Structure(coordinates=coordinates,
-                                       atomic_elements=symbols,
+                                       symbols=symbols,
                                        charge=charge,
                                        multiplicity=multiplicity)
 

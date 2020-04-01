@@ -23,7 +23,7 @@ class Eth00(unittest.TestCase):
                                   [-1.230407, -0.915473, 0.000000],
                                   [1.230407, 0.915473, 0.000000],
                                   [1.230407, -0.915473, 0.000000]],
-                  atomic_elements=['C', 'C', 'H', 'H', 'H', 'H'],
+                  symbols=['C', 'C', 'H', 'H', 'H', 'H'],
                   charge=0,
                   multiplicity=1)
 
@@ -182,7 +182,7 @@ class Eth90(unittest.TestCase):
             [-1.230407, -0.915473, 0.000000],
             [1.230407, 0.0, 0.915473],
             [1.230407, 0.0, -0.915473]],
-            atomic_elements=['C', 'C', 'H', 'H', 'H', 'H'],
+            symbols=['C', 'C', 'H', 'H', 'H', 'H'],
             charge=0,
             multiplicity=3)
 
@@ -340,7 +340,7 @@ class EthDist(unittest.TestCase):
             [-1.430407, -0.915473, 0.300000],
             [1.230407, 0.815473, -0.4],
             [1.000407,-0.888888, 0.45]],
-            atomic_elements=['C', 'C', 'H', 'H', 'H', 'H'],
+            symbols=['C', 'C', 'H', 'H', 'H', 'H'],
             charge=0,
             multiplicity=1)
 

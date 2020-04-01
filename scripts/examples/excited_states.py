@@ -15,7 +15,7 @@ for dist in distances:
     # generate molecule
     molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                       [0.0, 0.0, dist]],
-                         atomic_elements=['H', 'H'],
+                         symbols=['H', 'H'],
                          charge=0,
                          multiplicity=1)
 

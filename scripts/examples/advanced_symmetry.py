@@ -51,7 +51,7 @@ range_f2 = range(6, 12)
 
 # create molecule
 molecule = Structure(coordinates=dimer_ethene,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 

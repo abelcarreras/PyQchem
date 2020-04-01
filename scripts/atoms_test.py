@@ -40,7 +40,7 @@ for atom in atoms:
     for omega in omegas:
         try:
             molecule = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                                 atomic_elements=[atom],
+                                 symbols=[atom],
                                  charge=0)
 
             parameters.update({'ras_omega': int(omega)})

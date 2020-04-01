@@ -46,7 +46,7 @@ for slide_y in range_y:
         coordinates[6:, 2] = coordinates[6:, 2] + slide_z
 
         molecule = Structure(coordinates=coordinates,
-                             atomic_elements=['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H'],
+                             symbols=['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H'],
                              charge=0)
 
         txt_input = create_qchem_input(molecule, **parameters)

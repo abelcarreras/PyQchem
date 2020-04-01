@@ -74,11 +74,14 @@ class QchemInput:
                  # other
                  n_frozen_core='fc',
                  n_frozen_virt=0,
+                 mom_start=False,
+                 reorder_orbitals=None,
                  namd_nsurfaces=None,
                  scf_print=None,
                  scf_guess=None,
                  mem_total=2000,
-                 mem_static=64
+                 mem_static=64,
+                 skip_scfman=False,
                  ):
 
         # put to arguments self._* (will be written explicitly)
@@ -108,6 +111,10 @@ class QchemInput:
             self._basis = 'gen'
             self._custom_basis = basis
 
+        # Handle reorder mo
+        if self._reorder_orbitals is not None:
+            if not 'beta' in self._reorder_orbitals:
+                self._reorder_orbitals['beta'] = self._reorder_orbitals['alpha']
 
         # handle explicit guess (from MO coefficients)
         if scf_guess is not None and type(scf_guess) is not str:
@@ -184,6 +191,9 @@ class QchemInput:
         input_file += 'mem_static {}\n'.format(self._mem_static)
         input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
         input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
+        input_file += 'mom_start {}\n'.format(self._mom_start)
+        input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
+
 
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
@@ -333,6 +343,13 @@ class QchemInput:
         if self._basis == 'gen':
             input_file += '$basis\n'
             input_file += basis_to_txt(self._custom_basis)
+            input_file += '$end\n'
+
+        # reorder orbitals
+        if self._reorder_orbitals is not None:
+            input_file += '$reorder_mo\n'
+            input_file += ' '.join([str(s) for s in self._reorder_orbitals['alpha']]) + '\n'
+            input_file += ' '.join([str(s) for s in self._reorder_orbitals['beta']]) + '\n'
             input_file += '$end\n'
 
         return input_file + "\n"

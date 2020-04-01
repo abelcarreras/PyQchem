@@ -27,7 +27,7 @@ class HydrogenTest(unittest.TestCase):
         # generate molecule
         self.molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                                [0.0, 0.0, 1.5]],
-                                  atomic_elements=['H', 'H'],
+                                  symbols=['H', 'H'],
                                   charge=0,
                                   multiplicity=1)
 
@@ -126,9 +126,9 @@ class WaterTest(unittest.TestCase):
         molecule = Structure(coordinates=[[0.0, 1.0, 0.0],
                                           [0.0, 0.0, 1.0],
                                           [0.0, 0.0, -1.0]],
-                                  atomic_elements=['O', 'H', 'H'],
-                                  charge=0,
-                                  multiplicity=1)
+                             symbols=['O', 'H', 'H'],
+                             charge=0,
+                             multiplicity=1)
 
         # optimization
         txt_input = create_qchem_input(molecule,

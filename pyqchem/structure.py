@@ -79,7 +79,7 @@ class Structure:
                  z_matrix=None,
                  int_label=None,
                  atom_types=None,
-                 atomic_elements=None,
+                 symbols=None,
                  atomic_numbers=None,
                  connectivity=None,
                  file_name=None,
@@ -97,7 +97,7 @@ class Structure:
         self._atom_types = atom_types
         self._atomic_numbers = atomic_numbers
         self._connectivity = connectivity
-        self._atomic_elements = atomic_elements
+        self._atomic_elements = symbols
         self._charge = charge
         self._multiplicity = multiplicity
         self._name = name
@@ -113,7 +113,11 @@ class Structure:
 
         self._full_z_matrix = None
 
-        # get electrons
+        # check input data
+        from pyqchem.errors import StructureError
+        if symbols is not None and coordinates is not None:
+            if len(coordinates) != len(symbols):
+                raise StructureError('coordinates and symbols do not match')
 
     def __str__(self):
         return self.get_xyz()

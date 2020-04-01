@@ -20,7 +20,7 @@ symbols = ['C', 'C', 'H', 'H', 'H', 'H']
 
 # create molecule
 molecule = Structure(coordinates=ethene,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 

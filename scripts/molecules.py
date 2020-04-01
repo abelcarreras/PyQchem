@@ -25,7 +25,7 @@ def dimer_ethene(distance, slide_y, slide_z):
     symbols = ['C', 'C', 'H', 'H', 'H', 'H', 'C', 'C', 'H', 'H', 'H', 'H']
 
     molecule = Structure(coordinates=coordinates,
-                         atomic_elements=symbols,
+                         symbols=symbols,
                          charge=0)
 
     return molecule, {'state_threshold': 0.2,
@@ -53,7 +53,7 @@ def dimer_tetrafluoroethene(distance, slide_y, slide_z):
     coordinates = np.vstack([monomer, monomer2])
 
     molecule = Structure(coordinates=coordinates,
-                         atomic_elements=symbols*2,
+                         symbols=symbols * 2,
                          charge=0)
 
     return molecule, {'state_threshold': 0.2,
@@ -91,7 +91,7 @@ def dimer_mix(distance, slide_y, slide_z):
     symbols = symbols1 + symbols2
 
     molecule = Structure(coordinates=coordinates,
-                         atomic_elements=symbols,
+                         symbols=symbols,
                          charge=0)
 
     return molecule, {'state_threshold': 0.4,

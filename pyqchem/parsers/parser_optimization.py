@@ -26,7 +26,7 @@ def basic_optimization(output, print_data=False):
         coordinates_step = np.array([atom.split()[2:] for atom in atoms_list], dtype=float).tolist()
 
         step_molecule = Structure(coordinates=coordinates_step,
-                                  atomic_elements=symbols,
+                                  symbols=symbols,
                                   charge=charge,
                                   multiplicity=multiplicity)
 
@@ -55,7 +55,7 @@ def basic_optimization(output, print_data=False):
         coordinates_final = [line.split()[2:5] for line in coordinates_section[5:5+n_atoms]]
 
         optimized_molecule = Structure(coordinates=np.array(coordinates_final, dtype=float).tolist(),
-                                       atomic_elements=symbols,
+                                       symbols=symbols,
                                        charge=charge,
                                        multiplicity=multiplicity)
 

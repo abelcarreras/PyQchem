@@ -8,7 +8,7 @@ from pyqchem.basis import get_basis_from_ccRepo
 # create molecule
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                   [0.0, 0.0, 1.5811]],
-                     atomic_elements=['Se', 'H'],
+                     symbols=['Se', 'H'],
                      charge=-1,
                      multiplicity=1)
 

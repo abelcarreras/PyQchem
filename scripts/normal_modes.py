@@ -71,7 +71,7 @@ symbols = ['C', 'C', 'N', 'C', 'C', 'B', 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'C',
 
 
 molecule = Structure(coordinates=coordinates,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 
@@ -154,7 +154,7 @@ for mode in range(num_freq):
         rmsd = get_rmsd(disp_coor, opt_molecule.get_coordinates())
         f2.write(''.format(rmsd))
         mol = Structure(coordinates=disp_coor,
-                        atomic_elements=symbols)
+                        symbols=symbols)
 
         hartree_to_kcalmol = 627.509474
         # energy2 = 0.5 * freq**2 * red_mass * d**2 * 8.516358951e-5  # kcal/mol

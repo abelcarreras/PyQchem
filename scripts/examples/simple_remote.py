@@ -19,7 +19,7 @@ coordinates = [[0.0,  1.0,  0.0],
 symbols = ['O', 'H', 'H']
 
 molecule = Structure(coordinates=coordinates,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 

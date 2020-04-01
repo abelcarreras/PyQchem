@@ -16,6 +16,13 @@ class OutputError(Exception):
         return 'Error in Q-Chem calculation:\n{}'.format(self.error_lines)
 
 
+class StructureError(Exception):
+    def __init__(self, message):
+        self._message = message
+
+    def __str__(self):
+        return 'Error in Structure:\n{}'.format(self._message)
+
 class QchemInputWarning(UserWarning):
     def __init__(self, message):
         self.message = message

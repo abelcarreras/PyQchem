@@ -137,7 +137,7 @@ symbols = ['C', 'C', 'H', 'H', 'H', 'H']
 
 # create molecule
 molecule = Structure(coordinates=ethene,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 
@@ -160,7 +160,7 @@ coordinates = ethene + coor_monomer2.tolist()
 symbols_dimer = symbols * 2
 
 dimer = Structure(coordinates=coordinates,
-                  atomic_elements=symbols_dimer,
+                  symbols=symbols_dimer,
                   charge=0,
                   multiplicity=1)
 

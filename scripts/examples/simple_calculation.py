@@ -3,7 +3,7 @@ from pyqchem.parsers.basic import basic_parser_qchem
 
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                   [0.0, 0.0, 0.9]],
-                     atomic_elements=['O', 'H'],
+                     symbols=['O', 'H'],
                      charge=-1,
                      multiplicity=1)
 

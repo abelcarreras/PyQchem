@@ -22,7 +22,7 @@ symbols = ['C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H', 'C', 'H']
 
 # create molecule
 molecule = Structure(coordinates=benzene_coordinates,
-                     atomic_elements=symbols,
+                     symbols=symbols,
                      charge=0,
                      multiplicity=1)
 

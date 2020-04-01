@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     benzene_coordinates = np.array(benzene_coordinates)
     molecule = Structure(coordinates=benzene_coordinates,
-                         atomic_elements=symbols,
+                         symbols=symbols,
                          charge=0)
 
     parameters = {'jobtype': 'sp',

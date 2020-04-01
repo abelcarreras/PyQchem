@@ -46,7 +46,7 @@ from pyqchem.parsers.basic import basic_parser_qchem
 
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                   [0.0, 0.0, 0.9]],
-                     atomic_elements=['H', 'H'],
+                     symbols=['H', 'H'],
                      charge=0,
                      multiplicity=1)
 
