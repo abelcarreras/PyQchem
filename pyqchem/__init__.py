@@ -1,5 +1,5 @@
 __author__ = 'Abel Carreras'
-__version__ = '0.2.5'
+__version__ = '0.3.0'
 
 from pyqchem.structure import Structure
 from pyqchem.qc_input import QchemInput

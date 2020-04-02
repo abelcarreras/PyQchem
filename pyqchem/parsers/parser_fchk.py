@@ -33,8 +33,8 @@ def basis_format(basis_set_name,
                 '2': ['d', 6],
                 '3': ['f', 10],
                 '-1': ['sp', 4],
-                '-2': ['d', 5],
-                '-3': ['f', 7]}
+                '-2': ['d_', 5],
+                '-3': ['f_', 7]}
 
     atomic_numbers = [int(an) for an in atomic_numbers]
     atom_map = np.array(atom_map, dtype=int)

@@ -59,8 +59,8 @@ def build_fchk(parsed_data):
                        'd':  {'type':  2, 'angular_momentum': 2},
                        'f':  {'type':  3, 'angular_momentum': 3},
                        'sp': {'type': -1, 'angular_momentum': 1},  # hybrid
-                       'dc': {'type': -2, 'angular_momentum': 2},  # pure
-                       'fc': {'type': -3, 'angular_momentum': 3}}  # pure
+                       'd_': {'type': -2, 'angular_momentum': 2},  # pure
+                       'f_': {'type': -3, 'angular_momentum': 3}}  # pure
 
     shell_type = []
     p_exponents = []
