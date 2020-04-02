@@ -47,20 +47,23 @@ def basic_cis(output):
         output_cis = output[bars[0]:bars[1]]
 
         for m in re.finditer('Excited state ', output_cis):
-            state_cis_words = output_cis[m.end():].split()
+            state_cis_section = output_cis[m.end():]
+            state_cis_lines = state_cis_section.split('\n')
 
-            exc_energy = float(state_cis_words[5])
-            exc_energy_units = state_cis_words[3][1:-1]
-            tot_energy = float(state_cis_words[11])
+            exc_energy = float(state_cis_lines[0].split()[5])
+            exc_energy_units = state_cis_lines[0].split()[2][1:-1]
+            tot_energy = float(state_cis_lines[1].split()[5])
             try:
-                tot_energy_units = state_cis_words[12]
-                mul = state_cis_words[14]
-                trans_mom = [float(mom) for mom in [state_cis_words[17],
-                                                    state_cis_words[19],
-                                                    state_cis_words[21]]]
-                strength = float(state_cis_words[25])
+                tot_energy_units = state_cis_lines[1].split()[6]
+                mul = state_cis_lines[2].split()[2]
+
+                trans_mom = [float(mom) for mom in [state_cis_lines[3].split()[2],
+                                                    state_cis_lines[3].split()[4],
+                                                    state_cis_lines[3].split()[6]]]
+                strength = float(state_cis_lines[4].split()[2])
             except ValueError:
                 # old version of qchem (< 5.01)
+                state_cis_words = output_cis[m.end():].split()
                 tot_energy_units = 'au'
                 mul = state_cis_words[13]
                 trans_mom = [float(mom) for mom in [state_cis_words[16],
@@ -69,16 +72,16 @@ def basic_cis(output):
                 strength = float(state_cis_words[24])
 
             transitions = []
-            for i, word in enumerate(state_cis_words):
-                if word == '-->':
-                    origin = int(state_cis_words[i-1][:-1])
-                    target = int(state_cis_words[i+2][:-1])
-                    amplitude = float(state_cis_words[i+5])
+            for line in state_cis_lines[5:]:
+                if line.find('-->') > 0:
+                    origin = int(line[5:10].strip('(').strip(')'))
+                    target = int(line[16:20].strip('(').strip(')'))
+                    amplitude = float(line[21:].split()[2])
 
                     transitions.append({'origin': origin,
                                         'target': target,
                                         'amplitude': amplitude})
-                if word == 'Excited':
+                if len(line) < 5:
                     break
 
             excited_states.append({'total_energy': tot_energy,
@@ -112,7 +115,19 @@ def basic_cis(output):
                     labels.append('T{}'.format(nt))
                     nt += 1
                 else:
-                    raise ParserError('basic_cis', 'State multiplicity error')
+                    try:
+                        m = float(state['multiplicity'])
+                        if abs(m - 1) < 0.1:
+                            labels.append('S{}'.format(ns))
+                            ns += 1
+                        if abs(m - 3) < 0.1:
+                            labels.append('T{}'.format(nt))
+                            nt += 1
+                        state['multiplicity'] = m
+
+                    except ValueError:
+                        raise ParserError('basic_cis', 'State multiplicity error')
+
             return labels, nt-1, ns-1
 
         labels, n_triplet, n_singlet = label_states(excited_states)
