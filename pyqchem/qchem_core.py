@@ -322,7 +322,6 @@ def get_output_from_qchem(input_qchem,
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
     if not finish_ok(output):
-        err += '\n'.join(output.split('\n')[-10:])
         raise OutputError(output, err)
 
     if store_full_output:

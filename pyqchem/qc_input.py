@@ -13,7 +13,7 @@ class QchemInput:
 
     def __init__(self, molecule,
                  jobtype='sp',
-                 method='HF',
+                 method=None,
                  exchange=None,
                  correlation=None,
                  unrestricted=None,
@@ -94,17 +94,20 @@ class QchemInput:
 
         # set ras_occ
         if correlation is not None:
-            if ras_occ is None and correlation.upper() == 'RASCI':
-                if ras_elec is not None:
-                    self._ras_occ = (np.sum(
-                        molecule.get_atomic_numbers()) - ras_elec - molecule.charge) // 2
-                elif ras_elec_alpha is not None or ras_elec_beta is not None:
-                    self._ras_occ = (np.sum(
-                        molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
-                else:
-                    self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
-                self._ras_occ = int(self._ras_occ)
-                warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
+            if correlation.lower() == 'rasci':
+                if exchange is None:
+                    self._exchange = 'hf'
+                if ras_occ is None:
+                    if ras_elec is not None:
+                        self._ras_occ = (np.sum(
+                            molecule.get_atomic_numbers()) - ras_elec - molecule.charge) // 2
+                    elif ras_elec_alpha is not None or ras_elec_beta is not None:
+                        self._ras_occ = (np.sum(
+                            molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
+                    else:
+                        self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                    self._ras_occ = int(self._ras_occ)
+                    warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
 
         # Handle custom basis set
         if type(basis) is not str:
@@ -139,7 +142,8 @@ class QchemInput:
         keywords = dict(self.__dict__)
 
         # remove keywords that not affect the results (these keywords will be ignored in hash)
-        for key in ['_mem_total', '_mem_static', '_gui', '_set_iter', '_max_scf_cycles', '_geom_opt_max_cycles']:
+        for key in ['_mem_total', '_mem_static', '_gui', '_set_iter', '_max_scf_cycles',
+                    '_geom_opt_max_cycles', '_max_cis_cycles']:
             keywords.pop(key, None)
 
         # Change molecule object by molecule coordinates (Structure class too complex for JSON)
@@ -177,7 +181,8 @@ class QchemInput:
 
         if self._exchange is not None:
             input_file += 'exchange {}\n'.format(self._exchange)
-        else:
+
+        if self._method:
             input_file += 'method {}\n'.format(self._method)
 
         input_file += 'basis {}\n'.format(self._basis)
@@ -269,6 +274,10 @@ class QchemInput:
                         input_file += ','
                     input_file = input_file[:-1] + ']\n'
                     input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
+
+                # Borrowed keywords
+                input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
+
         # SOC
         if self._calc_soc is not False:
             input_file += 'calc_soc {}\n'.format(self._calc_soc)
