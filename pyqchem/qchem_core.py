@@ -302,6 +302,8 @@ def get_output_from_qchem(input_qchem,
                     return data
                 elif data_fchk is not None:
                     return data, data_fchk
+                else:
+                    force_recalculation = True
 
         else:
             if fchk_only and data_fchk is not None:

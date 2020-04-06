@@ -3,14 +3,15 @@ from pyqchem.utils import search_bars
 
 
 def _get_orbital_energies(orbitals_section):
+    # print(orbitals_section)
     occupied = orbitals_section.find('-- Occupied --')
     virtual = orbitals_section.find('-- Virtual --')
 
     occupied_section = orbitals_section[occupied:virtual]
     virtual_section = orbitals_section[virtual:]
 
-    occupied_energies = [float(energy) for energy in occupied_section.split()[3:]]
-    virtual_energies = [float(energy) for energy in virtual_section.split()[3:]]
+    occupied_energies = [float(energy) for energy in ' '.join(occupied_section.split('\n')[1::2]).split()]
+    virtual_energies = [float(energy) for energy in ' '.join(virtual_section.split('\n')[1::2]).split()]
 
     return {'occupied': occupied_energies, 'virtual': virtual_energies}
 
@@ -31,6 +32,8 @@ def basic_parser_qchem(output):
     alpha_mos = orbitals_section.find('Alpha MOs')
     beta_mos = orbitals_section.find('Beta MOs')
 
+    # print(orbitals_section[alpha_mos:beta_mos])
+    # print(orbitals_section[alpha_mos:])
     if beta_mos > 0:
         alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:beta_mos])
         beta_energies = _get_orbital_energies(orbitals_section[beta_mos:])

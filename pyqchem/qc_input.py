@@ -261,7 +261,7 @@ class QchemInput:
                         raise QchemInputError('{} not defined'.format('ras_srdft_cor'))
 
                 # Diabatization
-                diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3}
+                diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3, 'Gamma': 4}
                 if self._ras_diabatization_states is not None:
                     input_file += 'sts_multi_nroots {}\n'.format(len(self._ras_diabatization_states))
                     input_file += 'cis_diabath_decompose {}\n'.format(len(self._ras_diabatization_scheme))
