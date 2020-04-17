@@ -1,4 +1,4 @@
-excited_states_rasci:
+excited_states:
 - configurations:
   - alpha: '01'
     amplitude: -0.1967542

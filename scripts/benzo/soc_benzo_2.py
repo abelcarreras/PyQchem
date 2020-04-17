@@ -7,7 +7,7 @@ from pyqchem.basis import get_basis_from_ccRepo
 from pyqchem.file_io import build_fchk
 from pyqchem.errors import OutputError
 
-redefine_calculation_data_filename('soc_benzo_2.pkl')
+redefine_calculation_data_filename('soc_benzo_2_ras.pkl')
 
 coordinates = [[-0.49800797,  0.41832669,  0.00000000],
                [ 0.72930903,  0.41832669,  0.00000000],

@@ -222,7 +222,7 @@ def unify_configurations(configurations_list):
 
 
 print(output)
-print(output['excited_states_rasci'])
+print(output['excited_states'])
 
 
 print('++++++++')

@@ -166,7 +166,7 @@ class QchemInput:
 
         input_file += '{} {}\n'.format(self._molecule.charge, self._molecule.multiplicity)
 
-        atomic_elements = self._molecule.get_atomic_elements()
+        atomic_elements = self._molecule.get_symbols()
 
         coordinates = self._molecule.get_coordinates()
 

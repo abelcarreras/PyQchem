@@ -218,6 +218,27 @@ def get_occupied_electrons(configuration, structure):
     return (structure.number_of_electrons + structure.charge - (alpha_e + beta_e))//2
 
 
+def get_inertia(structure):
+    """
+    return inertia moments and main axis of inertia (in rows)
+    """
+
+    coordinates = structure.get_coordinates()
+    masses = structure.get_atomic_masses()
+
+    coordinates = np.array(coordinates)
+
+    cm = np.average(coordinates, axis=0, weights=masses)
+
+    inertia_tensor = np.zeros((3, 3))
+    for c, m in zip(coordinates, masses):
+        inertia_tensor += m * (np.dot(c-cm, c-cm) * np.identity(3) - np.outer(c-cm, c-cm))
+
+    eval, ev = np.linalg.eigh(inertia_tensor)
+
+    return eval.tolist(), ev.T.tolist()
+
+
 if __name__ == '__main__':
     state = {'configurations': [{'hole': '', 'alpha': '110100', 'beta': '111000', 'part': '', 'amplitude': 0.5}]}
     b = get_ratio_of_condition(state)

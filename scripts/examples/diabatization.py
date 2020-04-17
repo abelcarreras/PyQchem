@@ -83,7 +83,7 @@ qc_input = QchemInput(dimer,
 # print(qc_input.get_txt())
 
 parsed_data = get_output_from_qchem(qc_input,
-                                    processors=14,
+                                    processors=4,
                                     force_recalculation=False,
                                     parser=rasci_parser
                                     )
@@ -92,7 +92,7 @@ parsed_data = get_output_from_qchem(qc_input,
 # print(parsed_data)
 
 print('Adiabatic states dimer\n--------------------')
-for i, state in enumerate(parsed_data['excited_states_rasci']):
+for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
@@ -102,7 +102,7 @@ for i, state in enumerate(parsed_data['excited_states_rasci']):
 
 # plot diabatic states
 from pyqchem.plots import plot_state
-for i, state in enumerate(parsed_data['excited_states_rasci']):
+for i, state in enumerate(parsed_data['excited_states']):
     plt.figure(figsize=(len(state['configurations']), 5))
     plt.title('Adiabatic State {}'.format(i+1))
     amplitude_list = []
@@ -122,7 +122,7 @@ plt.show()
 # Analysis of diabatic states to use in diabatization
 from pyqchem.utils import is_transition, get_ratio_of_condition
 print('\nAdiabatic states to use in diabatization (1e, max_jump 4)')
-for i, state in enumerate(parsed_data['excited_states_rasci']):
+for i, state in enumerate(parsed_data['excited_states']):
     ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)
     mark = 'X' if ratio > 0.5 else ''
     print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
@@ -140,26 +140,13 @@ print(np.array(diabatization['adiabatic_matrix']))
 print('\nDiabatic Matrix')
 print(np.array(diabatization['diabatic_matrix']))
 
+
 print('\nDiabatic states dimer\n--------------------')
-for i, state in enumerate(diabatization['mulliken_analysis']):
-    print('\nMulliken analysis - state', i+1)
-    print('         Attach    Detach    Total ')
-    for i_atom, (at, det) in enumerate(zip(state['attach'], state['detach'])):
-        print('{:5}  {:8.4f}  {:8.4f}  {:8.4f}'.format(i_atom+1, at, det, at+det))
 
-    bars = range(1, dimer.get_number_of_atoms()+1)
-    plt.figure(i+1)
-    plt.suptitle('Mulliken analysis')
-    plt.title('Diabatic state {}'.format(i+1))
-    plt.bar(bars, state['attach'], label='Attachment')
-    plt.bar(bars, state['detach'], label='Detachment')
-    plt.plot(bars, state['total'], label='Total', color='r')
-    plt.xlabel('Atoms')
-    plt.ylabel('Charge [e-]')
-    plt.axvline((monomer.get_number_of_atoms()+0.5), color='black')
-    plt.legend()
+from pyqchem.tools import plot_diabatization
+plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
+                                                                   dimer.get_number_of_atoms()])
 
-plt.show()
 
 # Monomer adiabatic states (extra test)
 qc_input = QchemInput(opt_monomer,
@@ -182,7 +169,7 @@ parsed_data = get_output_from_qchem(qc_input,
                                     )
 
 print('\nAdiabatic states monomer\n--------------------')
-for i, state in enumerate(parsed_data['excited_states_rasci']):
+for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])

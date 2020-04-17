@@ -10,10 +10,10 @@ def _get_orbital_energies(orbitals_section):
     occupied_section = orbitals_section[occupied:virtual]
     virtual_section = orbitals_section[virtual:]
 
-    occupied_energies = [float(energy) for energy in ' '.join(occupied_section.split('\n')[1::2]).split()]
-    virtual_energies = [float(energy) for energy in ' '.join(virtual_section.split('\n')[1::2]).split()]
+    occupied_energies = [float(energy) if energy != '********' else None for energy in ' '.join(occupied_section.split('\n')[1::2]).split()]
+    virtual_energies = [float(energy) if energy != '********' else None for energy in ' '.join(virtual_section.split('\n')[1::2]).split()]
 
-    return {'occupied': occupied_energies, 'virtual': virtual_energies}
+    return occupied_energies + virtual_energies
 
 
 def basic_parser_qchem(output):
@@ -38,7 +38,7 @@ def basic_parser_qchem(output):
         alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:beta_mos])
         beta_energies = _get_orbital_energies(orbitals_section[beta_mos:])
     else:
-        alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:])
+        alpha_energies = _get_orbital_energies(orbitals_section[alpha_mos:beta_mos])
         beta_energies = alpha_energies
 
     data_dict['orbital_energies'] = {'alpha': alpha_energies, 'beta': beta_energies, 'units': 'au'}

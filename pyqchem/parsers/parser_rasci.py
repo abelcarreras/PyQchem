@@ -41,6 +41,7 @@ def rasci(output):
     - Diabatization scheme data
     - Structure
     - Adiabatic states
+    - SOC
 
     :param output:
     :return:
@@ -64,9 +65,9 @@ def rasci(output):
                                 multiplicity=multiplicity)
 
     enum = output.find('Standard Nuclear Orientation')
-    section_structure = output[enum:enum + 100*structure_input.get_number_of_atoms()].split('\n')
+    section_structure = output[enum:enum + 200*structure_input.get_number_of_atoms()].split('\n')
     section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
-    coordinates = [ [float(num) for num in s.split()[2:]] for s in section_structure]
+    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
 
     data_dict['structure'] = Structure(coordinates=coordinates,
                                        symbols=symbols,
@@ -142,13 +143,29 @@ def rasci(output):
             section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
 
             mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
-                             'detach': [float(l.split()[2]) for l in section_attachment],
-                             'total': [float(l.split()[3]) for l in section_attachment]})
+                                      'detach': [float(l.split()[2]) for l in section_attachment],
+                                      'total': [float(l.split()[3]) for l in section_attachment]})
+
+        enum = output.find('Transition dipole moment - diabatic states')
+
+        tdm_section = output[enum: enum + 70 * len(rot_matrix)]
+
+        diabatic_tdm = []
+        for m in re.finditer('TDM', tdm_section):
+            diabatic_tdm.append([float(n) for n in tdm_section[m.end(): m.end()+70][14:].split()[:3]])
+
+        diabatic_states = []
+        for i, tdm in enumerate(diabatic_tdm):
+            diabatic_states.append({'excitation_energy': diabatic_matrix[i][i],
+                                    'excitation_energy_units': 'eV',
+                                    'transition_moment': tdm,
+                                    'dipole_moment_units': 'ua',
+                                    'mulliken': mulliken_diabatic[i]})
 
         data_dict['diabatization'] = {'rot_matrix': rot_matrix,
                                       'adiabatic_matrix': adiabatic_matrix,
                                       'diabatic_matrix': diabatic_matrix,
-                                      'mulliken_analysis': mulliken_diabatic,
+                                      'diabatic_states': diabatic_states,
                                       'mulliken_adiabatic': mulliken_adiabatic}
 
     # excited states data
@@ -217,11 +234,12 @@ def rasci(output):
                                'multiplicity': state_multiplicity,
                                'dipole_moment': dipole_mom,
                                'transition_moment': trans_mom,
+                               'dipole_moment_units': 'ua',
                                'oscillator_strength': strength,
                                'configurations': table,
                                'contributions_fwn': contributions})
 
-    data_dict.update({'excited_states_rasci': excited_states})
+    data_dict.update({'excited_states': excited_states})
 
     # Interstate transition properties
     done_interstate = bool(output.find('Interstate Transition Properties')+1)

@@ -42,8 +42,8 @@ def int_to_xyz(molecule, no_dummy=True):
 
     if no_dummy:
       #  mask = np.argwhere(molecule.get_atomic_elements_with_dummy()[:,0]  == 'X')
-        mask = np.argwhere((molecule.get_atomic_elements_with_dummy()[:,0] == 'X') |
-                           (molecule.get_atomic_elements_with_dummy()[:,0] == 'x')).flatten()
+        mask = np.argwhere((molecule.get_symbols_with_dummy()[:, 0] == 'X') |
+                           (molecule.get_symbols_with_dummy()[:, 0] == 'x')).flatten()
         coordinates = np.delete(coordinates,mask,axis=0)
 
     return np.array(coordinates, dtype=float)
@@ -97,7 +97,7 @@ class Structure:
         self._atom_types = atom_types
         self._atomic_numbers = atomic_numbers
         self._connectivity = connectivity
-        self._atomic_elements = symbols
+        self._symbols = symbols
         self._charge = charge
         self._multiplicity = multiplicity
         self._name = name
@@ -119,6 +119,9 @@ class Structure:
             if len(coordinates) != len(symbols):
                 raise StructureError('coordinates and symbols do not match')
 
+        if atomic_numbers is not None:
+            self._symbols = [atom_data[i][1] for i in atomic_numbers]
+
     def __str__(self):
         return self.get_xyz()
 
@@ -130,7 +133,7 @@ class Structure:
     def get_coordinates(self):
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
-        return list(self._coordinates)
+        return np.array(self._coordinates).tolist()
 
     def set_coordinates(self, coordinates):
         self._coordinates = np.array(coordinates)
@@ -191,9 +194,10 @@ class Structure:
     def _set_int_weights(self, int_weights):
         self._int_weights = int_weights
 
-    def get_atomic_elements_with_dummy(self):
+    def get_symbols_with_dummy(self):
        # print([i for i in self._atomic_elements if i != "X"])
-       return self._atomic_elements
+       return self._symbols
+
 
     @property
     def name(self):
@@ -248,19 +252,19 @@ class Structure:
     def get_atomic_numbers(self):
         if self._atomic_numbers is None:
             self._atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper())
-                                    for element in self.get_atomic_elements()]
+                                    for element in self.get_symbols()]
         return self._atomic_numbers
 
     def set_atomic_numbers(self, atomic_numbers):
         self._atomic_numbers = atomic_numbers
 
-    def get_atomic_elements(self):
-        if self._atomic_elements is None:
-            self._atomic_elements = np.array(atom_data)[self.get_atomic_numbers()].T[1]
-        return np.array([i for i in self._atomic_elements if i != "X"], dtype=str)
+    def get_symbols(self):
+        if self._symbols is None:
+            self._symbols = np.array(atom_data)[self.get_atomic_numbers()].T[1]
+        return np.array([i for i in self._symbols if i != "X"], dtype=str)
 
     def set_atomic_elements(self, atomic_elements):
-        self._atomic_elements = atomic_elements
+        self._symbols = atomic_elements
 
     def _get_connectivity(self):
         if self._connectivity is None:
@@ -308,7 +312,7 @@ class Structure:
 
             try:
                 masses_string = np.array(atom_data)[:, 3:4][[np.where(np.array(atom_data)==element)[0][0]
-                                                             for element in self.get_atomic_elements()]]
+                                                             for element in self.get_symbols()]]
                 self._atomic_masses = np.array(masses_string, dtype=float).T[0]
             except TypeError:
                 print('Error reading element labels')
@@ -335,7 +339,7 @@ class Structure:
 
     def get_xyz(self, title=''):
         txt = '{}\n{}\n'.format(self.get_number_of_atoms(), title)
-        for s, c in zip(self.get_atomic_elements(), self.get_coordinates()):
+        for s, c in zip(self.get_symbols(), self.get_coordinates()):
             txt += '{:2} '.format(s) + '{:15.10f} {:15.10f} {:15.10f}\n'.format(*c)
 
         return txt

@@ -14,7 +14,7 @@ redefine_calculation_data_filename('test_soc2.pkl')
 as_clo = [[3, 2, 11], [5, 3, 10], [11, 6, 7], [13, 7, 6], [19, 10, 3]]
 mol_clo = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                  [0.0, 0.0, 1.5696]],
-                    atomic_elements=['Cl', 'O'],
+                    symbols=['Cl', 'O'],
                     charge=-1,
                     multiplicity=1,
                     name='ClO')
@@ -22,7 +22,7 @@ mol_clo = Structure(coordinates=[[0.0, 0.0, 0.0000],
 as_bro = [[3, 2, 20], [9, 5, 17], [13, 7, 15], [23, 12, 10]]
 mol_bro = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                  [0.0, 0.0, 1.7172]],
-                    atomic_elements=['Br', 'O'],
+                    symbols=['Br', 'O'],
                     charge=-1,
                     multiplicity=1,
                     name='BrO')
@@ -31,7 +31,7 @@ as_ncs = [[3, 2, 13], [7, 4, 11], [11, 6, 9], [15, 8, 7]]
 mol_ncs = Structure(coordinates=[[0.0, 0.0, 1.159],
                                  [0.0, 0.0, 0.000],
                                  [0.0, 0.0,-1.631]],
-                    atomic_elements=['N', 'C', 'S'],
+                    symbols=['N', 'C', 'S'],
                     charge=-1,
                     multiplicity=1,
                     name='NCS')
@@ -40,7 +40,7 @@ as_n2o = [[3, 2, 9], [11, 6, 5], [15, 8, 3]]
 mol_n2o = Structure(coordinates=[[0.0, 0.0, 1.154],
                                  [0.0, 0.0, 0.000],
                                  [0.0, 0.0,-1.182]],
-                    atomic_elements=['N', 'N', 'O'],
+                    symbols=['N', 'N', 'O'],
                     charge=0,
                     multiplicity=1,
                     name='N2O')
@@ -49,7 +49,7 @@ as_cco = [[3, 2, 9], [5, 3, 8], [11, 6, 5], [15, 8, 3]]
 mol_cco = Structure(coordinates=[[0.0, 0.0, 1.308],
                                  [0.0, 0.0, 0.000],
                                  [0.0, 0.0,-1.221]],
-                    atomic_elements=['C', 'C', 'O'],
+                    symbols=['C', 'C', 'O'],
                     charge=-2,
                     multiplicity=1,
                     name='CCO')
@@ -58,7 +58,7 @@ as_ccf = [[3, 2, 9], [5, 3, 8], [11, 6, 5], [15, 8, 3]]
 mol_ccf = Structure(coordinates=[[0.0, 0.0, 1.271],
                                  [0.0, 0.0, 0.000],
                                  [0.0, 0.0,-1.276]],
-                    atomic_elements=['C', 'C', 'F'],
+                    symbols=['C', 'C', 'F'],
                     charge=-1,
                     multiplicity=1,
                     name='CCF')
@@ -67,7 +67,7 @@ as_cccl = [[3, 2, 13], [5, 3, 12], [11, 6, 9], [15, 8, 7]]
 mol_cccl = Structure(coordinates=[[0.0, 0.0, 1.2964],
                                   [0.0, 0.0, 0.000],
                                   [0.0, 0.0,-1.6224]],
-                     atomic_elements=['C', 'C', 'Cl'],
+                     symbols=['C', 'C', 'Cl'],
                      charge=-1,
                      multiplicity=1,
                      name='CCCl')
@@ -110,7 +110,7 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             # print(qc_input.get_txt())
             try:
                 output = get_output_from_qchem(qc_input,
-                                               processors=10,
+                                               processors=4,
                                                force_recalculation=False,
                                                parser=parser_rasci,
                                                store_full_output=True
@@ -132,8 +132,8 @@ for molecule, active_space_list in [(mol_clo, as_clo), (mol_bro, as_bro), (mol_n
             soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])
             socc = output['interstate_properties'][(1, 2)]['mf_socc']
 
-            energy_1 = output['excited_states_rasci'][0]['total_energy']
-            energy_2 = output['excited_states_rasci'][1]['total_energy']
+            energy_1 = output['excited_states'][0]['total_energy']
+            energy_2 = output['excited_states'][1]['total_energy']
 
             print('---------------------------------------------')
             print('molecule: {}'.format(molecule.name))

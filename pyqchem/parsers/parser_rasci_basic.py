@@ -90,4 +90,4 @@ def basic_rasci(output):
                                'contributions_fwn': contributions})
 
     return {'scf_energy': scf_energy,
-            'excited_states_rasci': excited_states}
+            'excited_states': excited_states}

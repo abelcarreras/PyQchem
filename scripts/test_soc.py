@@ -11,30 +11,30 @@ redefine_calculation_data_filename('test_soc.pkl')
 # create molecules
 mol_oh = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                   [0.0, 0.0, 0.9697]],
-                     atomic_elements=['O', 'H'],
-                     charge=-1,
-                     multiplicity=1,
-                     name='OH')
+                   symbols=['O', 'H'],
+                   charge=-1,
+                   multiplicity=1,
+                   name='OH')
 
 as_oh = [[3, 2, 3], [5, 3, 2], [7, 4, 1], [9, 5, 0]]
 
 mol_sh = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                 [0.0, 0.0, 1.3409]],
-                     atomic_elements=['S', 'H'],
-                     charge=-1,
-                     multiplicity=1,
-                     name='SH')
+                   symbols=['S', 'H'],
+                   charge=-1,
+                   multiplicity=1,
+                   name='SH')
 
 as_sh = [[3, 2, 7], [5, 3, 6], [7, 4, 5], [13, 7, 2], [17, 9, 0]]
 
 mol_seh = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                   [0.0, 0.0, 1.5811]],
-                     atomic_elements=['Se', 'H'],
-                     charge=-1,
-                     multiplicity=1,
-                     name='SeH')
+                    symbols=['Se', 'H'],
+                    charge=-1,
+                    multiplicity=1,
+                    name='SeH')
 
-as_seh = [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6]]
+as_seh = [[3, 2, 16], [5, 3, 15], [7, 4, 14], [17, 9, 9], [23, 12, 6], [25, 13, 5]]
 
 # Generate basis name list
 basis_name_list = []
@@ -43,7 +43,7 @@ for s1 in ['cc-pV_Z', 'cc-pCV_Z']:
         basis_name_list.append(s1.replace('_', s2))
 
 for molecule, active_spaces in [(mol_oh, as_oh), (mol_sh, as_sh)]: # , (mol_oh, as_seh)]:
-    for calc_soc in [1, 2]:
+    for calc_soc in [1]:
         for basis_name in basis_name_list:
             for active_space in active_spaces:
 
@@ -101,8 +101,8 @@ for molecule, active_spaces in [(mol_oh, as_oh), (mol_sh, as_sh)]: # , (mol_oh, 
                 soc_tot = np.array(output['interstate_properties'][(1, 2)]['total_soc_mat'])[0, 0]
                 socc = output['interstate_properties'][(1, 2)]['mf_socc']
 
-                energy_1 = output['excited_states_rasci'][0]['total_energy']
-                energy_2 = output['excited_states_rasci'][1]['total_energy']
+                energy_1 = output['excited_states'][0]['total_energy']
+                energy_2 = output['excited_states'][1]['total_energy']
 
                 print('---------------------------------------------')
                 print('Molecule: {}'.format(molecule.name))

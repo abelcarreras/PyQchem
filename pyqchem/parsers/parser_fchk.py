@@ -195,7 +195,7 @@ def parser_fchk(output):
 
     basis = basis_format(basis_set_name=basis_set,
                          atomic_numbers=structure.get_atomic_numbers(),
-                         atomic_symbols=structure.get_atomic_elements(),
+                         atomic_symbols=structure.get_symbols(),
                          shell_type=data['Shell types'],
                          n_primitives=data['Number of primitives per shell'],
                          atom_map=data['Shell to atom map'],

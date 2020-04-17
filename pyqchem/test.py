@@ -40,14 +40,14 @@ def trunc_dictionary_list(dic_data, decimal):
 def standardize_dictionary(dic_data, decimal=5):
 
     # set all amplitudes to absolute value
-    for state in dic_data['excited_states_rasci']:
+    for state in dic_data['excited_states']:
         for configuration in state['configurations']:
             configuration['amplitude'] = abs(configuration['amplitude'])
 
     trunc_dictionary_list(dic_data, decimal)
 
     # delete zero amplitude configurations
-    for state in dic_data['excited_states_rasci']:
+    for state in dic_data['excited_states']:
         delete_list = []
         for i, configuration in enumerate(state['configurations']):
             if configuration['amplitude'] == 0:

@@ -57,14 +57,14 @@ center_f1, normal_f1 = get_plane(coordinates_f1)
 
 
 symmetry_measures = get_state_symmetry(electronic_structure,
-                                       output['excited_states_rasci'],
+                                       output['excited_states'],
                                        center=center_f1,
                                        orientation=normal_f1,
                                        group='D2h',
                                        extra_print=False
                                        )
 
-energies = [state['excitation_energy'] for state in output['excited_states_rasci']]
+energies = [state['excitation_energy'] for state in output['excited_states']]
 
 print('Symmetry of RASCI excited states\n--------------------------------')
 for energy, state in zip(energies, symmetry_measures.items()):

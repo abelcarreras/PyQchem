@@ -29,7 +29,7 @@ def get_wf_symmetry(structure,
         beta_mo_coeff = None
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
-                      symbols=structure.get_atomic_elements(),
+                      symbols=structure.get_symbols(),
                       basis=basis,
                       center=center,
                       VAxis=orientation,

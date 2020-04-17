@@ -11,33 +11,48 @@ redefine_calculation_data_filename('test_soc3.pkl')
 
 as_c = [[[3, 1], 4, 1]]
 atom_c = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                   atomic_elements=['C'],
+                   symbols=['C'],
                    charge=-1,
                    multiplicity=4,
                    name='C')
 
 as_o = [[[4, 2], 4, 1]]
 atom_o = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                   atomic_elements=['O'],
+                   symbols=['O'],
                    charge=-2,
                    multiplicity=1,
                    name='O')
 
 as_si = [[[3, 1], 4, 5], [[6, 4], 7, 2]]
 atom_si = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                    atomic_elements=['Si'],
+                    symbols=['Si'],
                     charge=-1,
                     multiplicity=4,
                     name='Si')
 
-as_s = [[[4, 2], 4, 5], [[7, 5], 7, 2]]
+as_s = [[[3, 1], 4, 5], [[7, 5], 7, 2], [[8, 6], 8, 1]]
 atom_s = Structure(coordinates=[[0.0, 0.0, 0.0]],
-                   atomic_elements=['S'],
-                   charge=0,
+                   symbols=['S'],
+                   charge=-2,
                    multiplicity=1,
                    name='S')
 
-for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si), (atom_s, as_s)]:
+as_f = [[[4, 3], 4, 1]]
+atom_f = Structure(coordinates=[[0.0, 0.0, 0.0]],
+                   symbols=['F'],
+                   charge=-1,
+                   multiplicity=1,
+                   name='F')
+
+as_cl = [[[4, 3], 4, 5], [[7, 6], 7, 2], [[8, 7], 8, 1]]
+atom_cl = Structure(coordinates=[[0.0, 0.0, 0.0]],
+                    symbols=['Cl'],
+                    charge=-1,
+                    multiplicity=1,
+                    name='Cl')
+
+
+for atom, active_space_list in [(atom_s, as_s)]:#, (atom_si, as_si), (atom_c, as_c), (atom_o, as_o),  (atom_f, as_f), (atom_cl, as_cl)]:
     for basis_name in ['cc-pVDZ', 'cc-pCVTZ', 'cc-pCVQZ']:
         for active_space in active_space_list:
             basis_custom_repo = get_basis_from_ccRepo(atom, basis_name)
@@ -71,7 +86,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
 
             try:
                 output = get_output_from_qchem(qc_input,
-                                               processors=10,
+                                               processors=4,
                                                force_recalculation=False,
                                                parser=parser_rasci,
                                                store_full_output=True
@@ -91,7 +106,7 @@ for atom, active_space_list in [(atom_c, as_c), (atom_o, as_o),  (atom_si, as_si
             print('Active space (ele, act, occ): {}'.format(active_space))
             print('---------------------------------------------')
 
-            for i, state in enumerate(output['excited_states_rasci']):
+            for i, state in enumerate(output['excited_states']):
                 print('Energy state {} ({}):  {: 18.12f} au'.format(i+1, state['multiplicity'], state['total_energy']))
                 print(' Alpha  Beta   Amplitude')
                 for j, conf in enumerate(state['configurations']):

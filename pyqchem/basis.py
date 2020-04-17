@@ -107,7 +107,7 @@ def get_basis_element_from_ccRepo(element,
 
 def get_basis_from_ccRepo(structure, basis, full=False, if_missing=None):
 
-    symbols = structure.get_atomic_elements()
+    symbols = structure.get_symbols()
     if not full:
         symbols = np.unique(symbols)
 
