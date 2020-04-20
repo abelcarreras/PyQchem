@@ -1,8 +1,6 @@
 import re
 import numpy as np
 from scipy.optimize import leastsq
-#from pyqchem import Structure
-#from pyqchem.symmetry import get_wf_symmetry
 
 
 def standardize_vector(vector):
@@ -258,6 +256,8 @@ def get_basis_functions_ranges_by_atoms(basis, atoms_range=None):
     return functions_range
 
 def classify_diabatic_states_of_fragment(diabatic_states, fragments_atoms, tol=0.1):
+
+    print('     Attach      Detach')
 
     types = []
     for i, state in enumerate(diabatic_states):

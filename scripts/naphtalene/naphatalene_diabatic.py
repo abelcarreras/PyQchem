@@ -127,7 +127,7 @@ qc_input = QchemInput(electronic_structure['structure'],
                       ras_diabatization_scheme=diabatization_scheme,
                       set_iter=60)
 
-print(qc_input.get_txt())
+# print(qc_input.get_txt())
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=14,
@@ -173,8 +173,12 @@ center_f1, normal_f1 = get_plane(coordinates_f1)
 coordinates_f2 = np.array(electronic_structure['structure'].get_coordinates())[range_f2]
 center_f2, normal_f2 = get_plane(coordinates_f2)
 
-print('\nDiabatic states symmetry analysis')
-sym_data = get_symmetry_le(electronic_structure, parsed_data, fragment_atoms=range_f2)
+print('\nDiabatic states symmetry analysis (monomer 1)')
+sym_data = get_symmetry_le(electronic_structure, parsed_data, fragment_atoms=range_f2, group='D2h')
+print('Symmetry: ', sym_data)
+
+print('\nDiabatic states symmetry analysis (monomer 2)')
+sym_data = get_symmetry_le(electronic_structure, parsed_data, fragment_atoms=range_f1, group='D2h')
 print('Symmetry: ', sym_data)
 
 
