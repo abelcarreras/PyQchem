@@ -1,6 +1,9 @@
 from wfnsympy import WfnSympy
 import numpy as np
 from pyqchem.utils import get_occupied_electrons, reorder_coefficients
+from pyqchem.utils import classify_diabatic_states_of_fragment, get_basis_functions_ranges_by_atoms
+from pyqchem.utils import get_inertia, get_plane
+from pyqchem import Structure
 
 
 def get_wf_symmetry(structure,
@@ -8,6 +11,7 @@ def get_wf_symmetry(structure,
                     mo_coeff,
                     center=None,
                     orientation=(0., 0., 1.),
+                    orientation2=(0, 1, 0),
                     group='C2h'):
 
     """
@@ -33,6 +37,7 @@ def get_wf_symmetry(structure,
                       basis=basis,
                       center=center,
                       VAxis=orientation,
+                      VAxis2=orientation2,
                       alpha_mo_coeff=alpha_mo_coeff,
                       beta_mo_coeff=beta_mo_coeff,
                       charge=structure.charge,
@@ -84,6 +89,7 @@ def get_state_symmetry(parsed_fchk,
                        rasci_states,
                        center=None,
                        orientation=(0, 0, 1),
+                       orientation2=(0, 1, 0),
                        group='C2h',
                        extra_print=False,
                        amplitude_cutoff=0.0
@@ -102,6 +108,7 @@ def get_state_symmetry(parsed_fchk,
                                      parsed_fchk['coefficients'],
                                      center=center,
                                      orientation=orientation,
+                                     orientation2=orientation2,
                                      group=group)
 
             molsym.print_alpha_mo_IRD()
@@ -109,6 +116,7 @@ def get_state_symmetry(parsed_fchk,
             molsym.print_wf_mo_IRD()
 
             print('\nRASCI Exited state {}\n---------------------------'.format(i+1))
+
 
         # print(configurations)
         occupations_list = []
@@ -128,8 +136,6 @@ def get_state_symmetry(parsed_fchk,
             if extra_print:
                 print(configuration['alpha'], configuration['beta'], configuration['amplitude'])
 
-
-
         state_symmetry_list = []
         for occupations in occupations_list:
             # print('occupations', occupations)
@@ -141,6 +147,7 @@ def get_state_symmetry(parsed_fchk,
                                      reordered_coefficients,
                                      center=center,
                                      orientation=orientation,
+                                     orientation2=orientation2,
                                      group=group)
 
             if extra_print:
@@ -168,6 +175,95 @@ def get_state_symmetry(parsed_fchk,
         sym_states['state {}'.format(i+1)] = [symmetry_label, average_measure]
     return sym_states
 
+def _indices_from_ranges(ranges):
+    indices = []
+    for i, j in ranges:
+        indices += list(range(i, j))
+
+    return indices
+
+
+def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.1, group='D2h'):
+    # This only works for singlets on close shell calculations
+
+    types = classify_diabatic_states_of_fragment(data_rasci['diabatization']['diabatic_states'], fragment_atoms, tol=0.1)
+    functions_range = get_basis_functions_ranges_by_atoms(electronic_structure['basis'], atoms_range=fragment_atoms)
+    coordinates_frag = np.array(electronic_structure['structure'].get_coordinates())[fragment_atoms]
+    labels_frag = electronic_structure['structure'].get_symbols()[fragment_atoms]
+
+    inertia_moments, inertia_axis = get_inertia(Structure(coordinates=coordinates_frag, symbols=labels_frag))
+    center_frag, normal_frag = get_plane(coordinates_frag)
+
+    # print(inertia_moments)
+    # print(inertia_axis[0])
+    # print(inertia_axis[1])
+    # print(inertia_axis[2])
+
+    if 'LE' in types:
+        index = types.index('LE') + 1
+        print('LE state found at diabat {}!'.format(index))
+
+        coefficients = electronic_structure['nato_coefficients_multi'][index]
+        occupation = electronic_structure['nato_occupancies_multi'][index]
+        overlap_matrix = np.array(electronic_structure['overlap'])
+
+        functions_indices = _indices_from_ranges(functions_range)
+        overlap_matrix = np.array([ovm[functions_indices] for ovm in overlap_matrix[functions_indices]])
+
+        c_alpha = np.array(coefficients['alpha'])
+        oc_alpha = np.array(occupation['alpha'])
+
+        orbitals = []
+        alpha = 0
+        beta = 0
+
+        coefficients_new = {'alpha': [], 'beta': []}
+        for i, (va, o) in enumerate(zip(c_alpha, oc_alpha)):
+            va_frag = va[functions_indices]
+            frag_dot = np.dot(va_frag, np.dot(overlap_matrix, va_frag))
+
+            if np.abs(frag_dot - 0.5) > tol:
+                if frag_dot > 0.5:
+                    orbitals.append((i, np.round(o)))
+
+                    orbital = np.zeros(len(c_alpha))
+                    for j, val in zip(functions_indices, va_frag):
+                        orbital[j] = val
+
+                    if np.abs(o - 1) < tol and o < 2 - tol:
+                        if alpha == beta:
+                            alpha += 1
+                            coefficients_new['alpha'].append(list(orbital))
+                        else:
+                            beta += 1
+                            coefficients_new['beta'].append(list(orbital))
+                else:
+                    pass
+
+        if alpha == beta:
+            multiplicity = 1
+        else:
+            multiplicity = 3
+
+        n_electrons = alpha + beta
+
+        # This only works for singlets
+        molsym = get_wf_symmetry(electronic_structure['structure'],
+                                 electronic_structure['basis'],
+                                 coefficients_new,
+                                 center=center_frag,
+                                 orientation=inertia_axis[0],
+                                 orientation2=inertia_axis[1],
+                                 group=group
+                                 )
+
+        #molsym.print_alpha_mo_IRD()
+        #molsym.print_beta_mo_IRD()
+        #molsym.print_wf_mo_IRD()
+
+        return molsym.IRLab[np.argmax(molsym.wf_IRd)]
+
+    return None
 
 if __name__ == '__main__':
     from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input

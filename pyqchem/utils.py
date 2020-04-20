@@ -1,6 +1,8 @@
 import re
 import numpy as np
 from scipy.optimize import leastsq
+#from pyqchem import Structure
+#from pyqchem.symmetry import get_wf_symmetry
 
 
 def standardize_vector(vector):
@@ -237,6 +239,47 @@ def get_inertia(structure):
     eval, ev = np.linalg.eigh(inertia_tensor)
 
     return eval.tolist(), ev.T.tolist()
+
+
+def get_basis_functions_ranges_by_atoms(basis, atoms_range=None):
+
+    num = 0
+    functions_range = []
+    for atoms in np.array(basis['atoms']):
+        ini = num
+        for shell in atoms['shells']:
+            num += shell['functions']
+        fin = num
+        functions_range.append((ini, fin))
+
+    if atoms_range is not None:
+        functions_range = np.array(functions_range)[atoms_range]
+
+    return functions_range
+
+def classify_diabatic_states_of_fragment(diabatic_states, fragments_atoms, tol=0.1):
+
+    types = []
+    for i, state in enumerate(diabatic_states):
+
+        sum_attach = np.sum([state['mulliken']['attach'][i] for i in fragments_atoms])
+        sum_detach = np.sum([state['mulliken']['detach'][i] for i in fragments_atoms])
+
+        type = 'unknown'
+        if np.abs(sum_attach) > 1.0 - tol:
+            if np.abs(sum_detach) < tol:
+                type = 'CT+'
+            else:
+                type = 'LE'
+        elif np.abs(sum_attach) < tol:
+            if np.abs(sum_detach) > 1 - tol:
+                type = 'CT-'
+
+        print('{} {:10.5f} {:10.5f} {}'.format(i + 1, sum_attach, sum_detach, type))
+        types.append(type)
+
+    return types
+
 
 
 if __name__ == '__main__':
