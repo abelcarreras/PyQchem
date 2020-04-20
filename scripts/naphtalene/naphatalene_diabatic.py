@@ -1,17 +1,14 @@
 from pyqchem.parsers.parser_rasci import rasci as rasci_parser
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.file_io import build_fchk
-from pyqchem.symmetry import get_orbital_classification, get_symmetry_le
+from pyqchem.symmetry import get_symmetry_le
 from pyqchem.qchem_core import redefine_calculation_data_filename
 from pyqchem.utils import set_zero_coefficients, get_plane
-from pyqchem.parsers.basic import basic_parser_qchem
-from pyqchem.utils import get_inertia
 from pyqchem.utils import is_transition, get_ratio_of_condition
-import numpy as np
-import matplotlib.pyplot as plt
-from pyqchem.units import DEBYE_TO_AU, EV_TO_NM
+from pyqchem.units import DEBYE_TO_AU
 from pyqchem.tools import print_excited_states, plot_diabatization, plot_rasci_state_configurations
-# from pyqchem.utils import get_basis_functions_ranges_by_atoms, classify_diabatic_states_of_fragment
+import numpy as np
+
 
 redefine_calculation_data_filename('diabatic_naphtalene.pkl')
 
@@ -36,11 +33,11 @@ coor_monomer1 = [[ 2.4610326539,  0.7054950347, -0.0070507104],
                  [ 1.2932627225, -2.3688000888,  0.0152164523],
                  [-3.2670227933,  1.2176289251, -0.0251089819]]
 
+# set dimer geometry
 coor_monomer2 = np.array(coor_monomer1).copy()
-coor_monomer2[:,2] += 5.0
-coor_monomer2[:,0] -= 0.0
+coor_monomer2[:, 2] += 5.0
+coor_monomer2[:, 0] -= 0.0
 coor_monomer2 = list(coor_monomer2)
-
 
 symbols_monomer = ['C', 'C', 'C', 'C', 'C', 'H', 'H', 'H', 'H',
                    'C', 'C', 'C', 'C', 'C', 'H', 'H', 'H', 'H']
@@ -52,6 +49,9 @@ dimer = Structure(coordinates=coordinates,
                   symbols=symbols_dimer,
                   charge=0,
                   multiplicity=1)
+
+range_f1 = range(len(coor_monomer1))
+range_f2 = range(len(coor_monomer1), len(coordinates))
 
 print('Dimer structure')
 print(dimer)
@@ -162,10 +162,6 @@ print_excited_states(diabatization['diabatic_states'], include_mulliken_rasci=Tr
 
 #plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
 #                                                                   dimer.get_number_of_atoms()])
-
-
-range_f1 = range(18)
-range_f2 = range(18, 36)
 
 coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[range_f1]
 center_f1, normal_f1 = get_plane(coordinates_f1)
