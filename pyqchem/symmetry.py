@@ -200,68 +200,72 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
     # print(inertia_axis[2])
 
     if 'LE' in types:
-        index = types.index('LE') + 1
-        print('LE state found at diabat {}!'.format(index))
+        indices = [i for i, x in enumerate(types) if x == "LE"]
+        symmetry_labels = []
+        for index in indices:
+        # index = types.index('LE') + 1
+            print('LE state found at diabat {}!'.format(index+1))
 
-        coefficients = electronic_structure['nato_coefficients_multi'][index]
-        occupation = electronic_structure['nato_occupancies_multi'][index]
-        overlap_matrix = np.array(electronic_structure['overlap'])
+            coefficients = electronic_structure['nato_coefficients_multi'][index+1]
+            occupation = electronic_structure['nato_occupancies_multi'][index+1]
+            overlap_matrix = np.array(electronic_structure['overlap'])
 
-        functions_indices = _indices_from_ranges(functions_range)
-        overlap_matrix = np.array([ovm[functions_indices] for ovm in overlap_matrix[functions_indices]])
+            functions_indices = _indices_from_ranges(functions_range)
+            overlap_matrix = np.array([ovm[functions_indices] for ovm in overlap_matrix[functions_indices]])
 
-        c_alpha = np.array(coefficients['alpha'])
-        oc_alpha = np.array(occupation['alpha'])
+            c_alpha = np.array(coefficients['alpha'])
+            oc_alpha = np.array(occupation['alpha'])
 
-        orbitals = []
-        alpha = 0
-        beta = 0
+            orbitals = []
+            alpha = 0
+            beta = 0
 
-        coefficients_new = {'alpha': [], 'beta': []}
-        for i, (va, o) in enumerate(zip(c_alpha, oc_alpha)):
-            va_frag = va[functions_indices]
-            frag_dot = np.dot(va_frag, np.dot(overlap_matrix, va_frag))
+            coefficients_new = {'alpha': [], 'beta': []}
+            for i, (va, o) in enumerate(zip(c_alpha, oc_alpha)):
+                va_frag = va[functions_indices]
+                frag_dot = np.dot(va_frag, np.dot(overlap_matrix, va_frag))
 
-            if np.abs(frag_dot - 0.5) > tol:
-                if frag_dot > 0.5:
-                    orbitals.append((i, np.round(o)))
+                if np.abs(frag_dot - 0.5) > tol:
+                    if frag_dot > 0.5:
+                        orbitals.append((i, np.round(o)))
 
-                    orbital = np.zeros(len(c_alpha))
-                    for j, val in zip(functions_indices, va_frag):
-                        orbital[j] = val/np.sqrt(frag_dot)
+                        orbital = np.zeros(len(c_alpha))
+                        for j, val in zip(functions_indices, va_frag):
+                            orbital[j] = val/np.sqrt(frag_dot)
 
-                    if np.abs(o - 1) < tol and o < 2 - tol:
-                        if alpha == beta:
-                            alpha += 1
-                            coefficients_new['alpha'].append(list(orbital))
-                        else:
-                            beta += 1
-                            coefficients_new['beta'].append(list(orbital))
-                else:
-                    pass
+                        if np.abs(o - 1) < tol and o < 2 - tol:
+                            if alpha == beta:
+                                alpha += 1
+                                coefficients_new['alpha'].append(list(orbital))
+                            else:
+                                beta += 1
+                                coefficients_new['beta'].append(list(orbital))
+                    else:
+                        pass
 
-        if alpha == beta:
-            multiplicity = 1
-        else:
-            multiplicity = 3
+            if alpha == beta:
+                multiplicity = 1
+            else:
+                multiplicity = 3
 
-        n_electrons = alpha + beta
+            n_electrons = alpha + beta
 
-        # This only works for singlets
-        molsym = get_wf_symmetry(electronic_structure['structure'],
-                                 electronic_structure['basis'],
-                                 coefficients_new,
-                                 center=center_frag,
-                                 orientation=inertia_axis[0],
-                                 orientation2=inertia_axis[1],
-                                 group=group
-                                 )
+            # This only works for singlets
+            molsym = get_wf_symmetry(electronic_structure['structure'],
+                                     electronic_structure['basis'],
+                                     coefficients_new,
+                                     center=center_frag,
+                                     orientation=inertia_axis[0],
+                                     orientation2=inertia_axis[1],
+                                     group=group
+                                     )
 
-        #molsym.print_alpha_mo_IRD()
-        #molsym.print_beta_mo_IRD()
-        molsym.print_wf_mo_IRD()
+            #molsym.print_alpha_mo_IRD()
+            #molsym.print_beta_mo_IRD()
+            molsym.print_wf_mo_IRD()
+            symmetry_labels.append(molsym.IRLab[np.argmax(molsym.wf_IRd)])
 
-        return molsym.IRLab[np.argmax(molsym.wf_IRd)]
+        return symmetry_labels
 
     return None
 
