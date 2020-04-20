@@ -228,7 +228,7 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
 
                     orbital = np.zeros(len(c_alpha))
                     for j, val in zip(functions_indices, va_frag):
-                        orbital[j] = val
+                        orbital[j] = val/np.sqrt(frag_dot)
 
                     if np.abs(o - 1) < tol and o < 2 - tol:
                         if alpha == beta:
@@ -259,7 +259,7 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
 
         #molsym.print_alpha_mo_IRD()
         #molsym.print_beta_mo_IRD()
-        #molsym.print_wf_mo_IRD()
+        molsym.print_wf_mo_IRD()
 
         return molsym.IRLab[np.argmax(molsym.wf_IRd)]
 
