@@ -203,8 +203,7 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
         indices = [i for i, x in enumerate(types) if x == "LE"]
         symmetry_labels = []
         for index in indices:
-        # index = types.index('LE') + 1
-            print('LE state found at diabat {}!'.format(index+1))
+            print('\nLE state found at diabat {}!'.format(index+1))
 
             coefficients = electronic_structure['nato_coefficients_multi'][index+1]
             occupation = electronic_structure['nato_occupancies_multi'][index+1]
