@@ -194,6 +194,7 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
     inertia_moments, inertia_axis = get_inertia(Structure(coordinates=coordinates_frag, symbols=labels_frag))
     center_frag, normal_frag = get_plane(coordinates_frag)
 
+    # print(np.array(inertia_axis))
     # print(inertia_moments)
     # print(inertia_axis[0])
     # print(inertia_axis[1])

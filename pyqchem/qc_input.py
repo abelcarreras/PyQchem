@@ -27,6 +27,7 @@ class QchemInput:
                  ras_do_hole=True,
                  ras_do_part=True,
                  ras_act=None,
+                 ras_act_orb=None,
                  ras_elec=None,
                  ras_elec_alpha=None,
                  ras_elec_beta=None,
@@ -242,6 +243,9 @@ class QchemInput:
                     input_file += 'ras_act {}\n'.format(self._ras_act)
                 else:
                     raise QchemInputError('{} not defined'.format('ras_act'))
+
+                if self._ras_act_orb is not None:
+                    input_file += 'ras_act_orb [' + ','.join([str(num) for num in self._ras_act_orb]) + ']\n'
 
                 # Sr-DFT
                 if self._ras_srdft:
