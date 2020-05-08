@@ -80,7 +80,7 @@ def rasci(output):
 
     data_dict['scf_energy'] = scf_energy
     # total energy
-    # enum = output.find('Total energy in the final basis set')
+    # enum = output.find('Total energy in the final basis set')
     # total_energy = float(output[enum:enum+100].split()[8])
 
     # RASCI dimensions

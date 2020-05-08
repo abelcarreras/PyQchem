@@ -96,7 +96,7 @@ def build_fchk(parsed_data):
     coordinates_list = angstrom_to_bohr*np.array(structure.get_coordinates()).flatten()
 
     txt_fchk = '{}\n'.format('filename')
-    txt_fchk += 'SP        R                             {}\n'.format('6-31G')
+    txt_fchk += 'SP        R                             {}\n'.format(basis['name'] if 'name' in basis else 'no_name')
     txt_fchk += 'Number of atoms                            I               {}\n'.format(structure.get_number_of_atoms())
     txt_fchk += 'Charge                                     I               {}\n'.format(structure.charge)
     txt_fchk += 'Multiplicity                               I               {}\n'.format(structure.multiplicity)
