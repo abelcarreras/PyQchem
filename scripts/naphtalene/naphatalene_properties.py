@@ -88,8 +88,8 @@ qc_input = QchemInput(molecule,
                       # ras_occ=31,
                       ras_spin_mult=0,
                       ras_roots=15,
-                      ras_do_hole=False,
-                      ras_do_part=False,
+                      ras_do_hole=True,
+                      ras_do_part=True,
                       # ras_srdft_cor='srpbe',
                       # ras_srdft_exc='srpbe',
                       # ras_omega=300,
@@ -131,6 +131,11 @@ inertia_moments, inertia_axis = get_inertia(electronic_structure['structure'])
 #print(ivec[1])
 #print(ivec[2])
 
+print('\nInertia\n----------')
+print(inertia_moments)
+print(np.array(inertia_axis))
+
+print(electronic_structure['structure'])
 symmetry_measures = get_state_symmetry(electronic_structure,
                                        parsed_data['excited_states'],
                                        center=[0, 0, 0],
