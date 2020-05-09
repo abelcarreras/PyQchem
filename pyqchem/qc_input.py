@@ -48,7 +48,15 @@ class QchemInput:
                  ras_srdft_spinpol=0,
                  # SOC
                  calc_soc=False,
-                 # cis
+                 # EOM
+                 ee_singlets=False,
+                 ee_triplets=False,
+                 cc_trans_prop=False,
+                 cc_symmetry=True,
+                 cc_e_conv=None,
+                 cc_t_conv=None,
+                 eom_davidson_conv=5,
+                 # CIS
                  cis_convergence=6,
                  cis_n_roots=None,
                  cis_singlets=False,
@@ -200,7 +208,6 @@ class QchemInput:
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
 
-
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
 
@@ -282,6 +289,27 @@ class QchemInput:
                 # Borrowed keywords
                 input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
 
+        #if self._method.upper() in ['EOM-CCSD'] or self._correlation.upper() in ['CCSD']:
+        if self._method is not None:
+
+            # EOM
+            if self._method.upper() in ['EOM-CCSD']:
+                input_file += 'cc_trans_prop {}\n'.format(self._cc_trans_prop)
+                input_file += 'cc_symmetry {}\n'.format(self._cc_symmetry)
+
+                if self._cc_e_conv is not None:
+                    input_file += 'cc_e_conv {}\n'.format(self._cc_e_conv)
+                if self._cc_t_conv is not None:
+                    input_file += 'cc_t_conv {}\n'.format(self._cc_t_conv)
+
+                if self._ee_singlets is not False:
+                    input_file += 'ee_singlets [' + ','.join([str(num) for num in self._ee_singlets]) + ']\n'
+
+                if self._ee_triplets is not False:
+                    input_file += 'ee_triplets [' + ','.join([str(num) for num in self._ee_triplets]) + ']\n'
+
+                input_file += 'eom_davidson_conv {}\n'.format(self._eom_davidson_conv)
+
         # SOC
         if self._calc_soc is not False:
             input_file += 'calc_soc {}\n'.format(self._calc_soc)
@@ -331,7 +359,6 @@ class QchemInput:
             input_file += ' '.join(np.array(self._localized_diabatization, dtype=str))
             input_file += '\n$end\n'
 
-
         # Constrains section
         if self._geom_opt_constrains is not None:
             input_file += '$opt\n'
@@ -343,7 +370,6 @@ class QchemInput:
                                                       constrain['value'])
             input_file += 'ENDCONSTRAINT\n'
             input_file += '$end\n'
-
 
         # Diabatization section
         if self._ras_diabatization_states is not None:

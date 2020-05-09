@@ -83,8 +83,6 @@ def get_orbital_classification(fchk_data,
         return orbital_type_alpha
 
 
-
-
 def get_state_symmetry(parsed_fchk,
                        rasci_states,
                        center=None,
@@ -94,9 +92,22 @@ def get_state_symmetry(parsed_fchk,
                        extra_print=False,
                        amplitude_cutoff=0.0
                        ):
-
+    """
+    Determines electronic state symmetry (only for closed shell configurations)
+    :param parsed_fchk: electronic structure
+    :param rasci_states: parsed rasci output dictionary
+    :param center: center of the molecule
+    :param orientation:  main symmetry axis
+    :param orientation2: secondary symmetry axis
+    :param group: symmetry group label
+    :param extra_print: if True prints wf & orbital symmetry analysis
+    :param amplitude_cutoff: determined the configurations to take in account in the symmetry measure
+    :return:
+    """
     sym_states = {}
     for i, state in enumerate(rasci_states):
+
+        print('HF/KS Ground state',i ,'\n***********************')
 
         structure = parsed_fchk['structure']
         total_orbitals = len(parsed_fchk['coefficients']['alpha'])
@@ -131,9 +142,29 @@ def get_state_symmetry(parsed_fchk,
             n_extra = total_orbitals - occupied_orbitals - len(configuration['beta'])
             vector_beta = [1] * occupied_orbitals + [int(c) for c in configuration['beta']] + [0] * n_extra
 
+            if configuration['hole'] is not '':
+                if np.sum(vector_alpha) > np.sum(vector_beta):
+                    vector_alpha[int(configuration['hole'])-1] = 0
+                else:
+                    vector_beta[int(configuration['hole'])-1] = 0
+
+            if configuration['part'] is not '':
+                if np.sum(vector_alpha) < np.sum(vector_beta):
+                    vector_alpha[int(configuration['part']) - 1] = 1
+                else:
+                    vector_beta[int(configuration['part']) - 1] = 1
+
             occupations_list.append({'alpha': vector_alpha, 'beta': vector_beta})
 
+            print('---------------------')
+            print('occupied', occupied_orbitals, total_orbitals)
+            print('sum', np.sum(occupations_list[-1]['alpha']), np.sum(occupations_list[-1]['beta']))
+            print('alpha', occupations_list[-1]['alpha'])
+            print('beta', occupations_list[-1]['beta'])
+
+            print(configuration['hole'],'|' , configuration['alpha'], configuration['beta'], '|', configuration['part'])
             if extra_print:
+                print('occ:', occupations_list[-1])
                 print(configuration['alpha'], configuration['beta'], configuration['amplitude'])
 
         state_symmetry_list = []
@@ -168,11 +199,13 @@ def get_state_symmetry(parsed_fchk,
             print(state_symmetry_list)
 
         # Make sure symmetry of all configurations is the same
-        assert len(np.unique([a[0] for a in state_symmetry_list])) == 1
+        if len(np.unique([a[0] for a in state_symmetry_list])) == 1:
+            symmetry_label = state_symmetry_list[0][0]
+            average_measure = np.average([a[1] for a in state_symmetry_list])
+            sym_states['state {}'.format(i+1)] = [symmetry_label, average_measure]
+        else:
+            sym_states['state {}'.format(i+1)] = ['Undef', 0]
 
-        symmetry_label = state_symmetry_list[0][0]
-        average_measure = np.average([a[1] for a in state_symmetry_list])
-        sym_states['state {}'.format(i+1)] = [symmetry_label, average_measure]
     return sym_states
 
 def _indices_from_ranges(ranges):

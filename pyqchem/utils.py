@@ -212,10 +212,13 @@ def reorder_coefficients(occupations, coefficients):
 
 
 def get_occupied_electrons(configuration, structure):
-    # not working for particle, hole enabled configurations!
+    # works for closed shell only
     alpha_e = np.sum([int(c) for c in configuration['alpha']])
     beta_e = np.sum([int(c) for c in configuration['beta']])
-    return (structure.number_of_electrons + structure.charge - (alpha_e + beta_e))//2
+    hole = 0 if configuration['hole'] == '' else 1
+    part = 0 if configuration['part'] == '' else 1
+
+    return (structure.number_of_electrons + structure.charge - (alpha_e + beta_e + part - hole))//2
 
 
 def get_inertia(structure):

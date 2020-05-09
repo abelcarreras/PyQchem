@@ -18,9 +18,9 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
 
         if include_conf_rasci:
             print('    Configurations')
-            print(' Alpha   Beta   Amplitude')
+            print('  Hole   Alpha  Beta   Part   Amplitude')
             for j, conf in enumerate(state['configurations']):
-                print(' {:^6} {:^6} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
+                print(' {:^6} {:^6} {:^6} {:^6} {:8.3f}'.format(conf['hole'], conf['alpha'], conf['beta'], conf['part'], conf['amplitude']))
 
         if include_mulliken_rasci:
             print('Mulliken analysis')
