@@ -413,12 +413,21 @@ class QchemInput:
                     for pair in self._trans_prop['state_list']['ee_triplets']:
                         input_file += 'ee_triplets {} {}\n'.format(*pair)
 
+                if 'ref' in self._trans_prop['state_list']:
+                    input_file += 'ref {}\n'.format(self._trans_prop['state_list']['ref'])
+
                 input_file += 'end_list\n'
 
+            if 'state_pair_list' in self._trans_prop:
+                for pair in self._trans_prop['state_pair_list']['ee_singlets']:
+                    input_file += '{} {}\n'.format(*pair)
+                input_file += 'end_pairs\n'
+
+            if 'calc' in self._trans_prop:
+                for calc in self._trans_prop['state_pair_list']['calc']:
+                    input_file += 'calc {}\n'.format(calc)
+
             input_file += '$end\n'
-
-
-
 
         return input_file + "\n"
 
