@@ -123,6 +123,13 @@ class QchemInput:
             self._basis = 'gen'
             self._custom_basis = basis
 
+        # Handle cc_trans_prop
+        if isinstance(self._cc_trans_prop, dict):
+            self._trans_prop = self._cc_trans_prop
+            self._cc_trans_prop = 1
+        else:
+            self._trans_prop = None
+
         # Handle reorder mo
         if self._reorder_orbitals is not None:
             if not 'beta' in self._reorder_orbitals:
@@ -390,6 +397,28 @@ class QchemInput:
             input_file += ' '.join([str(s) for s in self._reorder_orbitals['alpha']]) + '\n'
             input_file += ' '.join([str(s) for s in self._reorder_orbitals['beta']]) + '\n'
             input_file += '$end\n'
+
+        # trans_prop section
+        if self._trans_prop is not None:
+            input_file += '$trans_prop\n'
+
+            if 'state_list' in self._trans_prop:
+                input_file += 'state_list\n'
+
+                if 'ee_singlets' in self._trans_prop['state_list']:
+                    for pair in self._trans_prop['state_list']['ee_singlets']:
+                        input_file += 'ee_singlets {} {}\n'.format(*pair)
+
+                if 'ee_triplets' in self._trans_prop['state_list']:
+                    for pair in self._trans_prop['state_list']['ee_triplets']:
+                        input_file += 'ee_triplets {} {}\n'.format(*pair)
+
+                input_file += 'end_list\n'
+
+            input_file += '$end\n'
+
+
+
 
         return input_file + "\n"
 
