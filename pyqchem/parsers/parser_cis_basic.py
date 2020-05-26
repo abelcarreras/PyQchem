@@ -55,7 +55,7 @@ def basic_cis(output):
             tot_energy = float(state_cis_lines[1].split()[5])
             try:
                 tot_energy_units = state_cis_lines[1].split()[6]
-                mul = state_cis_lines[2].split()[2]
+                mul = state_cis_lines[2].split()[-1]
 
                 trans_mom = [float(mom) for mom in [state_cis_lines[3].split()[2],
                                                     state_cis_lines[3].split()[4],
@@ -91,7 +91,7 @@ def basic_cis(output):
                                    'multiplicity': mul,
                                    'transition_moment': standardize_vector(trans_mom),
                                    'strength': strength,
-                                   'transitions': transitions})
+                                   'configurations': transitions})
 
     data_dict['excited_states'] = excited_states
 
@@ -133,15 +133,15 @@ def basic_cis(output):
         labels, n_triplet, n_singlet = label_states(excited_states)
 
         for i, label in enumerate(labels):
-            data_interstate[(i+1, 0)] = {'soc': [0j, 0j, 0j], 'soc_units': 'cm-1'}
-            data_interstate[(0, i+1)] = {'soc': [0j, 0j, 0j], 'soc_units': 'cm-1'}
+            data_interstate[(i+1, 0)] = {'total_soc_mat': [0j, 0j, 0j], 'soc_units': 'cm-1'}
+            data_interstate[(0, i+1)] = {'total_soc_mat': [0j, 0j, 0j], 'soc_units': 'cm-1'}
             for j, label2 in enumerate(labels):
                 if (label[0] == 'S' or label2[0] == 'S') and (label[0] != label2[0]):
-                    data_interstate[(i+1, j+1)] = {'soc': [0j, 0j, 0j], 'soc_units': 'cm-1'}
+                    data_interstate[(i+1, j+1)] = {'total_soc_mat': [[0j, 0j, 0j]], 'soc_units': 'cm-1'}
                 elif label[0] == 'T' and label2[0] == 'T':
-                    data_interstate[(i+1, j+1)] = {'soc': [[0j, 0j, 0j], [0j, 0j, 0j], [0j, 0j, 0j]], 'soc_units': 'cm-1'}
+                    data_interstate[(i+1, j+1)] = {'total_soc_mat': [[0j, 0j, 0j], [0j, 0j, 0j], [0j, 0j, 0j]], 'soc_units': 'cm-1'}
                 elif label[0] == 'S' and label2[0] == 'S':
-                    data_interstate[(i+1, j+1)] = {'soc': [0j], 'soc_units': 'cm-1'}
+                    data_interstate[(i+1, j+1)] = {'total_soc_mat': [[0j]], 'soc_units': 'cm-1'}
                 else:
                     raise ParserError('basic_cis', 'State multiplicity error')
 
@@ -155,10 +155,10 @@ def basic_cis(output):
                                 if len(line.split()) == 0:
                                     break
                                 if line.split()[0] == '{}(ms={})'.format(label2, ms):
-                                    data_interstate[(i+1, j+1)]['soc'][k2][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(i+1, j+1)]['soc'][k][k2] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['soc'][k2][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['soc'][k][k2] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(i+1, j+1)]['total_soc_mat'][k2][k] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(i+1, j+1)]['total_soc_mat'][k][k2] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(j+1, i+1)]['total_soc_mat'][k2][k] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(j+1, i+1)]['total_soc_mat'][k][k2] = _list_to_complex(line.split()[1:4])
                                     break
 
                     elif label[0] == 'S':
@@ -168,8 +168,8 @@ def basic_cis(output):
                                 if len(line.split()) == 0:
                                     break
                                 if line.split()[0] == '{}(ms={})'.format(label2, ms):
-                                    data_interstate[(i+1, j+1)]['soc'][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['soc'][k] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(i+1, j+1)]['total_soc_mat'][0][k] = _list_to_complex(line.split()[1:4])
+                                    data_interstate[(j+1, i+1)]['total_soc_mat'][0][k] = _list_to_complex(line.split()[1:4])
                                     break
                     else:
                         raise ParserError('basic_cis', 'SOC reading error')
@@ -179,8 +179,8 @@ def basic_cis(output):
                     if len(line.split()) == 0:
                         break
                     if line.split()[0] == '{}(ms={})'.format(label, ms2):
-                        data_interstate[(i+1, 0)]['soc'][k2] = _list_to_complex(line.split()[1:4])
-                        data_interstate[(0, i+1)]['soc'][k2] = _list_to_complex(line.split()[1:4])
+                        data_interstate[(i+1, 0)]['total_soc_mat'][k2] = _list_to_complex(line.split()[1:4])
+                        data_interstate[(0, i+1)]['total_soc_mat'][k2] = _list_to_complex(line.split()[1:4])
                         break
 
         data_dict['interstate_properties'] = data_interstate
