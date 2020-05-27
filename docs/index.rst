@@ -8,7 +8,7 @@ A python wrapper for Q-Chem software (https://www.q-chem.com).
 
 .. toctree::
     :maxdepth: 1
-    :caption: cosymlib
+    :caption: Contents
 
     introduction
 
