@@ -20,10 +20,10 @@ Installation instructions
 - numpy
 - scipy
 - matplolib
-- wfnsympy
 - requests
 - lxml
 - wfnsympy (optional)
+- paramiko (optional)
 
 2a. Manual installation 
 
@@ -109,7 +109,7 @@ from pyqchem.basis import get_basis_from_ccRepo
 
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
                                   [0.0, 0.0, 1.5811]],
-                     atomic_elements=['Se', 'H'],
+                     symbols=['Se', 'H'],
                      charge=-1,
                      multiplicity=1)
 
