@@ -7,6 +7,7 @@ import warnings
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
 
+
 __calculation_data_filename__ = 'calculation_data.pkl'
 try:
     with open(__calculation_data_filename__, 'rb') as input:
@@ -46,7 +47,7 @@ def parse_output(get_output_function):
     to be deprecated
 
     :param get_output_function:
-    :return:
+    :return: parsed output
     """
 
     global calculation_data
@@ -97,7 +98,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
     :param work_dir:  Scratch directory where calculation run
     :param fchk_file: filename of fchk
     :param use_mpi: use mpi instead of openmp
-    :return output, err: Q-Chem standard output and standard error
+    :return: output, err: Q-Chem standard output and standard error
     """
 
     if not use_mpi:
@@ -129,7 +130,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     :param fchk_file: filename of fchk
     :param remote_params: connection parameters for paramiko
     :param use_mpi: use mpi instead of openmp
-    :return output, err: Q-Chem standard output and standard error
+    :return: output, err: Q-Chem standard output and standard error
     """
     import paramiko
 
@@ -221,28 +222,26 @@ def get_output_from_qchem(input_qchem,
     """
     Runs qchem and returns the output in the following format:
     1) If read_fchk is requested:
-        [output, error, parsed_fchk]
+        [output, parsed_fchk]
     2) If read_fchk is not requested:
-        [output, error]
+        [output]
 
     Note: if parser is set then output contains a dictionary with the parsed info
           else output contains the q-chem output in plain text
 
-    error: contains the standard error data from the calculation (if all OK, then should contain nothing)
     read_fchk: contains a dictionary with the parsed info inside fchk file.
 
-    :param input_qchem:
-    :param processors:
-    :param use_mpi:
-    :param scratch:
-    :param read_fchk:
-    :param parser:
-    :param parser_parameters:
-    :param force_recalculation:
-    :param fchk_only:
-    :param remote:
-    :param strict_policy:
-    :return output, error[, fchk_dict]:
+    :param input_qchem: QcInput object containing the Q-Chem input
+    :param processors: number of threads/processors to use in the calculation
+    :param use_mpi: If False use OpenMP (threads) else use MPI (processors)
+    :param scratch: Full Q-Chem scratch directory path. If None read from $QCSCRATCH
+    :param read_fchk: if True, generate and parse the FCHK file containing the electronic structure
+    :param parser: function to use to parse the Q-Chem output
+    :param parser_parameters: additional parameters that parser function may have
+    :param force_recalculation: Force to recalculate even identical calculation has already performed
+    :param fchk_only: If true, returns only the electronic structure data parsed from FCHK file
+    :param remote: dictionary containing the data for remote calculation (beta)
+    :return: output [, fchk_dict]
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
 

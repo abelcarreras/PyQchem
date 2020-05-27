@@ -82,7 +82,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 todo_include_todos = False
 
 
-autodoc_mock_imports = ['pyqchem.qchem_core', 'pyqchem.structure', 'pyqchem.qc_input']
+#autodoc_mock_imports = ['pyqchem.qchem_core', 'pyqchem.structure', 'pyqchem.qc_input']
 
 # -- Options for HTML output ----------------------------------------------
 

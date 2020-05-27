@@ -51,8 +51,12 @@ def int_to_xyz(molecule, no_dummy=True):
 
 def rotation_matrix(axis, theta):
     """
-    Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta radians.
+    Return the rotation matrix associated with counterclockwise rotation around the given axis
+
+    :param axis: rotation axis
+    :param theta: rotation angle in radians
+
+    :return: the rotation matrix
     """
     if np.dot(axis, axis) == 0.0:
         print ('Warning, reference rotation axis module is 0')
@@ -72,7 +76,6 @@ def rotation_matrix(axis, theta):
 
 
 class Structure:
-
     def __init__(self,
                  coordinates=None,
                  internal=None,
@@ -86,9 +89,16 @@ class Structure:
                  charge=0,
                  multiplicity=1,
                  name=None,
-
-                 #Buscar un lloc millor
                  int_weights=None):
+        """
+        Structure object containing all the geometric data of the molecule
+
+        :param coordinates: List containing the cartesian coordinates of each atom in Angstrom
+        :param symbols: Symbols of the atoms within the molecule
+        :param atomic_numbers: Atomic numbers of the atoms within the molecule
+        :param charge: charge of the molecule
+        :param multiplicity: multiplicity of the molecule
+        """
 
         self._coordinates = np.array(coordinates)
         self._internal = internal
@@ -277,7 +287,6 @@ class Structure:
         self._connectivity = connectivity
 
 #   Real methods
-
     def get_number_of_atoms(self):
         if self._number_of_atoms is None:
             self._number_of_atoms = np.array(self.get_coordinates()).shape[0]
