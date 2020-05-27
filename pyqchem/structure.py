@@ -3,6 +3,8 @@ import tempfile
 import os
 import numpy as np
 import hashlib, json
+from pyqchem.errors import StructureError
+
 
 def int_to_xyz(molecule, no_dummy=True):
 
@@ -76,6 +78,9 @@ def rotation_matrix(axis, theta):
 
 
 class Structure:
+    """
+    Structure object containing all the geometric data of the molecule
+    """
     def __init__(self,
                  coordinates=None,
                  internal=None,
@@ -91,8 +96,6 @@ class Structure:
                  name=None,
                  int_weights=None):
         """
-        Structure object containing all the geometric data of the molecule
-
         :param coordinates: List containing the cartesian coordinates of each atom in Angstrom
         :param symbols: Symbols of the atoms within the molecule
         :param atomic_numbers: Atomic numbers of the atoms within the molecule
@@ -124,7 +127,6 @@ class Structure:
         self._full_z_matrix = None
 
         # check input data
-        from pyqchem.errors import StructureError
         if symbols is not None and coordinates is not None:
             if len(coordinates) != len(symbols):
                 raise StructureError('coordinates and symbols do not match')
@@ -141,11 +143,22 @@ class Structure:
         return int(digest, 16)
 
     def get_coordinates(self):
+        """
+        gets the cartesian coordinates
+
+        :return: cartesian coordinates
+        """
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
         return np.array(self._coordinates).tolist()
 
     def set_coordinates(self, coordinates):
+        """
+        sets the cartessian coordinates
+
+        :param coordinates: cartesian coordinates matrix
+        """
+
         self._coordinates = np.array(coordinates)
         self._number_of_atoms = None
         self._energy = {}
@@ -211,6 +224,10 @@ class Structure:
 
     @property
     def name(self):
+        """
+        returns the name
+        :return: structure name
+        """
         return self._name
 
     @property
@@ -223,6 +240,10 @@ class Structure:
 
     @property
     def charge(self):
+        """
+        returns the charge
+        :return: the charge
+        """
         return self._charge
 
     @charge.setter
@@ -231,6 +252,11 @@ class Structure:
 
     @property
     def multiplicity(self):
+        """
+        returns the multiplicity
+
+        :return: the multiplicity
+        """
         return self._multiplicity
 
     @multiplicity.setter
@@ -239,15 +265,30 @@ class Structure:
 
     @property
     def number_of_electrons(self):
+        """
+        returns the total number of electrons
+
+        :return: number of total electrons
+        """
         return int(np.sum(self.get_atomic_numbers()) + self.charge)
 
     @property
     def alpha_electrons(self):
+        """
+        returns the alpha electrons
+
+        :return: number of alpha electrons
+        """
         alpha_unpaired = self.multiplicity // 2 + 1 if (self.number_of_electrons % 2) else self.multiplicity // 2
         return self.number_of_electrons // 2 + alpha_unpaired
 
     @property
     def beta_electrons(self):
+        """
+        returns the number of beta electrons
+
+        :return: number of beta electrons
+        """
         return self.number_of_electrons - self.alpha_electrons
 
     def _get_atom_types(self):
@@ -260,6 +301,11 @@ class Structure:
         self._atom_types = atom_types
 
     def get_atomic_numbers(self):
+        """
+        get the atomic numbers of the atoms of the molecule
+
+        :return: list with the atomic numbers
+        """
         if self._atomic_numbers is None:
             self._atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper())
                                     for element in self.get_symbols()]
@@ -269,6 +315,11 @@ class Structure:
         self._atomic_numbers = atomic_numbers
 
     def get_symbols(self):
+        """
+        get the  atomic element symbols of the atoms of the molecule
+
+        :return: list of symbols
+        """
         if self._symbols is None:
             self._symbols = np.array(atom_data)[self.get_atomic_numbers()].T[1]
         return np.array([i for i in self._symbols if i != "X"], dtype=str)
@@ -288,6 +339,11 @@ class Structure:
 
 #   Real methods
     def get_number_of_atoms(self):
+        """
+        get the number of atoms
+
+        :return: number of atoms
+        """
         if self._number_of_atoms is None:
             self._number_of_atoms = np.array(self.get_coordinates()).shape[0]
 
@@ -317,6 +373,11 @@ class Structure:
         return self._modes
 
     def get_atomic_masses(self):
+        """
+        get the atomic masses of the atoms of the molecule
+
+        :return: list of atomic masses
+        """
         if self._atomic_masses is None:
 
             try:
@@ -329,6 +390,11 @@ class Structure:
         return self._atomic_masses
 
     def get_valence_electrons(self):
+        """
+        gets number of valence electrons
+
+        :return: number of valence electrons
+        """
         valence_electrons = 0
         for number in self.get_atomic_numbers():
             if 2 >= number > 0:
@@ -347,6 +413,12 @@ class Structure:
         return valence_electrons
 
     def get_xyz(self, title=''):
+        """
+        generates a XYZ formatted file
+
+        :param title: title of the molecule
+        :return: string with the formatted XYZ file
+        """
         txt = '{}\n{}\n'.format(self.get_number_of_atoms(), title)
         for s, c in zip(self.get_symbols(), self.get_coordinates()):
             txt += '{:2} '.format(s) + '{:15.10f} {:15.10f} {:15.10f}\n'.format(*c)
