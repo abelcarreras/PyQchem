@@ -83,6 +83,7 @@ function becomes a python dictionary containing the parsed data.
 
 
 This is similar to the example shown above using a simple parser (*basic_parser_qchem*) :
+
 ..  code-block:: python
 
     from pyqchem.parsers.basic import basic_parser_qchem

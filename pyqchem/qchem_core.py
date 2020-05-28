@@ -221,6 +221,7 @@ def get_output_from_qchem(input_qchem,
                           strict_policy=False):
     """
     Runs qchem and returns the output in the following format:
+
     1) If read_fchk is requested:
         [output, parsed_fchk]
     2) If read_fchk is not requested:

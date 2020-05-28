@@ -63,14 +63,46 @@ def basic_parser_qchem(output):
     multipole_dict['dipole_moment'] = [float(val) for val in multipole_lines[3].split()[1::2]]
     multipole_dict['dipole_units'] = 'Debye'
 
-    multipole_dict['quadrupole_moment'] = [float(val) for val in multipole_lines[6].split()[1::2]] + \
-                                          [float(val) for val in multipole_lines[7].split()[1::2]]
+    quadrupole = [float(val) for val in multipole_lines[6].split()[1::2]] + \
+                 [float(val) for val in multipole_lines[7].split()[1::2]]
+
+    # create quadrupole array
+    multipole_dict['quadrupole_moment'] = [[quadrupole[0], quadrupole[1], quadrupole[2]],
+                                           [quadrupole[1], quadrupole[3], quadrupole[4]],
+                                           [quadrupole[2], quadrupole[4], quadrupole[5]]]
+
+    # multipole_dict['quadrupole_moment'] = [float(val) for val in multipole_lines[6].split()[1::2]] + \
+    #                                       [float(val) for val in multipole_lines[7].split()[1::2]]
+
+
     multipole_dict['quadrupole_units'] = 'Debye-Ang'
 
-    multipole_dict['octopole_moment'] = [float(val) for val in multipole_lines[9].split()[1::2]] + \
-                                        [float(val) for val in multipole_lines[10].split()[1::2]] + \
-                                        [float(val) for val in multipole_lines[11].split()[1::2]] + \
-                                        [float(val) for val in multipole_lines[12].split()[1::2]]
+    octopole = [float(val) for val in multipole_lines[9].split()[1::2]] + \
+               [float(val) for val in multipole_lines[10].split()[1::2]] + \
+               [float(val) for val in multipole_lines[11].split()[1::2]] + \
+               [float(val) for val in multipole_lines[12].split()[1::2]]
+
+    # create octopole array
+    multipole_dict['octopole_moment'] = [
+        [[octopole[0], octopole[1], octopole[4]],
+         [octopole[1], octopole[2], octopole[5]],
+         [octopole[4], octopole[5], octopole[7]]],
+
+        [[octopole[1], octopole[2], octopole[5]],
+         [octopole[2], octopole[3], octopole[6]],
+         [octopole[5], octopole[6], octopole[8]]],
+
+        [[octopole[4], octopole[5], octopole[7]],
+         [octopole[5], octopole[6], octopole[8]],
+         [octopole[7], octopole[8], octopole[9]]],
+    ]
+
+    # multipole_dict['octopole_moment'] = [float(val) for val in multipole_lines[9].split()[1::2]] + \
+    #                                     [float(val) for val in multipole_lines[10].split()[1::2]] + \
+    #                                     [float(val) for val in multipole_lines[11].split()[1::2]] + \
+    #                                     [float(val) for val in multipole_lines[12].split()[1::2]]
+
+
     multipole_dict['octopole_units'] = 'Debye-Ang^2'
 
     data_dict['multipole'] = multipole_dict
