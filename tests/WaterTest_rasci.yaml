@@ -188,11 +188,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.6133
-  excitation_energy_units: eV
   excitation_energy: 0.0
+  excitation_energy_units: eV
   multiplicity: Singlet
-  total_energy_units: au
   total_energy: -74.994167562465
+  total_energy_units: au
   transition_moment: null
 - configurations:
   - alpha: '0011'
@@ -393,11 +393,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.0023
-  excitation_energy_units: eV
   excitation_energy: 11.4705
+  excitation_energy_units: eV
   multiplicity: Singlet
-  total_energy_units: au
   total_energy: -74.572635860965
+  total_energy_units: au
   transition_moment:
   - 0.0
   - 0.0821
@@ -591,11 +591,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.1888
-  excitation_energy_units: eV
   excitation_energy: 13.1181
+  excitation_energy_units: eV
   multiplicity: Singlet
-  total_energy_units: au
   total_energy: -74.5120869698
+  total_energy_units: au
   transition_moment:
   - 0.0
   - 0.0
@@ -799,11 +799,11 @@ excited_states:
   - 0.0
   - 0.0
   - -0.1009
-  excitation_energy_units: eV
   excitation_energy: 15.9926
+  excitation_energy_units: eV
   multiplicity: Singlet
-  total_energy_units: au
   total_energy: -74.406450985952
+  total_energy_units: au
   transition_moment:
   - 0.0
   - 0.0
@@ -1007,11 +1007,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.0925
-  excitation_energy_units: eV
   excitation_energy: 18.0773
+  excitation_energy_units: eV
   multiplicity: Singlet
-  total_energy_units: au
   total_energy: -74.329838983815
+  total_energy_units: au
   transition_moment:
   - 0.384
   - 0.0
@@ -1215,11 +1215,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.2066
-  excitation_energy_units: eV
   excitation_energy: 21.0069
+  excitation_energy_units: eV
   multiplicity: Singlet
+  total_energy: -74.222178203308
   total_energy_units: au
-  total_energy: -74.222178203307
   transition_moment:
   - 1.4135
   - 0.0
