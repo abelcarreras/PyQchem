@@ -98,6 +98,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
     :param work_dir:  Scratch directory where calculation run
     :param fchk_file: filename of fchk
     :param use_mpi: use mpi instead of openmp
+
     :return: output, err: Q-Chem standard output and standard error
     """
 
@@ -130,6 +131,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     :param fchk_file: filename of fchk
     :param remote_params: connection parameters for paramiko
     :param use_mpi: use mpi instead of openmp
+
     :return: output, err: Q-Chem standard output and standard error
     """
     import paramiko
@@ -242,6 +244,7 @@ def get_output_from_qchem(input_qchem,
     :param force_recalculation: Force to recalculate even identical calculation has already performed
     :param fchk_only: If true, returns only the electronic structure data parsed from FCHK file
     :param remote: dictionary containing the data for remote calculation (beta)
+
     :return: output [, fchk_dict]
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
