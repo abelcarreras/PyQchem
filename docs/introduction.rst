@@ -16,15 +16,14 @@ homogenious as possible among the different methods producing a
 python dictionary that contains similar entries and can be used with the
 same analysis/visualization functions.
 
-
 The phylosophy of PyQChem is to build a homogenious input and output
 interface for the different methods implemented in Q-Chem to make the
 life of Q-Chem users easier.
 
 Main features
 -------------
+
 - Easy to use & clean python interface
 - Easy to install in your personal computer or cluster, no special q-chem compilation needed.
 - Output parser support for a variety of calculation.
 - Modular implementation that allows to easily extend its functionality by writing new parsers and analysis functions.
-
