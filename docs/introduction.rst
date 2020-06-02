@@ -27,3 +27,4 @@ Main features
 - Easy to install in your personal computer or cluster, no special q-chem compilation needed.
 - Output parser support for a variety of calculation.
 - Modular implementation that allows to easily extend its functionality by writing new parsers and analysis functions.
+
