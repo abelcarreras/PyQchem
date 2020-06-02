@@ -107,7 +107,7 @@ def get_state_symmetry(parsed_fchk,
     sym_states = {}
     for i, state in enumerate(rasci_states):
 
-        print('HF/KS Ground state',i ,'\n***********************')
+        # print('HF/KS Ground state',i ,'\n***********************')
 
         structure = parsed_fchk['structure']
         total_orbitals = len(parsed_fchk['coefficients']['alpha'])
@@ -156,13 +156,13 @@ def get_state_symmetry(parsed_fchk,
 
             occupations_list.append({'alpha': vector_alpha, 'beta': vector_beta})
 
-            print('---------------------')
-            print('occupied', occupied_orbitals, total_orbitals)
-            print('sum', np.sum(occupations_list[-1]['alpha']), np.sum(occupations_list[-1]['beta']))
-            print('alpha', occupations_list[-1]['alpha'])
-            print('beta', occupations_list[-1]['beta'])
+            # print('---------------------')
+            # print('occupied', occupied_orbitals, total_orbitals)
+            # print('sum', np.sum(occupations_list[-1]['alpha']), np.sum(occupations_list[-1]['beta']))
+            # print('alpha', occupations_list[-1]['alpha'])
+            # print('beta', occupations_list[-1]['beta'])
 
-            print(configuration['hole'],'|' , configuration['alpha'], configuration['beta'], '|', configuration['part'])
+            # print(configuration['hole'],'|' , configuration['alpha'], configuration['beta'], '|', configuration['part'])
             if extra_print:
                 print('occ:', occupations_list[-1])
                 print(configuration['alpha'], configuration['beta'], configuration['amplitude'])
@@ -283,20 +283,23 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
 
             n_electrons = alpha + beta
 
-            # This only works for singlets
-            molsym = get_wf_symmetry(electronic_structure['structure'],
-                                     electronic_structure['basis'],
-                                     coefficients_new,
-                                     center=center_frag,
-                                     orientation=inertia_axis[0],
-                                     orientation2=inertia_axis[1],
-                                     group=group
-                                     )
+            try:
+                # This only works for singlets
+                molsym = get_wf_symmetry(electronic_structure['structure'],
+                                         electronic_structure['basis'],
+                                         coefficients_new,
+                                         center=center_frag,
+                                         orientation=inertia_axis[0],
+                                         orientation2=inertia_axis[1],
+                                         group=group
+                                         )
 
-            #molsym.print_alpha_mo_IRD()
-            #molsym.print_beta_mo_IRD()
-            molsym.print_wf_mo_IRD()
-            symmetry_labels.append(molsym.IRLab[np.argmax(molsym.wf_IRd)])
+                #molsym.print_alpha_mo_IRD()
+                #molsym.print_beta_mo_IRD()
+                molsym.print_wf_mo_IRD()
+                symmetry_labels.append(molsym.IRLab[np.argmax(molsym.wf_IRd)])
+            except:
+                pass
 
         return symmetry_labels
 

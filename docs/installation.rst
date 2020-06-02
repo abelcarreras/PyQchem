@@ -19,7 +19,6 @@ Requirements
 - wfnsympy (optional: for symmetry analysis)
 - paramiko (optional: for remote calculations)
 
-
 Install
 -------
 
@@ -27,11 +26,9 @@ Install
 
     python setup.py install --user
 
-
 2) From PyPI repository ::
 
     pip install pyqchem --user
-
 
 Q-Chem setup
 ------------
