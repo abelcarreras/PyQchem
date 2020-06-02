@@ -32,3 +32,16 @@ Install
 
     pip install pyqchem --user
 
+
+Q-Chem setup
+------------
+
+PyQchem checks two environment variables to locate Q-Chem installation: $QC and $QCSCRATCH.
+*$QC* contains the path to the root directory of Q-Chem installation. This directory
+should contain a */bin* directory where *qchem* run script is placed. *$QCSCRATCH* contains
+the path to scratch directory.
+
+.. note::
+    $QCAUX and $QCREF environment variables are not directly used by pyqchem but they are
+    used by Q-Chem to properly run. Check Q-Chem manual for further information.
+

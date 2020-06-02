@@ -18,4 +18,3 @@ QcCore
 .. automodule:: pyqchem.qchem_core
     :members:
 
-

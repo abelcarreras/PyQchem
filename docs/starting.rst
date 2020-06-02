@@ -109,11 +109,44 @@ It is simple to create a custom parser by defining a custom function with the fo
     def custom_parser_qchem(output):
         """
         output: contains the full Q-Chem output in a string
+
         return: a dictionary with the parsed data
         """
         ...
         return {'property_1': prop1,
                 'property_2': prop2}
+
+
+Complex parsers may have optional arguments to add more control. This may be used to include parameters such as
+precision, max number of cycles/states/etc to read, etc..:
+
+..  code-block:: python
+
+    def custom_parser_qchem(output, custom_option=True, custom_prec=1e-4):
+        """
+        output: contains the full Q-Chem output in a string
+        custom_option: controls option to be used or not
+        custom_prec: defines the precision of som data to be read
+
+        return: a dictionary with the parsed data
+        """
+        ...
+
+
+        return {'property_1': prop1,
+                'property_2': prop2}
+
+to define this optional arguments *get_output_from_qchem* function you should include *parser_parameters* argument
+which requires a python dictionary. Each of the entries in this dictionary should be the name of one of the optional
+arguments in the parser function whose value is the value of the argument:
+
+..  code-block:: python
+
+    parsed_data = get_output_from_qchem(qc_input,
+                                        processors=4,
+                                        parser=custom_parser_qchem,
+                                        parser_parameters={'custom_option': True, 'custom_prec': 1e-4}
+                                        )
 
 
 Electronic structure

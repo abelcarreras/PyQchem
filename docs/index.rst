@@ -12,10 +12,10 @@ A python wrapper for Q-Chem software (https://www.q-chem.com).
     introduction
     installation
     starting
+    electronic_structure
     api
+
 
 PyQchem is being developed by Abel Carreras within David Casanova's group
 at Donostia International Physics Center (DIPC), Euskadi, Spain.
-
-
 
