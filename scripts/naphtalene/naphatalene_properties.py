@@ -1,6 +1,6 @@
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
-from pyqchem.parsers.parser_rasci import rasci
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.file_io import build_fchk
 from pyqchem.symmetry import get_orbital_classification
 from pyqchem.qchem_core import redefine_calculation_data_filename
@@ -102,7 +102,7 @@ qc_input = QchemInput(molecule,
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           force_recalculation=False,
-                                                          parser=rasci,
+                                                          parser=parser_rasci,
                                                           read_fchk=True,
                                                           store_full_output=True,
                                                           )
@@ -146,7 +146,6 @@ symmetry_measures = get_state_symmetry(electronic_structure,
                                        )
 
 energies = [state['excitation_energy'] for state in parsed_data['excited_states']]
-print(energies)
 
 print('\nSymmetry of RASCI excited states\n--------------------------------')
 for energy, state in zip(energies, symmetry_measures.items()):

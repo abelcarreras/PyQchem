@@ -1,9 +1,9 @@
-from pyqchem.parsers.parser_rasci import rasci as rasci_parser
+from pyqchem.parsers.parser_rasci import parser_rasci as rasci_parser
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.file_io import build_fchk
 from pyqchem.symmetry import get_symmetry_le
 from pyqchem.qchem_core import redefine_calculation_data_filename
-from pyqchem.utils import set_zero_coefficients, get_plane
+from pyqchem.utils import _set_zero_to_coefficients, get_plane
 from pyqchem.utils import is_transition, get_ratio_of_condition
 from pyqchem.units import DEBYE_TO_AU
 from pyqchem.tools import print_excited_states, plot_diabatization, plot_rasci_state_configurations
@@ -35,8 +35,8 @@ coor_monomer1 = [[ 2.4610326539,  0.7054950347, -0.0070507104],
 
 # set dimer geometry
 coor_monomer2 = np.array(coor_monomer1).copy()
-coor_monomer2[:, 2] += 5.0
-coor_monomer2[:, 0] -= 0.0
+coor_monomer2[:, 2] += 4.5
+coor_monomer2[:, 1] -= 5.0
 coor_monomer2 = list(coor_monomer2)
 
 symbols_monomer = ['C', 'C', 'C', 'C', 'C', 'H', 'H', 'H', 'H',
@@ -68,8 +68,8 @@ qc_input = QchemInput(dimer,
                       # ras_occ=66,
                       ras_spin_mult=1,  # singlets only
                       ras_roots=10,      # calculate 8 states
-                      ras_do_hole=False,
-                      ras_do_part=False,
+                      ras_do_hole=True,
+                      ras_do_part=True,
                       # ras_srdft_cor='srpbe',
                       # ras_srdft_exc='srpbe',
                       # ras_omega=300,
@@ -77,12 +77,15 @@ qc_input = QchemInput(dimer,
 
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
-                                    processors=4,
-                                    force_recalculation=False,
-                                    parser=rasci_parser,
-                                    read_fchk=True,
-                                    store_full_output=True
-                                    )
+                                                          processors=4,
+                                                          force_recalculation=False,
+                                                          parser=rasci_parser,
+                                                          read_fchk=True,
+                                                          store_full_output=True
+                                                          )
+
+print('final structure')
+print(electronic_structure['structure'])
 
 # Analysis of diabatic states to use in diabatization
 print('\nAdiabatic states to use in diabatization (1e, max_jump 4)')
@@ -90,7 +93,7 @@ list_diabatic = []
 for i, state in enumerate(parsed_data['excited_states']):
     ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)
 
-    if ratio > 0.5:
+    if ratio > 0.1:
         mark = 'X'
         list_diabatic.append(i+1)
     else:
@@ -101,9 +104,10 @@ for i, state in enumerate(parsed_data['excited_states']):
 
 # sequential diabatization scheme (2 steps)
 diabatization_scheme = [
-                        # {'method': 'ER', 'states': [1, 2, 3, 4]},
+                        #{'method': 'ER', 'states': list(range(1, len(list_diabatic)+1))},
                         {'method': 'Boys', 'states': list(range(1, len(list_diabatic)+1))},
-                        #{'method': 'DQ', 'states': [1, 2, 3, 4], 'paramters': [0.8]}
+                        # {'method': 'ER', 'states': [3, 4, 5, 6]},
+                        #{'method': 'DQ', 'states': list(range(1, len(list_diabatic)+1)), 'paramters': [0.9]}
                         ]
 
 # RASCI qchem input
@@ -118,8 +122,8 @@ qc_input = QchemInput(electronic_structure['structure'],
                       # ras_occ=66,
                       ras_spin_mult=1,  # singlets only
                       ras_roots=10,      # calculate 8 states
-                      ras_do_hole=False,
-                      ras_do_part=False,
+                      ras_do_hole=True,
+                      ras_do_part=True,
                       # ras_srdft_cor='srpbe',
                       # ras_srdft_exc='srpbe',
                       # ras_omega=300,
@@ -137,6 +141,8 @@ parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           store_full_output=True
                                                           )
 
+#print(parsed_data)
+#exit()
 np.set_printoptions(precision=3)
 
 print('\nAdiabatic states\n--------------------')
@@ -160,8 +166,8 @@ print('\nDiabatic states\n--------------------')
 print_excited_states(diabatization['diabatic_states'], include_mulliken_rasci=True)
 
 
-#plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
-#                                                                   dimer.get_number_of_atoms()])
+plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
+                                                                   dimer.get_number_of_atoms()])
 
 coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[range_f1]
 center_f1, normal_f1 = get_plane(coordinates_f1)
@@ -182,24 +188,22 @@ print('Symmetry: ', sym_data)
 from kimonet.system.molecule import Molecule
 from kimonet.core.processes.couplings import forster_coupling, forster_coupling_extended
 from kimonet.system.vibrations import Vibrations, MarcusModel, LevichJortnerModel, EmpiricalModel
-from kimonet.core.processes import Transfer, Decay, Direct
+from kimonet.core.processes import GoldenRule, DecayRate, DirectRate
 from kimonet.core.processes.decays import einstein_singlet_decay
-from copy import deepcopy
 
 au2dby = 1/DEBYE_TO_AU
 
+
 molecule = Molecule(state_energies={'gs': 0, 's1': 0},
-                    #transition_moment={('s1', 'gs'): [-0.064*au2dby, 0.060*au2dby, -0.011*au2dby]},  # transition dipole moment of the molecule (Debye)
-                    transition_moment={('s1', 'gs'): [0.013 * au2dby, -0.075 * au2dby, -1.750 * au2dby]},
-                    # transition_moment={('s1', 'gs'): [-0.217 * au2dby, 0.173 * au2dby, -0.036 * au2dby]},
-                    vibrations=MarcusModel(reorganization_energies={('s1', 'gs'): 0.06, ('gs', 's1'): 0.06}),
-                    decays={Decay(initial='s1', final='gs', description='decay s1'): einstein_singlet_decay},
-                    vdw_radius=1.0,
+                    transition_moment={('s1', 'gs'): [0.0001 * au2dby, 0.2673 * au2dby, -0.0230 * au2dby],
+                                       # ('s1', 'gs'): [0.0001 * au2dby, 0.3379 * au2dby, -0.0296 * au2dby],
+                                       ('s2', 'gs'): [0.0140 * au2dby, 0.1174 * au2dby, 1.8592 * au2dby]},
                     state='gs'
                     )
 
-donor = deepcopy(molecule)
-acceptor = deepcopy(molecule)
+
+donor = molecule.copy()
+acceptor = molecule.copy()
 
 donor.set_orientation([0, 0, 0])
 donor.set_coordinates(center_f1)
@@ -207,14 +211,43 @@ donor.set_coordinates(center_f1)
 acceptor.set_orientation([0, 0, 0])
 acceptor.set_coordinates(center_f2)
 
+print('\n------------ S1 ---------------')
 donor.state = 's1'
 acceptor.state = 'gs'
 
 electronic_coupling = forster_coupling_extended(donor, acceptor,
-                                       {'temperature': 300.0, 'refractive_index': 1, 'dexter_k': 1},
+                                       {'temperature': 300.0, 'refractive_index': 1},
                                        [[100., 0,   0],
                                         [0,   100., 0],
-                                        [0,   0,   100.]],longitude=1, n_divisions=100)
+                                        [0,   0,   100.]],[0, 0, 0], longitude=1.0, n_divisions=100)
 
+print('\n\nForster extended electronic coupling: {:10.8f}'.format(electronic_coupling))
+
+electronic_coupling = forster_coupling(donor, acceptor,
+                                       {'temperature': 300.0, 'refractive_index': 1},
+                                       [[100., 0,   0],
+                                        [0,   100., 0],
+                                        [0,   0,   100.]],[0, 0, 0])
+
+print('\n\nForster electronic coupling: {:10.8f}'.format(electronic_coupling))
+
+print('\n--------- S2 -----------')
+
+donor.state = 's2'
+acceptor.state = 'gs'
+
+electronic_coupling = forster_coupling_extended(donor, acceptor,
+                                       {'temperature': 300.0, 'refractive_index': 1},
+                                       [[100., 0,   0],
+                                        [0,   100., 0],
+                                        [0,   0,   100.]],[0, 0, 0], longitude=1.2, n_divisions=100)
+
+print('\n\nForster extended electronic coupling: {:10.8f}'.format(electronic_coupling))
+
+electronic_coupling = forster_coupling(donor, acceptor,
+                                       {'temperature': 300.0, 'refractive_index': 1},
+                                       [[100., 0,   0],
+                                        [0,   100., 0],
+                                        [0,   0,   100.]],[0, 0, 0])
 
 print('\n\nForster electronic coupling: {:10.8f}'.format(electronic_coupling))
