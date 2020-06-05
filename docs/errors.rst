@@ -14,7 +14,7 @@ input is incorrect or something happened with the computer that lead the calcula
 error is risen the traceback will show the last 20 lines of the Q-Chem output where, hopefully, you will find
 enough information to determine the cause of the error.
 
-..  code-block:: python
+..  code-block:: bash
 
     Traceback (most recent call last):
       File "/Users/abel/PycharmProjects/qchem_scripts/scripts/test_tddft.py", line 51, in <module>
