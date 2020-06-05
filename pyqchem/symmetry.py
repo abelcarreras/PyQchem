@@ -135,28 +135,8 @@ def get_state_symmetry(parsed_fchk,
             if np.abs(configuration['amplitude']) < amplitude_cutoff:
                 continue
 
-            occupied_orbitals = get_occupied_electrons(configuration, structure)
-            n_extra = total_orbitals - occupied_orbitals - len(configuration['alpha'])
-            vector_alpha = [1] * occupied_orbitals + [int(c) for c in configuration['alpha']] + [0] * n_extra
+            occupations_list.append(configuration['occupations'])
 
-            n_extra = total_orbitals - occupied_orbitals - len(configuration['beta'])
-            vector_beta = [1] * occupied_orbitals + [int(c) for c in configuration['beta']] + [0] * n_extra
-
-            if configuration['hole'] is not '':
-                if np.sum(vector_alpha) > np.sum(vector_beta):
-                    vector_alpha[int(configuration['hole'])-1] = 0
-                else:
-                    vector_beta[int(configuration['hole'])-1] = 0
-
-            if configuration['part'] is not '':
-                if np.sum(vector_alpha) < np.sum(vector_beta):
-                    vector_alpha[int(configuration['part']) - 1] = 1
-                else:
-                    vector_beta[int(configuration['part']) - 1] = 1
-
-            occupations_list.append({'alpha': vector_alpha, 'beta': vector_beta})
-
-            # print('---------------------')
             # print('occupied', occupied_orbitals, total_orbitals)
             # print('sum', np.sum(occupations_list[-1]['alpha']), np.sum(occupations_list[-1]['beta']))
             # print('alpha', occupations_list[-1]['alpha'])

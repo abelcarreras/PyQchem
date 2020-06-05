@@ -11,6 +11,7 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
             print('Multiplicity', state['multiplicity'])
 
         if state['transition_moment'] is not None:
+            print('Osc. strength: {:6.4f}'.format(state['oscillator_strength']))
             print('Transition DM: ', '{:6.4f} {:6.4f} {:6.4f}'.format(*state['transition_moment']),
                   ' ', state['dipole_moment_units'])
 

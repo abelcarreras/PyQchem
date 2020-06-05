@@ -5,6 +5,8 @@ import operator
 from pyqchem.utils import standardize_vector
 from pyqchem.structure import Structure
 from pyqchem.utils import search_bars
+from pyqchem.parsers.support import read_basic_info, get_rasci_occupations_list
+
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
     matrix_list = []
@@ -73,6 +75,10 @@ def rasci(output):
                                        symbols=symbols,
                                        charge=charge,
                                        multiplicity=multiplicity)
+
+    # basic info
+    enum = output.find('Molecular Point Group')
+    basic_data = read_basic_info(output[enum:enum + 5000])
 
     # scf_energy
     enum = output.find('SCF   energy in the final basis set')
@@ -209,7 +215,6 @@ def rasci(output):
         section_table = section_state[enum: enum2].split('\n')[2:-2]
 
         # ' HOLE  | ALPHA | BETA  | PART | AMPLITUDE'
-
         table = []
         for row in section_table:
             table.append({'hole': row.split('|')[1].strip(),
@@ -217,6 +222,10 @@ def rasci(output):
                           'beta': row.split('|')[3].strip(),
                           'part': row.split('|')[4].strip(),
                           'amplitude': float(row.split('|')[5]) + 0.0})
+            table[-1]['occupations'] = get_rasci_occupations_list(table[-1],
+                                                                  data_dict['structure'],
+                                                                  basic_data['n_basis_functions'])
+
         table = sorted(table, key=operator.itemgetter('hole', 'alpha', 'beta', 'part'))
 
         # Contributions RASCI wfn
