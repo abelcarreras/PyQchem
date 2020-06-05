@@ -14,6 +14,7 @@ A python wrapper for Q-Chem software (https://www.q-chem.com).
     starting
     electronic_structure
     symmetry
+    errors
     api
 
 PyQchem is being developed by Abel Carreras within David Casanova's group
