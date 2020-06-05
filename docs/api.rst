@@ -1,7 +1,7 @@
 .. highlight:: rst
 
-API
-===
+Public API
+==========
 
 QcInput
 -------
@@ -18,3 +18,7 @@ QcCore
 .. automodule:: pyqchem.qchem_core
     :members:
 
+Utils
+-----
+.. automodule:: pyqchem.utils
+    :members:

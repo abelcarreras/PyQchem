@@ -12,7 +12,7 @@ A python wrapper for Q-Chem software (https://www.q-chem.com).
     introduction
     installation
     starting
-    electronic_structure
+    advanced
     symmetry
     errors
     api

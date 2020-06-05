@@ -1,7 +1,7 @@
 .. highlight:: rst
 
-Working with electronic structure data
-======================================
+Advanced input
+==============
 
 The structure of the electronic structure dictionary is as follows:
 
@@ -32,6 +32,16 @@ The structure of the electronic structure dictionary is as follows:
      │   └── beta
      ├── structure
      └── overlap
+
+
+Using the information of this dictionary a Fchk file can be generated. This may be used to visualize the molecular
+orbitals using an external program.
+
+..  code-block:: python
+
+    from pyqchem.file_io import build_fchk
+    with open('file.fchk', 'w') as f:
+        f.write(build_fchk(electronic_structure))
 
 
 While electronic structure is a simple dictionary, its elements are designed to be interoperable along the
