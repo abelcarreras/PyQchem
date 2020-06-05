@@ -1,8 +1,8 @@
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
-from pyqchem.parsers.parser_rasci import rasci as parser_rasci
-from pyqchem.parsers.parser_cis_basic import basic_cis as parser_cis
+from pyqchem.parsers.parser_rasci import parser_rasci
+from pyqchem.parsers.parser_cis import basic_cis as parser_cis
 import numpy as np
 
 # Carbon atom defintion

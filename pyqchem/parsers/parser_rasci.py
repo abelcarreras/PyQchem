@@ -27,16 +27,16 @@ def _read_soc_matrix(lines, dimensions):
         real = []
         complex = []
         for j in range((dimensions[1] + 1) // 2):
-            real += lines[j*dimensions[0] + 2 * (j+1) + ib].split()[1:][0::2]
-            complex += lines[j*dimensions[0] + 2 * (j+1) +ib].split()[1:][1::2]
+            real += lines[j*dimensions[0] + 1 * (j+1) + ib].split()[1:][0::2]
+            complex += lines[j*dimensions[0] + 1 * (j+1) +ib].split()[1:][1::2]
 
-        row = [float(r) + float(c) * 1j for r, c in zip(real, complex)]
+        row = [float(r) + float(c[:-1]) * 1j for r, c in zip(real, complex)]
         matrix.append(row)
 
     return matrix
 
 
-def rasci(output):
+def parser_rasci(output):
     """
     Parser for RAS-CI calculations
     Include:

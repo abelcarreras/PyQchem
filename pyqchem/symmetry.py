@@ -289,7 +289,7 @@ if __name__ == '__main__':
     from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
     from pyqchem.structure import Structure
     from pyqchem.file_io import build_fchk
-    from pyqchem.utils import set_zero_coefficients
+    from pyqchem.utils import _set_zero_to_coefficients
 
     benzene_coordinates = [[ 0.00000,  1.40272, 0.00000],
                            [ 0.00000,  2.49029, 0.00000],
@@ -323,9 +323,9 @@ if __name__ == '__main__':
     from pyqchem.file_io import build_fchk
     open('test.fchk', 'w').write(build_fchk(fchk_data))
 
-    mo_coeff = set_zero_coefficients(fchk_data['basis'],
-                                           fchk_data['coefficients'],
-                                           range(6, 12))
+    mo_coeff = _set_zero_to_coefficients(fchk_data['basis'],
+                                         fchk_data['coefficients'],
+                                         range(6, 12))
     fchk_data['coefficients'] = mo_coeff
 
     structure = fchk_data['structure']

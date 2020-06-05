@@ -5,7 +5,7 @@ from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
 from pyqchem.file_io import build_fchk
-from pyqchem.parsers.parser_rasci import rasci as rasci_parser
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.symmetry import get_state_symmetry
 
 
@@ -44,7 +44,7 @@ output, electronic_structure = get_output_from_qchem(qc_input,
                                                      processors=4,
                                                      force_recalculation=False,
                                                      read_fchk=True,
-                                                     parser=rasci_parser,
+                                                     parser=parser_rasci,
                                                      store_full_output=True)
 
 

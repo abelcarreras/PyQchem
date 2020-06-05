@@ -1,7 +1,7 @@
 import numpy as np
 
 from pyqchem.symmetry import get_wf_symmetry
-from pyqchem.utils import set_zero_coefficients, get_plane
+from pyqchem.utils import _set_zero_to_coefficients, get_plane, crop_electronic_structure
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.structure import Structure
 from pyqchem.file_io import build_fchk
@@ -72,41 +72,32 @@ output, electronic_structure = get_output_from_qchem(qc_input,
 # store original fchk info in file
 open('test.fchk', 'w').write(build_fchk(electronic_structure))
 
-# get partial wf localized in fragment
-mo_coeff_f1 = set_zero_coefficients(electronic_structure['basis'],
-                                    electronic_structure['coefficients'],
-                                    range_f2)
-
-mo_coeff_f2 = set_zero_coefficients(electronic_structure['basis'],
-                                    electronic_structure['coefficients'],
-                                    range_f1)
-
 # get symmetry classification
-electronic_structure['coefficients'] = mo_coeff_f1
+electronic_structure_f1 = crop_electronic_structure(electronic_structure, range_f1)
 
 # save test fchk file with new coefficients
-open('test_f1.fchk', 'w').write(build_fchk(electronic_structure))
+open('test_f1.fchk', 'w').write(build_fchk(electronic_structure_f1))
 
 # get plane from coordinates
-coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())[range_f1]
+coordinates_f1 = electronic_structure['structure'].get_coordinates(fragment=range_f1)
 center_f1, normal_f1 = get_plane(coordinates_f1)
 
 # get classified orbitals
-orbital_type_f1 = get_custom_orbital_classification(electronic_structure,
+orbital_type_f1 = get_custom_orbital_classification(electronic_structure_f1,
                                                     center=center_f1,
                                                     orientation=normal_f1)
 
 # get plane from coordinates
-coordinates_f2 = np.array(electronic_structure['structure'].get_coordinates())[range_f2]
+coordinates_f2 = electronic_structure['structure'].get_coordinates(fragment=range_f2)
 center_f2, normal_f2 = get_plane(coordinates_f2)
 
-electronic_structure['coefficients'] = mo_coeff_f2
+electronic_structure_f2 = crop_electronic_structure(electronic_structure, range_f2)
 
 # save test fchk file with new coefficients
-open('test_f2.fchk', 'w').write(build_fchk(electronic_structure))
+open('test_f2.fchk', 'w').write(build_fchk(electronic_structure_f2))
 
 # get classified orbitals
-orbital_type_f2 = get_custom_orbital_classification(electronic_structure,
+orbital_type_f2 = get_custom_orbital_classification(electronic_structure_f2,
                                                     center=center_f2,
                                                     orientation=normal_f2)
 

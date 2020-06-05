@@ -1,6 +1,7 @@
 import re
 import numpy as np
 from scipy.optimize import leastsq
+from copy import deepcopy
 
 
 def standardize_vector(vector):
@@ -38,11 +39,13 @@ def search_bars(output, from_position=0, bar_type='---'):
 
 def is_transition(configuration, reference, n_electron=1, max_jump=10):
     """
-    Determine if a configuration correspond to a transition of n_electron
+    Determine if a configuration corresponds to a transition of n_electron
+
     :param configuration: dictionary containing the configuration to be analyzed
     :param reference: reference configuration (in general lowest energy Slater determinant)
     :param n_electron:
     :param max_jump: Restrict to transitions with jumps less or equal to max_jump orbitals
+
     :return: True if conditions are met, otherwise False
     """
 
@@ -95,7 +98,7 @@ def get_ratio_of_condition(state, n_electron=1, max_jump=10):
     return p
 
 
-def set_zero_coefficients(basis, mo_coeff, range_atoms):
+def _set_zero_to_coefficients(basis, mo_coeff, range_atoms):
     """
     set 0.0 to coefficients of functions centered in atoms 'range_atoms'
 
@@ -135,8 +138,28 @@ def set_zero_coefficients(basis, mo_coeff, range_atoms):
     return mo_coeff_zero
 
 
+def crop_electronic_structure(electronic_structure, atom_list):
+    n_atoms = electronic_structure['structure'].get_number_of_atoms()
+
+    complementary_list = [i for i in range(n_atoms) if not i in atom_list]
+
+    new_coefficients = _set_zero_to_coefficients(electronic_structure['basis'],
+                                                 electronic_structure['coefficients'],
+                                                 complementary_list)
+
+    new_electronic_structure = deepcopy(electronic_structure)
+    new_electronic_structure['coefficients'] = new_coefficients
+    return new_electronic_structure
+
+
 def get_plane(coords, direction=None):
-    """Generate initial guess"""
+    """
+    Returns the center and normal vector of tha plane formed by a list of atomic coordinates
+
+    :param coords: List of atomic coordinates
+
+    :return: center, normal_vector
+    """
 
     coords = np.array(coords)
     p0 = np.cross(coords[0] - coords[2], coords[0] - coords[-1]) / np.linalg.norm(np.cross(coords[0] - coords[2],
@@ -223,7 +246,11 @@ def get_occupied_electrons(configuration, structure):
 
 def get_inertia(structure):
     """
-    return inertia moments and main axis of inertia (in rows)
+    returns the inertia moments and main axis of inertia (in rows)
+
+    :param structure: Structure object containg the molecule
+
+    :return: eigenvalues, eigenvectors
     """
 
     coordinates = structure.get_coordinates()

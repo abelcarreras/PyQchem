@@ -1,13 +1,13 @@
 import numpy as np
 
 from pyqchem.symmetry import get_wf_symmetry
-from pyqchem.utils import get_plane, set_zero_coefficients
+from pyqchem.utils import get_plane, _set_zero_to_coefficients
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
 from pyqchem.file_io import build_fchk
 from copy import deepcopy
-from pyqchem.parsers.parser_rasci import rasci as rasci_parser
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.utils import reorder_coefficients
 from pyqchem.symmetry import get_state_symmetry
 
@@ -195,7 +195,7 @@ output, err, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           force_recalculation=False,
                                                           read_fchk=True,
-                                                          parser=rasci_parser,
+                                                          parser=parser_rasci,
                                                           store_full_output=True)
 
 
@@ -255,9 +255,9 @@ range_f2 = range(6, 12)
 
 
 
-mo_coeff_f1 = set_zero_coefficients(electronic_structure['basis'],
-                                    electronic_structure['nato_coefficients_multi'][1],
-                                    range_f2)
+mo_coeff_f1 = _set_zero_to_coefficients(electronic_structure['basis'],
+                                        electronic_structure['nato_coefficients_multi'][1],
+                                        range_f2)
 
 
 

@@ -1,7 +1,7 @@
 from pyqchem.qchem_core import get_output_from_qchem, redefine_calculation_data_filename
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
-from pyqchem.parsers.parser_rasci import rasci as parser_rasci
+from pyqchem.parsers.parser_rasci import parser_rasci as parser_rasci
 from pyqchem.basis import get_basis_from_ccRepo, trucate_basis, basis_to_txt
 import numpy as np
 from pyqchem.errors import OutputError

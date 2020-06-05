@@ -142,15 +142,22 @@ class Structure:
                                         sort_keys=True).encode()).hexdigest()
         return int(digest, 16)
 
-    def get_coordinates(self):
+    def get_coordinates(self, fragment=None):
         """
         gets the cartesian coordinates
 
-        :return: cartesian coordinates
+        :param fragment: list of atoms that are part of the fragment
+
+        :return: coordinates list
         """
         if self._coordinates is None:
             self._coordinates = int_to_xyz(self)
-        return np.array(self._coordinates).tolist()
+
+        if fragment is None:
+            return np.array(self._coordinates).tolist()
+        else:
+            return np.array(self._coordinates)[fragment].tolist()
+
 
     def set_coordinates(self, coordinates):
         """

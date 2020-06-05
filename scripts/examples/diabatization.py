@@ -1,7 +1,7 @@
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
-from pyqchem.parsers.parser_rasci import rasci as rasci_parser
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.structure import Structure
 
 import numpy as np
@@ -85,7 +85,7 @@ qc_input = QchemInput(dimer,
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
                                     force_recalculation=False,
-                                    parser=rasci_parser
+                                    parser=parser_rasci
                                     )
 
 # parsed_data = rasci_parser(parsed_data)
@@ -165,7 +165,7 @@ qc_input = QchemInput(opt_monomer,
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=14,
                                     force_recalculation=False,
-                                    parser=rasci_parser
+                                    parser=parser_rasci
                                     )
 
 print('\nAdiabatic states monomer\n--------------------')
