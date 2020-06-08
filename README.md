@@ -128,7 +128,7 @@ qc_input = QchemInput(molecule,
 ```python
 from pyqchem import get_output_from_qchem
 from pyqchem.errors import OutputError, ParserError
-from pyqchem.parsers.parser_rasci import rasci as parser_rasci
+from pyqchem.parsers.parser_rasci import parser_rasci
 
 try:
     parsed_data = get_output_from_qchem(qc_input,

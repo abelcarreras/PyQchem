@@ -424,9 +424,11 @@ class QchemInput:
                 input_file += 'end_pairs\n'
 
             if 'calc' in self._trans_prop:
-                for calc in self._trans_prop['state_pair_list']['calc']:
-                    input_file += 'calc {}\n'.format(calc)
+                for calc in self._trans_prop['calc']:
+                    input_file += 'CALC {}\n'.format(calc)
 
+            if self._calc_soc is not False and self._calc_soc != 0:
+                input_file += 'CALC soc\n'
             input_file += '$end\n'
 
         return input_file + "\n"
