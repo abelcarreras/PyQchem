@@ -2,6 +2,8 @@ import numpy as np
 from pyqchem.units import DEBYE_TO_AU
 import matplotlib.pyplot as plt
 from pyqchem.plots import plot_state
+import requests as req
+from json import dumps
 
 
 def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken_rasci=False):
@@ -72,15 +74,22 @@ def plot_rasci_state_configurations(states):
 
 
 def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
-    from json import dumps
-    from httplib2 import Http
+    """
+    Submit a notification using webhooks
 
-    if service == 'pushbullet':
+    :param message: The message to send
+    :param service: pushbullet or samepage
+    :param pb_token: pushbullet token
+    :param sp_url: samepage url
+    :return:
+    """
+
+    if service.lower() == 'pushbullet':
         url = 'https://api.pushbullet.com/v2/pushes'
         bot_message = { 'body': message, 'type': 'note'}
         message_headers = {'Content-Type': 'application/json; charset=UTF-8',
                            'Access-Token': pb_token}
-    elif service == 'samepage':
+    elif service.lower() == 'samepage':
         url = sp_url
         bot_message = {'text': message}
         message_headers = {'Content-Type': 'application/json'}
@@ -88,9 +97,8 @@ def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
         print('client not found!')
         return
 
-    http_obj = Http()
-    return http_obj.request(uri=url,
-                            method='POST',
-                            headers=message_headers,
-                            body=dumps(bot_message),
-                            )
+    r = req.post(url=url,
+                 headers=message_headers,
+                 data=dumps(bot_message))
+
+    r.close()
