@@ -69,3 +69,28 @@ def plot_rasci_state_configurations(states):
         plt.legend()
 
     plt.show()
+
+
+def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
+    from json import dumps
+    from httplib2 import Http
+
+    if service == 'pushbullet':
+        url = 'https://api.pushbullet.com/v2/pushes'
+        bot_message = { 'body': message, 'type': 'note'}
+        message_headers = {'Content-Type': 'application/json; charset=UTF-8',
+                           'Access-Token': pb_token}
+    elif service == 'samepage':
+        url = sp_url
+        bot_message = {'text': message}
+        message_headers = {'Content-Type': 'application/json'}
+    else:
+        print('client not found!')
+        return
+
+    http_obj = Http()
+    return http_obj.request(uri=url,
+                            method='POST',
+                            headers=message_headers,
+                            body=dumps(bot_message),
+                            )
