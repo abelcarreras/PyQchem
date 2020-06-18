@@ -94,6 +94,7 @@ class QchemInput:
                  ):
 
         # put to arguments self._* (will be written explicitly)
+        self.purecart = purecart
         for name, value in vars().items():
             if name != 'self':
                 # set keywords in lower case
@@ -270,8 +271,6 @@ class QchemInput:
 
                     if self._ras_srdft_exc is not None:
                         input_file += 'ras_srdft_exc {}\n'.format(self._ras_srdft_exc)
-                    else:
-                        raise QchemInputError('{} not defined'.format('ras_srdft_exc'))
 
                     if self._ras_srdft_cor is not None:
                         input_file += 'ras_srdft_cor {}\n'.format(self._ras_srdft_cor)

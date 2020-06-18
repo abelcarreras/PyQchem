@@ -13,7 +13,7 @@ try:
     with open(__calculation_data_filename__, 'rb') as input:
         calculation_data = pickle.load(input)
         print('Loaded data from {}'.format(__calculation_data_filename__))
-except IOError:
+except (IOError, EOFError):
     calculation_data = {}
 
 
