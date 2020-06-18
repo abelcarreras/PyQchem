@@ -61,7 +61,6 @@ for dist in distances:
     energies.append([state['total_energy'] for state in data['excited_states']])
 
 multiplicity_list = [state['multiplicity'] for state in data['excited_states']]
-print(multiplicity_list)
 
 # transform energy list in array
 energies = np.array(energies)

@@ -46,7 +46,6 @@ class HydrogenTest(unittest.TestCase):
                                        ras_do_hole=True,
                                        ras_sts_tm=True,
                                        # rasci sr-dft
-                                       ras_srdft=True,
                                        ras_omega=400,
                                        ras_srdft_cor='srpw92',
                                        ras_srdft_exc='srpbe',
@@ -204,7 +203,6 @@ class WaterTest(unittest.TestCase):
                                        ras_do_hole=True,
                                        ras_sts_tm=True,
                                        # rasci sr-dft
-                                       ras_srdft=True,
                                        ras_omega=300,
                                        ras_srdft_cor='srpbe',
                                        ras_srdft_exc='srlsda',
