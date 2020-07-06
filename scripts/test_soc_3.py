@@ -156,6 +156,9 @@ for atom, active_space_list in [(atom_s, as_s)]:#, (atom_si, as_si), (atom_c, as
                         line += '        -         '
                 print(line)
 
+            print('Frozen occupied: {} / virtual: {}'.format(output['rasci_dimensions']['frozen_occupied'],
+                                                             output['rasci_dimensions']['frozen_virtual']))
+
             print('\nSOCC (cm-1)')
             print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
             for i in range(1, 9):
