@@ -3,7 +3,7 @@ __author__ = 'Abel Carreras'
 import re
 from pyqchem.utils import search_bars, standardize_vector
 from pyqchem.errors import ParserError
-from pyqchem.parsers.support import read_basic_info, get_cis_occupations_list
+from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list
 
 
 def _list_to_complex(list):

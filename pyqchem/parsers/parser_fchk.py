@@ -51,7 +51,7 @@ def basis_format(basis_set_name,
 
     atoms_data = []
     for iatom, atomic_number in enumerate(atomic_numbers):
-        symbol = atomic_symbols[iatom]
+        symbol = str(atomic_symbols[iatom])
 
         shell_from_atom_counts = np.unique(atom_map, return_counts=True)[1]
         shell_from_atom_index = np.unique(atom_map, return_index=True)[1]
@@ -143,6 +143,31 @@ def _get_all_nato(output):
     return nato_coefficients_list, nato_occupancies_list
 
 
+def _get_all_nto(output):
+    import re
+
+    nto_coefficients_list = []
+    nto_occupancies_list = []
+
+    for m in re.finditer('Natural Transition Orbital U coefficients', output):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nto_coefficients_list.append({'U': np.array(data, dtype=float).reshape(nbas, nbas).tolist()})
+
+    for m in re.finditer('Natural Transition Orbital occupancies', output):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nto_occupancies_list.append(np.array(data, dtype=float).tolist())
+
+    for i, m in enumerate(re.finditer('Natural Transition Orbital V coefficients', output)):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        nto_coefficients_list[i]['V'] = np.array(data, dtype=float).reshape(nbas, nbas).tolist()
+
+    return nto_coefficients_list, nto_occupancies_list
+
 def parser_fchk(output):
 
     def convert_to_type(item_type, item):
@@ -161,7 +186,9 @@ def parser_fchk(output):
                 'Beta MO coefficients', 'Coordinates of each shell', 'Overlap Matrix',
                 'Core Hamiltonian Matrix', 'Alpha Orbital Energies', 'Beta Orbital Energies',
                 'Total SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
-                'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies'
+                'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
+                'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
+                'Natural Transition Orbital V coefficients'
                 ]
 
     basis_set = output.split('\n')[1].split()[-1]
@@ -237,5 +264,11 @@ def parser_fchk(output):
         if len(nato_occupancies_list) > 1:
             final_dict['nato_coefficients_multi'] = nato_coefficients_list
             final_dict['nato_occupancies_multi'] = nato_occupancies_list
+
+    if 'Natural Transition Orbital occupancies' in data:
+        nat_coefficients_list, nat_occupancies_list = _get_all_nto(output)
+        if len(nat_occupancies_list) > 1:
+            final_dict['nto_coefficients_multi'] = nat_coefficients_list
+            final_dict['nto_occupancies_multi'] = nat_occupancies_list
 
     return final_dict

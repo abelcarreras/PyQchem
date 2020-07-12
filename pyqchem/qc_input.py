@@ -48,6 +48,7 @@ class QchemInput:
                  ras_srdft_spinpol=0,
                  # SOC
                  calc_soc=False,
+                 state_analysis=False,
                  # EOM
                  ee_singlets=False,
                  ee_triplets=False,
@@ -319,6 +320,9 @@ class QchemInput:
         # SOC
         if self._calc_soc is not False:
             input_file += 'calc_soc {}\n'.format(self._calc_soc)
+
+        if self._state_analysis is not False:
+            input_file += 'state_analysis {}\n'.format(self._state_analysis)
 
         # CIS variables
         if self._cis_n_roots is not None:

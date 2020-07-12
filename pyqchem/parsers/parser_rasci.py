@@ -5,7 +5,7 @@ import operator
 from pyqchem.utils import standardize_vector
 from pyqchem.structure import Structure
 from pyqchem.utils import search_bars
-from pyqchem.parsers.support import read_basic_info, get_rasci_occupations_list
+from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
 
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
