@@ -16,7 +16,7 @@ setup(name='pyqchem',
       install_requires=['numpy', 'scipy', 'lxml', 'requests', 'matplotlib', 'PyYAML'],
       author='Abel Carreras',
       author_email='abelcarreras83@gmail.com',
-      packages=['pyqchem', 'pyqchem.parsers'],
+      packages=['pyqchem', 'pyqchem.parsers', 'pyqchem.parsers.common'],
       url='https://github.com/abelcarreras/PyQchem',
       classifiers=[
           "Programming Language :: Python",
