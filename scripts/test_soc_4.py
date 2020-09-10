@@ -51,7 +51,7 @@ print('\nExperimental values (cm-1)')
 for e, v in experimental.items():
     print('{}: {}'.format(e, v))
 
-use_experimental = True
+use_experimental = False
 
 for atom, active_spaces in [(atom_c, {'singlet': as_c_singlet, 'triplet': as_c_triplet}),
                             (atom_o, {'singlet': as_o_singlet, 'triplet': as_o_triplet}),
@@ -196,9 +196,6 @@ for atom, active_spaces in [(atom_c, {'singlet': as_c_singlet, 'triplet': as_c_t
         for i in range(3):
             for j in range(6):
                     for ms_i in range(3):
-                        # print(i+1, j+4)
-                        # print(np.array(output_s['interstate_properties'][(i+1, j+4)]['total_soc_mat'])[0, ms_i])
-                        # print((i+1, j+3))
                         coupling[i*3+ms_i, j+9] = np.array(output_s['interstate_properties'][(i+1, j+4)]['total_soc_mat'])[0, ms_i]
                         coupling[j+9, i*3+ms_i] = np.array(output_s['interstate_properties'][(j+4, i+1)]['total_soc_mat'])[ms_i, 0]
 

@@ -22,13 +22,17 @@ def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
 
 
 def _read_soc_matrix(lines, dimensions):
+    # for line in lines:
+    #     print(line)
+
+    col_per_line = 5
     matrix = []
     for ib in range(dimensions[0]):
         real = []
         complex = []
-        for j in range((dimensions[1] + 1) // 2):
-            real += lines[j*dimensions[0] + 1 * (j+1) + ib].split()[1:][0::2]
-            complex += lines[j*dimensions[0] + 1 * (j+1) +ib].split()[1:][1::2]
+        for j in range((dimensions[1] - 1) // col_per_line + 1):
+            real += lines[j*dimensions[0] + 1 * (j+1) + ib][11:].split()[0::2]
+            complex += lines[j*dimensions[0] + 1 * (j+1) +ib][11:].split()[1::2]
 
         row = [float(r) + float(c[:-1]) * 1j for r, c in zip(real, complex)]
         matrix.append(row)
@@ -261,7 +265,7 @@ def parser_rasci(output):
         for m in re.finditer('State A: Root', interstate_section):
             section_pair = interstate_section[m.start():m.start() + 10000]
             section_pair = section_pair[:section_pair.find('********')]
-            # print(section_pair)
+
             lines = section_pair.split('\n')
 
             state_a = int(lines[0].split()[-1])
@@ -278,9 +282,9 @@ def parser_rasci(output):
                     pair_dict['gamma_sym'] = float(lines[i+1].split()[-1])
                     pair_dict['gamma_anti_sym'] = float(lines[i+2].split()[-1])
 
-                if 'KET: S,Sz' in line:
-                    s_a = float(lines[i].split()[-2])
-                    s_b = float(lines[i+1].split()[-2])
+                if "KET: S',Sz'" in line:
+                    s_a = float(lines[i].split('=')[1].split()[0])
+                    s_b = float(lines[i+1].split('=')[1].split()[0])
                 if '1-elec SOC matrix (cm-1)' in line:
                     pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [int(2*s_b + 1), int(2*s_a+1)])
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
