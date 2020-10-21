@@ -8,6 +8,7 @@ def get_array_txt(label, type, array, row_size=5):
     formats = {'R': '15.8e',
                'I': '11'}
 
+    array = np.array(array, dtype=float if type == 'R' else int)
     n_elements = len(array)
     rows = int(np.ceil(n_elements/row_size))
 
@@ -19,7 +20,7 @@ def get_array_txt(label, type, array, row_size=5):
             txt_fchk += (' {:{fmt}}'* (n_elements - i*row_size) + '\n').format(*array[i * row_size:n_elements],
                                                                                fmt=formats[type])
         else:
-            txt_fchk += (' {:{fmt}}'* row_size  + '\n').format(*array[i * row_size: (i+1)*row_size],
+            txt_fchk += (' {:{fmt}}'* row_size + '\n').format(*array[i * row_size: (i+1)*row_size],
                                                                fmt=formats[type])
 
     return txt_fchk
@@ -130,6 +131,47 @@ def build_fchk(parsed_data):
     # txt_fchk += get_array_txt('Beta MO coefficients', 'R', beta_mo_coeff)
 
     return txt_fchk
+
+
+def read_structure_from_xyz(filename, read_multiple=False):
+    """
+    Reads a XYZ file and returns the geometry of all structures in it
+    :param file_name: file name
+    :param read_multiple: read multiple files if available
+    :return: list of Geometry objects
+    """
+    input_molecule = [[], []]
+    geometries = []
+    with open(filename, mode='r') as lines:
+        lines.readline()
+        name = lines.readline()
+        if name.strip():
+            name = name.split()[0]
+        for line in lines:
+            if '$' in line or '#' in line:
+                pass
+            else:
+                try:
+                    float(line.split()[1])
+                    input_molecule[0].append(line.split()[0])
+                    input_molecule[1].append(line.split()[1:])
+                except (ValueError, IndexError):
+                    if input_molecule[0]:
+                        structure = Structure(coordinates=np.array(input_molecule[1], dtype=float).tolist(),
+                                              symbols=input_molecule[0],
+                                              name=name)
+                    input_molecule = [[], []]
+                    name = line.split()[0]
+
+        structure = Structure(coordinates=np.array(input_molecule[1], dtype=float).tolist(),
+                              symbols=input_molecule[0],
+                              name=name)
+        if read_multiple:
+            geometries.append(structure)
+        else:
+            return structure
+
+    return geometries
 
 if __name__ == '__main__':
     from pyqchem.parsers.parser_fchk import parser_fchk
