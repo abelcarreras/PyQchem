@@ -21,7 +21,7 @@ def get_array_txt(label, type, array, row_size=5):
                                                                                fmt=formats[type])
         else:
             txt_fchk += (' {:{fmt}}'* row_size + '\n').format(*array[i * row_size: (i+1)*row_size],
-                                                               fmt=formats[type])
+                                                              fmt=formats[type])
 
     return txt_fchk
 

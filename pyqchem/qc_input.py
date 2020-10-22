@@ -6,6 +6,24 @@ import warnings
 from pyqchem.errors import QchemInputWarning, QchemInputError
 
 
+def normalize_values(value):
+    """
+    Set all string values (including keys and values of dictionaries) to lower case
+
+    :param value: the values
+    :return: normalized values
+    """
+    def normalize(value):
+        if isinstance(value, str):
+            return value.lower()
+        return value
+    if isinstance(value, dict):
+        return {normalize(k): normalize(v) for k, v in value.items()}
+    else:
+        return normalize(value)
+
+
+
 class QchemInput:
     """
     Handles the Q-Chem input info
@@ -81,6 +99,9 @@ class QchemInput:
                  geom_opt_tol_energy=100,
                  geom_opt_max_cycles=50,
                  geom_opt_constrains=None,
+                 # solvent
+                 solvent_method=False,
+                 solvent_params=None,
                  # other
                  n_frozen_core='fc',
                  n_frozen_virt=0,
@@ -99,8 +120,7 @@ class QchemInput:
         for name, value in vars().items():
             if name != 'self':
                 # set keywords in lower case
-                if type(value) is str:
-                    value = value.lower()
+                value = normalize_values(value)
                 setattr(self, '_' + name, value)
 
         # set ras_occ
@@ -179,7 +199,10 @@ class QchemInput:
 
         input_file = ''
 
+        ##############################
         # Molecule definition
+        ##############################
+
         input_file += '$molecule\n'
 
         input_file += '{} {}\n'.format(self._molecule.charge, self._molecule.multiplicity)
@@ -193,7 +216,10 @@ class QchemInput:
 
         input_file += '$end\n'
 
+        #####################
         # Rem variables
+        #####################
+
         input_file += '$rem\n'
         input_file += 'jobtype {}\n'.format(self._jobtype)
 
@@ -216,6 +242,7 @@ class QchemInput:
         input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
+        input_file += 'solvent_method {}\n'.format(self._solvent_method)
 
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
@@ -363,6 +390,10 @@ class QchemInput:
 
         input_file += '$end\n'
 
+        ##########################
+        # Additional sections
+        ##########################
+
         # localized diabatization
         if self._localized_diabatization is not None:
             input_file += '$localized_diabatization\nadiabatic states\n'
@@ -432,6 +463,15 @@ class QchemInput:
 
             if self._calc_soc is not False and self._calc_soc != 0:
                 input_file += 'CALC soc\n'
+            input_file += '$end\n'
+
+        # solvent
+        if self._solvent_method is not None:
+            input_file += '$solvent\n'
+            if self._solvent_params is None:
+                raise QchemInputError('solvent_params is not defined')
+            for prop, value in self._solvent_params.items():
+                input_file += '{} {}\n'.format(prop, value)
             input_file += '$end\n'
 
         return input_file + "\n"
