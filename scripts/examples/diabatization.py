@@ -143,6 +143,11 @@ print(np.array(diabatization['diabatic_matrix']))
 
 print('\nDiabatic states dimer\n--------------------')
 
+for i, state in enumerate(diabatization['diabatic_states']):
+    print('\nState {}'.format(i+1))
+    print('Transition DM: ', state['transition_moment'])
+    print('Energy: ', state['excitation_energy'])
+
 from pyqchem.tools import plot_diabatization
 plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
                                                                    dimer.get_number_of_atoms()])
