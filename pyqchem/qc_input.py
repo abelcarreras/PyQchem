@@ -466,10 +466,8 @@ class QchemInput:
             input_file += '$end\n'
 
         # solvent
-        if self._solvent_method is not None:
+        if self._solvent_params is not None:
             input_file += '$solvent\n'
-            if self._solvent_params is None:
-                raise QchemInputError('solvent_params is not defined')
             for prop, value in self._solvent_params.items():
                 input_file += '{} {}\n'.format(prop, value)
             input_file += '$end\n'
