@@ -1,7 +1,7 @@
 import numpy as np
 from pyqchem.units import DEBYE_TO_AU
 import matplotlib.pyplot as plt
-from pyqchem.plots import plot_state
+from pyqchem.plots import plot_configuration
 import requests as req
 from json import dumps
 
@@ -33,26 +33,6 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
                 print('{:5}  {:8.4f}  {:8.4f}  {:8.4f}'.format(i_atom + 1, at, det, at + det))
 
 
-def plot_diabatization(diabatic_states, atoms_ranges=(1, 2)):
-
-    for i, state in enumerate(diabatic_states):
-
-        bars = range(1, atoms_ranges[-1]+1)
-
-        for pos in atoms_ranges[:-1]:
-            plt.axvline((pos+0.5), color='black')
-
-        plt.figure(i+1)
-        plt.suptitle('Mulliken analysis')
-        plt.title('Diabatic state {}'.format(i+1))
-        plt.bar(bars, state['mulliken']['attach'], label='Attachment')
-        plt.bar(bars, state['mulliken']['detach'], label='Detachment')
-        plt.plot(bars, state['mulliken']['total'], label='Total', color='r')
-        plt.xlabel('Atoms')
-        plt.ylabel('Charge [e-]')
-        plt.legend()
-
-    plt.show()
 
 
 def plot_rasci_state_configurations(states):
@@ -61,7 +41,7 @@ def plot_rasci_state_configurations(states):
         plt.title('State {}'.format(i+1))
         amplitude_list = []
         for j, conf in enumerate(state['configurations']):
-            plot_state(conf['alpha'], conf['beta'], index=j)
+            plot_configuration(conf['alpha'], conf['beta'], index=j)
             amplitude_list.append(conf['amplitude'])
 
         plt.plot(range(1, len(amplitude_list)+1), np.square(amplitude_list)*len(state['configurations'][0]['alpha']), label='amplitudes')

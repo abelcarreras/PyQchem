@@ -1,9 +1,10 @@
 __author__ = 'Abel Carreras'
 
-import re
 from pyqchem.utils import search_bars, standardize_vector
 from pyqchem.errors import ParserError
 from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list
+import numpy as np
+import re
 
 
 def _list_to_complex(list):
@@ -85,28 +86,47 @@ def basic_cis(output):
                     target = int(line[16:20].strip('(').strip(')'))
                     amplitude = float(line[21:].split()[2])
 
-                    alpha_transitions = beta_transitions = []
+                    alpha_transitions = []
+                    beta_transitions = []
                     try:
                         spin = line[21:].split()[3]
                         if spin == 'alpha':
                             alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
                         elif spin == 'beta':
-                                beta_transitions.append({'origin': origin, 'target': target + basic_data['n_beta']})
+                            beta_transitions.append({'origin': origin, 'target': target + basic_data['n_beta']})
                         else:
                             raise ParserError('basic_cis', 'Error reading configurations')
 
-                    except IndexError:
-                        alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
-                        beta_transitions.append({'origin': origin, 'target': target + basic_data['n_beta']})
+                        transitions.append({'origin': origin,
+                                            'target': target,
+                                            'amplitude': amplitude,
+                                            'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
+                                                                                    basic_data['n_alpha'],
+                                                                                    basic_data['n_beta'],
+                                                                                    alpha_transitions=alpha_transitions,
+                                                                                    beta_transitions=beta_transitions)})
 
-                    transitions.append({'origin': origin,
-                                        'target': target,
-                                        'amplitude': amplitude,
-                                        'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
-                                                                                basic_data['n_alpha'],
-                                                                                basic_data['n_beta'],
-                                                                                alpha_transitions=alpha_transitions,
-                                                                                beta_transitions=beta_transitions)})
+                    except IndexError:
+                        # This supposes single electron transition
+                        alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
+
+                        transitions.append({'origin': origin,
+                                            'target': target,
+                                            'amplitude': amplitude/np.sqrt(2),
+                                            'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
+                                                                                    basic_data['n_alpha'],
+                                                                                    basic_data['n_beta'],
+                                                                                    alpha_transitions=alpha_transitions,
+                                                                                    beta_transitions=beta_transitions)})
+
+                        transitions.append({'origin': origin,
+                                            'target': target,
+                                            'amplitude': amplitude/np.sqrt(2) if mul == 'Singlet' else -amplitude/np.sqrt(2),
+                                            'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
+                                                                                    basic_data['n_alpha'],
+                                                                                    basic_data['n_beta'],
+                                                                                    alpha_transitions=beta_transitions,
+                                                                                    beta_transitions=alpha_transitions)})
 
                 if len(line) < 5:
                     break

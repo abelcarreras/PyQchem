@@ -3,6 +3,7 @@ from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.structure import Structure
+from pyqchem.plots import plot_diabatization, plot_state
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -91,6 +92,7 @@ parsed_data = get_output_from_qchem(qc_input,
 # parsed_data = rasci_parser(parsed_data)
 # print(parsed_data)
 
+# print adiabatic states
 print('Adiabatic states dimer\n--------------------')
 for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
@@ -100,21 +102,11 @@ for i, state in enumerate(parsed_data['excited_states']):
     for j, conf in enumerate(state['configurations']):
         print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
-# plot diabatic states
-from pyqchem.plots import plot_state
+# plot adiabatic states
 for i, state in enumerate(parsed_data['excited_states']):
-    plt.figure(figsize=(len(state['configurations']), 5))
+    plot_state(state, with_amplitude=True, orbital_range=[qc_input._ras_occ,
+                                                          qc_input._ras_occ + qc_input._ras_act])
     plt.title('Adiabatic State {}'.format(i+1))
-    amplitude_list = []
-    for j, conf in enumerate(state['configurations']):
-        plot_state(conf['alpha'], conf['beta'], index=j)
-        amplitude_list.append(conf['amplitude'])
-
-    plt.plot(range(1, len(amplitude_list)+1), np.square(amplitude_list)*len(state['configurations'][0]['alpha']), label='amplitudes')
-    plt.xlabel('Configurations')
-    plt.ylabel('Amplitude')
-    plt.axis('off')
-    plt.legend()
 
 plt.show()
 
@@ -148,7 +140,6 @@ for i, state in enumerate(diabatization['diabatic_states']):
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
 
-from pyqchem.tools import plot_diabatization
 plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
                                                                    dimer.get_number_of_atoms()])
 
