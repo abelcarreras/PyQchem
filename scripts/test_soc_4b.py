@@ -86,10 +86,10 @@ for atom, active_spaces in [(atom_cl, as_cl_doblet), (atom_f, as_f_doblet)]:
                 print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
         print('\nsoc_tot (cm-1) [imaginary part]')
-        print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
-        for i in range(1, 10):
+        print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 11)]))
+        for i in range(1, 11):
             line = '{:3}'.format(i)
-            for j in range(1, 10):
+            for j in range(1, 11):
                 try:
                     line += '{:18.12f}'.format(np.array(output_d['interstate_properties'][(i, j)]['total_soc_mat'])[0, 0].imag)
                 except KeyError:
