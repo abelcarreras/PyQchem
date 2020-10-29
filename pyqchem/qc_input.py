@@ -102,6 +102,7 @@ class QchemInput:
                  # solvent
                  solvent_method=False,
                  solvent_params=None,
+                 pcm_params=None,
                  # other
                  n_frozen_core='fc',
                  n_frozen_virt=0,
@@ -469,6 +470,12 @@ class QchemInput:
         if self._solvent_params is not None:
             input_file += '$solvent\n'
             for prop, value in self._solvent_params.items():
+                input_file += '{} {}\n'.format(prop, value)
+            input_file += '$end\n'
+
+        if self._pcm_params is not None:
+            input_file += '$pcm\n'
+            for prop, value in self._pcm_params.items():
                 input_file += '{} {}\n'.format(prop, value)
             input_file += '$end\n'
 
