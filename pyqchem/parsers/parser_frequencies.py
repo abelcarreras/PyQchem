@@ -24,8 +24,26 @@ def basic_frequencies(output, print_data=False):
     n = output.find('Total energy in the final basis set =')
     energy = float(output[n:n+70].split()[8])
 
-    n = output.find('VIBRATIONAL ANALYSIS')
-    vibration_section = output[n:]
+    n_hess = output.find('Hessian of the SCF Energy')
+    n_van = output.find('VIBRATIONAL ANALYSIS')
+
+    # Hessian
+    ncol = 6
+    ndim = n_atoms * n_atoms
+    hessian_section = output[n_hess: n_van]
+    hess_block = hessian_section.split('\n')[1:]
+
+    hessian = []
+    for i in range(ndim):
+        line = []
+        for block in range((ndim-1)//ncol + 1):
+            line += hess_block[block*(ndim+1) + i +1].split()[1:]
+        hessian.append(line)
+
+    hessian = np.array(hessian, dtype=float).tolist()
+
+    # Vibration analysis
+    vibration_section = output[n_van:]
 
     frequencies = []
     force_constants = []
@@ -93,4 +111,5 @@ def basic_frequencies(output, print_data=False):
                       'displacement': displacements[i]})
 
     return {'modes': modes,
+            'hessian': hessian,
             'scf_energy': energy}

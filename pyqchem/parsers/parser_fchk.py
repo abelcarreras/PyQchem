@@ -168,6 +168,7 @@ def _get_all_nto(output):
 
     return nto_coefficients_list, nto_occupancies_list
 
+
 def parser_fchk(output):
 
     def convert_to_type(item_type, item):

@@ -100,9 +100,18 @@ class QchemInput:
                  geom_opt_max_cycles=50,
                  geom_opt_constrains=None,
                  # solvent
-                 solvent_method=False,
+                 solvent_method=None,
                  solvent_params=None,
                  pcm_params=None,
+                 # IRC
+                 rpath_coords=0,
+                 rpath_direction=1,
+                 rpath_max_cycles=20,
+                 rpath_max_stepsize=150,
+                 rpath_tol_displacement=5000,
+                 # symmetry
+                 symmetry=True,
+                 sym_ignore=False,
                  # other
                  n_frozen_core='fc',
                  n_frozen_virt=0,
@@ -111,8 +120,8 @@ class QchemInput:
                  namd_nsurfaces=None,
                  scf_print=None,
                  scf_guess=None,
-                 symmetry=True,
-                 sym_ignore=False,
+                 scf_guess_mix=False,
+                 hessian=None,
                  sym_tol=5,
                  mem_total=2000,
                  mem_static=64,
@@ -246,7 +255,10 @@ class QchemInput:
         input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
-        input_file += 'solvent_method {}\n'.format(self._solvent_method)
+        input_file += 'scf_guess_mix {}\n'.format(self._scf_guess_mix)
+
+        if self._solvent_method is not None:
+            input_file += 'solvent_method {}\n'.format(self._solvent_method)
 
         if self._unrestricted is not None:
             input_file += 'unrestricted {}\n'.format(self._unrestricted)
@@ -394,12 +406,19 @@ class QchemInput:
             input_file += 'sym_tol {}\n'.format(self._sym_tol)
 
         # optimization
-        if self._jobtype.lower() == 'opt':
+        if self._jobtype.lower() in ['opt', 'ts']:
             input_file += 'geom_opt_coords {}\n'.format(self._geom_opt_coords)
             input_file += 'geom_opt_tol_gradient {}\n'.format(self._geom_opt_tol_gradient)
             input_file += 'geom_opt_tol_displacement {}\n'.format(self._geom_opt_tol_displacement)
             input_file += 'geom_opt_tol_energy {}\n'.format(self._geom_opt_tol_energy)
             input_file += 'geom_opt_max_cycles {}\n'.format(self._geom_opt_max_cycles)
+        # IRC
+        if self._jobtype.lower() in ['rpath']:
+            input_file += 'rpath_coords {}\n'.format(self._rpath_coords)
+            input_file += 'rpath_direction {}\n'.format(self._rpath_direction)
+            input_file += 'rpath_max_cycles {}\n'.format(self._rpath_max_cycles)
+            input_file += 'rpath_max_stepsize {}\n'.format(self._rpath_max_stepsize)
+            input_file += 'rpath_tol_displacement {}\n'.format(self._rpath_tol_displacement)
 
         input_file += '$end\n'
 
@@ -497,6 +516,10 @@ class QchemInput:
     @property
     def mo_coefficients(self):
         return self._mo_coefficients
+
+    @property
+    def hessian(self):
+        return self._hessian
 
     @property
     def gui(self):

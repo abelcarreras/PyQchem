@@ -281,6 +281,15 @@ def get_output_from_qchem(input_qchem,
         with open(work_dir + '53.0', 'w') as f:
             guess_file.tofile(f, sep='')
 
+    # check if hessian
+    if input_qchem.hessian is not None:
+        ndim =len(input_qchem.hessian)
+
+        hessian_triu = np.array(input_qchem.hessian)
+
+        with open(work_dir + '132.0', 'w') as f:
+            hessian_triu.tofile(f, sep='')
+
     input_txt = input_qchem.get_txt()
 
     # check if parameters is None
