@@ -198,7 +198,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-def store_calculation_data(input_qchem, keyword, data, protocol=pickle.DEFAULT_PROTOCOL):
+def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL):
 
     calculation_data[(hash(input_qchem), keyword)] = data
     with open(__calculation_data_filename__, 'wb') as f:
