@@ -46,6 +46,8 @@ qc_input = QchemInput(opt_data['optimized_molecule'],
                       jobtype='freq',
                       exchange='hf',
                       basis='sto-3g',
+                      sym_ignore=True,
+                      symmetry=False,
                       scf_guess=ee['coefficients'])
 
 freq_data = get_output_from_qchem(qc_input,
