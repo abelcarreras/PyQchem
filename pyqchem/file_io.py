@@ -3,6 +3,7 @@ from pyqchem.structure import atom_data, Structure
 import numpy as np
 angstrom_to_bohr = 1/0.529177249
 
+
 def get_array_txt(label, type, array, row_size=5):
 
     formats = {'R': '15.8e',
@@ -172,6 +173,32 @@ def read_structure_from_xyz(filename, read_multiple=False):
             return structure
 
     return geometries
+
+
+def write_structure_to_xyz(structures, filename):
+    """
+    Store structures in a XYZ file
+
+    :param structures: Structure or list of Structure
+    :param filename: name of the file
+    :return:
+    """
+
+    # Get xyz file format from Molecule or Geometry (or list)
+
+    if not isinstance(structures, list):
+        structures = [structures]
+
+    txt = ''
+    for structure in structures:
+        txt += '{}\n'.format(structure.get_number_of_atoms())
+        txt += '{}\n'.format(structure.name if structure.name is not None else '')
+        for idp, position in enumerate(structure.get_coordinates()):
+            txt += '{:2} {:11.6f} {:11.6f} {:11.6f}\n'.format(structure.get_symbols()[idp],
+                                                                  position[0], position[1], position[2])
+    with open(filename, 'w') as f:
+        f.write(txt)
+
 
 if __name__ == '__main__':
     from pyqchem.parsers.parser_fchk import parser_fchk

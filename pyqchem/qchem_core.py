@@ -83,7 +83,7 @@ def parse_output(get_output_function):
 
         calculation_data[hash_p] = parsed_output
         with open(__calculation_data_filename__, 'wb') as output:
-            pickle.dump(calculation_data, output, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(calculation_data, output, protocol=pickle.DEFAULT_PROTOCOL)
 
         return parsed_output
 
@@ -198,7 +198,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL):
+def store_calculation_data(input_qchem, keyword, data, protocol=pickle.DEFAULT_PROTOCOL):
 
     calculation_data[(hash(input_qchem), keyword)] = data
     with open(__calculation_data_filename__, 'wb') as f:

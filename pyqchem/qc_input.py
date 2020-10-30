@@ -111,6 +111,9 @@ class QchemInput:
                  namd_nsurfaces=None,
                  scf_print=None,
                  scf_guess=None,
+                 symmetry=True,
+                 sym_ignore=False,
+                 sym_tol=5,
                  mem_total=2000,
                  mem_static=64,
                  skip_scfman=False,
@@ -380,6 +383,15 @@ class QchemInput:
 
         if self._scf_guess is not None:
             input_file += 'scf_guess {}\n'.format(self._scf_guess)
+
+        if self._symmetry is not None:
+            input_file += 'symmetry {}\n'.format(self._symmetry)
+
+        if self._sym_ignore is not None:
+            input_file += 'sym_ignore {}\n'.format(self._sym_ignore)
+
+        if self._sym_tol is not None:
+            input_file += 'sym_tol {}\n'.format(self._sym_tol)
 
         # optimization
         if self._jobtype.lower() == 'opt':
