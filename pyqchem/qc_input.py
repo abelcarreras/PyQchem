@@ -39,6 +39,7 @@ class QchemInput:
                  thresh=14,
                  scf_convergence=8,
                  max_scf_cycles=50,
+                 scf_algorithm='diis',
                  purecart=None,
                  # RASCI
                  ras_roots=1,
@@ -245,6 +246,7 @@ class QchemInput:
         input_file += 'basis {}\n'.format(self._basis)
         input_file += 'thresh {}\n'.format(self._thresh)
         input_file += 'scf_convergence {}\n'.format(self._scf_convergence)
+        input_file += 'scf_algorithm {}\n'.format(self._scf_algorithm)
         input_file += 'max_scf_cycles {}\n'.format(self._max_scf_cycles)
         input_file += 'gui {}\n'.format(self.gui)
         input_file += 'set_iter {}\n'.format(self._set_iter)
