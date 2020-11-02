@@ -29,7 +29,7 @@ def basic_frequencies(output, print_data=False):
 
     # Hessian
     ncol = 6
-    ndim = n_atoms * n_atoms
+    ndim = n_atoms * 3
     hessian_section = output[n_hess: n_van]
     hess_block = hessian_section.split('\n')[1:]
 
