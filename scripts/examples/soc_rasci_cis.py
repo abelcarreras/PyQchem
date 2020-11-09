@@ -51,9 +51,8 @@ for qc_input, parser in [(qc_input_cis, parser_cis), (qc_input_rasci, parser_ras
 
     output = get_output_from_qchem(qc_input,
                                    processors=4,
-                                   force_recalculation=False,
+                                   force_recalculation=True,
                                    parser=parser,
-                                   store_full_output=True
                                    )
 
     # print calculation data
