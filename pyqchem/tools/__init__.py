@@ -66,7 +66,7 @@ def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
 
     if service.lower() == 'pushbullet':
         url = 'https://api.pushbullet.com/v2/pushes'
-        bot_message = { 'body': message, 'type': 'note'}
+        bot_message = {'body': message, 'type': 'note'}
         message_headers = {'Content-Type': 'application/json; charset=UTF-8',
                            'Access-Token': pb_token}
     elif service.lower() == 'samepage':

@@ -275,10 +275,12 @@ def get_output_from_qchem(input_qchem,
         else:
             mo_coeffb = mo_coeffa
 
+        # here we set orbital energies to 0 (no problem if skip_scfman=False)
+        # since they will be recalculated
         mo_ene = np.zeros(l)
 
-        guess_file = np.vstack([mo_coeffa, mo_ene, mo_coeffb, mo_ene]).flatten()
-        with open(work_dir + '53.0', 'w') as f:
+        guess_file = np.vstack([mo_coeffa, mo_coeffb, mo_ene, mo_ene]).flatten()
+        with open(work_dir + '/53.0', 'w') as f:
             guess_file.tofile(f, sep='')
 
     # check if hessian

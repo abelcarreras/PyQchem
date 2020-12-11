@@ -319,13 +319,13 @@ def get_occupated_list(configuration, structure, total_orbitals):
     n_extra = total_orbitals - occupied_orbitals - len(configuration['beta'])
     vector_beta = [1] * occupied_orbitals + [int(c) for c in configuration['beta']] + [0] * n_extra
 
-    if configuration['hole'] is not '':
+    if configuration['hole'] != '':
         if np.sum(vector_alpha) > np.sum(vector_beta):
             vector_alpha[int(configuration['hole']) - 1] = 0
         else:
             vector_beta[int(configuration['hole']) - 1] = 0
 
-    if configuration['part'] is not '':
+    if configuration['part'] != '':
         if np.sum(vector_alpha) < np.sum(vector_beta):
             vector_alpha[int(configuration['part']) - 1] = 1
         else:

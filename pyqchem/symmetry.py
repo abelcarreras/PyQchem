@@ -27,21 +27,31 @@ def get_wf_symmetry(structure,
     """
 
     alpha_mo_coeff = np.array(mo_coeff['alpha']).tolist()
+
+    alpha_occupancy = [0] * len(mo_coeff['alpha'])
+    alpha_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
+
     if 'beta' in mo_coeff:
         beta_mo_coeff = np.array(mo_coeff['beta']).tolist()
+        beta_occupancy = [0] * len(mo_coeff['beta'])
+        beta_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
     else:
         beta_mo_coeff = None
+        beta_occupancy = None
+
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
                       symbols=structure.get_symbols(),
                       basis=basis,
                       center=center,
-                      VAxis=orientation,
-                      VAxis2=orientation2,
+                      axis=orientation,
+                      axis2=orientation2,
                       alpha_mo_coeff=alpha_mo_coeff,
                       beta_mo_coeff=beta_mo_coeff,
-                      charge=structure.charge,
-                      multiplicity=structure.multiplicity,
+                      alpha_occupancy=alpha_occupancy,
+                      beta_occupancy=beta_occupancy,
+                      #charge=structure.charge,
+                      #multiplicity=structure.multiplicity,
                       group=group)
     return molsym
 

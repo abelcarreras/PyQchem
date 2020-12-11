@@ -23,7 +23,6 @@ def normalize_values(value):
         return normalize(value)
 
 
-
 class QchemInput:
     """
     Handles the Q-Chem input info
