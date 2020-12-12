@@ -120,6 +120,7 @@ class QchemInput:
                  namd_nsurfaces=None,
                  scf_print=None,
                  scf_guess=None,
+                 scf_energies=None,
                  scf_guess_mix=False,
                  hessian=None,
                  sym_tol=5,
@@ -513,10 +514,51 @@ class QchemInput:
 
         return input_file + "\n"
 
+    def store_mo_file(self, path='.'):
+        guess_coeff = self._mo_coefficients
+        guess_energies = self._scf_energies
+
+        # set guess in place
+        mo_coeffa = np.array(guess_coeff['alpha'], dtype=np.float)
+
+        if 'beta' in guess_coeff:
+            mo_coeffb = np.array(guess_coeff['beta'], dtype=np.float)
+        else:
+            mo_coeffb = mo_coeffa
+
+        if guess_energies is not None:
+            mo_enea = np.array(guess_energies['alpha'], dtype=np.float)
+            if 'beta' in guess_coeff:
+                mo_coeffb = np.array(guess_coeff['beta'], dtype=np.float)
+                mo_eneb = np.array(guess_energies['beta'], dtype=np.float)
+            else:
+                mo_eneb = mo_enea
+
+        else:
+            # here we set orbital energies to 0 (no problem if skip_scfman=False)
+            # since they will be recalculated
+            mo_enea = np.zeros(len(mo_coeffa))
+            mo_eneb = np.zeros(len(mo_coeffb))
+
+        guess_file = np.vstack([mo_coeffa, mo_coeffb, mo_enea, mo_eneb]).flatten()
+        with open(path + '/53.0', 'w') as f:
+            guess_file.tofile(f, sep='')
+
+    def store_energy_file(self, path='.'):
+        mo_enea = self._mo_coefficients['alpha']
+        energy_file = np.zeros(len(mo_enea))
+        warnings.warn('warining: FILE_ENERGY will be set to zeros, this may affect post HF methods')
+        with open(path + '/99.0', 'w') as f:
+            energy_file.tofile(f, sep='')
+
     # Access to properties (only a reduced set should be accessible/editable)
     @property
     def mo_coefficients(self):
         return self._mo_coefficients
+
+    @property
+    def mo_energies(self):
+        return self._scf_energies
 
     @property
     def hessian(self):

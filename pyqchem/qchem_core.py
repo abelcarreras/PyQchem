@@ -264,24 +264,14 @@ def get_output_from_qchem(input_qchem,
     except OSError:
         pass
 
-    # check scf_guess if guess
+    # handle custom guess
     if input_qchem.mo_coefficients is not None:
-        guess = input_qchem.mo_coefficients
-        # set guess in place
-        mo_coeffa = np.array(guess['alpha'], dtype=np.float)
-        l = len(mo_coeffa)
-        if 'beta' in guess:
-            mo_coeffb = np.array(guess['beta'], dtype=np.float)
-        else:
-            mo_coeffb = mo_coeffa
+        input_qchem.store_mo_file(work_dir)
 
-        # here we set orbital energies to 0 (no problem if skip_scfman=False)
-        # since they will be recalculated
-        mo_ene = np.zeros(l)
-
-        guess_file = np.vstack([mo_coeffa, mo_coeffb, mo_ene, mo_ene]).flatten()
-        with open(work_dir + '/53.0', 'w') as f:
-            guess_file.tofile(f, sep='')
+    # set scf energy if skip_scfman (to not break)
+    # TODO: now SCF energy is set to zero. This works for very little features.
+    if input_qchem._skip_scfman:
+        input_qchem.store_energy_file(work_dir)
 
     # check if hessian
     if input_qchem.hessian is not None:
