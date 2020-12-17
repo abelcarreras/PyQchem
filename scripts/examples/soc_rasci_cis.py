@@ -8,17 +8,17 @@ import numpy as np
 # Carbon atom defintion
 atom_c = Structure(coordinates=[[0.0, 0.0, 0.0]],
                    symbols=['C'],
-                   charge=0,
+                   charge=-2,
                    multiplicity=1,
                    name='C')
 
-basis_name = 'sto-3g'
+basis_name = '6-31G**'
 # RAS_CI calculation
 qc_input_rasci = QchemInput(atom_c,
                             jobtype='sp',
                             exchange='hf',
                             correlation='rasci',
-                            unrestricted='False',
+                            unrestricted=True,
                             thresh=14,
                             scf_convergence=8,
                             max_cis_cycles=150,
@@ -57,22 +57,26 @@ for qc_input, parser in [(qc_input_cis, parser_cis), (qc_input_rasci, parser_ras
 
     # print calculation data
     for i, state in enumerate(output['excited_states']):
-        print('Energy state {} ({}):  {: 18.12f} au'.format(i+1, state['multiplicity'], state['total_energy']))
+        print('Energy state {} ({}):  {:18.12f} au'.format(i+1, state['multiplicity'], state['total_energy']))
+        print('Transition energy  {:4.8} eV'.format(state['excitation_energy']))
+        if qc_input is qc_input_cis:
+            print(' Origin  Target   Amplitude')
+        else:
+            print(' Alpha  Beta   Amplitude')
+
         for j, conf in enumerate(state['configurations']):
             try:
-                print(' Origin  Target   Amplitude')
-                print('   {}   {}  {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))
+                print('     {}     {}  {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))
             except KeyError:
-                print(' Alpha  Beta   Amplitude')
                 print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
-    print('\nsoc_tot (cm-1) [(0,0) element, imaginary part]')
+    print('\n1e_soc_mat (cm-1) [(0,0) element, imaginary part]')
     print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, 9)]))
     for i in range(1, 9):
         line = '{:3}'.format(i)
         for j in range(1, 9):
             try:
-                line += '{:18.12f}'.format(np.array(output['interstate_properties'][(i, j)]['total_soc_mat'])[0, 0].imag)
+                line += '{:18.12f}'.format(np.array(output['interstate_properties'][(i, j)]['1e_soc_mat'])[0, 0].imag)
             except KeyError:
                 line += '        -         '
         print(line)

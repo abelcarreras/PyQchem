@@ -11,6 +11,7 @@ from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.utils import reorder_coefficients
 from pyqchem.symmetry import get_state_symmetry
 
+
 def inverse_cummulative(vector):
     vector = np.array(vector)
 
@@ -191,7 +192,7 @@ print(qc_input.get_txt())
 
 
 # get data from Q-Chem calculation
-output, err, electronic_structure = get_output_from_qchem(qc_input,
+output, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           force_recalculation=False,
                                                           read_fchk=True,

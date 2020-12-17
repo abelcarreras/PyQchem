@@ -1,4 +1,4 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem import get_output_from_qchem, QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
@@ -23,14 +23,14 @@ print('Initial structure')
 print(molecule)
 
 # optimization
-qc_input = create_qchem_input(molecule,
-                              jobtype='opt',
-                              exchange='hf',
-                              basis='sto-3g',
-                              geom_opt_tol_gradient=300,
-                              geom_opt_tol_energy=100,
-                              geom_opt_coords=-1,
-                              geom_opt_tol_displacement=1200)
+qc_input = QchemInput(molecule,
+                      jobtype='opt',
+                      exchange='hf',
+                      basis='sto-3g',
+                      geom_opt_tol_gradient=300,
+                      geom_opt_tol_energy=100,
+                      geom_opt_coords=-1,
+                      geom_opt_tol_displacement=1200)
 
 
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
@@ -45,11 +45,11 @@ print('Optimized structure')
 print(opt_molecule)
 
 # frequencies calculation
-qc_input = create_qchem_input(opt_molecule,
-                              jobtype='freq',
-                              exchange='hf',
-                              basis='sto-3g',
-                              scf_guess=electronic_structure['coefficients'])
+qc_input = QchemInput(opt_molecule,
+                      jobtype='freq',
+                      exchange='hf',
+                      basis='sto-3g',
+                      scf_guess=electronic_structure['coefficients'])
 
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
