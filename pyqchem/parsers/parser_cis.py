@@ -82,9 +82,9 @@ def basic_cis(output):
             transitions = []
             for line in state_cis_lines[5:]:
                 if line.find('-->') > 0:
-                    origin = int(line[5:10].strip('(').strip(')'))
-                    target = int(line[16:20].strip('(').strip(')'))
-                    amplitude = float(line[21:].split()[2])
+                    origin = int(line.split('>')[0].split('(')[1].split(')')[0])
+                    target = int(line.split('>')[1].split('(')[1].split(')')[0])
+                    amplitude = float(line.split('=')[1])
 
                     alpha_transitions = []
                     beta_transitions = []
@@ -106,7 +106,7 @@ def basic_cis(output):
                                                                                     alpha_transitions=alpha_transitions,
                                                                                     beta_transitions=beta_transitions)})
 
-                    except IndexError:
+                    except (IndexError, ParserError):
                         # This supposes single electron transition
                         alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
 

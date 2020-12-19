@@ -378,7 +378,6 @@ class QchemInput:
             input_file += 'cis_ampl_anal {}\n'.format(self._cis_ampl_anal)
             input_file += 'loc_cis_ov_separate {}\n'.format(self._loc_cis_ov_separate)
             input_file += 'er_cis_numstate {}\n'.format(self._er_cis_numstate)
-            input_file += 'cis_diabath_decompose {}\n'.format(self._cis_diabath_decompose)
             input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
         # other
         if self._namd_nsurfaces is not None:
