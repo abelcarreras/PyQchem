@@ -108,7 +108,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
         os.environ["MKL_NUM_THREADS"] = "1"
 
     os.environ["GUIFILE"] = fchk_file
-    qc_dir = os.environ['QC']
+    qc_dir = os.getenv('QC')
     binary = "{}/exe/qcprog.exe".format(qc_dir)
     # command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
     command = binary + ' {} '.format(os.path.join(work_dir, input_file_name)) + ' {} '.format(work_dir)
@@ -255,7 +255,7 @@ def get_output_from_qchem(input_qchem,
             input_qchem.gui = 2
 
     if scratch is None:
-        scratch = os.environ['QCSCRATCH']
+        scratch = os.getenv('QCSCRATCH')
 
     work_dir = '{}/qchem{}/'.format(scratch, os.getpid())
 

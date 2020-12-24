@@ -113,7 +113,7 @@ class QchemInput:
                  symmetry=True,
                  sym_ignore=False,
                  # other
-                 n_frozen_core='fc',
+                 n_frozen_core=None,
                  n_frozen_virt=0,
                  mom_start=False,
                  reorder_orbitals=None,
@@ -253,11 +253,13 @@ class QchemInput:
         input_file += 'RPA {}\n'.format(self._RPA)
         input_file += 'mem_total {}\n'.format(self._mem_total)
         input_file += 'mem_static {}\n'.format(self._mem_static)
-        input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
         input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
         input_file += 'scf_guess_mix {}\n'.format(self._scf_guess_mix)
+
+        if self._n_frozen_core is not None:
+            input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
 
         if self._solvent_method is not None:
             input_file += 'solvent_method {}\n'.format(self._solvent_method)
