@@ -16,6 +16,7 @@ def basic_optimization(output, print_data=False):
     symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
     n_atoms = len(coordinates)
 
+    step_s2 = None
     # Optimization steps
     optimization_steps = []
     list_iterations = [l.end() for l in re.finditer('Optimization Cycle', output)]
@@ -36,6 +37,10 @@ def basic_optimization(output, print_data=False):
         step_gradient = float(step_section[enum: enum+50].split()[1])
         enum = step_section.find('      Displacement')
         step_displacement = float(step_section[enum: enum+50].split()[1])
+
+        enum = step_section.find('<S^2>')
+        if enum > 0:
+            step_s2 = float(step_section[enum: enum+50].split()[2])
 
         optimization_steps.append({'molecule': step_molecule,
                                    'energy': step_energy,
@@ -61,6 +66,7 @@ def basic_optimization(output, print_data=False):
 
         data_dict['optimized_molecule'] = optimized_molecule
         data_dict['energy'] = final_energy
+        data_dict['s2'] = step_s2
 
     return data_dict
 
