@@ -136,43 +136,35 @@ def build_fchk(parsed_data):
 
 def read_structure_from_xyz(filename, read_multiple=False):
     """
-    Reads a XYZ file and returns the geometry of all structures in it
+    Read a XYZ file a return a Structure
+
     :param file_name: file name
-    :param read_multiple: read multiple files if available
-    :return: list of Geometry objects
+    :param read_multiple: read multiple molecules
+    :return: Structure or list of Structure
     """
-    input_molecule = [[], []]
-    geometries = []
+
     with open(filename, mode='r') as lines:
-        lines.readline()
-        name = lines.readline()
-        if name.strip():
-            name = name.split()[0]
-        for line in lines:
-            if '$' in line or '#' in line:
-                pass
-            else:
-                try:
-                    float(line.split()[1])
-                    input_molecule[0].append(line.split()[0])
-                    input_molecule[1].append(line.split()[1:])
-                except (ValueError, IndexError):
-                    if input_molecule[0]:
-                        structure = Structure(coordinates=np.array(input_molecule[1], dtype=float).tolist(),
-                                              symbols=input_molecule[0],
-                                              name=name)
-                    input_molecule = [[], []]
-                    name = line.split()[0]
+        file_lines = lines.readlines()
+        i_start = 0
+        structures = []
+        while True:
+            n_atoms = int(file_lines[i_start].split()[0])
+            name = file_lines[i_start+ 1]
+            body_txt = file_lines[i_start + 2: i_start+ n_atoms+2]
 
-        structure = Structure(coordinates=np.array(input_molecule[1], dtype=float).tolist(),
-                              symbols=input_molecule[0],
-                              name=name)
-        if read_multiple:
-            geometries.append(structure)
-        else:
-            return structure
+            structures.append(Structure(coordinates=np.array([c.split()[1:4] for c in body_txt], dtype=float).tolist(),
+                                        symbols=[c.split()[0] for c in body_txt],
+                                        name=name)
+                              )
 
-    return geometries
+            if not read_multiple:
+                return structures[0]
+
+            i_start += len(body_txt) + 2
+            if len(file_lines) - i_start < 3:
+                break
+
+    return structures
 
 
 def write_structure_to_xyz(structures, filename):

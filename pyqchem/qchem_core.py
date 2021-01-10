@@ -1,4 +1,4 @@
-import os
+import os, shutil
 from subprocess import Popen, PIPE
 import numpy as np
 import hashlib
@@ -219,6 +219,7 @@ def get_output_from_qchem(input_qchem,
                           force_recalculation=False,
                           fchk_only=False,
                           store_full_output=False,
+                          remove_scratch=True,
                           remote=None,
                           strict_policy=False):
     """
@@ -360,6 +361,9 @@ def get_output_from_qchem(input_qchem,
         store_calculation_data(input_qchem, 'fchk', data_fchk)
 
         return output, data_fchk
+
+    if remove_scratch:
+        shutil.rmtree(work_dir)
 
     return output
 
