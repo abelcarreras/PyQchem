@@ -15,6 +15,7 @@ A python wrapper for Q-Chem software (https://www.q-chem.com).
     advanced
     symmetry
     errors
+    tutorial
     api
     troubleshooting
 
