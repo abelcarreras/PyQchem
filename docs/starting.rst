@@ -51,6 +51,21 @@ Example of single point calculation using unrestricted Hartree-Fock method with 
                           basis='6-31G',
                           unrestricted=True)
 
+.. note::
+
+    In case a particular Q-Chem keyword of *$REM* section in not implemented in PyQchem, *extra_rem_keywords* argument
+    can be used to include it. This argument requires a dictionary containing the keywords as dictionary keys and its
+    values as dictionary values. Values can be either strings or numbers.
+
+    .. code-block:: python
+
+            qc_input = QchemInput(molecule,
+                          jobtype='sp',
+                          exchange='hf',
+                          basis='6-31G',
+                          extra_rem_keywords={'keyword_1': 'value',
+                                              'keyword_2': 34}
+
 
 Running calculations
 --------------------

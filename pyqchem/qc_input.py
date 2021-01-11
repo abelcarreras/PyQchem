@@ -127,6 +127,8 @@ class QchemInput:
                  mem_total=2000,
                  mem_static=64,
                  skip_scfman=False,
+                 # special
+                 extra_rem_keywords=None,
                  ):
 
         # put to arguments self._* (will be written explicitly)
@@ -422,6 +424,11 @@ class QchemInput:
             input_file += 'rpath_max_cycles {}\n'.format(self._rpath_max_cycles)
             input_file += 'rpath_max_stepsize {}\n'.format(self._rpath_max_stepsize)
             input_file += 'rpath_tol_displacement {}\n'.format(self._rpath_tol_displacement)
+
+        # Extra keywords
+        if self._extra_rem_keywords is not None:
+            for key, value in self._extra_rem_keywords.items():
+                input_file += '{} {}\n'.format(key, value)
 
         input_file += '$end\n'
 
