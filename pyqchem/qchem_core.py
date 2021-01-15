@@ -6,6 +6,8 @@ import pickle
 import warnings
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
+import time
+import fcntl
 
 
 __calculation_data_filename__ = 'calculation_data.pkl'
@@ -13,7 +15,11 @@ try:
     with open(__calculation_data_filename__, 'rb') as input:
         calculation_data = pickle.load(input)
         print('Loaded data from {}'.format(__calculation_data_filename__))
-except (IOError, EOFError):
+except (IOError, EOFError, BlockingIOError):
+    print('Creating new calculation data file {}'.format(__calculation_data_filename__))
+    calculation_data = {}
+except (UnicodeDecodeError):
+    print('Warning: Calculation data file is corrupted and will be overwritten')
     calculation_data = {}
 
 
@@ -28,7 +34,8 @@ def redefine_calculation_data_filename(filename):
         with open(__calculation_data_filename__, 'rb') as input:
             calculation_data = pickle.load(input)
             print('Loaded data from {}'.format(__calculation_data_filename__))
-    except IOError:
+    except (IOError, EOFError):
+        print('Creating new calculation data file {}'.format(__calculation_data_filename__))
         calculation_data = {}
 
 
@@ -198,11 +205,39 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL):
+def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL, timeout=60):
+    global calculation_data
+
+    for iter in range(100):
+        try:
+            with open(__calculation_data_filename__, 'rb') as input:
+                calculation_data = pickle.load(input)
+        except FileNotFoundError:
+            calculation_data = {}
+            continue
+        except (UnicodeDecodeError):
+            print('Warning: {} file is corrupted and will be overwritten'.format(__calculation_data_filename__))
+            calculation_data = {}
+        except (BlockingIOError, IOError, EOFError):
+            # print('read_try: {}'.format(iter))
+            time.sleep(timeout/100)
+            continue
+        break
 
     calculation_data[(hash(input_qchem), keyword)] = data
-    with open(__calculation_data_filename__, 'wb') as f:
-        pickle.dump(calculation_data, f, protocol)
+
+    for iter in range(100):
+        try:
+            with open(__calculation_data_filename__, 'wb') as f:
+                fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                pickle.dump(calculation_data, f, protocol)
+        except BlockingIOError:
+            # print('read_try: {}'.format(iter))
+            time.sleep(timeout/100)
+            continue
+        break
+
+    print('store_calc', len(calculation_data))
 
 
 def retrieve_calculation_data(input_qchem, keyword):
