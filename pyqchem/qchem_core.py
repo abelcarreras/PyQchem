@@ -8,7 +8,12 @@ from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
 import time
 import fcntl
+import sys
 
+
+# Py2 compatibility
+if sys.version_info[0] < 3:
+    BlockingIOError = IOError
 
 __calculation_data_filename__ = 'calculation_data.pkl'
 try:
