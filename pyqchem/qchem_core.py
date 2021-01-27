@@ -242,8 +242,6 @@ def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_P
             continue
         break
 
-    print('store_calc', len(calculation_data))
-
 
 def retrieve_calculation_data(input_qchem, keyword):
     return calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem), keyword) in calculation_data else None
