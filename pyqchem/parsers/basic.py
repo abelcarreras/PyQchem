@@ -18,9 +18,13 @@ def _get_orbital_energies(orbitals_section):
 
 def basic_parser_qchem(output):
     """
-    This showcases the format of parser version compatibility
+    This showcases the format of  Q-Chem version parser compatibility.
+    Just by creating a docstring with the following line:
 
     compatibility: 5.1, 5.2+
+
+    will activate the check for parser-qchem version compatibility.
+    If they are not compatible a warning will rise.
 
     """
     data_dict = {}
