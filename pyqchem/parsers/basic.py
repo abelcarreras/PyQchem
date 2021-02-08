@@ -17,7 +17,12 @@ def _get_orbital_energies(orbitals_section):
 
 
 def basic_parser_qchem(output):
+    """
+    This showcases the format of parser version compatibility
 
+    compatibility: 5.1, 5.2+
+
+    """
     data_dict = {}
 
     # scf_energy

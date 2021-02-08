@@ -49,6 +49,87 @@ def finish_ok(output):
     return output[-1000:].find('Thank you very much for using Q-Chem') != -1
 
 
+# Return qchem version
+def get_version_output(output):
+
+    class QChemVersion:
+        def __init__(self, string):
+
+            string_version = string.split()[1]
+            self._major = string_version.split('.')[0]
+            self._minor = string_version.split('.')[1]
+
+            string_branch = string.split()[2]
+            self._devel = True if '(devel)' in string_branch else False
+
+        def __str__(self):
+            dev = 'dev' if self.is_development else ''
+            return '{}.{} {}'.format(self.major, self.minor, dev)
+
+        def __eq__(self, other):
+
+            """
+            Here put the logic for more sophisticated comparison
+            between versions
+
+            :param other: string/QchemVersion
+            :return:
+            """
+
+            if isinstance(other, QChemVersion):
+                return True if self.__str__() == other.__str__() else False
+
+            o_major = other.split('.')[0]
+            o_minor = other.split('.')[1]
+
+            if int(o_major) == self.major:
+
+                # handle expresions like 2.3+
+                if '+' in o_minor[-1]:
+                    if self.minor >= int(o_minor[:-1]):
+                        return True
+                    else:
+                        return False
+
+                if int(o_minor) == self.minor:
+                    return True
+
+            return False
+
+        @property
+        def major(self):
+            return int(self._major)
+
+        @property
+        def minor(self):
+            return int(self._minor)
+
+        @property
+        def is_development(self):
+            return self._devel
+
+    index = output[:500].find('\n Q-Chem')
+    string = output[index: index + 30]
+
+    return QChemVersion(string)
+
+
+def get_compatibility_list_from_parser(parser):
+    docstring = parser.__doc__
+    if docstring is None:
+        return None
+
+    lines = docstring.split('\n')
+    for line in lines:
+        if 'compatibility' in line.lower():
+            try:
+                return [version.strip() for version in line.split(':')[1].split(',')]
+            except IndexError:
+                continue
+
+    return None
+
+
 # Layer of compatibility with old version
 def create_qchem_input(*args, **kwargs):
     return QchemInput(*args, **kwargs)
@@ -369,10 +450,19 @@ def get_output_from_qchem(input_qchem,
     if not finish_ok(output):
         raise OutputError(output, err)
 
+    version = get_version_output(output)
+
     if store_full_output:
         store_calculation_data(input_qchem, 'fullout', [output, err])
 
     if parser is not None:
+
+        # Check parser compatibility
+        compatibility_list = get_compatibility_list_from_parser(parser)
+        if compatibility_list is not None:
+            if version not in compatibility_list:
+                warnings.warn('Parser "{}" may not be compatible with Q-Chem {}'.format(parser.__name__, version))
+
         try:
             output = parser(output, **parser_parameters)
         # minimum functionality for error capture
