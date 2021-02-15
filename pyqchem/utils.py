@@ -2,6 +2,7 @@ import re
 import numpy as np
 from scipy.optimize import leastsq
 from copy import deepcopy
+import warnings
 
 
 def standardize_vector(vector):
@@ -37,7 +38,7 @@ def search_bars(output, from_position=0, bar_type='---'):
     return positions
 
 
-def is_transition(configuration, reference, n_electron=1, max_jump=10):
+def is_rasci_transition(configuration, reference, n_electron=1, max_jump=10):
     """
     Determine if a configuration corresponds to a transition of n_electron
 
@@ -48,6 +49,9 @@ def is_transition(configuration, reference, n_electron=1, max_jump=10):
 
     :return: True if conditions are met, otherwise False
     """
+
+    warnings.warn('This function will be deprecated, use "is_transition" instead', DeprecationWarning)
+
 
     alpha_diff = [int(i) - int(j) for i, j in zip(configuration['alpha'], reference['alpha'])]
     beta_diff = [int(i) - int(j) for i, j in zip(configuration['beta'], reference['beta'])]
@@ -77,9 +81,10 @@ def is_transition(configuration, reference, n_electron=1, max_jump=10):
     return elec_condition and jump_condition
 
 
-def get_ratio_of_condition(state, n_electron=1, max_jump=10):
+def get_ratio_of_condition_rasci(state, n_electron=1, max_jump=10):
     # reference = {'hole': '', 'alpha': '111000', 'beta': '111000', 'part': '', 'amplitude': 0.9777044}
 
+    warnings.warn('This function will be deprecated, use "get_ratio_of_condition" instead', DeprecationWarning)
     alpha_int = [int(i) for i in state['configurations'][0]['alpha']]
     ref_alpha = ''
     for i in range(len(alpha_int)):
@@ -89,6 +94,68 @@ def get_ratio_of_condition(state, n_electron=1, max_jump=10):
             ref_alpha += '0'
 
     reference = {'hole': '', 'alpha': ref_alpha, 'beta': ref_alpha, 'part': ''}
+
+    p = 0
+    for configuration in state['configurations']:
+        if is_rasci_transition(configuration, reference, n_electron, max_jump):
+            p += configuration['amplitude']**2
+
+    return p
+
+def is_transition(configuration, reference, n_electron=1, max_jump=10):
+    """
+    Determine if a configuration corresponds to a transition of n_electron
+
+    :param configuration: dictionary containing the configuration to be analyzed
+    :param reference: reference configuration (in general lowest energy Slater determinant)
+    :param n_electron: number of electrons in the transition
+    :param max_jump: Restrict to transitions with jumps less or equal to max_jump orbitals
+
+    :return: True if conditions are met, otherwise False
+    """
+
+    alpha_diff = [int(i) - int(j) for i, j in zip(configuration['occupations']['alpha'], reference['alpha'])]
+    beta_diff = [int(i) - int(j) for i, j in zip(configuration['occupations']['beta'], reference['beta'])]
+
+
+    ini_alpha = np.where(np.array(alpha_diff) < 0)[0]
+    fin_alpha = np.where(np.array(alpha_diff) > 0)[0]
+
+    ini_beta = np.where(np.array(beta_diff) < 0)[0]
+    fin_beta = np.where(np.array(beta_diff) > 0)[0]
+
+    try:
+        jump_alpha = np.max(fin_alpha) - np.min(ini_alpha)
+    except ValueError:
+        jump_alpha = 0
+
+    try:
+        jump_beta = np.max(fin_beta) - np.min(ini_beta)
+    except ValueError:
+        jump_beta = 0
+
+    n_alpha = len(fin_alpha)
+    n_beta = len(fin_beta)
+
+    elec_condition = n_alpha + n_beta == n_electron
+    jump_condition = jump_alpha <= max_jump and jump_beta <= max_jump
+
+    return elec_condition and jump_condition
+
+
+def get_ratio_of_condition(state, n_electron=1, max_jump=10, ground_state_configuration=None):
+    # reference = {'hole': '', 'alpha': '111000', 'beta': '111000', 'part': '', 'amplitude': 0.9777044}
+
+
+    n_alpha = np.sum(state['configurations'][0]['occupations']['alpha'])
+    n_beta = np.sum(state['configurations'][0]['occupations']['beta'])
+    n_orb = len(state['configurations'][0]['occupations']['alpha'])
+
+    if ground_state_configuration is None:
+        reference = {'alpha': [1] * n_alpha + [0] * (n_orb - n_alpha),
+                     'beta': [1] * n_beta + [0] * (n_orb - n_beta)}
+    else:
+        reference = ground_state_configuration
 
     p = 0
     for configuration in state['configurations']:

@@ -1,5 +1,7 @@
 __author__ = 'Abel Carreras'
+AU_TO_EV = 27.21138
 
+from pyqchem.structure import Structure
 from pyqchem.utils import search_bars, standardize_vector
 from pyqchem.errors import ParserError
 from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list
@@ -27,8 +29,33 @@ def basic_cis(output):
     :param output:
     :return:
     """
-
     data_dict = {}
+
+    # Molecule
+    n = output.find('$molecule')
+    n2 = output[n:].find('$end')
+
+    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
+    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
+    coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
+    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
+    n_atoms = len(symbols)
+
+    # structure
+    structure_input = Structure(coordinates=coordinates,
+                                symbols=symbols,
+                                charge=charge,
+                                multiplicity=multiplicity)
+
+    enum = output.find('Standard Nuclear Orientation')
+    section_structure = output[enum:enum + 200*structure_input.get_number_of_atoms()].split('\n')
+    section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
+    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
+
+    data_dict['structure'] = Structure(coordinates=coordinates,
+                                       symbols=symbols,
+                                       charge=charge,
+                                       multiplicity=multiplicity)
 
     # scf_energy
     enum = output.find('Total energy in the final basis set')
@@ -231,6 +258,68 @@ def basic_cis(output):
                         break
 
         data_dict['interstate_properties'] = data_interstate
+
+    # diabatization
+    initial = output.find('Localization Code for CIS excited states')
+    if initial > 0:
+
+        bars = search_bars(output, from_position=initial)
+        diabat_section = output[initial: bars[0]]
+
+        def read_diabatization_matrix(label):
+            matrix = []
+            for m in re.finditer(label, diabat_section):
+                line = diabat_section[m.end(): m.end() + 50].split('\n')[0]
+                matrix.append(float(line.split('=')[1]))
+
+            diabat_dim = int(np.sqrt(len(matrix)))
+            return np.array(matrix).reshape(diabat_dim, diabat_dim).T
+
+        rot_matrix = read_diabatization_matrix('showmatrix adiabatic R-Matrix')
+        adiabatic_matrix = read_diabatization_matrix('showmatrix adiabatH') * AU_TO_EV
+        diabatic_matrix = read_diabatization_matrix('showmatrix diabatH') * AU_TO_EV
+
+        diabat_data = {'rot_matrix': rot_matrix,
+                       'adiabatic_matrix': adiabatic_matrix.tolist(),
+                       'diabatic_matrix': diabatic_matrix.tolist()}
+
+        if diabat_section.find('showmatrix Total_Decomposed_H_diabatic'):
+
+            tot_decomp_matrix = read_diabatization_matrix('showmatrix Total_Decomposed_H_diabatic') * AU_TO_EV
+            decomp_one_matrix = read_diabatization_matrix('showmatrix Decomposed_One_diabatic') * AU_TO_EV
+            decomp_j_matrix = read_diabatization_matrix('showmatrix Decomposed_J_diabatic') * AU_TO_EV
+            decomp_k_matrix = read_diabatization_matrix('showmatrix Decomposed_K_diabatic') * AU_TO_EV
+
+            diabat_data.update({'tot_decomp_matrix': tot_decomp_matrix,
+                                               'decomp_one_matrix': decomp_one_matrix.tolist(),
+                                               'decomp_j_matrix': decomp_j_matrix.tolist(),
+                                               'decomp_k_matrix': decomp_k_matrix.tolist()})
+
+        mulliken_diabatic = []
+
+        enum = output.find('Mulliken & Loewdin analysis of')
+        for m in re.finditer('Mulliken analysis of TDA State', output[enum:]):
+            section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
+            section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
+            section_attachment = section_mulliken.split('\n')[10 + n_atoms: 10 + n_atoms * 2]
+
+            mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
+                                      'detach': [float(l.split()[2]) for l in section_attachment],
+                                      'total': [float(l.split()[3]) for l in section_attachment]})
+
+        diabatic_states = []
+        for i in range(len(rot_matrix)):
+            diabat_states_data = {'excitation_energy': diabatic_matrix[i][i],
+                                  'excitation_energy_units': 'eV',
+                                  'transition_moment': [],
+                                  'dipole_moment_units': 'ua'}
+            if len(mulliken_diabatic) > 0:
+                diabat_states_data['mulliken'] = mulliken_diabatic[i]
+
+            diabatic_states.append(diabat_states_data)
+        diabat_data['diabatic_states'] = diabatic_states
+
+        data_dict['diabatization'] = diabat_data
 
     return data_dict
 

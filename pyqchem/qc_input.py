@@ -443,14 +443,21 @@ class QchemInput:
             input_file += '\n$end\n'
 
         # Constrains section
+        def modulate_angles(type, value):
+            if type in ['tors', 'outp', 'linc', 'linp', 'bend']:
+                value = np.mod(value + 180, 360) - 180
+            if type in ['bend']:
+                value = np.abs(value)
+            return value
+
         if self._geom_opt_constrains is not None:
             input_file += '$opt\n'
             input_file += 'CONSTRAINT\n'
             for type, constrains in self._geom_opt_constrains.items():
                 for constrain in constrains:
                     input_file += '{} {} {:15.6f}\n'.format(type,
-                                                      ' '.join([str(num) for num in constrain['atoms']]),
-                                                      constrain['value'])
+                                                            ' '.join([str(num) for num in constrain['atoms']]),
+                                                            modulate_angles(type, constrain['value']))
             input_file += 'ENDCONSTRAINT\n'
             input_file += '$end\n'
 

@@ -4,6 +4,7 @@ from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.structure import Structure
 from pyqchem.plots import plot_diabatization, plot_state
+from pyqchem.utils import get_ratio_of_condition
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -112,7 +113,6 @@ plt.show()
 
 
 # Analysis of diabatic states to use in diabatization
-from pyqchem.utils import is_transition, get_ratio_of_condition
 print('\nAdiabatic states to use in diabatization (1e, max_jump 4)')
 for i, state in enumerate(parsed_data['excited_states']):
     ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)

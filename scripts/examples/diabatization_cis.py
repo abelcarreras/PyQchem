@@ -1,8 +1,8 @@
 from pyqchem import Structure, QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
-from pyqchem.parsers.parser_rasci import parser_rasci
+from pyqchem.parsers.parser_cis import basic_cis
 from pyqchem.plots import plot_diabatization, plot_state
-from pyqchem.utils import is_transition, get_ratio_of_condition
+from pyqchem.utils import get_ratio_of_condition
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,7 +44,7 @@ print(opt_monomer)
 
 # Build dimer from monomer
 coor_monomer2 = np.array(opt_monomer.get_coordinates())
-coor_monomer2[:, 2] += 4.0  # monomers separation
+coor_monomer2[:, 2] += 6.0  # monomers separation
 
 coordinates = opt_monomer.get_coordinates() + coor_monomer2.tolist()
 symbols_dimer = symbols_monomer * 2
@@ -57,26 +57,28 @@ dimer = Structure(coordinates=coordinates,
 print('Dimer structure')
 print(dimer)
 
-# RASCI qchem input
-qc_input = QchemInput(dimer,
-                      jobtype='sp',
-                      exchange='hf',
-                      correlation='rasci',
-                      basis='sto-3g',
-                      ras_act=6,
-                      ras_elec=4,
-                      ras_spin_mult=1,  # singlets only
-                      ras_roots=8,      # calculate 8 states
-                      ras_do_hole=False,
-                      ras_do_part=False,
-                      set_iter=30)
 
-# print(qc_input.get_txt())
+# CIS qchem input
+qc_input = QchemInput(dimer,
+                      exchange='hf',
+                      basis='sto-3g',
+                      #unrestricted=True,
+                      cis_n_roots=10,
+                      cis_convergence=8,
+                      cis_singlets=True,
+                      cis_triplets=False,
+                      cis_ampl_anal=True,
+                      RPA=False,
+                      mem_static=900,
+                      set_iter=30
+                      )
+
+print(qc_input.get_txt())
 
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
                                     force_recalculation=False,
-                                    parser=parser_rasci
+                                    parser=basic_cis
                                     )
 
 
@@ -84,7 +86,7 @@ parsed_data = get_output_from_qchem(qc_input,
 print('\nStates to use in diabatization (1e, max_jump 4)')
 list_diabatic = []
 for i, state in enumerate(parsed_data['excited_states']):
-    ratio = get_ratio_of_condition(state, n_electron=1, max_jump=4)
+    ratio = get_ratio_of_condition(state, n_electron=1, max_jump=3)
     if ratio > 0.5:
         list_diabatic.append(i+1)
         mark = 'X'
@@ -98,28 +100,34 @@ diabatization_scheme = [{'method': 'ER', # first step
                          'states': list(range(1, len(list_diabatic)+1))},  # in order with respect to selected states
                         ]
 
+
 # RASCI qchem input
 qc_input = QchemInput(dimer,
-                      jobtype='sp',
                       exchange='hf',
-                      correlation='rasci',
                       basis='sto-3g',
-                      ras_act=6,
-                      ras_elec=4,
-                      ras_spin_mult=1,  # singlets only
-                      ras_roots=8,      # calculate 8 states
-                      ras_do_hole=False,
-                      ras_do_part=False,
-                      ras_diabatization_states=list_diabatic,  # adiabatic states selected for diabatization
-                      ras_diabatization_scheme=diabatization_scheme,
-                      set_iter=30)
+                      #unrestricted=True,
+                      cis_n_roots=10,
+                      cis_convergence=8,
+                      cis_singlets=True,
+                      cis_triplets=False,
+                      cis_ampl_anal=True,
+                      loc_cis_ov_separate=False,
+                      namd_nsurfaces=0,
+                      er_cis_numstate=len(list_diabatic),
+                      cis_diabath_decompose=True,
+                      localized_diabatization=list_diabatic,
+                      RPA=False,
+                      mem_static=900,
+                      set_iter=30
+                      )
 
 # print(qc_input.get_txt())
 
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
                                     force_recalculation=False,
-                                    parser=parser_rasci
+                                    parser=basic_cis,
+                                    store_full_output=True,
                                     )
 
 # parsed_data = rasci_parser(parsed_data)
@@ -131,14 +139,13 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
-    print(' Alpha  Beta   Amplitude')
+    print(' Origin  Target   Amplitude')
     for j, conf in enumerate(state['configurations']):
-        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
+        print('{:^9} {:^7} {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))
 
 # plot adiabatic states
 for i, state in enumerate(parsed_data['excited_states']):
-    plot_state(state, with_amplitude=True, orbital_range=[qc_input._ras_occ,
-                                                          qc_input._ras_occ + qc_input._ras_act])
+    plot_state(state, with_amplitude=True, orbital_range=[0, dimer.alpha_electrons + 10])
     plt.title('Adiabatic State {}'.format(i+1))
 
 plt.show()
@@ -162,7 +169,6 @@ print('\nDiabatic states dimer\n--------------------')
 
 for i, state in enumerate(diabatization['diabatic_states']):
     print('\nState {}'.format(i+1))
-    print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
 
 plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
@@ -170,23 +176,25 @@ plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_num
 
 
 # Monomer adiabatic states (extra test)
-qc_input = QchemInput(opt_monomer,
-                      jobtype='sp',
+qc_input = QchemInput(dimer,
+                      #method='cis',
                       exchange='hf',
-                      correlation='rasci',
                       basis='sto-3g',
-                      ras_act=6,
-                      ras_elec=4,
-                      ras_spin_mult=1,  # singlets only
-                      ras_roots=4,      # calculate 8 states
-                      ras_do_hole=False,
-                      ras_do_part=False,
-                      set_iter=30)
+                      #unrestricted=True,
+                      cis_n_roots=10,
+                      cis_convergence=8,
+                      cis_singlets=True,
+                      cis_triplets=False,
+                      cis_ampl_anal=True,
+                      RPA=False,
+                      mem_static=900,
+                      set_iter=30
+                      )
 
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=14,
                                     force_recalculation=False,
-                                    parser=parser_rasci
+                                    parser=basic_cis
                                     )
 
 print('\nAdiabatic states monomer\n--------------------')
@@ -194,6 +202,6 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
-    print(' Alpha  Beta   Amplitude')
+    print(' Origin  Target   Amplitude')
     for j, conf in enumerate(state['configurations']):
-        print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
+        print('{:^9} {:^7} {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))
