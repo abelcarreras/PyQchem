@@ -63,7 +63,7 @@ qc_input = QchemInput(dimer,
                       exchange='hf',
                       basis='sto-3g',
                       #unrestricted=True,
-                      cis_n_roots=10,
+                      cis_n_roots=8,
                       cis_convergence=8,
                       cis_singlets=True,
                       cis_triplets=False,
@@ -83,11 +83,11 @@ parsed_data = get_output_from_qchem(qc_input,
 
 
 # Analysis of diabatic states to use in diabatization
-print('\nStates to use in diabatization (1e, max_jump 4)')
+print('\nStates to use in diabatization (1e, max_jump 3)')
 list_diabatic = []
 for i, state in enumerate(parsed_data['excited_states']):
     ratio = get_ratio_of_condition(state, n_electron=1, max_jump=3)
-    if ratio > 0.5:
+    if ratio > 0.9:
         list_diabatic.append(i+1)
         mark = 'X'
     else:
@@ -95,18 +95,12 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
 
 
-# sequential diabatization scheme (2 steps)
-diabatization_scheme = [{'method': 'ER', # first step
-                         'states': list(range(1, len(list_diabatic)+1))},  # in order with respect to selected states
-                        ]
-
-
 # RASCI qchem input
 qc_input = QchemInput(dimer,
                       exchange='hf',
                       basis='sto-3g',
                       #unrestricted=True,
-                      cis_n_roots=10,
+                      cis_n_roots=8,
                       cis_convergence=8,
                       cis_singlets=True,
                       cis_triplets=False,

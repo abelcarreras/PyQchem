@@ -146,7 +146,6 @@ def is_transition(configuration, reference, n_electron=1, max_jump=10):
 def get_ratio_of_condition(state, n_electron=1, max_jump=10, ground_state_configuration=None):
     # reference = {'hole': '', 'alpha': '111000', 'beta': '111000', 'part': '', 'amplitude': 0.9777044}
 
-
     n_alpha = np.sum(state['configurations'][0]['occupations']['alpha'])
     n_beta = np.sum(state['configurations'][0]['occupations']['beta'])
     n_orb = len(state['configurations'][0]['occupations']['alpha'])
