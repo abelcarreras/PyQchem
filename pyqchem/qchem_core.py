@@ -338,7 +338,7 @@ def get_output_from_qchem(input_qchem,
                           force_recalculation=False,
                           fchk_only=False,
                           store_full_output=False,
-                          remove_scratch=True,
+                          delete_scratch=True,
                           remote=None,
                           strict_policy=False):
     """
@@ -364,6 +364,8 @@ def get_output_from_qchem(input_qchem,
     :param force_recalculation: Force to recalculate even identical calculation has already performed
     :param fchk_only: If true, returns only the electronic structure data parsed from FCHK file
     :param remote: dictionary containing the data for remote calculation (beta)
+    :param store_full_output: store full output in plain text in pkl file
+    :param delete_scratch: delete all scratch files when calculation is finished
 
     :return: output [, fchk_dict]
     """
@@ -490,7 +492,7 @@ def get_output_from_qchem(input_qchem,
 
         return output, data_fchk
 
-    if remove_scratch:
+    if delete_scratch:
         shutil.rmtree(work_dir)
 
     return output

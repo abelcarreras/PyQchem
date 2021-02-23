@@ -13,7 +13,7 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
             print('Multiplicity', state['multiplicity'])
 
         if state['transition_moment'] is not None:
-            print('Osc. strength: {:6.4f}'.format(state['oscillator_strength']))
+            #print('Osc. strength: {:6.4f}'.format(state['oscillator_strength']))
             print('Transition DM: ', '{:6.4f} {:6.4f} {:6.4f}'.format(*state['transition_moment']),
                   ' ', state['dipole_moment_units'])
 
@@ -31,8 +31,6 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
             for i_atom, (at, det) in enumerate(zip(state['mulliken']['attach'],
                                                    state['mulliken']['detach'])):
                 print('{:5}  {:8.4f}  {:8.4f}  {:8.4f}'.format(i_atom + 1, at, det, at + det))
-
-
 
 
 def plot_rasci_state_configurations(states):

@@ -129,6 +129,7 @@ class QchemInput:
                  skip_scfman=False,
                  # special
                  extra_rem_keywords=None,
+                 extra_sections=None,
                  ):
 
         # put to arguments self._* (will be written explicitly)
@@ -527,6 +528,15 @@ class QchemInput:
                 input_file += '{} {}\n'.format(prop, value)
             input_file += '$end\n'
 
+        # extra sections
+        if self._extra_sections is not None:
+            if isinstance(self._extra_sections, list):
+                for section in self._extra_sections:
+                    input_file += section.get_txt()
+            else:
+                # Only one section
+                input_file += self._extra_sections.get_txt()
+
         return input_file + "\n"
 
     def store_mo_file(self, path='.'):
@@ -608,3 +618,16 @@ class QchemInput:
         # put to arguments self._* (will be written explicitly)
         for name, value in dictionary.items():
             setattr(self, '_' + name, value)
+
+
+class CustomSection:
+    def __init__(self, title, data):
+        self._tile = title
+        self._data = data
+
+    def get_txt(self):
+        txt_input = '${}\n'.format(self._tile)
+        for prop, value in self._data.items():
+            txt_input += ' {} {}\n'.format(prop, value)
+        txt_input += '$end\n'
+        return txt_input

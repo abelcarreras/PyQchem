@@ -33,6 +33,12 @@ def get_array_txt(label, type, array, row_size=5):
     return txt_fchk
 
 
+def write_to_fchk(parsed_data, filename):
+    txt = build_fchk(parsed_data)
+    with open(filename, 'w') as f:
+        f.write(txt)
+
+
 def build_fchk(parsed_data):
 
     structure = parsed_data['structure']

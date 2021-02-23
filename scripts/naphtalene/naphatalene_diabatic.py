@@ -3,9 +3,8 @@ from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.file_io import build_fchk
 from pyqchem.symmetry import get_symmetry_le
 from pyqchem.qchem_core import redefine_calculation_data_filename
-from pyqchem.utils import _set_zero_to_coefficients, get_plane
-from pyqchem.utils import is_transition, get_ratio_of_condition
-from pyqchem.units import DEBYE_TO_AU
+from pyqchem.utils import get_plane
+from pyqchem.utils import get_ratio_of_condition
 from pyqchem.tools import print_excited_states, plot_rasci_state_configurations
 from pyqchem.plots import plot_diabatization
 import numpy as np
@@ -105,10 +104,10 @@ for i, state in enumerate(parsed_data['excited_states']):
 
 # sequential diabatization scheme (2 steps)
 diabatization_scheme = [
-                        #{'method': 'ER', 'states': list(range(1, len(list_diabatic)+1))},
+                        # {'method': 'ER', 'states': list(range(1, len(list_diabatic)+1))},
                         {'method': 'Boys', 'states': list(range(1, len(list_diabatic)+1))},
                         # {'method': 'ER', 'states': [3, 4, 5, 6]},
-                        #{'method': 'DQ', 'states': list(range(1, len(list_diabatic)+1)), 'paramters': [0.9]}
+                        # {'method': 'DQ', 'states': list(range(1, len(list_diabatic)+1)), 'paramters': [0.9]}
                         ]
 
 # RASCI qchem input
@@ -183,72 +182,3 @@ print('Symmetry: ', sym_data)
 print('\nDiabatic states symmetry analysis (monomer 2)')
 sym_data = get_symmetry_le(electronic_structure, parsed_data, fragment_atoms=range_f1, group='D2h')
 print('Symmetry: ', sym_data)
-
-exit()
-
-# Test kimonet Forster coupling
-from kimonet.system.molecule import Molecule
-from kimonet.core.processes.couplings import forster_coupling, forster_coupling_extended
-from kimonet.system.state import State
-from kimonet.system.vibrations import MarcusModel, LevichJortnerModel, EmpiricalModel
-from kimonet.core.processes import GoldenRule, DecayRate, DirectRate
-from kimonet.core.processes.decays import einstein_radiative_decay
-
-au2dby = 1/DEBYE_TO_AU
-
-
-# TODO: this has to be adapted to new inerface in KIMONET
-molecule = Molecule(states=[State(label='gs', energy=0),
-                            State(label='s1', energy=1.0)],
-                    transition_moment={('s1', 'gs'): [0.0001 * au2dby, 0.2673 * au2dby, -0.0230 * au2dby],
-                                       # ('s1', 'gs'): [0.0001 * au2dby, 0.3379 * au2dby, -0.0296 * au2dby],
-                                       ('s2', 'gs'): [0.0140 * au2dby, 0.1174 * au2dby, 1.8592 * au2dby]},
-                    state='gs'
-                    )
-
-
-donor = molecule.copy()
-acceptor = molecule.copy()
-
-donor.set_orientation([0, 0, 0])
-donor.set_coordinates(center_f1)
-
-acceptor.set_orientation([0, 0, 0])
-acceptor.set_coordinates(center_f2)
-
-print('\n------------ S1 ---------------')
-donor.state = 's1'
-acceptor.state = 'gs'
-
-electronic_coupling = forster_coupling_extended(donor, acceptor,
-                                       [[100., 0,   0],
-                                        [0,   100., 0],
-                                        [0,   0,   100.]], [0, 0, 0], longitude=1.0, n_divisions=100)
-
-print('\n\nForster extended electronic coupling: {:10.8f}'.format(electronic_coupling))
-
-electronic_coupling = forster_coupling(donor, acceptor,
-                                       [[100., 0,   0],
-                                        [0,   100., 0],
-                                        [0,   0,   100.]],[0, 0, 0])
-
-print('\n\nForster electronic coupling: {:10.8f}'.format(electronic_coupling))
-
-print('\n--------- S2 -----------')
-
-donor.state = 's2'
-acceptor.state = 'gs'
-
-electronic_coupling = forster_coupling_extended(donor, acceptor,
-                                       [[100., 0,   0],
-                                        [0,   100., 0],
-                                        [0,   0,   100.]],[0, 0, 0], longitude=1.2, n_divisions=100)
-
-print('\n\nForster extended electronic coupling: {:10.8f}'.format(electronic_coupling))
-
-electronic_coupling = forster_coupling(donor, acceptor,
-                                       [[100., 0,   0],
-                                        [0,   100., 0],
-                                        [0,   0,   100.]],[0, 0, 0])
-
-print('\n\nForster electronic coupling: {:10.8f}'.format(electronic_coupling))
