@@ -60,11 +60,27 @@ Example of single point calculation using unrestricted Hartree-Fock method with 
     .. code-block:: python
 
             qc_input = QchemInput(molecule,
-                          jobtype='sp',
-                          exchange='hf',
-                          basis='6-31G',
-                          extra_rem_keywords={'keyword_1': 'value',
-                                              'keyword_2': 34}
+                                  jobtype='sp',
+                                  exchange='hf',
+                                  basis='6-31G',
+                                  extra_rem_keywords={'keyword_1': 'value',
+                                                      'keyword_2': 34}
+
+
+    Also if a non implemented Q-Chem section is required, *extra_sections* argument
+    can be used to include it. This argument requires a list of CustomSection objects
+    which can be imported from pyqchem.qc_input.
+
+
+    .. code-block:: python
+            from pyqchem.qc_input import CustomSection
+            qc_input = QchemInput(molecule,
+                                  jobtype='sp',
+                                  exchange='hf',
+                                  basis='6-31G',
+                                  extra_sections=[CustomSection(title='section_title',
+                                                                keywords={'sec_keyword_1': 'value',
+                                                                          'sec_keyword_2': 34})]
 
 
 Running calculations

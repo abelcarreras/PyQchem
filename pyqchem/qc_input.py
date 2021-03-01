@@ -621,9 +621,9 @@ class QchemInput:
 
 
 class CustomSection:
-    def __init__(self, title, data):
+    def __init__(self, title, keywords):
         self._tile = title
-        self._data = data
+        self._data = keywords
 
     def get_txt(self):
         txt_input = '${}\n'.format(self._tile)

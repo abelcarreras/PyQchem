@@ -12,7 +12,7 @@ to automatize Q-Chem calculations. For this purpose PyQchem implements
 an input generation class, a calculation submitting function and a set of
 flexible parsers that extracts the output information and converts in
 a well structured python dictionary. These parsers are intended to be as
-homogenious as possible among the different methods producing a
+homogeneous as possible among the different methods producing a
 python dictionary that contains similar entries and can be used with the
 same analysis/visualization functions.
 
