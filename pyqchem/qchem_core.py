@@ -1,11 +1,11 @@
-import os, shutil
+from pyqchem.qc_input import QchemInput
+from pyqchem.errors import ParserError, OutputError
 from subprocess import Popen, PIPE
+import os, shutil
 import numpy as np
 import hashlib
 import pickle
 import warnings
-from pyqchem.qc_input import QchemInput
-from pyqchem.errors import ParserError, OutputError
 import time
 import fcntl
 import sys
@@ -328,6 +328,15 @@ def retrieve_calculation_data(input_qchem, keyword):
     return calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem), keyword) in calculation_data else None
 
 
+def generate_additional_files(input_qchem, work_dir):
+    # Hessian
+    if input_qchem.hessian is not None:
+        # ndim = len(input_qchem.hessian)
+        hessian_triu = np.array(input_qchem.hessian)
+        with open(work_dir + '132.0', 'w') as f:
+            hessian_triu.tofile(f, sep='')
+
+
 def get_output_from_qchem(input_qchem,
                           processors=1,
                           use_mpi=False,
@@ -358,7 +367,7 @@ def get_output_from_qchem(input_qchem,
     :param processors: number of threads/processors to use in the calculation
     :param use_mpi: If False use OpenMP (threads) else use MPI (processors)
     :param scratch: Full Q-Chem scratch directory path. If None read from $QCSCRATCH
-    :param read_fchk: if True, generate and parse the FCHK file containing the electronic structure
+    :param read_fchk: if True, returns the parsed FCHK file containing the electronic structure
     :param parser: function to use to parse the Q-Chem output
     :param parser_parameters: additional parameters that parser function may have
     :param force_recalculation: Force to recalculate even identical calculation has already performed
@@ -371,15 +380,14 @@ def get_output_from_qchem(input_qchem,
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
 
-    # check gui > 2 if read_fchk
-    if read_fchk:
-        if input_qchem.gui is None or input_qchem.gui < 1:
-            input_qchem.gui = 2
+    # Always generate fchk
+    if input_qchem.gui is None or input_qchem.gui < 1:
+        input_qchem.gui = 2
 
     if scratch is None:
         scratch = os.getenv('QCSCRATCH')
 
-    work_dir = '{}/qchem{}/'.format(scratch, os.getpid())
+    work_dir = '{}/pyqchem_{}/'.format(scratch, os.getpid())
 
     try:
         os.mkdir(work_dir)
@@ -395,52 +403,38 @@ def get_output_from_qchem(input_qchem,
     if input_qchem._skip_scfman:
         input_qchem.store_energy_file(work_dir)
 
-    # check if hessian
-    if input_qchem.hessian is not None:
-        ndim =len(input_qchem.hessian)
-
-        hessian_triu = np.array(input_qchem.hessian)
-
-        with open(work_dir + '132.0', 'w') as f:
-            hessian_triu.tofile(f, sep='')
-
-    input_txt = input_qchem.get_txt()
-
     # check if parameters is None
     if parser_parameters is None:
         parser_parameters = {}
 
     # check if full output is stored
-    # print('input:', input_qchem)
     output, err = calculation_data[(hash(input_qchem), 'fullout')] if (hash(input_qchem), 'fullout') in calculation_data else [None, None]
-    # output, err = retrieve_calculation_data(input_qchem, 'fullout') if retrieve_calculation_data(input_qchem, 'fullout') is not None else [None, None]
+    data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
 
-    if not force_recalculation and not store_full_output:
-
-        data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
-
+    # check if repeated calculation
+    if not force_recalculation and not store_full_output:  # store_full_output always force re-parsing
         if parser is not None:
-
-            data = retrieve_calculation_data(hash(input_qchem), parser.__name__)
-
-            if data is not None:
-                if read_fchk is False:
-                    return data
-                elif data_fchk is not None:
-                    return data, data_fchk
+            parsed_data = retrieve_calculation_data(hash(input_qchem), parser.__name__)
+            if parsed_data is not None:
+                if read_fchk:
+                    return parsed_data, data_fchk
                 else:
-                    force_recalculation = True
-
+                    return parsed_data
         else:
             if fchk_only and data_fchk is not None:
-                return None, data_fchk
+                return output, data_fchk
 
     fchk_filename = 'qchem_temp_{}.fchk'.format(os.getpid())
     temp_filename = 'qchem_temp_{}.inp'.format(os.getpid())
 
+    # generate the input in TXT form
+    input_txt = input_qchem.get_txt()
     qchem_input_file = open(os.path.join(work_dir, temp_filename), mode='w')
     qchem_input_file.write(input_txt)
     qchem_input_file.close()
+
+    # generate extra files in calculation directory
+    generate_additional_files(input_qchem, work_dir)
 
     # Q-Chem calculation
     if output is None or force_recalculation is True:
@@ -449,53 +443,46 @@ def get_output_from_qchem(input_qchem,
         else:
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
-    if not finish_ok(output):
-        raise OutputError(output, err)
+        if not finish_ok(output):
+            raise OutputError(output, err)
 
-    version = get_version_output(output)
+        # parse fchk file
+        if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
+            warnings.warn('fchk not found! something may be wrong in calculation')
+        else:
+            with open(os.path.join(work_dir, fchk_filename)) as f:
+                fchk_txt = f.read()
 
-    if store_full_output:
-        store_calculation_data(input_qchem, 'fullout', [output, err])
+            data_fchk = parser_fchk(fchk_txt)
+            store_calculation_data(input_qchem, 'fchk', data_fchk)
+
+        if store_full_output:
+            store_calculation_data(input_qchem, 'fullout', [output, err])
 
     if parser is not None:
 
         # Check parser compatibility
+        version = get_version_output(output)
         compatibility_list = get_compatibility_list_from_parser(parser)
         if compatibility_list is not None:
             if version not in compatibility_list:
                 warnings.warn('Parser "{}" may not be compatible with Q-Chem {}'.format(parser.__name__, version))
 
+        # minimum functionality for parser error capture
         try:
             output = parser(output, **parser_parameters)
-        # minimum functionality for error capture
         except:
             raise ParserError(parser.__name__, 'Undefined error')
 
         store_calculation_data(input_qchem, parser.__name__, output)
 
-    if read_fchk:
-
-        data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
-        if data_fchk is not None and not force_recalculation:
-            return output, data_fchk
-
-        if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
-            warnings.warn('fchk not found! Make sure the input generates it (gui 2)')
-            return output, []
-
-        with open(os.path.join(work_dir, fchk_filename)) as f:
-            fchk_txt = f.read()
-        os.remove(os.path.join(work_dir, fchk_filename))
-
-        data_fchk = parser_fchk(fchk_txt)
-        store_calculation_data(input_qchem, 'fchk', data_fchk)
-
-        return output, data_fchk
-
     if delete_scratch:
         shutil.rmtree(work_dir)
 
-    return output
+    if read_fchk:
+        return output, data_fchk
+    else:
+        return output
 
 
 def get_input_hash(data):

@@ -181,7 +181,7 @@ def parser_fchk(output):
             return item_types[item_type](item)
 
     key_list = ['Charge', 'Multiplicity', 'Number of alpha electrons', 'Number of beta electrons',
-                'Atomic numbers', 'Current cartesian coordinates', 'Shell types',
+                'Atomic numbers', 'Current cartesian coordinates', 'Number of basis functions', 'Shell types',
                 'Number of primitives per shell', 'Shell to atom map', 'Primitive exponents',
                 'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha MO coefficients',
                 'Beta MO coefficients', 'Coordinates of each shell', 'Overlap Matrix',
@@ -231,21 +231,21 @@ def parser_fchk(output):
                          c_coefficients=data['Contraction coefficients'],
                          p_c_coefficients=data['P(S=P) Contraction coefficients'])
 
-    nbas = int(np.sqrt(len(data['Alpha MO coefficients'])))
-    mo_coeff = {'alpha': np.array(data['Alpha MO coefficients']).reshape(nbas, nbas).tolist()}
-    mo_energy = {'alpha': data['Alpha Orbital Energies']}
-
-    if 'Beta MO coefficients' in data:
-        mo_coeff['beta'] = np.array(data['Beta MO coefficients']).reshape(nbas, nbas).tolist()
-        mo_energy['beta'] = data['Beta Orbital Energies']
+    nbas = data['Number of basis functions']
 
     final_dict = {'structure': structure,
                   'basis': basis,
-                  'coefficients': mo_coeff,
-                  'mo_energies': mo_energy,
                   'number_of_electrons': {'alpha': data['Number of alpha electrons'],
                                           'beta': data['Number of beta electrons']}
                   }
+
+    if 'Alpha MO coefficients' in data:
+        final_dict['coefficients'] = {'alpha': np.array(data['Alpha MO coefficients']).reshape(nbas, nbas).tolist()}
+        final_dict['mo_energies'] = {'alpha': data['Alpha Orbital Energies']}
+
+    if 'Beta MO coefficients' in data:
+        final_dict['coefficients']['beta'] = np.array(data['Beta MO coefficients']).reshape(nbas, nbas).tolist()
+        final_dict['mo_energies']['beta'] = data['Beta Orbital Energies']
 
     if 'Total SCF Density' in data:
         final_dict['scf_density'] = vect_to_mat(data['Total SCF Density'])
