@@ -438,16 +438,22 @@ def get_geometry_from_pubchem(entry, type='name'):
     json_data = json.loads(string)
 
     conformers = json_data['PC_Compounds'][0]['coords'][0]['conformers'][0]
+    atoms = json_data['PC_Compounds'][0]['atoms']
+
     positions = np.array([conformers['x'], conformers['y'], conformers['z']]).T
-    atomic_numbers = json_data['PC_Compounds'][0]['atoms']['element']
+    atomic_numbers = atoms['element']
+
+    if 'charge' in atoms:
+        charge = np.add.reduce([c_atom['value'] for c_atom in atoms['charge']])
+    else:
+        charge = 0
 
     return Structure(coordinates=positions,
-                     atomic_numbers=atomic_numbers)
+                     atomic_numbers=atomic_numbers,
+                     charge=charge)
 
 
 if __name__ == '__main__':
 
-    mol = get_geometry_from_pubchem('methane', type='name')
+    mol = get_geometry_from_pubchem('acetone', type='name')
     print(mol)
-
-    exit()
