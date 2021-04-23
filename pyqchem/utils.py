@@ -1,8 +1,11 @@
-import re
-import numpy as np
 from scipy.optimize import leastsq
 from copy import deepcopy
+from pyqchem.structure import Structure
+from urllib.request import urlopen
+import numpy as np
 import warnings
+import re
+import json
 
 
 def standardize_vector(vector):
@@ -376,6 +379,7 @@ def classify_diabatic_states_of_fragment(diabatic_states, fragments_atoms, tol=0
 
     return types
 
+
 def get_occupated_list(configuration, structure, total_orbitals):
     import numpy as np
     occupied_orbitals = get_occupied_electrons(configuration, structure)
@@ -400,7 +404,50 @@ def get_occupated_list(configuration, structure, total_orbitals):
     return {'alpha': vector_alpha, 'beta': vector_beta}
 
 
+def get_geometry_from_pubchem(entry, type='name'):
+    """
+    Get structure form PubChem database
+
+    :param entry: entry data
+    :param type: data type: 'name', 'cid'
+    :return: Structure
+    """
+
+    base = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/"
+    input_1 = 'compound/{}/'.format(type)
+    output_format = "JSON"
+    additional = "record_type=3d"
+
+    apiurl = base + input_1 + output_format + '?' + additional
+    postdata = '{}={}'.format(type, entry).encode()
+
+    from urllib.error import HTTPError
+
+    try:
+        response = urlopen(apiurl, postdata)
+    except HTTPError as e:
+        string = e.read().decode("utf-8")
+        json_data = json.loads(string)
+        fault = json_data['Fault']
+        if 'Details' in fault:
+            raise Exception(fault['Details'][0])
+        else:
+            raise Exception(fault['Message'])
+
+    string = response.read().decode("utf-8")
+    json_data = json.loads(string)
+
+    conformers = json_data['PC_Compounds'][0]['coords'][0]['conformers'][0]
+    positions = np.array([conformers['x'], conformers['y'], conformers['z']]).T
+    atomic_numbers = json_data['PC_Compounds'][0]['atoms']['element']
+
+    return Structure(coordinates=positions,
+                     atomic_numbers=atomic_numbers)
+
+
 if __name__ == '__main__':
-    state = {'configurations': [{'hole': '', 'alpha': '110100', 'beta': '111000', 'part': '', 'amplitude': 0.5}]}
-    b = get_ratio_of_condition(state)
-    print('test', b)
+
+    mol = get_geometry_from_pubchem('methane', type='name')
+    print(mol)
+
+    exit()
