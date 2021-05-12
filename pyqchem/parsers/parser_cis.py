@@ -2,8 +2,8 @@ __author__ = 'Abel Carreras'
 AU_TO_EV = 27.21138
 
 from pyqchem.structure import Structure
-from pyqchem.utils import search_bars, standardize_vector
 from pyqchem.errors import ParserError
+from pyqchem.parsers.common import search_bars, standardize_vector
 from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list
 import numpy as np
 import re

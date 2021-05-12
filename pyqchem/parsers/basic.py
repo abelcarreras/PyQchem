@@ -1,5 +1,5 @@
 __author__ = 'Abel Carreras'
-from pyqchem.utils import search_bars
+from pyqchem.parsers.common import search_bars
 
 
 def _get_orbital_energies(orbitals_section):

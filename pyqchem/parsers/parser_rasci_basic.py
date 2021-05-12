@@ -2,9 +2,7 @@ __author__ = 'Abel Carreras'
 
 import re
 import operator
-from pyqchem.utils import standardize_vector
-from pyqchem.structure import Structure
-
+from pyqchem.parsers.common import standardize_vector
 
 
 def basic_rasci(output):

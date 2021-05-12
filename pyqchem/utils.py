@@ -1,11 +1,7 @@
 from scipy.optimize import leastsq
 from copy import deepcopy
-from pyqchem.structure import Structure
-from urllib.request import urlopen
 import numpy as np
 import warnings
-import re
-import json
 
 
 def standardize_vector(vector):
@@ -27,18 +23,6 @@ def standardize_vector(vector):
         vector[i] = vector[i] + 0
 
     return vector
-
-
-def search_bars(output, from_position=0, bar_type='---'):
-    output = output[from_position:]
-    positions = []
-    previous = 0
-    for m in re.finditer(bar_type, output):
-        if m.start() > previous + 1:
-            positions.append(m.start() + from_position)
-        previous = m.end()
-
-    return positions
 
 
 def is_rasci_transition(configuration, reference, n_electron=1, max_jump=10):
@@ -404,56 +388,3 @@ def get_occupated_list(configuration, structure, total_orbitals):
     return {'alpha': vector_alpha, 'beta': vector_beta}
 
 
-def get_geometry_from_pubchem(entry, type='name'):
-    """
-    Get structure form PubChem database
-
-    :param entry: entry data
-    :param type: data type: 'name', 'cid'
-    :return: Structure
-    """
-
-    base = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/"
-    input_1 = 'compound/{}/'.format(type)
-    output_format = "JSON"
-    additional = "record_type=3d"
-
-    apiurl = base + input_1 + output_format + '?' + additional
-    postdata = '{}={}'.format(type, entry).encode()
-
-    from urllib.error import HTTPError
-
-    try:
-        response = urlopen(apiurl, postdata)
-    except HTTPError as e:
-        string = e.read().decode("utf-8")
-        json_data = json.loads(string)
-        fault = json_data['Fault']
-        if 'Details' in fault:
-            raise Exception(fault['Details'][0])
-        else:
-            raise Exception(fault['Message'])
-
-    string = response.read().decode("utf-8")
-    json_data = json.loads(string)
-
-    conformers = json_data['PC_Compounds'][0]['coords'][0]['conformers'][0]
-    atoms = json_data['PC_Compounds'][0]['atoms']
-
-    positions = np.array([conformers['x'], conformers['y'], conformers['z']]).T
-    atomic_numbers = atoms['element']
-
-    if 'charge' in atoms:
-        charge = np.add.reduce([c_atom['value'] for c_atom in atoms['charge']])
-    else:
-        charge = 0
-
-    return Structure(coordinates=positions,
-                     atomic_numbers=atomic_numbers,
-                     charge=charge)
-
-
-if __name__ == '__main__':
-
-    mol = get_geometry_from_pubchem('acetone', type='name')
-    print(mol)
