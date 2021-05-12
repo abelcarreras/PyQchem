@@ -1,47 +1,18 @@
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
+from pyqchem.cache import SqlCache as CacheSystem
 from subprocess import Popen, PIPE
 import os, shutil
 import numpy as np
 import hashlib
 import pickle
 import warnings
-import time
-import fcntl
-import sys
 
 
-# Py2 compatibility
-if sys.version_info[0] < 3:
-    BlockingIOError = IOError
-
-__calculation_data_filename__ = 'calculation_data.pkl'
-try:
-    with open(__calculation_data_filename__, 'rb') as input:
-        calculation_data = pickle.load(input)
-        print('Loaded data from {}'.format(__calculation_data_filename__))
-except (IOError, EOFError, BlockingIOError):
-    print('Creating new calculation data file {}'.format(__calculation_data_filename__))
-    calculation_data = {}
-except (UnicodeDecodeError):
-    print('Warning: Calculation data file is corrupted and will be overwritten')
-    calculation_data = {}
-
-
+# Backwards Compatibility
 def redefine_calculation_data_filename(filename):
-    global __calculation_data_filename__
-    global calculation_data
-
-    __calculation_data_filename__ = filename
-    print('Set data file to {}'.format(__calculation_data_filename__))
-
-    try:
-        with open(__calculation_data_filename__, 'rb') as input:
-            calculation_data = pickle.load(input)
-            print('Loaded data from {}'.format(__calculation_data_filename__))
-    except (IOError, EOFError):
-        print('Creating new calculation data file {}'.format(__calculation_data_filename__))
-        calculation_data = {}
+    cache = CacheSystem()
+    cache.redefine_calculation_data_filename(filename)
 
 
 # Check if calculation finished ok
@@ -143,7 +114,7 @@ def parse_output(get_output_function):
     :return: parsed output
     """
 
-    global calculation_data
+    cache = CacheSystem()
 
     def func_wrapper(*args, **kwargs):
         parser = kwargs.pop('parser', None)
@@ -154,9 +125,9 @@ def parse_output(get_output_function):
 
         if parser is not None:
             hash_p = (args[0], parser.__name__)
-            if hash_p in calculation_data and not force_recalculation:
+            if hash_p in cache.calculation_data and not force_recalculation:
                 print('already calculated. Skip')
-                return calculation_data[hash_p]
+                return cache.calculation_data[hash_p]
 
         output, err = get_output_function(*args, **kwargs)
 
@@ -174,9 +145,9 @@ def parse_output(get_output_function):
 
         parsed_output = parser(output, **parser_parameters)
 
-        calculation_data[hash_p] = parsed_output
-        with open(__calculation_data_filename__, 'wb') as output:
-            pickle.dump(calculation_data, output, protocol=pickle.DEFAULT_PROTOCOL)
+        cache.calculation_data[hash_p] = parsed_output
+        with open(cache._calculation_data_filename, 'wb') as output:
+            pickle.dump(cache.calculation_data, output, protocol=pickle.DEFAULT_PROTOCOL)
 
         return parsed_output
 
@@ -291,42 +262,6 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-def store_calculation_data(input_qchem, keyword, data, protocol=pickle.HIGHEST_PROTOCOL, timeout=60):
-    global calculation_data
-
-    for iter in range(100):
-        try:
-            with open(__calculation_data_filename__, 'rb') as input:
-                calculation_data = pickle.load(input)
-        except FileNotFoundError:
-            calculation_data = {}
-            continue
-        except (UnicodeDecodeError):
-            print('Warning: {} file is corrupted and will be overwritten'.format(__calculation_data_filename__))
-            calculation_data = {}
-        except (BlockingIOError, IOError, EOFError):
-            # print('read_try: {}'.format(iter))
-            time.sleep(timeout/100)
-            continue
-        break
-
-    calculation_data[(hash(input_qchem), keyword)] = data
-
-    for iter in range(100):
-        try:
-            with open(__calculation_data_filename__, 'wb') as f:
-                fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                pickle.dump(calculation_data, f, protocol)
-        except BlockingIOError:
-            # print('read_try: {}'.format(iter))
-            time.sleep(timeout/100)
-            continue
-        break
-
-
-def retrieve_calculation_data(input_qchem, keyword):
-    return calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem), keyword) in calculation_data else None
-
 
 def generate_additional_files(input_qchem, work_dir):
     # Hessian
@@ -379,6 +314,7 @@ def get_output_from_qchem(input_qchem,
     :return: output [, fchk_dict]
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
+    cache = CacheSystem()
 
     # Always generate fchk
     if input_qchem.gui is None or input_qchem.gui < 1:
@@ -408,13 +344,15 @@ def get_output_from_qchem(input_qchem,
         parser_parameters = {}
 
     # check if full output is stored
-    output, err = calculation_data[(hash(input_qchem), 'fullout')] if (hash(input_qchem), 'fullout') in calculation_data else [None, None]
-    data_fchk = retrieve_calculation_data(input_qchem, 'fchk')
+    output = cache.retrieve_calculation_data(input_qchem, 'fullout')
+
+    #output, err = cache.calculation_data[(hash(input_qchem), 'fullout')] if (hash(input_qchem), 'fullout') in cache.calculation_data else [None, None]
+    data_fchk = cache.retrieve_calculation_data(input_qchem, 'fchk')
 
     # check if repeated calculation
     if not force_recalculation and not store_full_output:  # store_full_output always force re-parsing
         if parser is not None:
-            parsed_data = retrieve_calculation_data(hash(input_qchem), parser.__name__)
+            parsed_data = cache.retrieve_calculation_data(hash(input_qchem), parser.__name__)
             if parsed_data is not None:
                 if read_fchk:
                     return parsed_data, data_fchk
@@ -454,10 +392,10 @@ def get_output_from_qchem(input_qchem,
                 fchk_txt = f.read()
 
             data_fchk = parser_fchk(fchk_txt)
-            store_calculation_data(input_qchem, 'fchk', data_fchk)
+            cache.store_calculation_data(input_qchem, 'fchk', data_fchk)
 
         if store_full_output:
-            store_calculation_data(input_qchem, 'fullout', [output, err])
+            cache.store_calculation_data(input_qchem, 'fullout', output)
 
     if parser is not None:
 
@@ -474,7 +412,7 @@ def get_output_from_qchem(input_qchem,
         except:
             raise ParserError(parser.__name__, 'Undefined error')
 
-        store_calculation_data(input_qchem, parser.__name__, output)
+        cache.store_calculation_data(input_qchem, parser.__name__, output)
 
     if delete_scratch:
         shutil.rmtree(work_dir)

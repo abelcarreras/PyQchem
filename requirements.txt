@@ -8,3 +8,4 @@ requests
 scipy
 matplotlib
 PyYAML
+six

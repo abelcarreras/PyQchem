@@ -1,4 +1,4 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
+from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename
 from pyqchem.parsers.parser_rasci_basic import basic_rasci
 from pyqchem.structure import Structure
 from pyqchem.test import standardize_dictionary
@@ -8,6 +8,9 @@ import unittest
 
 ctrl_print = False  # set to true to generate reference files
 do_alpha_beta = False # explicitly defining alpha/beta number of electrons?
+
+
+redefine_calculation_data_filename('test_data.db')
 
 
 class Eth00(unittest.TestCase):

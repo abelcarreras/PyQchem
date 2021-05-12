@@ -41,7 +41,7 @@ qc_input = QchemInput(molecule,
 
 output = get_output_from_qchem(qc_input,
                                processors=4,
-                               force_recalculation=True,
+                               force_recalculation=False,
                                parser=basic_parser_qchem
                                )
 
@@ -58,7 +58,7 @@ qc_input = QchemInput(molecule,
 
 output = get_output_from_qchem(qc_input,
                                processors=4,
-                               force_recalculation=True,
+                               force_recalculation=False,
                                parser=basic_parser_qchem
                                )
 

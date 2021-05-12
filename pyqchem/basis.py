@@ -3,8 +3,9 @@ from lxml import html
 import unicodedata
 import re
 import numpy as np
-from copy import deepcopy
+import six
 
+from copy import deepcopy
 
 def _txt_to_basis_dict(basis_txt):
     # read basis in gaussian/qchem format
@@ -95,11 +96,12 @@ def get_basis_element_from_ccRepo(element,
     r.close()
 
     header = tree.xpath('//div[@class="container"]/text()')
-    citation = unicodedata.normalize('NFC', header[1]).strip()
+    citation = unicodedata.normalize('NFC', six.text_type(header[1])).strip()
     description = unicodedata.normalize('NFC', header[2]).strip()
 
+
     basis_data = tree.xpath('/html/body/div/nobr/text()')
-    basis_clean = [unicodedata.normalize('NFKC', line).strip() for line in basis_data]
+    basis_clean = [unicodedata.normalize('NFKC', six.text_type(line)).strip() for line in basis_data]
     # basis_name = basis_clean[1].split('"')[1]
 
     return citation, description, basis_clean[2:]

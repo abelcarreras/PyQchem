@@ -8,10 +8,7 @@ import unittest
 import os, sys
 
 
-if sys.version_info[0] == 2:
-    redefine_calculation_data_filename('test_data_py2.pkl')
-else:
-    redefine_calculation_data_filename('test_data_py3.pkl')
+redefine_calculation_data_filename('test_data.db')
 
 if 'USER' in os.environ and os.environ['USER'] == 'travis':
     recalculate = False
