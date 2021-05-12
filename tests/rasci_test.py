@@ -13,7 +13,7 @@ redefine_calculation_data_filename('test_data.db')
 if 'USER' in os.environ and os.environ['USER'] == 'travis':
     recalculate = False
 else:
-    recalculate = False
+    recalculate = True
 
 
 class HydrogenTest(unittest.TestCase):
