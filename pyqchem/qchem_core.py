@@ -11,8 +11,7 @@ import warnings
 
 # Backwards Compatibility
 def redefine_calculation_data_filename(filename):
-    cache = CacheSystem()
-    cache.redefine_calculation_data_filename(filename)
+    cache = CacheSystem(filename=filename)
 
 
 # Check if calculation finished ok

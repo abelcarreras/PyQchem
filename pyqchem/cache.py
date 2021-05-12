@@ -24,10 +24,13 @@ class SimpleCache:
         cls.__instance__ = super(SimpleCache, cls, ).__new__(cls)
         return cls.__instance__
 
-    def __init__(self):
+    def __init__(self, filename=None):
         """
         Constructor
         """
+
+        if filename is not None:
+            self._calculation_data_filename = filename
 
         # python 2 compatibility
         if not '_calculation_data_filename' in dir(self):
@@ -112,13 +115,17 @@ class SqlCache:
         cls.__instance__ = super(SqlCache, cls, ).__new__(cls)
         return cls.__instance__
 
-    def __init__(self):
+    def __init__(self, filename=None):
         """
         Constructor
         """
 
+        if filename is not None:
+            self._calculation_data_filename = filename
+
         # python 2 compatibility
         if not '_calculation_data_filename' in dir(self):
+            print('python 2')
             self._calculation_data_filename = 'calculation_data.db'
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
