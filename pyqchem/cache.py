@@ -3,104 +3,112 @@ import time
 import fcntl
 import sys
 import sqlite3
-import six
+import numpy as np
 
 
 # Singleton class to handle cache
-class SimpleCache:
-    __instance__ = None
 
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance__ is not None:
-            return cls.__instance__
 
-        # Py2 compatibility
-        if sys.version_info[0] < 3:
-            BlockingIOError = IOError
+class SimpleCache(object):
 
-        cls._calculation_data_filename = 'calculation_data.pkl'
-        cls._pickle_protocol = pickle.HIGHEST_PROTOCOL
-
-        cls.__instance__ = super(SimpleCache, cls, ).__new__(cls)
-        return cls.__instance__
-
-    def __init__(self, filename=None):
-        """
-        Constructor
-        """
-
-        if filename is not None:
+    class __SimpleCache:
+        def __init__(self, filename='calculation_data.pkl'):
             self._calculation_data_filename = filename
+            self._pickle_protocol = pickle.HIGHEST_PROTOCOL
 
-        # python 2 compatibility
-        if not '_calculation_data_filename' in dir(self):
-            self._calculation_data_filename = 'calculation_data.db'
+            # Py2 compatibility
+            if sys.version_info[0] < 3:
+                BlockingIOError = IOError
 
-        try:
-            with open(self._calculation_data_filename, 'rb') as input:
-                self._calculation_data = pickle.load(input)
-                print('Loaded data from {}'.format(self._calculation_data_filename))
-        except (IOError, EOFError, BlockingIOError):
-            print('Creating new calculation data file {}'.format(self._calculation_data_filename))
-            self._calculation_data = {}
-        except (UnicodeDecodeError):
-            print('Warning: Calculation data file is corrupted and will be overwritten')
-            self._calculation_data = {}
-
-    def redefine_calculation_data_filename(self, filename):
-
-        self._calculation_data_filename = filename
-        print('Set data file to {}'.format(self._calculation_data_filename))
-
-        try:
-            with open(self._calculation_data_filename, 'rb') as input:
-                self._calculation_data = pickle.load(input)
-                print('Loaded data from {}'.format(self._calculation_data_filename))
-        except (IOError, EOFError):
-            print('Creating new calculation data file {}'.format(self._calculation_data_filename))
-            self._calculation_data = {}
-
-    def store_calculation_data(self, input_qchem, keyword, data, timeout=60):
-
-        for iter in range(100):
             try:
                 with open(self._calculation_data_filename, 'rb') as input:
-                    self._calculation_data = pickle.load(input)
-            except FileNotFoundError:
-                self._calculation_data = {}
-                continue
+                    self.calculation_data = pickle.load(input)
+                    print('Loaded data from {}'.format(self._calculation_data_filename))
+            except (IOError, EOFError, BlockingIOError):
+                print('Creating new calculation data file {}'.format(self._calculation_data_filename))
+                self.calculation_data = {}
             except (UnicodeDecodeError):
-                print('Warning: {} file is corrupted and will be overwritten'.format(self._calculation_data_filename))
-                self._calculation_data = {}
-            except (BlockingIOError, IOError, EOFError):
-                # print('read_try: {}'.format(iter))
-                time.sleep(timeout/100)
-                continue
-            break
+                print('Warning: Calculation data file is corrupted and will be overwritten')
+                self.calculation_data = {}
 
-        self._calculation_data[(hash(input_qchem), keyword)] = data
+        def redefine_calculation_data_filename(self, filename):
 
-        for iter in range(100):
+            self._calculation_data_filename = filename
+            print('Set data file to {}'.format(self._calculation_data_filename))
+
             try:
-                with open(self._calculation_data_filename, 'wb') as f:
-                    fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                    pickle.dump(self._calculation_data, f, self._pickle_protocol)
-            except BlockingIOError:
-                # print('read_try: {}'.format(iter))
-                time.sleep(timeout/100)
-                continue
-            break
+                with open(self._calculation_data_filename, 'rb') as input:
+                    self.calculation_data = pickle.load(input)
+                    print('Loaded data from {}'.format(self._calculation_data_filename))
+            except (IOError, EOFError):
+                print('Creating new calculation data file {}'.format(self._calculation_data_filename))
+                self.calculation_data = {}
 
-    def retrieve_calculation_data(self, input_qchem, keyword):
-        return self._calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem), keyword) in self._calculation_data else None
+        def store_calculation_data(self, input_qchem, keyword, data, timeout=60):
 
-    @property
-    def calculation_data(self):
-        return self._calculation_data
+            # Py2 compatibility
+            if sys.version_info[0] < 3:
+                FileNotFoundError = IOError
 
-    @calculation_data.setter
-    def calculation_data(self, calculation_data):
-        self._calculation_data = calculation_data
+            for iter in range(100):
+                try:
+                    with open(self._calculation_data_filename, 'rb') as input:
+                        self.calculation_data = pickle.load(input)
+                except FileNotFoundError:
+                    self.calculation_data = {}
+                    continue
+                except (UnicodeDecodeError):
+                    print(
+                        'Warning: {} file is corrupted and will be overwritten'.format(self._calculation_data_filename))
+                    self.calculation_data = {}
+                except (BlockingIOError, IOError, EOFError):
+                    # print('read_try: {}'.format(iter))
+                    time.sleep(timeout / 100)
+                    continue
+                break
+
+            self.calculation_data[(hash(input_qchem), keyword)] = data
+
+            for iter in range(100):
+                try:
+                    with open(self._calculation_data_filename, 'wb') as f:
+                        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        pickle.dump(self.calculation_data, f, self._pickle_protocol)
+                except BlockingIOError:
+                    # print('read_try: {}'.format(iter))
+                    time.sleep(timeout / 100)
+                    continue
+                break
+
+        def retrieve_calculation_data(self, input_qchem, keyword):
+            return self.calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem),
+                                                                           keyword) in self.calculation_data else None
+
+        def get_all_data(self):
+
+            calc_id_list = np.unique([r[0] for r in self.calculation_data.keys()])
+            calc_list = []
+            for id in calc_id_list:
+                data_dict = {}
+                for r in self.calculation_data:
+                    if r[0] == id:
+                        data_dict.update({r[1]: self.calculation_data[(id, r[1])]})
+                calc_list.append(data_dict)
+
+            return calc_list
+
+    instance = None
+
+    def __new__(cls, **arguments):
+        if not SimpleCache.instance:
+            SimpleCache.instance = SimpleCache.__SimpleCache(**arguments)
+        return SimpleCache.instance
+
+    def __getattr__(self, nombre):
+        return getattr(self.instance, nombre)
+
+    def __setattr__(self, nombre, valor):
+        return setattr(self.instance, nombre, valor)
 
 
 class SqlCache:
@@ -162,7 +170,10 @@ class SqlCache:
         if sys.version_info[0] < 3:
             serialized_data = buffer(serialized_data)
 
-        self._conn.execute("INSERT or REPLACE into DATA_TABLE (input_hash, parser, qcdata)  VALUES (?, ?, ?)",
+        self._conn.execute("DELETE FROM DATA_TABLE WHERE input_hash=? AND parser=?",
+                           (hash(input_qchem), keyword))
+
+        self._conn.execute("INSERT into DATA_TABLE (input_hash, parser, qcdata)  VALUES (?, ?, ?)",
                            (hash(input_qchem),  keyword, serialized_data))
         self._conn.commit()
         self._conn.close()
@@ -178,6 +189,27 @@ class SqlCache:
         self._conn.close()
 
         return pickle.loads(rows[0][0]) if len(rows) > 0 else None
+
+    def get_all_data(self):
+
+        self._conn = sqlite3.connect(self._calculation_data_filename)
+
+        cursor = self._conn.execute("SELECT * FROM DATA_TABLE")
+        rows = cursor.fetchall()
+
+        self._conn.close()
+
+        calc_id_list = np.unique([r[0] for r in rows])
+
+        calc_list = []
+        for id in calc_id_list:
+            data_dict = {}
+            for r in rows:
+                if r[0] == id:
+                    data_dict.update({r[1]: pickle.loads(r[2])})
+            calc_list.append(data_dict)
+
+        return calc_list
 
     @property
     def calculation_data(self):

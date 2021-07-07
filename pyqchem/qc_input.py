@@ -93,6 +93,9 @@ class QchemInput:
                  set_iter=30,
                  gui=0,
                  # optimization
+                 geom_opt_dmax=300,
+                 geom_opt_update=-1,
+                 geom_opt_linear_angle=165,
                  geom_opt_coords=-1,
                  geom_opt_tol_gradient=300,
                  geom_opt_tol_displacement=1200,
@@ -413,6 +416,9 @@ class QchemInput:
 
         # optimization
         if self._jobtype.lower() in ['opt', 'ts']:
+            input_file += 'geom_opt_dmax {}\n'.format(self._geom_opt_dmax)
+            input_file += 'geom_opt_update {}\n'.format(self._geom_opt_update)
+            input_file += 'geom_opt_linear_angle {}\n'.format(self._geom_opt_linear_angle)
             input_file += 'geom_opt_coords {}\n'.format(self._geom_opt_coords)
             input_file += 'geom_opt_tol_gradient {}\n'.format(self._geom_opt_tol_gradient)
             input_file += 'geom_opt_tol_displacement {}\n'.format(self._geom_opt_tol_displacement)

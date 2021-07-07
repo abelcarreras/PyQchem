@@ -1,12 +1,19 @@
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
-from pyqchem.cache import SqlCache as CacheSystem
 from subprocess import Popen, PIPE
 import os, shutil
 import numpy as np
 import hashlib
 import pickle
 import warnings
+import sys
+
+if sys.version_info[0] < 3 or sys.platform.startswith('win'):
+    # For python 2.x or Windows use pickle based cache system
+    from pyqchem.cache import SimpleCache as CacheSystem
+else:
+    # For python 3.x use SQL Database based cache system
+    from pyqchem.cache import SqlCache as CacheSystem
 
 
 # Backwards Compatibility

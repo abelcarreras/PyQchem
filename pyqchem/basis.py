@@ -4,8 +4,9 @@ import unicodedata
 import re
 import numpy as np
 import six
-
+from pyqchem.structure import atom_data
 from copy import deepcopy
+
 
 def _txt_to_basis_dict(basis_txt):
     # read basis in gaussian/qchem format
@@ -62,23 +63,7 @@ def get_basis_element_from_ccRepo(element,
             # print(resp.text[m.end():m.end()+50].split('"')[1] )
             element_list.append(resp.text[m.end():m.end()+50].split('"')[1])
 
-    # define symbol to element dictionary (more should be added)
-    element_dict = {'H': 'hydrogen',
-                    'He': 'helum',
-                    'Li': 'lithium',
-                    'Be': 'beryllium',
-                    'B': 'boron',
-                    'C': 'carbon',
-                    'N': 'nitrogen',
-                    'O': 'oxygen',
-                    'F': 'fluorine',
-                    'S': 'sulfur',
-                    'Cl': 'chlorine',
-                    'Si': 'silicon',
-                    'Se': 'selenium',
-                    'Br': 'bromine',
-                    'I': 'iodine'
-                    }
+    element_dict = {atom[1]: atom[2].lower() for atom in atom_data[1:]}
 
     resp = req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/{}".format(element_dict[element]))
     n_ini = resp.text.find('form-inline')
