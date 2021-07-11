@@ -1,4 +1,3 @@
-from pyqchem.units import DEBYE_TO_AU
 import matplotlib.pyplot as plt
 from pyqchem.plots import plot_configuration
 from pyqchem.structure import Structure
