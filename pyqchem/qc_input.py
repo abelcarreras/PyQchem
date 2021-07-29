@@ -35,6 +35,7 @@ class QchemInput:
                  correlation=None,
                  unrestricted=None,
                  basis='6-31G',
+                 basis2=None,
                  thresh=14,
                  scf_convergence=8,
                  max_scf_cycles=50,
@@ -165,6 +166,11 @@ class QchemInput:
             self._basis = 'gen'
             self._custom_basis = basis
 
+        # Handle custom basis set
+        if not isinstance(basis2, str) and basis2 is not None:
+            self._basis2 = 'gen'
+            self._custom_basis2 = basis2
+
         # Handle cc_trans_prop
         if isinstance(self._cc_trans_prop, dict):
             self._trans_prop = self._cc_trans_prop
@@ -263,6 +269,9 @@ class QchemInput:
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
         input_file += 'scf_guess_mix {}\n'.format(self._scf_guess_mix)
+
+        if self._basis2 is not None:
+            input_file += 'basis2 {}\n'.format(self._basis2)
 
         if self._n_frozen_core is not None:
             input_file += 'n_frozen_core {}\n'.format(self._n_frozen_core)
@@ -479,6 +488,12 @@ class QchemInput:
         if self._basis == 'gen':
             input_file += '$basis\n'
             input_file += basis_to_txt(self._custom_basis)
+            input_file += '$end\n'
+
+        # custom basis2 section
+        if self._basis2 == 'gen':
+            input_file += '$basis2\n'
+            input_file += basis_to_txt(self._custom_basis2)
             input_file += '$end\n'
 
         # reorder orbitals
