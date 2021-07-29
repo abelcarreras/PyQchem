@@ -130,7 +130,7 @@ def basis_to_txt(basis):
     basis_txt = ''
 
     for atom in basis['atoms']:
-        basis_txt += atom['symbol'] + '\n'
+        basis_txt += atom['symbol'] + '  0\n'
         for shell in atom['shells']:
             basis_txt += '{} {} {}\n'.format(shell['shell_type'].upper(), len(shell['p_exponents']), 1.00)
             for p, c, pc in zip(shell['p_exponents'], shell['con_coefficients'], shell['p_con_coefficients']):
