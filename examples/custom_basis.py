@@ -3,6 +3,7 @@ from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure
 from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.basis import get_basis_from_ccRepo
+from pyqchem.basis import get_basis_from_BSE
 
 
 # create molecule
@@ -63,3 +64,19 @@ output = get_output_from_qchem(qc_input,
                                )
 
 print('scf_energy (custom basis: cc-pVTZ): ', output['scf_energy'])
+
+basis_custom_repo = get_basis_from_BSE(molecule, '4zapa-nr', if_missing='6-31g')
+
+qc_input = QchemInput(molecule,
+                      jobtype='sp',
+                      exchange='hf',
+                      basis=basis_custom_repo)
+
+
+output = get_output_from_qchem(qc_input,
+                               processors=4,
+                               force_recalculation=False,
+                               parser=basic_parser_qchem
+                               )
+
+print('scf_energy (custom basis: coemd): ', output['scf_energy'])

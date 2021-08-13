@@ -65,7 +65,11 @@ def get_basis_element_from_ccRepo(element,
 
     element_dict = {atom[1]: atom[2].lower() for atom in atom_data[1:]}
 
-    resp = req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/{}".format(element_dict[element]))
+    try:
+        resp = req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/{}".format(element_dict[element]))
+    except KeyError as e:
+        raise Exception('Atom label {} not recognized'.format(e.args[0]))
+
     n_ini = resp.text.find('form-inline')
 
     # determinte the php web address for particular element
@@ -93,6 +97,15 @@ def get_basis_element_from_ccRepo(element,
 
 
 def get_basis_from_ccRepo(structure, basis, full=False, if_missing=None):
+    """
+    Get basis from ccRepo
+
+    :param structure: Structure
+    :param basis: basis set label (string)
+    :param full: if False only list basis for unique atoms
+    :param if_missing: backup basis to use if basis is missing for a particular atom
+    :return: basis set dictionary
+    """
 
     symbols = structure.get_symbols()
     if not full:
@@ -110,12 +123,82 @@ def get_basis_from_ccRepo(structure, basis, full=False, if_missing=None):
                                                                                   program='Gaussian',
                                                                                   basis=if_missing)
                 if len(basis_data) == 0:
-                    raise Exception('Basis {}, {} not found for atom {}'.format(basis, if_missing, symbol))
+                    raise Exception('Basis {}, {} not found for atom {} in ccRepo'.format(basis, if_missing, symbol))
             else:
-                raise Exception('Basis {} not found for atom {}'.format(basis, symbol))
+                raise Exception('Basis {} not found for atom {} in ccRepo'.format(basis, symbol))
 
         # print(description)
         # print(citation)
+        atoms.append(_txt_to_basis_dict(basis_data))
+
+    basis_set = {'name': basis,
+                 'primitive_type': 'gaussian',
+                 'atoms': atoms}
+
+    return basis_set
+
+
+def get_basis_from_BSE(structure, basis, full=False, if_missing=None):
+    """
+    get basis from Basis Set Exchange
+
+    :param structure:
+    :param basis: basis set label (string)
+    :param full: if False only list basis for unique atoms
+    :return: basis set dictionary
+    """
+
+    base_url = "http://basissetexchange.org"
+    basis = basis.lower()
+
+    headers = {
+        'User-Agent': 'BSE Example Python Script',
+        'From': 'bse@molssi.org'
+    }
+
+    r = req.get(base_url + '/api/basis/{}/format/gaussian94'.format(basis),
+                     headers=headers
+                     )
+
+    description = '\n'.join([line for line in r.text.split('\n') if '!'  in line])
+
+    r = req.get(base_url + '/api/references/{}/format/bib'.format(basis),
+                     headers=headers
+                     )
+
+    citation = r.text
+
+    symbols = structure.get_symbols()
+    if not full:
+        symbols = np.unique(symbols)
+
+    atoms = []
+    for symbol in symbols:
+
+        params = {'elements': [symbol]}
+        r = req.get(base_url + '/api/basis/{}/format/gaussian94'.format(basis),
+                    params=params,
+                    headers=headers
+                    )
+        # https://www.basissetexchange.org/basis/coemd-2/format/gaussian94/?version=0&elements=6,7,8
+        if r.status_code != 200:
+            if if_missing is not None:
+                r = req.get(base_url + '/api/basis/{}/format/gaussian94'.format(if_missing),
+                            params=params,
+                            headers=headers
+                            )
+                if r.status_code != 200:
+                    raise Exception('Basis {}, {} not found for atom {} in BSE'.format(basis, if_missing, symbol))
+            else:
+                #raise RuntimeError("Could not obtain data from the BSE. Check the error information above")
+                raise Exception('Basis {} not found for atom {} in BSE'.format(basis, symbol))
+
+        basis_data = []
+        for line in r.text.split('\n'):
+            if len(line) !=0 and line[0] not in ['!']:
+                basis_data.append(line.replace('D+', 'E+').replace('D-', 'E-'))
+
+
         atoms.append(_txt_to_basis_dict(basis_data))
 
     basis_set = {'name': basis,
@@ -189,3 +272,12 @@ if __name__ == '__main__':
                                   full=False)
 
     print(basis_to_txt(basis))
+
+    print('----------------------')
+    exit()
+    basis = get_basis_from_BSE(molecule,
+                               basis='cc-pVTZ',
+                               full=False)
+
+    print(basis_to_txt(basis))
+

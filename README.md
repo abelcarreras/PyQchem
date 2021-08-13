@@ -104,7 +104,7 @@ for i, mode in enumerate(parsed_data['modes']):
 
 ```python
 from pyqchem import QchemInput, Structure
-from pyqchem.basis import get_basis_from_ccRepo
+from pyqchem.basis import get_basis_from_BSE
 
 
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
@@ -113,7 +113,7 @@ molecule = Structure(coordinates=[[0.0, 0.0, 0.0000],
                      charge=-1,
                      multiplicity=1)
 
-basis_custom = get_basis_from_ccRepo(molecule, 'cc-pVTZ')
+basis_custom = get_basis_from_BSE(molecule, 'cc-pVTZ')
 
 qc_input = QchemInput(molecule,
                       jobtype='sp',
