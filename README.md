@@ -13,13 +13,12 @@ Main features
 - No special q-chem compilation needed (reads Q-Chem environment)
 - Output parser support
 - Cache system for calculations
-- python 2.7.x/3.x compatibility
+- python 2.7.x/3.5+ compatibility
 
 Installation instructions
 -------------------------
 1. Requirements
 
-- Python 2.7.x/3.5+
 - numpy
 - scipy
 - matplolib
