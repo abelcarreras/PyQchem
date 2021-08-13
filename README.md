@@ -11,6 +11,8 @@ Main features
 - Easy to use clean python interface for Q-Chem
 - No special q-chem compilation needed (reads Q-Chem environment)
 - Output parser support
+- Cache system for calculations
+- python 2.7.x/3.x compatibility
 
 Installation instructions
 -------------------------
