@@ -4,7 +4,8 @@
 
 PyQchem
 =======
-Python wrapper for Q-Chem (https://www.q-chem.com)
+Python wrapper for Q-Chem (https://www.q-chem.com)  
+Online manual: https://pyqchem.readthedocs.io/
 
 Main features
 -------------
@@ -27,7 +28,7 @@ Installation instructions
 - wfnsympy (optional)
 - paramiko (optional)
 
-2a. Manual installation 
+2a. Installation from source
 
 ```shell
 python setup.py install --user
