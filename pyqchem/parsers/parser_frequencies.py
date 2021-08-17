@@ -110,6 +110,41 @@ def basic_frequencies(output, print_data=False):
                       'raman_active': raman_active[i],
                       'displacement': displacements[i]})
 
+    # thermochemistry
+    def get_data_from_line(text):
+        n_words = len(text.split())
+        n = output.find(text)
+
+        value, units = output[n:n + 70].split()[n_words: n_words + 2]
+
+        return float(value), units
+
+    zpe, zpe_units = get_data_from_line('Zero point vibrational energy')
+    trans_enthalpy, trans_enthalpy_units = get_data_from_line('Translational Enthalpy')
+    rot_enthalpy, rot_enthalpy_units = get_data_from_line('Rotational Enthalpy')
+    vib_enthalpy, vib_enthalpy_units = get_data_from_line('Vibrational Enthalpy')
+    rt, rt_units = get_data_from_line('gas constant (RT)')
+
+    trans_entropy, trans_entropy_units = get_data_from_line('Translational Entropy')
+    rot_entropy, rot_entropy_units = get_data_from_line('Rotational Entropy')
+    vib_entropy, vib_entropy_units = get_data_from_line('Vibrational Entropy')
+
+    tot_enthalpy, tot_enthalpy_unis = get_data_from_line('Total Enthalpy')
+    tot_entropy, tot_entropy_units = get_data_from_line('Total Entropy')
+
+    thermochemistry = {'zpe': zpe, 'zpe_units': zpe_units,
+                       'trans_enthalpy': trans_enthalpy, 'trans_enthalpy_units': trans_enthalpy_units,
+                       'rot_enthalpy': rot_enthalpy, 'rot_enthalpy_units': rot_enthalpy_units,
+                       'vib_enthalpy': vib_enthalpy, 'vib_enthalpy_units': vib_enthalpy_units,
+                       'rt': rt, 'rt_units': rt_units,
+                       'trans_entropy': trans_entropy, 'trans_entropy_units': trans_entropy_units,
+                       'rot_entropy': rot_entropy, 'rot_entropy_units': rot_entropy_units,
+                       'vib_entropy': vib_entropy, 'vib_entropy_units': vib_entropy_units,
+                       'tot_enthalpy': tot_enthalpy, 'tot_enthalpy_unis': tot_enthalpy_unis,
+                       'tot_entropy': tot_entropy, 'tot_entropy_units': tot_entropy_units,
+                       }
+
     return {'modes': modes,
             'hessian': hessian,
+            'thermochemistry': thermochemistry,
             'scf_energy': energy}
