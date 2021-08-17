@@ -5,6 +5,8 @@ from urllib.request import urlopen
 import requests as req
 import numpy as np
 import json
+import warnings
+from requests.exceptions import ConnectionError
 
 
 def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken_rasci=False):
@@ -76,11 +78,14 @@ def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
         print('client not found!')
         return
 
-    r = req.post(url=url,
-                 headers=message_headers,
-                 data=json.dumps(bot_message))
+    try:
+        r = req.post(url=url,
+                     headers=message_headers,
+                     data=json.dumps(bot_message))
+        r.close()
 
-    r.close()
+    except ConnectionError:
+        warnings.warn('Connection error: Message was not delivered')
 
 
 def rotate_coordinates(coordinates, angle, axis, atoms_list=None):

@@ -2,6 +2,7 @@ from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.basic import basic_parser_qchem
 
+
 # define molecule
 coordinates = [[0.0,  1.0,  0.0],
                [0.0,  0.0,  1.0],
