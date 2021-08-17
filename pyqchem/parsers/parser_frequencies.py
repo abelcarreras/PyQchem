@@ -132,7 +132,9 @@ def basic_frequencies(output, print_data=False):
     tot_enthalpy, tot_enthalpy_unis = get_data_from_line('Total Enthalpy')
     tot_entropy, tot_entropy_units = get_data_from_line('Total Entropy')
 
-    thermochemistry = {'zpe': zpe, 'zpe_units': zpe_units,
+    thermochemistry = {'conditions': {'temperature': 298.15, 'temperature_units': 'K',
+                                      'pressure': 1.00, 'pressure_units': 'atm' },
+                       'zpe': zpe, 'zpe_units': zpe_units,
                        'trans_enthalpy': trans_enthalpy, 'trans_enthalpy_units': trans_enthalpy_units,
                        'rot_enthalpy': rot_enthalpy, 'rot_enthalpy_units': rot_enthalpy_units,
                        'vib_enthalpy': vib_enthalpy, 'vib_enthalpy_units': vib_enthalpy_units,
