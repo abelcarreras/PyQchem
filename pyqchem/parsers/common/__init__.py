@@ -3,11 +3,20 @@ import re
 from pyqchem.utils import get_occupied_electrons
 
 
-def read_basic_info(output):
+def read_symmetry_info(output):
     enum = output.find('Molecular Point Group')
-    mpg = output[enum:enum+100].split()[3]
+    mpg = output[enum:enum + 100].split()[3]
     enum = output.find('Largest Abelian Subgroup')
-    las = output[enum:enum+100].split()[3]
+    if enum > 0:
+        las = output[enum:enum + 100].split()[3]
+    else:
+        las = None
+
+    return {'molecular_point_group': mpg,
+            'largest_abelian_subgroup': las}
+
+
+def read_basic_info(output):
 
     there_vector = [m.start() for m in re.finditer('There are ', output)]
     n_alpha = int(output[there_vector[0]:there_vector[0]+100].split()[2])
@@ -16,9 +25,7 @@ def read_basic_info(output):
     nshell = int(output[there_vector[1]:there_vector[1]+100].split()[2])
     nbas = int(output[there_vector[1]:there_vector[1]+100].split()[5])
 
-    return {'molecular_point_group': mpg,
-            'largest_abelian_subgroup': las,
-            'n_alpha': n_alpha,
+    return {'n_alpha': n_alpha,
             'n_beta': n_beta,
             'n_shells': nshell,
             'n_basis_functions': nbas}

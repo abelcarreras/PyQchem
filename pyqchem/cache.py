@@ -228,7 +228,7 @@ class SqlCache:
 
         cursor = self._conn.execute("SELECT input_hash, parser, qcdata from DATA_TABLE")
 
-        print('{:^25}  {:^20}'.format('ID', 'PARSER'))
+        print('{:^25}  {:^20}'.format('ID', 'KEYWORD'))
         print('--'*25)
         for row in cursor:
             print('{:<25} {}'.format(row[0], row[1]))

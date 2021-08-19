@@ -4,7 +4,7 @@ AU_TO_EV = 27.21138
 from pyqchem.structure import Structure
 from pyqchem.errors import ParserError
 from pyqchem.parsers.common import search_bars, standardize_vector
-from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list
+from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list, read_symmetry_info
 import numpy as np
 import re
 
@@ -65,6 +65,10 @@ def basic_cis(output):
         pass
 
     enum = output.find('Molecular Point Group')
+    if enum > 0:
+        symmetry_data = read_symmetry_info(output[enum:enum + 1000])
+
+    enum = output.find('Nuclear Repulsion Energy')
     basic_data = read_basic_info(output[enum:enum + 5000])
 
     # CIS excited states
@@ -111,7 +115,7 @@ def basic_cis(output):
                 if line.find('-->') > 0:
                     origin = int(line.split('>')[0].split('(')[1].split(')')[0])
                     target = int(line.split('>')[1].split('(')[1].split(')')[0])
-                    amplitude = float(line.split('=')[1])
+                    amplitude = float(line.split('=')[1].split()[0])
 
                     alpha_transitions = []
                     beta_transitions = []
