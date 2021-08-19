@@ -190,6 +190,41 @@ class SqlCache:
 
         return pickle.loads(rows[0][0]) if len(rows) > 0 else None
 
+    def retrieve_calculation_data_from_id(self, id, keyword=None):
+
+        self._conn = sqlite3.connect(self._calculation_data_filename)
+
+        if keyword is None:
+            cursor = self._conn.execute("SELECT qcdata FROM DATA_TABLE WHERE input_hash=?", (id,))
+            rows = cursor.fetchall()
+        else:
+            cursor = self._conn.execute("SELECT qcdata FROM DATA_TABLE WHERE input_hash=? AND parser=?",
+                                        (id, keyword))
+            rows = cursor.fetchall()
+
+        self._conn.close()
+
+        if len(rows) <= 0:
+            return None
+        elif len(rows) == 1:
+            return pickle.loads(rows[0][0]) if len(rows) > 0 else None
+        else:
+            return [pickle.loads(r[0]) for r in rows]
+
+
+    def list_database(self):
+        self._conn = sqlite3.connect(self._calculation_data_filename)
+
+        cursor = self._conn.execute("SELECT input_hash, parser, qcdata from DATA_TABLE")
+
+        print('{:^25}  {:^20}'.format('ID', 'PARSER'))
+        print('--'*25)
+        for row in cursor:
+            print('{:<25} {}'.format(row[0], row[1]))
+
+        self._conn.close()
+
+
     def get_all_data(self):
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
