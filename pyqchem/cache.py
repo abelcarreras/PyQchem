@@ -191,6 +191,13 @@ class SqlCache:
         return pickle.loads(rows[0][0]) if len(rows) > 0 else None
 
     def retrieve_calculation_data_from_id(self, id, keyword=None):
+        """
+        Only for SQL cache
+
+        :param id:
+        :param keyword:
+        :return:
+        """
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
@@ -211,8 +218,12 @@ class SqlCache:
         else:
             return [pickle.loads(r[0]) for r in rows]
 
-
     def list_database(self):
+        """
+        Only for SQL cache
+
+        :return:
+        """
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
         cursor = self._conn.execute("SELECT input_hash, parser, qcdata from DATA_TABLE")
@@ -223,7 +234,6 @@ class SqlCache:
             print('{:<25} {}'.format(row[0], row[1]))
 
         self._conn.close()
-
 
     def get_all_data(self):
 
