@@ -245,7 +245,44 @@ class SqlCache:
 
         pass
 
-    def export(self, file):
+    def fix_database(self, file):
+
+        import subprocess, os
+
+        dump_file = self._calculation_data_filename + '.dump'
+        # dump_file = '_recovery.test'
+        print(dump_file)
+        schema = subprocess.run(
+            ['sqlite3',
+             self._calculation_data_filename,
+             '.output {}'.format(dump_file),
+             '.dump',
+             ],
+            capture_output=True
+        )
+
+        with open(dump_file, 'r') as f:
+            data = f.read().replace("ROLLBACK", "COMMIT")
+
+        with open(dump_file, 'w') as f:
+            f.write(data)
+
+        try:
+            os.remove(file)
+        except FileNotFoundError:
+            pass
+
+        schema = subprocess.run(
+            ['sqlite3',
+             file,
+             '.read {}'.format(dump_file)
+             ],
+            capture_output=True
+        )
+
+        os.remove(dump_file)
+
+    def _recovery_kill(self, file):
 
         # cursor = self._conn.execute(".save ?", (file,))
 
@@ -253,12 +290,12 @@ class SqlCache:
         schema = subprocess.run(
             ['sqlite3',
              self._calculation_data_filename,
-             '.backup {}'.format(file)
+             '.recover'.format(file)
              ],
             capture_output=True
         )
 
-        # print(schema.stdout.decode('utf-8'))
+        print(schema.stdout)
 
     def get_all_data(self):
 
