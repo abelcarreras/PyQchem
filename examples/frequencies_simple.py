@@ -65,6 +65,10 @@ for i, mode in enumerate(parsed_data['modes']):
     print('frequency:       {:10.5f} {}'.format(mode['frequency'], mode['frequency_units']))
     print('force constant:  {:10.5f} {}\n'.format(mode['force_constant'], mode['force_constant_units']))
 
+print('Thermochemistry\n')
+for k, v in parsed_data['thermochemistry'].items():
+    print('{:20} {}'.format(k, v))
+
 
 # Thermodynamics
 def get_thermodynamics(T):

@@ -235,6 +235,31 @@ class SqlCache:
 
         self._conn.close()
 
+    def integrity_check(self):
+        self._conn = sqlite3.connect(self._calculation_data_filename)
+
+        cursor = self._conn.execute("PRAGMA integrity_check")
+        rows = ''.join(*cursor.fetchall()[0])
+        print(rows)
+        self._conn.close()
+
+        pass
+
+    def export(self, file):
+
+        # cursor = self._conn.execute(".save ?", (file,))
+
+        import subprocess
+        schema = subprocess.run(
+            ['sqlite3',
+             self._calculation_data_filename,
+             '.backup {}'.format(file)
+             ],
+            capture_output=True
+        )
+
+        # print(schema.stdout.decode('utf-8'))
+
     def get_all_data(self):
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
