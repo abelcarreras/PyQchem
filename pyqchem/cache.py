@@ -251,7 +251,7 @@ class SqlCache:
 
         dump_file = self._calculation_data_filename + '.dump'
         # dump_file = '_recovery.test'
-        print(dump_file)
+
         schema = subprocess.run(
             ['sqlite3',
              self._calculation_data_filename,
