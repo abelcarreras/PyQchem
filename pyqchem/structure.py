@@ -284,7 +284,7 @@ class Structure:
 
         :return: number of alpha electrons
         """
-        alpha_unpaired = self.multiplicity // 2 + 1 if (self.number_of_electrons % 2) else self.multiplicity // 2
+        alpha_unpaired = self.multiplicity // 2
         return self.number_of_electrons // 2 + alpha_unpaired
 
     @property
