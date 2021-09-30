@@ -4,6 +4,7 @@ import fcntl
 import sys
 import sqlite3
 import numpy as np
+from datetime import datetime
 
 
 # Singleton class to handle cache
@@ -142,7 +143,8 @@ class SqlCache:
             self._conn.execute('''CREATE TABLE DATA_TABLE
                               (input_hash  INT ,
                                parser      TEXT,
-                               qcdata      TEXT);''')
+                               qcdata      TEXT,
+                               date        TEXT);''')
             self._conn.commit()
             # print('Initialized database')
 
@@ -161,6 +163,8 @@ class SqlCache:
 
     def store_calculation_data(self, input_qchem, keyword, data):
 
+        date_time = datetime.now()
+
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
 
@@ -173,8 +177,13 @@ class SqlCache:
         self._conn.execute("DELETE FROM DATA_TABLE WHERE input_hash=? AND parser=?",
                            (hash(input_qchem), keyword))
 
-        self._conn.execute("INSERT into DATA_TABLE (input_hash, parser, qcdata)  VALUES (?, ?, ?)",
-                           (hash(input_qchem),  keyword, serialized_data))
+        try:
+            self._conn.execute("INSERT into DATA_TABLE (input_hash, parser, qcdata, date)  VALUES (?, ?, ?, ?)",
+                               (hash(input_qchem),  keyword, serialized_data, date_time))
+        except sqlite3.OperationalError:
+            self._conn.execute("INSERT into DATA_TABLE (input_hash, parser, qcdata)  VALUES (?, ?, ?)",
+                               (hash(input_qchem),  keyword, serialized_data))
+
         self._conn.commit()
         self._conn.close()
 
@@ -226,12 +235,19 @@ class SqlCache:
         """
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
-        cursor = self._conn.execute("SELECT input_hash, parser, qcdata from DATA_TABLE")
+        try:
+            cursor = self._conn.execute("SELECT input_hash, parser, date from DATA_TABLE")
+        except sqlite3.OperationalError:
+            cursor = self._conn.execute("SELECT input_hash, parser from DATA_TABLE")
 
-        print('{:^25}  {:^20}'.format('ID', 'KEYWORD'))
-        print('--'*25)
+
+        print('{:^25} {:^25} {:^25}'.format('ID', 'KEYWORD', 'DATE'))
+        print('--'*40)
         for row in cursor:
-            print('{:<25} {}'.format(row[0], row[1]))
+            try:
+                print('{:<25} {:<25} {}'.format(*row))
+            except IndexError:
+                print('{:<25} {:<25}'.format(*row))
 
         self._conn.close()
 
