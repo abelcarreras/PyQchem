@@ -71,6 +71,9 @@ print('Energy: ', data['scf_energy'])
 from pyqchem import QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_frequencies import basic_frequencies
+from pyqchem.tools import get_geometry_from_pubchem
+
+molecule = get_geometry_from_pubchem('aspirin')
 
 qc_input = QchemInput(molecule,
                       jobtype='opt',
