@@ -139,12 +139,9 @@ for i, state in enumerate(parsed_data['excited_states']):
 
 # plot adiabatic states
 for i, state in enumerate(parsed_data['excited_states']):
-    plot_state(state, with_amplitude=True, orbital_range=[0, dimer.alpha_electrons + 10])
+    plot_state(state, with_amplitude=True, orbital_range=[dimer.alpha_electrons-4, dimer.alpha_electrons+4])
     plt.title('Adiabatic State {}'.format(i+1))
-
 plt.show()
-
-
 
 # diabatization analysis
 diabatization = parsed_data['diabatization']
