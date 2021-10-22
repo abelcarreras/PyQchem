@@ -163,6 +163,9 @@ print('\nDiabatic states dimer\n--------------------')
 
 for i, state in enumerate(diabatization['diabatic_states']):
     print('\nState {}'.format(i+1))
+    mat = [state['transition_moment'] for i, state in enumerate(parsed_data['excited_states']) if i+1 in list_diabatic]
+    tdm = np.dot(np.array(diabatization['rot_matrix']).T, mat)[i]
+    print('Transition DM: ', tdm)
     print('Energy: ', state['excitation_energy'])
 
 plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
