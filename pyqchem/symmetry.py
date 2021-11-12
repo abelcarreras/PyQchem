@@ -12,7 +12,8 @@ def get_wf_symmetry(structure,
                     center=None,
                     orientation=(0., 0., 1.),
                     orientation2=(0, 1, 0),
-                    group='C2h'):
+                    group='C2h',
+                    occupancy=None):
 
     """
     Simplified interface between pyqchem anf wfnsympy
@@ -39,6 +40,9 @@ def get_wf_symmetry(structure,
         beta_mo_coeff = None
         beta_occupancy = None
 
+    if occupancy is not None:
+        alpha_occupancy = occupancy['alpha']
+        beta_occupancy = occupancy['alpha']
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
                       symbols=structure.get_symbols(),

@@ -424,9 +424,9 @@ class Structure:
         :param title: title of the molecule
         :return: string with the formatted XYZ file
         """
-        txt = '{}\n{}\n'.format(self.get_number_of_atoms(), title)
+        txt = '{}\n{}'.format(self.get_number_of_atoms(), title)
         for s, c in zip(self.get_symbols(), self.get_coordinates()):
-            txt += '{:2} '.format(s) + '{:15.10f} {:15.10f} {:15.10f}\n'.format(*c)
+            txt += '\n{:2} '.format(s) + '{:15.10f} {:15.10f} {:15.10f}'.format(*c)
 
         return txt
 
