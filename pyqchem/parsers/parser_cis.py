@@ -279,7 +279,8 @@ def basic_cis(output):
             diabat_dim = int(np.sqrt(len(matrix)))
             return np.array(matrix).reshape(diabat_dim, diabat_dim).T
 
-        rot_matrix = read_diabatization_matrix('showmatrix adiabatic R-Matrix')
+        r_matrix = read_diabatization_matrix('showmatrix adiabatic R-Matrix')
+        rot_matrix = read_diabatization_matrix('showmatrix final adiabatic -> diabatic RotMatrix')
         adiabatic_matrix = read_diabatization_matrix('showmatrix adiabatH') * AU_TO_EV
         diabatic_matrix = read_diabatization_matrix('showmatrix diabatH') * AU_TO_EV
 

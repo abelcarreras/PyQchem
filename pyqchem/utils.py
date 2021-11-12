@@ -5,7 +5,6 @@ import warnings
 
 
 def standardize_vector(vector):
-    import numpy as np
     if vector[0] != 0:
         if vector[0] < 0:
             vector = np.array(vector) * -1
@@ -88,6 +87,7 @@ def get_ratio_of_condition_rasci(state, n_electron=1, max_jump=10):
             p += configuration['amplitude']**2
 
     return p
+
 
 def is_transition(configuration, reference, n_electron=1, max_jump=10):
     """
@@ -338,6 +338,7 @@ def get_basis_functions_ranges_by_atoms(basis, atoms_range=None):
 
     return functions_range
 
+
 def classify_diabatic_states_of_fragment(diabatic_states, fragments_atoms, tol=0.1):
 
     print('     Attach      Detach')
@@ -386,5 +387,3 @@ def get_occupated_list(configuration, structure, total_orbitals):
             vector_beta[int(configuration['part']) - 1] = 1
 
     return {'alpha': vector_alpha, 'beta': vector_beta}
-
-

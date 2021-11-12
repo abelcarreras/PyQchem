@@ -139,12 +139,9 @@ for i, state in enumerate(parsed_data['excited_states']):
 
 # plot adiabatic states
 for i, state in enumerate(parsed_data['excited_states']):
-    plot_state(state, with_amplitude=True, orbital_range=[0, dimer.alpha_electrons + 10])
+    plot_state(state, with_amplitude=True, orbital_range=[dimer.alpha_electrons-4, dimer.alpha_electrons+4])
     plt.title('Adiabatic State {}'.format(i+1))
-
 plt.show()
-
-
 
 # diabatization analysis
 diabatization = parsed_data['diabatization']
@@ -163,6 +160,9 @@ print('\nDiabatic states dimer\n--------------------')
 
 for i, state in enumerate(diabatization['diabatic_states']):
     print('\nState {}'.format(i+1))
+    mat = [state['transition_moment'] for i, state in enumerate(parsed_data['excited_states']) if i+1 in list_diabatic]
+    tdm = np.dot(np.array(diabatization['rot_matrix']).T, mat)[i]
+    print('Transition DM: ', tdm)
     print('Energy: ', state['excitation_energy'])
 
 plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_number_of_atoms()/2,
