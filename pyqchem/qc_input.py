@@ -1,6 +1,6 @@
 import numpy as np
 from copy import deepcopy
-from pyqchem.basis import basis_to_txt
+from pyqchem.basis import basis_to_txt, get_purecard
 import hashlib, json
 import warnings
 from pyqchem.errors import QchemInputWarning, QchemInputError
@@ -165,11 +165,14 @@ class QchemInput:
         if type(basis) is not str:
             self._basis = 'gen'
             self._custom_basis = basis
+            self._purecart = get_purecard(basis)
+
 
         # Handle custom basis set
         if not isinstance(basis2, str) and basis2 is not None:
             self._basis2 = 'gen'
             self._custom_basis2 = basis2
+            self._purecart = get_purecard(basis2)
 
         # Handle cc_trans_prop
         if isinstance(self._cc_trans_prop, dict):

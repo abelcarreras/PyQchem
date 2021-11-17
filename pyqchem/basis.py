@@ -215,7 +215,13 @@ def basis_to_txt(basis):
     for atom in basis['atoms']:
         basis_txt += atom['symbol'] + '  0\n'
         for shell in atom['shells']:
-            basis_txt += '{} {} {}\n'.format(shell['shell_type'].upper(), len(shell['p_exponents']), 1.00)
+            # check if shell is pure or cartesian
+            if shell['shell_type'].endswith('_'):
+                shell_type = shell['shell_type'][:-1]
+            else:
+                shell_type = shell['shell_type']
+
+            basis_txt += '{} {} {}\n'.format(shell_type.upper(), len(shell['p_exponents']), 1.00)
             for p, c, pc in zip(shell['p_exponents'], shell['con_coefficients'], shell['p_con_coefficients']):
                 if shell['shell_type'].upper() in ['SP']:
                     basis_txt += '{:15.10e} {:15.10e} {:15.10e} \n'.format(p, c, pc)
@@ -224,6 +230,22 @@ def basis_to_txt(basis):
 
         basis_txt += '****\n'
     return basis_txt
+
+
+def get_purecard(basis):
+
+    # default 2111
+    keyword = {'d': 1, 'f': 1, 'g': 1, 'h': 2}
+
+    # check if basis is pure
+    for atom in basis['atoms']:
+        for shell in atom['shells']:
+            if shell['shell_type'].endswith('_'):
+                keyword[shell['shell_type'][:-1].lower()] = 1
+            else:
+                keyword[shell['shell_type'].lower()] = 2
+
+    return '{}{}{}{}'.format(keyword['h'], keyword['g'], keyword['f'], keyword['d'])
 
 
 def trucate_basis(basis, shells=()):

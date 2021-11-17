@@ -81,11 +81,11 @@ class Structure:
     """
     def __init__(self,
                  coordinates=None,
+                 symbols=None,
                  internal=None,
                  z_matrix=None,
                  int_label=None,
                  atom_types=None,
-                 symbols=None,
                  atomic_numbers=None,
                  connectivity=None,
                  file_name=None,
