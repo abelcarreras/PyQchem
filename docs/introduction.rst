@@ -16,7 +16,7 @@ homogeneous as possible among the different methods producing a
 python dictionary that contains similar entries and can be used with the
 same analysis/visualization functions.
 
-The phylosophy of PyQChem is to build a homogenious input and output
+The philosophy of PyQChem is to build a homogeneous input and output
 interface for the different methods implemented in Q-Chem to make the
 life of Q-Chem users easier.
 
