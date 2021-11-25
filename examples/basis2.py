@@ -1,3 +1,4 @@
+# Use of basis2 to use a guess from a previous calculation with a different basis set
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.basic import basic_parser_qchem

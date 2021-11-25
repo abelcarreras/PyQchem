@@ -1,3 +1,4 @@
+# Compute the excited states using RASCI method
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_rasci import parser_rasci

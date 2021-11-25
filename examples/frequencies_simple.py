@@ -1,3 +1,4 @@
+# Optimization + frequency calculation
 from pyqchem import get_output_from_qchem, QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization

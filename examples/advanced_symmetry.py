@@ -1,10 +1,10 @@
-import numpy as np
-
+# Classify (quasi) molecular orbitals of the individual monomers from a dimer calculation
 from pyqchem.symmetry import get_wf_symmetry
 from pyqchem.utils import get_plane, crop_electronic_structure
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.structure import Structure
 from pyqchem.file_io import build_fchk
+import numpy as np
 
 
 # Define custom classification function

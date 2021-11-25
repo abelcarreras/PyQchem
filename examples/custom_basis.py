@@ -1,3 +1,4 @@
+# Use of custom basis set obtained from ccRepo
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.structure import Structure

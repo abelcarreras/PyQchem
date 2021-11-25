@@ -1,3 +1,4 @@
+# Geomtry optimization of water molecule
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
 import matplotlib.pyplot as plt

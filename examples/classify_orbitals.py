@@ -1,3 +1,4 @@
+# Classify molecular orbitals between sigma and pi
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.structure import Structure
 from pyqchem.symmetry import get_orbital_classification
@@ -40,7 +41,6 @@ output, parsed_fchk = get_output_from_qchem(qc_input,
                                             force_recalculation=False,
                                             read_fchk=True,
                                             fchk_only=True)
-
 
 # write .fchk file copy on disk (for checking purpose)
 txt_fchk = build_fchk(parsed_fchk)

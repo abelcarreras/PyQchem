@@ -1,3 +1,4 @@
+# Compute the excited states using TD-DFT
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_cis import basic_cis

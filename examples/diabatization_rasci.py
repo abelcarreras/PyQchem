@@ -1,3 +1,4 @@
+# Application of diabatization method implemented in RASCI for ethylene dimer
 from pyqchem import Structure, QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_rasci import parser_rasci

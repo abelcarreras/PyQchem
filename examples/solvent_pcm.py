@@ -1,3 +1,4 @@
+# Example of use of solvation (PCM) in pyqchem
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.structure import Structure

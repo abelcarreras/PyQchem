@@ -1,3 +1,4 @@
+# Simple single point calculation
 from pyqchem import get_output_from_qchem, QchemInput, Structure
 from pyqchem.parsers.basic import basic_parser_qchem
 import numpy as np

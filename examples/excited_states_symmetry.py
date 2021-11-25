@@ -1,3 +1,4 @@
+# COmpute the wave function symmetry of excited states computed with CIS and RASCI
 from pyqchem.utils import get_plane
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
