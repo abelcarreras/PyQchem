@@ -46,15 +46,15 @@ output, electronic_structure = get_output_from_qchem(qc_input,
                                                      store_full_output=True)
 
 
-# get plane from coordinates
-coordinates_f1 = np.array(electronic_structure['structure'].get_coordinates())
-center_f1, normal_f1 = get_plane(coordinates_f1)
+# get plane from coordinates to determine orientation using the plane of the molecule
+coordinates_mat = np.array(electronic_structure['structure'].get_coordinates())
+center, normal = get_plane(coordinates_mat)
 
 
 symmetry_measures = get_state_symmetry(electronic_structure,
                                        output['excited_states'],
-                                       center=center_f1,
-                                       orientation=normal_f1,
+                                       center=center,  # if not provided use center of electronic charge
+                                       orientation=normal,  # if not provided auto-search best orientation
                                        group='D2h',
                                        extra_print=False
                                        )
@@ -83,8 +83,8 @@ output, electronic_structure = get_output_from_qchem(qc_input,
 
 symmetry_measures = get_state_symmetry(electronic_structure,
                                        output['excited_states'],
-                                       center=center_f1,
-                                       orientation=normal_f1,
+                                       center=center,  # if not provided use center of electronic charge
+                                       orientation=normal,  # if not provided auto-search best orientation
                                        group='D2h',
                                        extra_print=False
                                        )
