@@ -42,7 +42,8 @@ def get_wf_symmetry(structure,
 
     if occupancy is not None:
         alpha_occupancy = occupancy['alpha']
-        beta_occupancy = occupancy['alpha']
+        if 'beta' in occupancy:
+            beta_occupancy = occupancy['beta']
 
     molsym = WfnSympy(coordinates=structure.get_coordinates(),
                       symbols=structure.get_symbols(),
@@ -142,8 +143,6 @@ def get_state_symmetry(parsed_fchk,
 
             print('\nRASCI Exited state {}\n---------------------------'.format(i+1))
 
-
-        # print(configurations)
         occupations_list = []
         for configuration in state['configurations']:
             if np.abs(configuration['amplitude']) < amplitude_cutoff:
@@ -151,28 +150,20 @@ def get_state_symmetry(parsed_fchk,
 
             occupations_list.append(configuration['occupations'])
 
-            # print('occupied', occupied_orbitals, total_orbitals)
-            # print('sum', np.sum(occupations_list[-1]['alpha']), np.sum(occupations_list[-1]['beta']))
-            # print('alpha', occupations_list[-1]['alpha'])
-            # print('beta', occupations_list[-1]['beta'])
-
-            # print(configuration['hole'],'|' , configuration['alpha'], configuration['beta'], '|', configuration['part'])
             if extra_print:
                 print('occ:', occupations_list[-1])
                 print(configuration['alpha'], configuration['beta'], configuration['amplitude'])
 
         state_symmetry_list = []
         for occupations in occupations_list:
-            # print('occupations', occupations)
-
-            reordered_coefficients = reorder_coefficients(occupations, parsed_fchk['coefficients'])
 
             molsym = get_wf_symmetry(structure,
                                      parsed_fchk['basis'],
-                                     reordered_coefficients,
+                                     parsed_fchk['coefficients'],
                                      center=center,
                                      orientation=orientation,
                                      orientation2=orientation2,
+                                     occupancy=occupations,
                                      group=group)
 
             if extra_print:
