@@ -4,77 +4,6 @@ import hashlib, json
 from pyqchem.errors import StructureError
 
 
-def int_to_xyz(molecule, no_dummy=True):
-
-    internal = molecule._get_full_z_matrix()
-    coordinates = [[0.0, 0.0, 0.0]]
-
-    for line in internal[1:]:
-        bi = int(line[0])  # bond index
-        B = line[1]        # bond value
-        ai = int(line[2])  # Angle index
-        A = line[3]        # Angle value
-        ci = int(line[4])  # Dihedral index
-        C = line[5]        # Dihedral value
-
-        bond = np.array(coordinates[ai-1]) - np.array(coordinates[bi-1])
-        if np.linalg.norm(bond) == 0:
-            bond = np.array([1, 0, 0])
-
-        bond2 = np.array(coordinates[ci-1]) - np.array(coordinates[ai-1])
-        if np.linalg.norm(bond2) == 0:
-            bond2 = np.array([0, 1, 0])
-
-        origin = bond/np.linalg.norm(bond)*B
-        ref2 = bond
-        ref3 = np.cross(bond, bond2)
-
-        # Check case of linear structure
-        if np.linalg.norm(ref3) == 0:
-            ref3 = [0.0, 0.0, 0.1]
-
-        inter = np.dot(rotation_matrix(ref3, np.deg2rad(A)), origin)
-        final = np.dot(rotation_matrix(ref2, np.deg2rad(C)), inter)
-        final = final + np.array(coordinates[bi-1])
-        coordinates.append(final)
-
-    coordinates = np.array(coordinates)
-
-    if no_dummy:
-      #  mask = np.argwhere(molecule.get_atomic_elements_with_dummy()[:,0]  == 'X')
-        mask = np.argwhere((molecule.get_symbols_with_dummy()[:, 0] == 'X') |
-                           (molecule.get_symbols_with_dummy()[:, 0] == 'x')).flatten()
-        coordinates = np.delete(coordinates,mask,axis=0)
-
-    return np.array(coordinates, dtype=float)
-
-
-def rotation_matrix(axis, theta):
-    """
-    Return the rotation matrix associated with counterclockwise rotation around the given axis
-
-    :param axis: rotation axis
-    :param theta: rotation angle in radians
-
-    :return: the rotation matrix
-    """
-    if np.dot(axis, axis) == 0.0:
-        print ('Warning, reference rotation axis module is 0')
-        exit()
-
-    axis = np.asarray(axis)
-    theta = np.asarray(theta)
-    axis = axis/np.sqrt(np.dot(axis, axis))
-
-    a = np.cos(theta/2)
-    b, c, d = -axis*np.sin(theta/2)
-    aa, bb, cc, dd = a*a, b*b, c*c, d*d
-    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
-    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
-                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
-                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
-
-
 class Structure:
     """
     Structure object containing all the geometric data of the molecule
@@ -82,17 +11,11 @@ class Structure:
     def __init__(self,
                  coordinates=None,
                  symbols=None,
-                 internal=None,
-                 z_matrix=None,
-                 int_label=None,
-                 atom_types=None,
                  atomic_numbers=None,
                  connectivity=None,
-                 file_name=None,
                  charge=0,
                  multiplicity=1,
-                 name=None,
-                 int_weights=None):
+                 name=None):
         """
         :param coordinates: List containing the cartesian coordinates of each atom in Angstrom
         :param symbols: Symbols of the atoms within the molecule
@@ -102,27 +25,14 @@ class Structure:
         """
 
         self._coordinates = np.array(coordinates)
-        self._internal = internal
-        self._z_matrix = z_matrix
-        self._int_label = int_label
-        self._atom_types = atom_types
         self._atomic_numbers = atomic_numbers
         self._connectivity = connectivity
         self._symbols = symbols
         self._charge = charge
         self._multiplicity = multiplicity
         self._name = name
-
-        self._file_name = file_name
-        self._int_weights = int_weights
-
         self._atomic_masses = None
         self._number_of_atoms = None
-        self._number_of_internal = None
-        self._energy = {}
-        self._modes = None
-
-        self._full_z_matrix = None
 
         # check input data
         if symbols is not None and coordinates is not None:
@@ -149,7 +59,7 @@ class Structure:
         :return: coordinates list
         """
         if self._coordinates is None:
-            self._coordinates = int_to_xyz(self)
+            return None
 
         if fragment is None:
             return np.array(self._coordinates).tolist()
@@ -166,66 +76,6 @@ class Structure:
 
         self._coordinates = np.array(coordinates)
         self._number_of_atoms = None
-        self._energy = {}
-
-    def _get_internal(self):
-        if self._internal is None:
-            print('No internal coordinates available\n Load internal file')
-            exit()
-        return self._internal.copy()
-
-    def _set_internal(self, internal):
-        self._internal = internal
-        self._energy = None
-        self._coordinates = int_to_xyz(self)
-        self._full_z_matrix = None
-
-    def _get_full_z_matrix(self):
-        if self._full_z_matrix is None:
-            num_z_atoms = self._get_z_matrix().shape[0]
-            self._full_z_matrix = np.zeros((num_z_atoms,6))
-
-            for row, i in enumerate(self._get_z_matrix()[1:]):
-                    for col, k in enumerate(i[0]):
-                        try:
-                            self._full_z_matrix[row+1, col] = float(k)
-                        except ValueError:
-                            self._full_z_matrix[row+1, col] = self._get_int_dict()[k]
-
-
-        return self._full_z_matrix
-
-    def _get_z_matrix(self):
-        if self._z_matrix is None:
-            print('No Z-matrix available\n Load zmatrix file')
-            exit()
-        return self._z_matrix
-
-    def _set_z_matrix(self, z_matrix):
-        self._z_matrix = z_matrix
-
-    def _get_int_label(self):
-        return self._int_label
-
-    def _set_int_label(self, int_label):
-        self._int_label = int_label
-
-    def _get_int_dict(self):
-        self._internal_dict = {}
-        for i, label in enumerate(self._get_int_label()[:, 0]):
-            self._internal_dict.update({label:self._get_internal()[i, 0]})
-        return self._internal_dict
-
-    def _get_int_weights(self):
-        return self._int_weights
-
-    def _set_int_weights(self, int_weights):
-        self._int_weights = int_weights
-
-    def get_symbols_with_dummy(self):
-       # print([i for i in self._atomic_elements if i != "X"])
-       return self._symbols
-
 
     @property
     def name(self):
@@ -296,15 +146,6 @@ class Structure:
         """
         return self.number_of_electrons - self.alpha_electrons
 
-    def _get_atom_types(self):
-        if self._atom_types is None:
-            print('No atom types available')
-            exit()
-        return self._atom_types
-
-    def _set_atom_types(self, atom_types):
-        self._atom_types = atom_types
-
     def get_atomic_numbers(self):
         """
         get the atomic numbers of the atoms of the molecule
@@ -329,7 +170,7 @@ class Structure:
             self._symbols = np.array(atom_data)[self.get_atomic_numbers()].T[1]
         return np.array([i for i in self._symbols if i != "X"], dtype=str)
 
-    def set_atomic_elements(self, atomic_elements):
+    def set_symbols(self, atomic_elements):
         self._symbols = atomic_elements
 
     def _get_connectivity(self):
@@ -353,29 +194,6 @@ class Structure:
             self._number_of_atoms = np.array(self.get_coordinates()).shape[0]
 
         return self._number_of_atoms
-
-    def _get_number_of_internal(self):
-        if self._number_of_internal is None:
-            self._number_of_internal = self._get_internal().shape[0]
-
-        return self._number_of_internal
-
-    def _get_energy(self, method=None):
-        if method is None:
-            if len(self._energy) == 1:
-                return self._energy.values()[0]
-            raise Exception('No method defined')
-        elif '{}'.format(hash(method)) not in self._energy:
-            self._energy['{}'.format(hash(method))] = method.single_point(self)
-        return self._energy['{}'.format(hash(method))]
-
-    def _get_modes(self, method=None):
-        if self._modes is None:
-            if method is None:
-                raise Exception('No method defined')
-            self._modes, energy = method.vibrations(self)
-            self._energy['{}'.format(method.multiplicity)] = energy
-        return self._modes
 
     def get_atomic_masses(self):
         """
