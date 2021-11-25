@@ -186,7 +186,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
     qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True, cwd=work_dir)
     (output, err) = qchem_process.communicate()
     qchem_process.wait()
-    output = output.decode()
+    output = output.decode(errors='ignore')
     err = err.decode()
 
     return output, err
