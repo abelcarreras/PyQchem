@@ -216,6 +216,10 @@ class QchemInput:
         # Change molecule object by molecule coordinates (Structure class too complex for JSON)
         keywords['_molecule'] = hash(keywords['_molecule'])
 
+        # Handle extra section
+        if '_extra_sections' in keywords:
+            keywords['_extra_sections'] = hash(keywords['_extra_sections'])
+
         digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
         return int(digest, 16)
 
