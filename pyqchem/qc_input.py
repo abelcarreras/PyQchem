@@ -653,6 +653,11 @@ class CustomSection:
         self._tile = title
         self._data = keywords
 
+    def __hash__(self):
+        keywords = dict(self.__dict__)
+        digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
+        return int(digest, 16)
+
     def get_txt(self):
         txt_input = '${}\n'.format(self._tile)
         for prop, value in self._data.items():
