@@ -217,8 +217,10 @@ class QchemInput:
         keywords['_molecule'] = hash(keywords['_molecule'])
 
         # Handle extra section
-        if '_extra_sections' in keywords:
-            keywords['_extra_sections'] = hash(keywords['_extra_sections'])
+        if keywords['_extra_sections'] is not None:
+            if isinstance(keywords['_extra_sections'], list):
+                keywords['_extra_sections'] = tuple(keywords['_extra_sections'])
+            keywords['_extra_sections'] = hash(keywords['_extra_sections'],)
 
         digest = hashlib.md5(json.dumps(keywords, sort_keys=True).encode()).hexdigest()
         return int(digest, 16)
