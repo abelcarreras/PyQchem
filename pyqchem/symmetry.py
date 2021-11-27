@@ -105,8 +105,8 @@ def get_state_symmetry(parsed_fchk,
                        orientation2=(0, 1, 0),
                        group='C2h',
                        extra_print=False,
-                       amplitude_cutoff=0.0
-                       ):
+                       amplitude_cutoff=0.0,
+                       check_consistency=True):
     """
     Determines electronic state symmetry (only for closed shell configurations)
     :param parsed_fchk: electronic structure
@@ -184,12 +184,15 @@ def get_state_symmetry(parsed_fchk,
             print(state_symmetry_list)
 
         # Make sure symmetry of all configurations is the same
-        if len(np.unique([a[0] for a in state_symmetry_list])) == 1:
-            symmetry_label = state_symmetry_list[0][0]
-            average_measure = np.average([a[1] for a in state_symmetry_list])
-            sym_states['state {}'.format(i+1)] = [symmetry_label, average_measure]
+        if check_consistency:
+            if len(np.unique([a[0] for a in state_symmetry_list])) == 1:
+                symmetry_label = state_symmetry_list[0][0]
+                average_measure = np.average([a[1] for a in state_symmetry_list])
+                sym_states['state {}'.format(i+1)] = [symmetry_label, average_measure]
+            else:
+                sym_states['state {}'.format(i+1)] = ['Undef', 0]
         else:
-            sym_states['state {}'.format(i+1)] = ['Undef', 0]
+            sym_states['state {}'.format(i+1)] = state_symmetry_list[np.argmax([a[1] for a in state_symmetry_list])]
 
     return sym_states
 

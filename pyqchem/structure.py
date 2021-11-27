@@ -274,6 +274,20 @@ class Structure:
         else:
             return (np.array(np.where(relative_differences < thresh - 1)).T + 1).tolist()
 
+    def get_point_symmetry(self):
+        """
+        Returns the point group of the molecule using pymatgen
+
+        :return: point symmetry label
+        """
+        from pymatgen.core import Molecule
+        from pymatgen.symmetry.analyzer import PointGroupAnalyzer
+
+        pymatgen_mol = Molecule(self.get_symbols(), self.get_coordinates())
+        symm_group = PointGroupAnalyzer(pymatgen_mol, tolerance=0.1)
+
+        return symm_group.sch_symbol
+
 
 atom_data = [
     # atomic number, symbols, names, masses, bohr radius

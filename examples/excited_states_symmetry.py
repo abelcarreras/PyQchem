@@ -24,6 +24,9 @@ molecule = Structure(coordinates=ethene,
                      charge=0,
                      multiplicity=1)
 
+point_group = molecule.get_point_symmetry()
+print('Point group: {}\n'.format(point_group))
+
 # create Q-Chem input
 qc_input = QchemInput(molecule,
                       jobtype='sp',
@@ -55,7 +58,7 @@ symmetry_measures = get_state_symmetry(electronic_structure,
                                        output['excited_states'],
                                        center=center,  # if not provided use center of electronic charge
                                        orientation=normal,  # if not provided auto-search best orientation
-                                       group='D2h',
+                                       group=point_group,
                                        extra_print=False
                                        )
 
@@ -85,7 +88,7 @@ symmetry_measures = get_state_symmetry(electronic_structure,
                                        output['excited_states'],
                                        center=center,  # if not provided use center of electronic charge
                                        orientation=normal,  # if not provided auto-search best orientation
-                                       group='D2h',
+                                       group=point_group,
                                        extra_print=False
                                        )
 
