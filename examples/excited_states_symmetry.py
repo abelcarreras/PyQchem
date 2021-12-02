@@ -65,8 +65,8 @@ symmetry_measures = get_state_symmetry(electronic_structure,
 energies = [state['excitation_energy'] for state in output['excited_states']]
 
 print('Symmetry of RASCI excited states\n--------------------------------')
-for energy, state in zip(energies, symmetry_measures.items()):
-    print('{:8} '.format(state[0]) + ' {:5} {:5.3f}'.format(*state[1]) + '  {:5.3f} eV'.format(energy))
+for i, (energy, state) in enumerate(zip(energies, symmetry_measures)):
+    print('{:2} {:6} {:5.3f}'.format(i+1, state[0], state[1]) + '  {:5.3f} eV'.format(energy))
 
 
 # J. Phys. Chem. 1992, 96, 26, 10756–10768
@@ -95,5 +95,5 @@ symmetry_measures = get_state_symmetry(electronic_structure,
 energies = [state['excitation_energy'] for state in output['excited_states']]
 
 print('\nSymmetry of CIS excited states\n--------------------------------')
-for energy, state in zip(energies, symmetry_measures.items()):
-    print('{:8} '.format(state[0]) + ' {:5} {:5.3f}'.format(*state[1]) + '  {:5.3f} eV'.format(energy))
+for i, (energy, state) in enumerate(zip(energies, symmetry_measures)):
+    print('{:2} {:6} {:5.3f}'.format(i+1, state[0], state[1]) + '  {:5.3f} eV'.format(energy))

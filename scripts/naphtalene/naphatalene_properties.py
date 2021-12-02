@@ -21,7 +21,6 @@ def draw_molecule(molecule):
 
     mogli.show(mol, bonds_param=1.5, title='Molecule')
 
-redefine_calculation_data_filename('naphtalene.pkl')
 
 
 # define molecule
@@ -148,6 +147,6 @@ symmetry_measures = get_state_symmetry(electronic_structure,
 energies = [state['excitation_energy'] for state in parsed_data['excited_states']]
 
 print('\nSymmetry of RASCI excited states\n--------------------------------')
-for energy, state in zip(energies, symmetry_measures.items()):
-    print('{:8} '.format(state[0]) + ' {:5} {:5.3f}'.format(*state[1]) + '  {:5.3f} eV'.format(energy))
+for i, (energy, state) in enumerate(zip(energies, symmetry_measures)):
+    print('{:2} {:6} {:5.3f}'.format(i+1, state[0], state[1]) + '  {:5.3f} eV'.format(energy))
 

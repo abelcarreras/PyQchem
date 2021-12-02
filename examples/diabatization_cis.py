@@ -4,6 +4,7 @@ from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_cis import basic_cis
 from pyqchem.plots import plot_diabatization, plot_state
 from pyqchem.utils import get_ratio_of_condition
+from pyqchem.symmetry import get_state_symmetry
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -76,12 +77,18 @@ qc_input = QchemInput(dimer,
 
 print(qc_input.get_txt())
 
-parsed_data = get_output_from_qchem(qc_input,
-                                    processors=4,
-                                    force_recalculation=False,
-                                    parser=basic_cis
-                                    )
+parsed_data, ee = get_output_from_qchem(qc_input,
+                                        processors=4,
+                                        force_recalculation=False,
+                                        parser=basic_cis,
+                                        read_fchk=True
+                                        )
 
+
+symmetry_measures = get_state_symmetry(ee,
+                                       parsed_data['excited_states'],
+                                       group='D2h',
+                                       )
 
 # Analysis of diabatic states to use in diabatization
 print('\nStates to use in diabatization (1e, max_jump 3)')
@@ -93,7 +100,11 @@ for i, state in enumerate(parsed_data['excited_states']):
         mark = 'X'
     else:
         mark = ''
-    print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
+    # print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
+
+    sym_lab = symmetry_measures[i][0]
+    print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
+
 
 
 # RASCI qchem input
@@ -157,7 +168,7 @@ print('\nDiabatic Matrix')
 print(np.array(diabatization['diabatic_matrix']))
 
 
-print('\nDiabatic states dimer\n--------------------')
+print('\nDiabatic states dimer\n---------------------')
 
 for i, state in enumerate(diabatization['diabatic_states']):
     print('\nState {}'.format(i+1))
@@ -186,17 +197,25 @@ qc_input = QchemInput(dimer,
                       set_iter=30
                       )
 
-parsed_data = get_output_from_qchem(qc_input,
-                                    processors=14,
-                                    force_recalculation=False,
-                                    parser=basic_cis
-                                    )
+parsed_data, ee = get_output_from_qchem(qc_input,
+                                        processors=14,
+                                        force_recalculation=False,
+                                        parser=basic_cis,
+                                        read_fchk=True
+                                        )
 
-print('\nAdiabatic states monomer\n--------------------')
+symmetry_measures = get_state_symmetry(ee,
+                                       parsed_data['excited_states'],
+                                       group='D2h',
+                                       )
+
+
+print('\nAdiabatic states monomer\n------------------------')
 for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
+    print('Symmetry: ', symmetry_measures[i][0])
     print(' Origin  Target   Amplitude')
     for j, conf in enumerate(state['configurations']):
         print('{:^9} {:^7} {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))

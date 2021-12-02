@@ -191,7 +191,9 @@ def _set_zero_to_coefficients(basis, mo_coeff, range_atoms):
     return mo_coeff_zero
 
 
-def crop_electronic_structure(electronic_structure, atom_list):
+def crop_electronic_structure(electronic_structure, atom_list, renormalize=True):
+
+
     n_atoms = electronic_structure['structure'].get_number_of_atoms()
 
     complementary_list = [i for i in range(n_atoms) if not i in atom_list]
@@ -199,6 +201,38 @@ def crop_electronic_structure(electronic_structure, atom_list):
     new_coefficients = _set_zero_to_coefficients(electronic_structure['basis'],
                                                  electronic_structure['coefficients'],
                                                  complementary_list)
+
+    if renormalize:
+        if 'overlap' not in electronic_structure:
+            raise Exception('Overlap matrix not found')
+
+        overlap = electronic_structure['overlap']
+
+        def renomalize_coefficients(original_coeff, activate_test=False):
+
+            dot = np.dot(original_coeff, np.dot(overlap, np.transpose(original_coeff)))
+            norm_vect = np.diag(dot)
+
+            def normalize_vector(vector, norm):
+                if norm > 1e-8:
+                    return list(np.array(vector)/np.sqrt(norm))
+                else:
+                    return np.zeros_like(vector).tolist()
+
+            coeff = np.array([ normalize_vector(mo, norm) for mo, norm in zip(original_coeff, norm_vect)])
+
+            if activate_test:
+                print('-Norm Test-')
+                dot = np.dot(coeff, np.dot(overlap, coeff.T))
+                norm_vect = np.diag(dot)
+                print(norm_vect)
+
+            return coeff
+
+        new_coefficients['alpha'] = renomalize_coefficients(new_coefficients['alpha'])
+        if 'beta' in new_coefficients:
+            new_coefficients['beta'] = renomalize_coefficients(new_coefficients['beta'])
+
 
     new_electronic_structure = deepcopy(electronic_structure)
     new_electronic_structure['coefficients'] = new_coefficients

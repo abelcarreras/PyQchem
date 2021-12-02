@@ -7,12 +7,12 @@ def draw_electron(pos, spin=1, color='black'):
     s = 0.05
     if spin == 1:
         d = 0.1
-        plt.plot([pos[0]+d, pos[0]+0.1+d], [pos[1]+a, pos[1]+a*0.6], 'k-', lw=2, color=color)
+        plt.plot([pos[0]+d, pos[0]+0.1+d], [pos[1]+a, pos[1]+a*0.6], '-', lw=2, color=color)
     else:
         d = -0.1
-        plt.plot([pos[0]+d, pos[0]-0.1+d], [pos[1]+s, pos[1]+a*0.4+s], 'k-', lw=2, color=color)
+        plt.plot([pos[0]+d, pos[0]-0.1+d], [pos[1]+s, pos[1]+a*0.4+s], '-', lw=2, color=color)
 
-    plt.plot([pos[0]+d, pos[0]+d], [pos[1]+s, pos[1] + a], 'k-', lw=2, color=color)
+    plt.plot([pos[0]+d, pos[0]+d], [pos[1]+s, pos[1] + a], '-', lw=2, color=color)
 
 
 def plot_configuration(alpha, beta, index=1):
@@ -28,7 +28,7 @@ def plot_configuration(alpha, beta, index=1):
 
     for xi, yi, oa, ob in zip(x, levels_alpha, alpha, beta):
 
-        plt.plot([xi-0.3, xi+0.3], [yi, yi], 'k-', lw=3, color='blue')
+        plt.plot([xi-0.3, xi+0.3], [yi, yi], '-', lw=3, color='blue')
         if oa == '1':
             draw_electron([xi, yi], spin=1, color='r')
         if ob == '1':

@@ -106,7 +106,8 @@ def get_state_symmetry(parsed_fchk,
                        group='C2h',
                        extra_print=False,
                        amplitude_cutoff=0.0,
-                       check_consistency=True):
+                       check_consistency=True,
+                       full_vector=False):
     """
     Determines electronic state symmetry (only for closed shell configurations)
     :param parsed_fchk: electronic structure
@@ -152,9 +153,10 @@ def get_state_symmetry(parsed_fchk,
 
             if extra_print:
                 print('occ:', occupations_list[-1])
-                print(configuration['alpha'], configuration['beta'], configuration['amplitude'])
+                print(configuration['occupations']['alpha'], configuration['occupations']['beta'], configuration['amplitude'])
 
         state_symmetry_list = []
+        states_symmetry_list = []
         for occupations in occupations_list:
 
             molsym = get_wf_symmetry(structure,
@@ -170,6 +172,8 @@ def get_state_symmetry(parsed_fchk,
                 molsym.print_alpha_mo_IRD()
                 molsym.print_beta_mo_IRD()
                 molsym.print_wf_mo_IRD()
+                print('center: ', molsym.center)
+                print('orientation axis', molsym.axis, molsym.axis2)
 
             state_symmetry = {}
             for label, measure in zip(molsym.IRLab, molsym.wf_IRd):
@@ -179,6 +183,7 @@ def get_state_symmetry(parsed_fchk,
             if extra_print:
                 print([molsym.IRLab[np.argmax(molsym.wf_IRd)], np.max(molsym.wf_IRd)])
             state_symmetry_list.append([molsym.IRLab[np.argmax(molsym.wf_IRd)], np.max(molsym.wf_IRd)])
+            states_symmetry_list.append([molsym.IRLab, molsym.wf_IRd, configuration['amplitude']])
 
         if extra_print:
             print(state_symmetry_list)
@@ -192,9 +197,21 @@ def get_state_symmetry(parsed_fchk,
             else:
                 sym_states['state {}'.format(i+1)] = ['Undef', 0]
         else:
-            sym_states['state {}'.format(i+1)] = state_symmetry_list[np.argmax([a[1] for a in state_symmetry_list])]
+            if not full_vector:
+                sym_states['state {}'.format(i+1)] = state_symmetry_list[np.argmax([a[1] for a in state_symmetry_list])]
+            else:
+                sym_states['state {}'.format(i+1)] = states_symmetry_list[np.argmax([a[2]**2 for a in states_symmetry_list])]
 
-    return sym_states
+                def average(states_symmetry_list):
+                    amplitudes2 = [a[2]**2 for a in states_symmetry_list]
+                    measure_average = np.average([a[1] for a in states_symmetry_list], axis=0, weights=amplitudes2)
+
+                    return [states_symmetry_list[0][0], measure_average, np.average(amplitudes2)]
+
+                # sym_states['state {}'.format(i+1)] = average(states_symmetry_list)
+                sym_states['state {}'.format(i+1)] = states_symmetry_list[np.argmax([a[2]**2 for a in states_symmetry_list])]
+
+    return [sym_states['state {}'.format(i+1)] for i in range(len(sym_states))]
 
 def _indices_from_ranges(ranges):
     indices = []
