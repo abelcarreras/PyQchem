@@ -606,7 +606,17 @@ class QchemInput:
         with open(path + '/99.0', 'w') as f:
             energy_file.tofile(f, sep='')
 
+    def store_hessian_file(self, path='.'):
+        hessian_triu = np.array(self._hessian)
+        with open(path + '/132.0', 'w') as f:
+            hessian_triu.tofile(f, sep='')
+
     # Access to properties (only a reduced set should be accessible/editable)
+
+    @property
+    def molecule(self):
+        return self._molecule
+
     @property
     def mo_coefficients(self):
         return self._mo_coefficients

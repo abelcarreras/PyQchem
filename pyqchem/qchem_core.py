@@ -268,14 +268,80 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     return output, error
 
 
-
 def generate_additional_files(input_qchem, work_dir):
-    # Hessian
+    """
+    Generate additional files on scratch (work dir) for special calculations
+
+    :param input_qchem: QChem input object
+    :param work_dir: scratch directory
+    """
+
+    # handle custom guess
+    if input_qchem.mo_coefficients is not None:
+        input_qchem.store_mo_file(work_dir)
+
+    # set scf energy if skip_scfman (to not break)
+    # TODO: now SCF energy is set to zero. This works for very little features.
+    if input_qchem._skip_scfman:
+        input_qchem.store_energy_file(work_dir)
+
+    # Write hessian
     if input_qchem.hessian is not None:
-        # ndim = len(input_qchem.hessian)
-        hessian_triu = np.array(input_qchem.hessian)
-        with open(work_dir + '132.0', 'w') as f:
-            hessian_triu.tofile(f, sep='')
+        input_qchem.store_hessian_file(work_dir)
+
+
+def retrieve_additional_files(input_qchem, data_fchk, work_dir):
+    """
+    retrieve data from files in scratch data (on development, currently for test only)
+
+    :param input_qchem: QChem input object
+    :param data_fchk: FCHK parsed dictionary
+    :param work_dir: scratch directory
+    :return: dictionary with additional data
+    """
+
+    additional_data = {}
+
+    natom = len(input_qchem.molecule.get_coordinates())
+    file_list = os.listdir(work_dir)
+
+    # OLD_DIMENSIONS
+    if '819.0' in file_list:
+        with open(work_dir + '819.0', 'r') as f:
+            data = np.fromfile(f, dtype=np.int32)
+            norb_alpha, norb_beta = data[0:2]
+            nbas = norb_alpha  # assumption
+    else:
+        norb_alpha = np.shape(data_fchk['coefficients']['alpha'])[0]
+        norb_beta = np.shape(data_fchk['coefficients']['beta'])[0]
+        nbas = np.shape(data_fchk['coefficients']['alpha'])[1]
+
+    # # MO_COEFS
+    # if '53.0' in file_list:
+    #     with open(work_dir + '53.0', 'r') as f:
+    #         # dt = np.dtype([('time', [('min', np.int64), ('sec', np.int64)]), ('temp', float)])
+    #         dt = float
+    #         data = np.fromfile(f, dtype=dt)
+    #         mo_alpha = data[:norb_alpha*nbas].reshape(-1, norb_alpha).tolist()
+    #         mo_beta = data[norb_alpha*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
+    #         additional_data['coefficients_internal'] = {'alpha': mo_alpha, 'beta': mo_beta}
+
+    # FOCK_MATRIX
+    if '58.0' in file_list:
+        with open(work_dir + '58.0', 'r') as f:
+            data = np.fromfile(f, dtype=float)
+            fock_alpha = data[:norb_alpha*nbas].reshape(-1, norb_alpha).tolist()
+            fock_beta = data[norb_alpha*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
+            additional_data['fock_matrix'] = {'alpha': fock_alpha, 'beta': fock_beta}
+
+    # HESSIAN_MATRIX
+    if '132.0' in file_list:
+        with open(work_dir + '132.0', 'r') as f:
+            data = np.fromfile(f, dtype=float)
+            hessian = data.reshape(-1, natom*3)
+            additional_data['hessian'] = hessian.tolist()
+
+    return additional_data
 
 
 def get_output_from_qchem(input_qchem,
@@ -289,8 +355,7 @@ def get_output_from_qchem(input_qchem,
                           fchk_only=False,
                           store_full_output=False,
                           delete_scratch=True,
-                          remote=None,
-                          strict_policy=False):
+                          remote=None):
     """
     Runs qchem and returns the output in the following format:
 
@@ -335,15 +400,6 @@ def get_output_from_qchem(input_qchem,
         os.mkdir(work_dir)
     except OSError:
         pass
-
-    # handle custom guess
-    if input_qchem.mo_coefficients is not None:
-        input_qchem.store_mo_file(work_dir)
-
-    # set scf energy if skip_scfman (to not break)
-    # TODO: now SCF energy is set to zero. This works for very little features.
-    if input_qchem._skip_scfman:
-        input_qchem.store_energy_file(work_dir)
 
     # check if parameters is None
     if parser_parameters is None:
@@ -390,7 +446,7 @@ def get_output_from_qchem(input_qchem,
         if not finish_ok(output):
             raise OutputError(output, err)
 
-        # parse fchk file
+        # parse fchk file & and additional scratch dir files
         if not os.path.isfile(os.path.join(work_dir, fchk_filename)):
             warnings.warn('fchk not found! something may be wrong in calculation')
         else:
@@ -398,6 +454,7 @@ def get_output_from_qchem(input_qchem,
                 fchk_txt = f.read()
 
             data_fchk = parser_fchk(fchk_txt)
+            data_fchk.update(retrieve_additional_files(input_qchem, data_fchk, work_dir))
             cache.store_calculation_data(input_qchem, 'fchk', data_fchk)
 
         if store_full_output:

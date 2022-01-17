@@ -26,6 +26,7 @@ Installation instructions
 - lxml
 - wfnsympy (optional)
 - paramiko (optional)
+- pymatgen (optional)
 
 2a. Installation from source
 

@@ -28,19 +28,22 @@ def basic_frequencies(output, print_data=False):
     n_van = output.find('VIBRATIONAL ANALYSIS')
 
     # Hessian
-    ncol = 6
-    ndim = n_atoms * 3
-    hessian_section = output[n_hess: n_van]
-    hess_block = hessian_section.split('\n')[1:]
+    if n_hess > 0:
+        ncol = 6
+        ndim = n_atoms * 3
+        hessian_section = output[n_hess: n_van]
+        hess_block = hessian_section.split('\n')[1:]
 
-    hessian = []
-    for i in range(ndim):
-        line = []
-        for block in range((ndim-1)//ncol + 1):
-            line += hess_block[block*(ndim+1) + i +1].split()[1:]
-        hessian.append(line)
+        hessian = []
+        for i in range(ndim):
+            line = []
+            for block in range((ndim-1)//ncol + 1):
+                line += hess_block[block*(ndim+1) + i +1].split()[1:]
+            hessian.append(line)
 
-    hessian = np.array(hessian, dtype=float).tolist()
+        hessian = np.array(hessian, dtype=float).tolist()
+    else:
+        hessian = None
 
     # Vibration analysis
     vibration_section = output[n_van:]

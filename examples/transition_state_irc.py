@@ -51,11 +51,12 @@ qc_input = QchemInput(opt_data['optimized_molecule'],
                       symmetry=False,
                       scf_guess=ee['coefficients'])
 
-freq_data = get_output_from_qchem(qc_input,
-                                  processors=4,
-                                  # force_recalculation=True,
-                                  parser=basic_frequencies,
-                                  store_full_output=True)
+freq_data, ee = get_output_from_qchem(qc_input,
+                                      processors=4,
+                                      force_recalculation=True,
+                                      parser=basic_frequencies,
+                                      read_fchk=True,
+                                      store_full_output=True)
 
 # IRC calculation
 qc_input = QchemInput(opt_data['optimized_molecule'],
@@ -64,7 +65,7 @@ qc_input = QchemInput(opt_data['optimized_molecule'],
                       basis='sto-3g',
                       rpath_max_cycles=30,
                       scf_guess=ee['coefficients'],
-                      hessian=freq_data['hessian']
+                      hessian=ee['hessian']
                       )
 
 irc_data = get_output_from_qchem(qc_input,
