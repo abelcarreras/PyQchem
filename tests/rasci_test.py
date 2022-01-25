@@ -15,6 +15,7 @@ if 'USER' in os.environ and os.environ['USER'] == 'travis':
 else:
     recalculate = True
 
+remake_tests = False
 
 class HydrogenTest(unittest.TestCase):
 
@@ -60,16 +61,17 @@ class HydrogenTest(unittest.TestCase):
 
         filename = self.__class__.__name__ + '_srdft.yaml'
 
-        #with open(filename, 'w') as outfile:
-        #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        if remake_tests:
+            with open(filename, 'w') as outfile:
+                yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = standardize_dictionary(data)
+        data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded, decimal=2)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -99,16 +101,17 @@ class HydrogenTest(unittest.TestCase):
 
         filename = self.__class__.__name__ + '_rasci.yaml'
 
-        # with open(filename, 'w') as outfile:
-        #      yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        if remake_tests:
+            with open(filename, 'w') as outfile:
+                yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = standardize_dictionary(data)
+        data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded, decimal=2)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -171,16 +174,17 @@ class WaterTest(unittest.TestCase):
 
         filename = self.__class__.__name__ + '_rasci.yaml'
 
-        # with open(filename, 'w') as outfile:
-        #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        if remake_tests:
+            with open(filename, 'w') as outfile:
+                yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
-        data = standardize_dictionary(data)
+        data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
             data_loaded = yaml.safe_load(stream)
 
         print(data_loaded)
-        data_loaded = standardize_dictionary(data_loaded)
+        data_loaded = standardize_dictionary(data_loaded, decimal=2)
 
         self.assertDictEqual(data, data_loaded)
 
@@ -222,8 +226,9 @@ class WaterTest(unittest.TestCase):
 
         filename = self.__class__.__name__ + '_srdft.yaml'
 
-        # with open(filename, 'w') as outfile:
-        #     yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
+        if remake_tests:
+            with open(filename, 'w') as outfile:
+                yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         data = standardize_dictionary(data)
 
