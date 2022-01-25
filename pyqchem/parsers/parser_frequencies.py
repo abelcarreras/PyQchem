@@ -27,12 +27,13 @@ def basic_frequencies(output, print_data=False):
     n_hess = output.find('Hessian of the SCF Energy')
     n_van = output.find('VIBRATIONAL ANALYSIS')
 
-    # Hessian
-    if n_hess > 0:
+    if n_hess > -1:
+        # Hessian
         ncol = 6
         ndim = n_atoms * 3
         hessian_section = output[n_hess: n_van]
         hess_block = hessian_section.split('\n')[1:]
+
 
         hessian = []
         for i in range(ndim):
