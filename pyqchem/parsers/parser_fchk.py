@@ -240,11 +240,11 @@ def parser_fchk(output):
                   }
 
     if 'Alpha MO coefficients' in data:
-        final_dict['coefficients'] = {'alpha': np.array(data['Alpha MO coefficients']).reshape(nbas, -1).tolist()}
+        final_dict['coefficients'] = {'alpha': np.array(data['Alpha MO coefficients']).reshape(-1, nbas).tolist()}
         final_dict['mo_energies'] = {'alpha': data['Alpha Orbital Energies']}
 
     if 'Beta MO coefficients' in data:
-        final_dict['coefficients']['beta'] = np.array(data['Beta MO coefficients']).reshape(nbas, -1).tolist()
+        final_dict['coefficients']['beta'] = np.array(data['Beta MO coefficients']).reshape(-1, nbas).tolist()
         final_dict['mo_energies']['beta'] = data['Beta Orbital Energies']
 
     if 'Total SCF Density' in data:
@@ -257,12 +257,12 @@ def parser_fchk(output):
         final_dict['overlap'] = vect_to_mat(data['Overlap Matrix']).tolist()
 
     if 'Alpha NATO coefficients' in data:
-        final_dict['nato_coefficients'] = {'alpha': np.array(data['Alpha NATO coefficients']).reshape(nbas, -1).tolist()}
+        final_dict['nato_coefficients'] = {'alpha': np.array(data['Alpha NATO coefficients']).reshape(-1, nbas).tolist()}
         final_dict['nato_occupancies'] = {'alpha': data['Alpha Natural Orbital occupancies']}
 
     if 'Beta NATO coefficients' in data:
         final_dict['nato_coefficients'].update({
-            'beta': np.array(data['Beta NATO coefficients']).reshape(nbas, -1).tolist()})
+            'beta': np.array(data['Beta NATO coefficients']).reshape(-1, nbas).tolist()})
         final_dict['nato_occupancies'].update({'beta': data['Beta Natural Orbital occupancies']})
 
     # check multiple NATO (may be improved)
