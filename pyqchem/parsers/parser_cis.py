@@ -281,8 +281,13 @@ def basic_cis(output):
 
         r_matrix = read_diabatization_matrix('showmatrix adiabatic R-Matrix')
         rot_matrix = read_diabatization_matrix('showmatrix final adiabatic -> diabatic RotMatrix')
-        adiabatic_matrix = read_diabatization_matrix('showmatrix adiabatH') * AU_TO_EV
         diabatic_matrix = read_diabatization_matrix('showmatrix diabatH') * AU_TO_EV
+        if len(rot_matrix) == 0:
+            # Boys diabatization
+            rot_matrix = read_diabatization_matrix('showmatrix Boys adiabatic->diabatic RotMatrix')
+            diabatic_matrix = read_diabatization_matrix('showmatrix Boys diabatH') * AU_TO_EV
+
+        adiabatic_matrix = read_diabatization_matrix('showmatrix adiabatH') * AU_TO_EV
 
         diabat_data = {'rot_matrix': rot_matrix,
                        'adiabatic_matrix': adiabatic_matrix.tolist(),
