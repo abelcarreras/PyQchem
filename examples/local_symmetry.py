@@ -1,4 +1,5 @@
 # Application of local symmetry analysis of RASCI WF for ethylene dimer
+# This example requires posym (https://github.com/abelcarreras/posym)
 from pyqchem import Structure, QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_rasci import parser_rasci
