@@ -82,11 +82,11 @@ parsed_data, ee = get_output_from_qchem(qc_input,
                                         read_fchk=True,
                                         )
 
-
-
 symmetry_measures = get_state_symmetry(ee,
                                        parsed_data['excited_states'],
                                        group='D2h',
+                                       orientation=(1, 0, 0),
+                                       orientation2=(0, 1, 0),
                                        )
 
 
@@ -104,7 +104,7 @@ for i, state in enumerate(parsed_data['excited_states']):
     sym_lab = symmetry_measures[i][0]
     print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
 
-
+list_diabatic = [3, 4, 5, 6]
 # sequential diabatization scheme (2 steps)
 diabatization_scheme = [{'method': 'ER', # first step
                          'states': list(range(1, len(list_diabatic)+1))},  # in order with respect to selected states
@@ -143,7 +143,7 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('\nState {}'.format(i+1))
     print('Transition DM: ', state['transition_moment'])
     print('Energy: ', state['excitation_energy'])
-    print(' Alpha  Beta   Amplitude')
+    print('   Alpha  Beta   Amplitude')
     for j, conf in enumerate(state['configurations']):
         print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
@@ -152,9 +152,7 @@ for i, state in enumerate(parsed_data['excited_states']):
     plot_state(state, with_amplitude=True, orbital_range=[qc_input._ras_occ,
                                                           qc_input._ras_occ + qc_input._ras_act])
     plt.title('Adiabatic State {}'.format(i+1))
-
 plt.show()
-
 
 
 # diabatization analysis
@@ -206,6 +204,8 @@ parsed_data, ee = get_output_from_qchem(qc_input,
 symmetry_measures = get_state_symmetry(ee,
                                        parsed_data['excited_states'],
                                        group='D2h',
+                                       orientation=(0, 0, 1),
+                                       orientation2=(1, 0, 0),
                                        )
 
 
