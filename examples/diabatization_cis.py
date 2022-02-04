@@ -63,8 +63,7 @@ print(dimer)
 # CIS qchem input
 qc_input = QchemInput(dimer,
                       exchange='hf',
-                      basis='sto-3g',
-                      #unrestricted=True,
+                      basis='6-311g',
                       cis_n_roots=8,
                       cis_convergence=8,
                       cis_singlets=True,
@@ -75,7 +74,7 @@ qc_input = QchemInput(dimer,
                       set_iter=30
                       )
 
-print(qc_input.get_txt())
+# print(qc_input.get_txt())
 
 parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=4,
@@ -88,6 +87,8 @@ parsed_data, ee = get_output_from_qchem(qc_input,
 symmetry_measures = get_state_symmetry(ee,
                                        parsed_data['excited_states'],
                                        group='D2h',
+                                       orientation=(1, 0, 0),
+                                       orientation2=(0, 1, 0),
                                        )
 
 # Analysis of diabatic states to use in diabatization
@@ -106,12 +107,10 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
 
 
-
 # RASCI qchem input
 qc_input = QchemInput(dimer,
                       exchange='hf',
-                      basis='sto-3g',
-                      #unrestricted=True,
+                      basis='6-311g',
                       cis_n_roots=8,
                       cis_convergence=8,
                       cis_singlets=True,
@@ -119,7 +118,7 @@ qc_input = QchemInput(dimer,
                       cis_ampl_anal=True,
                       loc_cis_ov_separate=False,
                       namd_nsurfaces=0,
-                      er_cis_numstate=len(list_diabatic),
+                      boys_cis_numstate=len(list_diabatic),
                       cis_diabath_decompose=True,
                       localized_diabatization=list_diabatic,
                       RPA=False,
@@ -127,11 +126,9 @@ qc_input = QchemInput(dimer,
                       set_iter=30
                       )
 
-# print(qc_input.get_txt())
-
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
-                                    force_recalculation=False,
+                                    force_recalculation=True,
                                     parser=basic_cis,
                                     store_full_output=True,
                                     )
@@ -183,11 +180,10 @@ plot_diabatization(diabatization['diabatic_states'], atoms_ranges=[dimer.get_num
 
 # Monomer adiabatic states (extra test)
 qc_input = QchemInput(dimer,
-                      #method='cis',
                       exchange='hf',
-                      basis='sto-3g',
+                      basis='6-311g',
                       #unrestricted=True,
-                      cis_n_roots=10,
+                      cis_n_roots=8,
                       cis_convergence=8,
                       cis_singlets=True,
                       cis_triplets=False,
@@ -207,6 +203,8 @@ parsed_data, ee = get_output_from_qchem(qc_input,
 symmetry_measures = get_state_symmetry(ee,
                                        parsed_data['excited_states'],
                                        group='D2h',
+                                       orientation=(0, 0, 1),
+                                       orientation2=(1, 0, 0),
                                        )
 
 
