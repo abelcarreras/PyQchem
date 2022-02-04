@@ -1,5 +1,5 @@
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename
-from pyqchem.parsers.parser_rasci_basic import basic_rasci
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
 from pyqchem.test import standardize_dictionary
@@ -57,7 +57,7 @@ class HydrogenTest(unittest.TestCase):
                                        force_recalculation=recalculate,
                                        store_full_output=True)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         filename = self.__class__.__name__ + '_srdft.yaml'
 
@@ -68,7 +68,7 @@ class HydrogenTest(unittest.TestCase):
         data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         print(data_loaded)
         data_loaded = standardize_dictionary(data_loaded, decimal=2)
@@ -97,7 +97,7 @@ class HydrogenTest(unittest.TestCase):
                                        force_recalculation=recalculate,
                                        store_full_output=True)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         filename = self.__class__.__name__ + '_rasci.yaml'
 
@@ -108,7 +108,7 @@ class HydrogenTest(unittest.TestCase):
         data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         print(data_loaded)
         data_loaded = standardize_dictionary(data_loaded, decimal=2)
@@ -168,7 +168,7 @@ class WaterTest(unittest.TestCase):
                                        force_recalculation=recalculate,
                                        store_full_output=True)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -181,7 +181,7 @@ class WaterTest(unittest.TestCase):
         data = standardize_dictionary(data, decimal=2)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         print(data_loaded)
         data_loaded = standardize_dictionary(data_loaded, decimal=2)
@@ -220,7 +220,7 @@ class WaterTest(unittest.TestCase):
                                        store_full_output=True)
 
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -233,7 +233,7 @@ class WaterTest(unittest.TestCase):
         data = standardize_dictionary(data)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         print(data_loaded)
         data_loaded = standardize_dictionary(data_loaded)

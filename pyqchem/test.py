@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def trunc_dictionary_list(dic_data, decimal):
     # w : dictionary
     # decimal: number of decimal places to leave after truncation
@@ -54,6 +55,9 @@ def standardize_dictionary(dic_data, decimal=5):
                 delete_list.append(i)
         for i in reversed(delete_list):
             del state['configurations'][i]
+
+    if 'structure' in dic_data:
+        del dic_data['structure']
 
     return dic_data
 

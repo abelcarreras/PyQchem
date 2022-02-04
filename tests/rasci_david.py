@@ -1,5 +1,5 @@
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename
-from pyqchem.parsers.parser_rasci_basic import basic_rasci
+from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.structure import Structure
 from pyqchem.test import standardize_dictionary
 
@@ -75,7 +75,7 @@ class Eth00(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         filename = self.__class__.__name__ + '_ras22.yaml'
 
@@ -85,7 +85,7 @@ class Eth00(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -113,7 +113,7 @@ class Eth00(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -125,7 +125,7 @@ class Eth00(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -150,7 +150,7 @@ class Eth00(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -162,7 +162,7 @@ class Eth00(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -234,7 +234,7 @@ class Eth90(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -246,7 +246,7 @@ class Eth90(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -271,7 +271,7 @@ class Eth90(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -283,7 +283,7 @@ class Eth90(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -308,7 +308,7 @@ class Eth90(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -320,7 +320,7 @@ class Eth90(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -392,7 +392,7 @@ class EthDist(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -404,7 +404,7 @@ class EthDist(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -429,7 +429,7 @@ class EthDist(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -441,7 +441,7 @@ class EthDist(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 
@@ -466,7 +466,7 @@ class EthDist(unittest.TestCase):
         # calculate and parse qchem output
         output = get_output_from_qchem(txt_input, processors=4)
         print(output)
-        data = basic_rasci(output)
+        data = parser_rasci(output)
 
         print(data)
 
@@ -478,7 +478,7 @@ class EthDist(unittest.TestCase):
                 yaml.dump(data, outfile, default_flow_style=False, allow_unicode=True)
 
         with open(filename, 'r') as stream:
-            data_loaded = yaml.safe_load(stream)
+            data_loaded = yaml.load(stream, Loader=yaml.Loader)
 
         data = standardize_dictionary(data, decimal=2)
 

@@ -4,21 +4,49 @@ excited_states:
     amplitude: -0.35540329790278
     beta: '01'
     hole: ''
+    occupations:
+      alpha:
+      - 0
+      - 1
+      beta:
+      - 0
+      - 1
     part: ''
   - alpha: '01'
     amplitude: -1.80855224832e-16
     beta: '10'
     hole: ''
+    occupations:
+      alpha:
+      - 0
+      - 1
+      beta:
+      - 1
+      - 0
     part: ''
   - alpha: '10'
     amplitude: 1.1102230246252e-16
     beta: '01'
     hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 0
+      beta:
+      - 0
+      - 1
     part: ''
   - alpha: '10'
     amplitude: 0.93471305534898
     beta: '10'
     hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 0
+      beta:
+      - 1
+      - 0
     part: ''
   contributions_fwn:
     active: 100.0
@@ -28,9 +56,11 @@ excited_states:
   - 0.0
   - 0.0
   - 0.0
+  dipole_moment_units: ua
   excitation_energy: 0.0
   excitation_energy_units: eV
-  multiplicity: Singlet
+  multiplicity: '0.0000'
+  oscillator_strength: null
   total_energy: -0.998149354622
   total_energy_units: au
   transition_moment: null
@@ -39,21 +69,49 @@ excited_states:
     amplitude: 3.6524812119219e-17
     beta: '01'
     hole: ''
+    occupations:
+      alpha:
+      - 0
+      - 1
+      beta:
+      - 0
+      - 1
     part: ''
   - alpha: '01'
     amplitude: -0.70710678118655
     beta: '10'
     hole: ''
+    occupations:
+      alpha:
+      - 0
+      - 1
+      beta:
+      - 1
+      - 0
     part: ''
   - alpha: '10'
     amplitude: 0.70710678118655
     beta: '01'
     hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 0
+      beta:
+      - 0
+      - 1
     part: ''
   - alpha: '10'
     amplitude: -2.19553613936e-16
     beta: '10'
     hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 0
+      beta:
+      - 1
+      - 0
     part: ''
   contributions_fwn:
     active: 100.0
@@ -63,13 +121,83 @@ excited_states:
   - 0.0
   - 0.0
   - 0.0
+  dipole_moment_units: ua
   excitation_energy: 2.92698092351
   excitation_energy_units: eV
-  multiplicity: Triplet
+  multiplicity: '2.0000'
+  oscillator_strength: 0.0
   total_energy: -0.89058478265
   total_energy_units: au
   transition_moment:
   - 0.0
   - 0.0
   - 0.0
+interstate_properties:
+  ? !!python/tuple
+  - 1
+  - 2
+  : gamma_anti_sym: 0.409634
+    gamma_sym: 0.91225
+    gamma_total: 1.0
+    state_a: 1
+    state_b: 2
+  ? !!python/tuple
+  - 2
+  - 1
+  : gamma_anti_sym: 0.409634
+    gamma_sym: 0.91225
+    gamma_total: 1.0
+    state_a: 2
+    state_b: 1
+rasci_dimensions:
+  active_configurations: 4
+  doubly_occupied: 0
+  doubly_virtual: 0
+  frozen_occupied: 0
+  frozen_virtual: 0
+  hole_configurations: 0
+  particle_configurations: 0
+  total_configurations: 4
 scf_energy: -0.9108735547
+structure: !!python/object:pyqchem.structure.Structure
+  _atomic_masses: null
+  _atomic_numbers:
+  - 1
+  - 1
+  _charge: 0
+  _connectivity: null
+  _coordinates: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - !!python/name:numpy.ndarray ''
+    - !!python/tuple
+      - 0
+    - !!binary |
+      Yg==
+    state: !!python/tuple
+    - 1
+    - !!python/tuple
+      - 2
+      - 3
+    - !!python/object/apply:numpy.dtype
+      args:
+      - f8
+      - false
+      - true
+      state: !!python/tuple
+      - 3
+      - <
+      - null
+      - null
+      - null
+      - -1
+      - -1
+      - 0
+    - false
+    - !!binary |
+      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOi/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOg/
+  _multiplicity: 1
+  _name: null
+  _number_of_atoms: null
+  _symbols:
+  - H
+  - H

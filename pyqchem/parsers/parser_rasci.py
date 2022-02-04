@@ -191,6 +191,7 @@ def parser_rasci(output):
         tot_energy = float(section_state.split()[1])
         exc_energy_units = section_state.split()[4][1:-1]
         exc_energy = float(section_state.split()[6])
+        print(section_state.split()[8])
         state_multiplicity = section_state.split()[8] if section_state.split()[8] != ':' else section_state.split()[9]
 
         # dipole moment
