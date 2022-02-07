@@ -79,7 +79,7 @@ def parser_rasci(output):
                                        multiplicity=multiplicity)
 
     # basic info
-    enum = output.find('Molecular Point Group')
+    enum = output.find('Nuclear Repulsion Energy')
     basic_data = read_basic_info(output[enum:enum + 5000])
 
     # scf_energy
