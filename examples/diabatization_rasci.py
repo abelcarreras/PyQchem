@@ -104,7 +104,6 @@ for i, state in enumerate(parsed_data['excited_states']):
     sym_lab = symmetry_measures[i][0]
     print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
 
-list_diabatic = [3, 4, 5, 6]
 # sequential diabatization scheme (2 steps)
 diabatization_scheme = [{'method': 'ER', # first step
                          'states': list(range(1, len(list_diabatic)+1))},  # in order with respect to selected states
