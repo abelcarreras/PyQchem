@@ -126,6 +126,7 @@ class QchemInput:
                  scf_print=None,
                  scf_guess=None,
                  scf_energies=None,
+                 scf_density=None,
                  scf_guess_mix=False,
                  hessian=None,
                  sym_tol=5,
@@ -601,9 +602,21 @@ class QchemInput:
         with open(path + '/53.0', 'w') as f:
             guess_file.tofile(f, sep='')
 
+    def store_density_file(self, path='.'):
+        guess_density = self._scf_density
+        # set guess in place
+        density_alpha = np.array(guess_density['alpha'], dtype=np.float)
+        if 'beta' in guess_density:
+            density_beta = np.array(guess_density['beta'], dtype=np.float)
+        else:
+            density_beta = density_alpha
+
+        guess_file = np.vstack([density_alpha, density_beta]).flatten()
+        with open(path + '/54.0', 'w') as f:
+            guess_file.tofile(f, sep='')
+
     def store_energy_file(self, path='.'):
-        mo_enea = self._mo_coefficients['alpha']
-        energy_file = np.zeros(len(mo_enea))
+        energy_file = np.zeros(12)
         warnings.warn('warining: FILE_ENERGY will be set to zeros, this may affect post HF methods')
         with open(path + '/99.0', 'w') as f:
             energy_file.tofile(f, sep='')
@@ -626,6 +639,10 @@ class QchemInput:
     @property
     def mo_energies(self):
         return self._scf_energies
+
+    @property
+    def scf_density(self):
+        return self._scf_density
 
     @property
     def hessian(self):
