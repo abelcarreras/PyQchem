@@ -229,7 +229,7 @@ def basic_cis(output):
                     if label[0] == 'T':
                         for k, ms in enumerate([-1, 0, 1]):
                             enum = soc_section.find('SOC between the {} (ms={}) state and excited triplet states (ms={})'.format(label, ms2, ms))
-                            for line in soc_section[enum:enum+50*(n_triplet+1)].split('\n'):
+                            for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
                                 if len(line.split()) == 0:
                                     break
                                 if line.split()[0] == '{}(ms={})'.format(label2, ms):
@@ -242,7 +242,7 @@ def basic_cis(output):
                     elif label[0] == 'S':
                         for k, ms in enumerate([-1, 0, 1]):
                             enum = soc_section.find('SOC between the {} state and excited triplet states (ms={})'.format(label, ms))
-                            for line in soc_section[enum:enum+50*(n_triplet+1)].split('\n'):
+                            for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
                                 if len(line.split()) == 0:
                                     break
                                 if line.split()[0] == '{}(ms={})'.format(label2, ms):
@@ -253,7 +253,7 @@ def basic_cis(output):
                         raise ParserError('basic_cis', 'SOC reading error')
 
                 enum = soc_section.find('SOC between the singlet ground state and excited triplet states (ms={})'.format(ms2))
-                for line in soc_section[enum:enum+50*(n_triplet+1)].split('\n'):
+                for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
                     if len(line.split()) == 0:
                         break
                     if line.split()[0] == '{}(ms={})'.format(label, ms2):
