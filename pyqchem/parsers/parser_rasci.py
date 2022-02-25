@@ -285,6 +285,7 @@ def parser_rasci(output):
                     s_b = float(lines[i+1].split('=')[1].split()[0])
                 if '1-elec SOC matrix (cm-1)' in line:
                     pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [int(2*s_b + 1), int(2*s_a+1)])
+                    pair_dict['1e_socc'] = float(lines[i+2 + int(2*s_b + 1)].split()[-2:][0])
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
                     r, c = lines[i+1].split()[-2:]
                     pair_dict['hso_l-'] = float(r) + float(c) * 1j
