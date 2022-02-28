@@ -1,7 +1,7 @@
 excited_states:
 - configurations:
   - alpha: '01'
-    amplitude: -0.11077460868193
+    amplitude: -0.11077460868192
     beta: '01'
     hole: ''
     occupations:
@@ -29,7 +29,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.99124159988816
+    amplitude: 0.99124159988815
     beta: '10'
     hole: ''
     occupations:
@@ -74,7 +74,7 @@ excited_states:
   transition_moment: null
 - configurations:
   - alpha: '01'
-    amplitude: -0.70143698036055
+    amplitude: -0.70143698036054
     beta: '10'
     hole: ''
     occupations:
@@ -102,7 +102,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.70143698019403
+    amplitude: 0.70143698019402
     beta: '01'
     hole: ''
     occupations:
@@ -152,17 +152,35 @@ interstate_properties:
   ? !!python/tuple
   - 1
   - 2
-  : gamma_anti_sym: 0.622695
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.622695
     gamma_sym: 0.782372
     gamma_total: 0.999927
+    spin_matrices:
+    - &id001
+      - - 0.0
+    - *id001
+    - *id001
     state_a: 1
     state_b: 2
   ? !!python/tuple
   - 2
   - 1
-  : gamma_anti_sym: 0.622695
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.622695
     gamma_sym: 0.782372
     gamma_total: 0.999927
+    spin_matrices:
+    - &id002
+      - - 0.0
+    - *id002
+    - *id002
     state_a: 2
     state_b: 1
 rasci_dimensions:
