@@ -54,10 +54,7 @@ for i, state in enumerate(output['excited_states']):
     print('Transition energy  {:4.8} eV'.format(state['excitation_energy']))
     print(' Alpha  Beta   Amplitude')
     for j, conf in enumerate(state['configurations']):
-        try:
-            print('     {}     {}  {:8.3f}'.format(conf['origin'], conf['target'], conf['amplitude']))
-        except KeyError:
-            print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
+       print('  {}  {} {:8.3f}'.format(conf['alpha'], conf['beta'], conf['amplitude']))
 
 n_states = len(output['excited_states'])
 
@@ -80,6 +77,73 @@ for i in range(1, n_states+1):
     for j in range(1, n_states+1):
         try:
             line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['mf_socc'])
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+
+print('\nAngular Momentum Lx (imaginary component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['angular_momentum'][0].imag)
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+print('\nAngular Momentum Ly (imaginary component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['angular_momentum'][1].imag)
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+print('\nAngular Momentum Lz (imaginary component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['angular_momentum'][2].imag)
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+print('\nSpin matrix Sx (0,0 real component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['spin_matrices'][0] [0][0].real)
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+print('\nSpin matrix Sy (0,0 imag component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['spin_matrices'][1] [0][0].imag)
+        except KeyError:
+            line += '        -         '
+    print(line)
+
+print('\nSpin matrix Sz (0,0 real component) [states x states]')
+print('   ' + ''.join(['{:^18}'.format(n) for n in range(1, n_states+1)]))
+for i in range(1, n_states+1):
+    line = '{:3}'.format(i)
+    for j in range(1, n_states+1):
+        try:
+            line += '{:18.12f}'.format(output['interstate_properties'][(i, j)]['spin_matrices'][2] [0][0].real)
         except KeyError:
             line += '        -         '
     print(line)

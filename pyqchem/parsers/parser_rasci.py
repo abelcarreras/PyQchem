@@ -2,6 +2,7 @@ __author__ = 'Abel Carreras'
 
 import re
 import operator
+import numpy as np
 from pyqchem.structure import Structure
 from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list, search_bars, standardize_vector
 
@@ -275,6 +276,9 @@ def parser_rasci(output):
             s_a = s_b = 0
             for i, line in enumerate(lines):
                 # RAS-CI SOC section
+                if 'Angular momentum components' in line:
+                    pair_dict['angular_momentum'] = [complex(lines[i+1+k].split()[-1].replace('i', 'j')) for k in range(3)]
+
                 if '||gamma^AB||_total' in line:
                     pair_dict['gamma_total'] = float(lines[i+0].split()[-1])
                     pair_dict['gamma_sym'] = float(lines[i+1].split()[-1])
@@ -283,9 +287,22 @@ def parser_rasci(output):
                 if "KET: S',Sz'" in line:
                     s_a = float(lines[i].split('=')[1].split()[0])
                     s_b = float(lines[i+1].split('=')[1].split()[0])
+
+                na = int(2 * s_a + 1)
+                nb = int(2 * s_b + 1)
+
+                if 'Spin Matrices' in line:
+                    spinmat_x = _read_soc_matrix(lines[i + 2:], [nb, na])
+                    spinmat_y = _read_soc_matrix(lines[i + 4 + nb:], [nb, na])
+                    spinmat_z = _read_soc_matrix(lines[i + 6 + 2*nb:], [nb, na])
+                    pair_dict['spin_matrices'] = [spinmat_x, spinmat_y, spinmat_z]
+
+                if 'Spin matrices Sx, Sy and Sz for states' in line:
+                    pair_dict['spin_matrices'] = [np.zeros((nb, na)).tolist()]*3
+
                 if '1-elec SOC matrix (cm-1)' in line:
-                    pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [int(2*s_b + 1), int(2*s_a+1)])
-                    pair_dict['1e_socc'] = float(lines[i+2 + int(2*s_b + 1)].split()[-2:][0])
+                    pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [nb, na])
+                    pair_dict['1e_socc'] = float(lines[i+2 + nb].split()[-2:][0])
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
                     r, c = lines[i+1].split()[-2:]
                     pair_dict['hso_l-'] = float(r) + float(c) * 1j
@@ -295,9 +312,9 @@ def parser_rasci(output):
                     pair_dict['hso_l+'] = float(r) + float(c) * 1j
 
                 if '2-elec mean-field SOC matrix (cm-1)' in line:
-                    pair_dict['2e_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
+                    pair_dict['2e_soc_mat'] = _read_soc_matrix(lines[i + 1:], [nb, na])
                 if 'Total mean-field SOC matrix (cm-1)' in line:
-                    pair_dict['total_soc_mat'] = _read_soc_matrix(lines[i + 1:], [int(2 * s_b + 1), int(2 * s_a + 1)])
+                    pair_dict['total_soc_mat'] = _read_soc_matrix(lines[i + 1:], [nb, na])
                 if 'Mean-Field SOCC' in line:
                     pair_dict['mf_socc'] = float(line.split()[-2])
                     pair_dict['units'] = line.split()[-1]
