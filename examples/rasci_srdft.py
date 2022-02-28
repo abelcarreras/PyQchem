@@ -41,11 +41,11 @@ for dist in distances:
                           ras_roots=2,
                           ras_do_part=False,
                           ras_do_hole=False,
-                          ras_srdft_spinpol=True,
+                          # ras_srdft_spinpol=True,
                           ras_omega=400,
                           max_scf_cycles=100,
                           ras_srdft_cor='srPBE',
-                          #ras_srdft_exc='srPBE'
+                          # ras_srdft_exc='srPBE'
                           )
 
     # calculate and parse qchem output
