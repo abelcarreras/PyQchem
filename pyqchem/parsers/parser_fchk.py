@@ -251,7 +251,7 @@ def parser_fchk(output):
         final_dict['scf_density'] = vect_to_mat(data['Total SCF Density'])
 
     if 'Core Hamiltonian Matrix' in data:
-        final_dict['scf_density'] = vect_to_mat(data['Core Hamiltonian Matrix']).tolist()
+        final_dict['core_hamiltonian'] = vect_to_mat(data['Core Hamiltonian Matrix']).tolist()
 
     if 'Overlap Matrix' in data:
         final_dict['overlap'] = vect_to_mat(data['Overlap Matrix']).tolist()
