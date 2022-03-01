@@ -186,7 +186,7 @@ def parser_fchk(output):
                 'Contraction coefficients', 'P(S=P) Contraction coefficients', 'Alpha MO coefficients',
                 'Beta MO coefficients', 'Coordinates of each shell', 'Overlap Matrix',
                 'Core Hamiltonian Matrix', 'Alpha Orbital Energies', 'Beta Orbital Energies',
-                'Total SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
+                'Total SCF Density', 'Spin SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
                 'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
                 'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
                 'Natural Transition Orbital V coefficients'
@@ -248,7 +248,19 @@ def parser_fchk(output):
         final_dict['mo_energies']['beta'] = data['Beta Orbital Energies']
 
     if 'Total SCF Density' in data:
-        final_dict['scf_density'] = vect_to_mat(data['Total SCF Density'])
+        total = vect_to_mat(data['Total SCF Density'])
+        if 'Spin SCF Density' in data:
+            spin = vect_to_mat(data['Spin SCF Density'])
+            final_dict['scf_density'] = {'alpha': np.ndarray.tolist((total + spin)/2),
+                                         'beta': np.ndarray.tolist((total - spin)/2)}
+        else:
+            final_dict['scf_density'] = {'alpha': np.ndarray.tolist(total/2),
+                                         'beta': np.ndarray.tolist(total/2)}
+
+        final_dict['total_scf_density'] = vect_to_mat(data['Total SCF Density'])
+
+    if 'Spin SCF Density' in data:
+        final_dict['spin_density'] = vect_to_mat(data['Spin SCF Density']).tolist()
 
     if 'Core Hamiltonian Matrix' in data:
         final_dict['core_hamiltonian'] = vect_to_mat(data['Core Hamiltonian Matrix']).tolist()

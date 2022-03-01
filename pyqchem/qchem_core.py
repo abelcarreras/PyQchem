@@ -280,9 +280,14 @@ def generate_additional_files(input_qchem, work_dir):
     if input_qchem.mo_coefficients is not None:
         input_qchem.store_mo_file(work_dir)
 
+    if input_qchem.scf_density is not None:
+        input_qchem.store_density_file(work_dir)
+
     # set scf energy if skip_scfman (to not break)
-    # TODO: now SCF energy is set to zero. This works for very little features.
+    # TODO: now SCF energy is set to zero. This may not work for all features.
     if input_qchem._skip_scfman:
+        if input_qchem.mo_coefficients is None:
+            raise Exception('Explicit MO guess has to be provided for scf_skip')
         input_qchem.store_energy_file(work_dir)
 
     # Write hessian
@@ -310,29 +315,42 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
         with open(work_dir + '819.0', 'r') as f:
             data = np.fromfile(f, dtype=np.int32)
             norb_alpha, norb_beta = data[0:2]
-            nbas = norb_alpha  # assumption
+            norb = norb_alpha
+            nbas = norb  # assumption
     else:
-        norb_alpha = np.shape(data_fchk['coefficients']['alpha'])[0]
-        norb_beta = np.shape(data_fchk['coefficients']['beta'])[0]
+        norb = np.shape(data_fchk['coefficients']['alpha'])[0]
         nbas = np.shape(data_fchk['coefficients']['alpha'])[1]
 
-    # # MO_COEFS
+    # # MO_COEFS (Already in fchk)
     # if '53.0' in file_list:
     #     with open(work_dir + '53.0', 'r') as f:
     #         # dt = np.dtype([('time', [('min', np.int64), ('sec', np.int64)]), ('temp', float)])
     #         dt = float
     #         data = np.fromfile(f, dtype=dt)
-    #         mo_alpha = data[:norb_alpha*nbas].reshape(-1, norb_alpha).tolist()
-    #         mo_beta = data[norb_alpha*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
+    #         mo_alpha = data[:norb*nbas].reshape(-1, norb).tolist()
+    #         mo_beta = data[norb*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
     #         additional_data['coefficients_internal'] = {'alpha': mo_alpha, 'beta': mo_beta}
 
     # FOCK_MATRIX
     if '58.0' in file_list:
         with open(work_dir + '58.0', 'r') as f:
             data = np.fromfile(f, dtype=float)
-            fock_alpha = data[:norb_alpha*nbas].reshape(-1, norb_alpha).tolist()
-            fock_beta = data[norb_alpha*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
+            fock_alpha = data[:nbas*nbas].reshape(-1, nbas).tolist()
+            fock_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas).tolist()
             additional_data['fock_matrix'] = {'alpha': fock_alpha, 'beta': fock_beta}
+
+    # # FILE_ENERGY (Not really worth to read it)
+    # if '99.0' in file_list:
+    #     with open(work_dir + '99.0', 'r') as f:
+    #         data = np.fromfile(f, dtype=float)
+
+    # # FILE_DENSITY_MATRIX (Already in fchk)
+    # if '54.0' in file_list:
+    #     with open(work_dir + '54.0', 'r') as f:
+    #         data = np.fromfile(f, dtype=float)
+    #         density_alpha = data[:nbas*nbas].reshape(-1, nbas).tolist()
+    #         density_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas).tolist()
+    #         additional_data['scf_density_internal'] = {'alpha': density_alpha, 'beta': density_beta}
 
     # HESSIAN_MATRIX
     if '132.0' in file_list:

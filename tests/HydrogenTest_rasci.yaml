@@ -136,17 +136,35 @@ interstate_properties:
   ? !!python/tuple
   - 1
   - 2
-  : gamma_anti_sym: 0.409634
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.409634
     gamma_sym: 0.91225
     gamma_total: 1.0
+    spin_matrices:
+    - &id001
+      - - 0.0
+    - *id001
+    - *id001
     state_a: 1
     state_b: 2
   ? !!python/tuple
   - 2
   - 1
-  : gamma_anti_sym: 0.409634
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.409634
     gamma_sym: 0.91225
     gamma_total: 1.0
+    spin_matrices:
+    - &id002
+      - - 0.0
+    - *id002
+    - *id002
     state_a: 2
     state_b: 1
 rasci_dimensions:

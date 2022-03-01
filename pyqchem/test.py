@@ -7,6 +7,8 @@ def trunc_dictionary_list(dic_data, decimal):
     def round_float(num):
         if isinstance(num, float):
             return int(num * 10**decimal)
+        elif isinstance(num, complex):
+            return int(abs(num) * 10**decimal)
         else:
             return num
 
