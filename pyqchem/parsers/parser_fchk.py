@@ -169,6 +169,33 @@ def _get_all_nto(output):
     return nto_coefficients_list, nto_occupancies_list
 
 
+def _get_all_nto_new_format(output):
+    import re
+
+    nto_data_dict = {}
+    for m in re.finditer('NTOs U coefficients SOC', output):
+        indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
+        n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
+        nto_data_dict[tuple(indices)] = {'U': np.array(data, dtype=float).reshape(nbas, nbas).tolist()}
+
+    for i, m in enumerate(re.finditer('NTOs occupancies SOC', output)):
+        indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
+        n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
+        nto_data_dict[tuple(indices)]['occupancies'] = np.array(data, dtype=float).tolist()
+
+    for i, m in enumerate(re.finditer('NTOs V coefficients SOC', output)):
+        indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
+        n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
+        nbas = int(np.sqrt(n_elements))
+        data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
+        nto_data_dict[tuple(indices)]['V'] = np.array(data, dtype=float).reshape(nbas, nbas).tolist()
+
+    return nto_data_dict
+
+
 def parser_fchk(output):
 
     def convert_to_type(item_type, item):
@@ -189,7 +216,7 @@ def parser_fchk(output):
                 'Total SCF Density', 'Spin SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
                 'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
                 'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
-                'Natural Transition Orbital V coefficients'
+                'Natural Transition Orbital V coefficients', 'NTOs occupancies SOC',
                 ]
 
     basis_set = output.split('\n')[1].split()[-1]
@@ -203,11 +230,20 @@ def parser_fchk(output):
             word = ' '.join(words_output[i:i+wc])
             if word == key:
                 item_type = words_output[i+wc]
-                if words_output[i + wc + 1] == 'N=':
-                    n_elements = int(words_output[i + wc + 2])
-                    data[word] = convert_to_type(item_type, words_output[i + wc + 3: i + wc + n_elements + 3])
-                else:
-                    data[word] = convert_to_type(item_type, words_output[i + wc + 1])
+                for l_step in range(5):
+                    try:
+                        if words_output[l_step + i + wc + 1] == 'N=':
+                            item_type = words_output[l_step + i + wc]
+                            word += ' '.join(words_output[i + wc:l_step + i + wc])
+                            n_elements = int(words_output[l_step + i + wc + 2])
+                            data[word] = convert_to_type(item_type, words_output[l_step + i + wc + 3: l_step + i + wc + n_elements + 3])
+                        else:
+                            item_type = words_output[l_step + i + wc]
+                            #print(item_type, words_output[l_step + i + wc + 1])
+                            data[word] = convert_to_type(item_type, words_output[l_step + i + wc + 1])
+                        break
+                    except KeyError:
+                        pass
                 break
 
     bohr_to_angstrom = 0.529177249
@@ -289,5 +325,10 @@ def parser_fchk(output):
         if len(nat_occupancies_list) > 1:
             final_dict['nto_coefficients_multi'] = nat_coefficients_list
             final_dict['nto_occupancies_multi'] = nat_occupancies_list
+
+    # Parse new format RAS NTO's
+    NTOS_dict = dict(filter(lambda item: "NTOs occupancies SOC" in item[0], data.items()))
+    if len(NTOS_dict) > 0:
+        final_dict['ntos'] = _get_all_nto_new_format(output)
 
     return final_dict
