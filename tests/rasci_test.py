@@ -8,12 +8,13 @@ import unittest
 import os, sys
 
 
-redefine_calculation_data_filename('test_data.db')
+#redefine_calculation_data_filename('test_data.db')
 
 #if 'USER' in os.environ and os.environ['USER'] == 'travis':
 recalculate = False
 remake_tests = False
 dir_path = os.path.dirname(os.path.realpath(__file__))
+redefine_calculation_data_filename(dir_path + '/test_data.db')
 
 cwd = os.getcwd()
 
@@ -28,12 +29,6 @@ class HydrogenTest(unittest.TestCase):
                                   symbols=['H', 'H'],
                                   charge=0,
                                   multiplicity=1)
-
-        print('work_dir:', cwd)
-        import sqlite3
-        self._conn = sqlite3.connect('test_data.db')
-        print(self._conn)
-
 
     def test_srdft(self):
 
