@@ -87,7 +87,7 @@ class HydrogenTest(unittest.TestCase):
         self.assertDictEqual(data, data_loaded)
 
 
-    def test_rasci(self):
+    def _test_rasci(self):
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
                                        jobtype='sp',
@@ -158,7 +158,7 @@ class WaterTest(unittest.TestCase):
 
         self.molecule = parsed_data['optimized_molecule']
 
-    def test_rasci(self):
+    def _test_rasci(self):
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
                                        jobtype='sp',
@@ -200,7 +200,7 @@ class WaterTest(unittest.TestCase):
         self.assertDictEqual(data, data_loaded)
 
 
-    def test_srdft(self):
+    def _test_srdft(self):
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
