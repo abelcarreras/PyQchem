@@ -13,6 +13,10 @@ redefine_calculation_data_filename('test_data.db')
 #if 'USER' in os.environ and os.environ['USER'] == 'travis':
 recalculate = False
 remake_tests = False
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+cwd = os.getcwd()
+print('work_dir:', cwd)
 
 class HydrogenTest(unittest.TestCase):
 
@@ -56,7 +60,7 @@ class HydrogenTest(unittest.TestCase):
         print(output)
         data = parser_rasci(output)
 
-        filename = self.__class__.__name__ + '_srdft.yaml'
+        filename = dir_path + '/' + self.__class__.__name__ + '_srdft.yaml'
 
         if remake_tests:
             with open(filename, 'w') as outfile:
@@ -96,7 +100,7 @@ class HydrogenTest(unittest.TestCase):
         print(output)
         data = parser_rasci(output)
 
-        filename = self.__class__.__name__ + '_rasci.yaml'
+        filename = dir_path + '/' + self.__class__.__name__ + '_rasci.yaml'
 
         if remake_tests:
             with open(filename, 'w') as outfile:
@@ -169,7 +173,7 @@ class WaterTest(unittest.TestCase):
 
         print(data)
 
-        filename = self.__class__.__name__ + '_rasci.yaml'
+        filename = dir_path + '/' + self.__class__.__name__ + '_rasci.yaml'
 
         if remake_tests:
             with open(filename, 'w') as outfile:
@@ -221,7 +225,7 @@ class WaterTest(unittest.TestCase):
 
         print(data)
 
-        filename = self.__class__.__name__ + '_srdft.yaml'
+        filename = dir_path + '/' + self.__class__.__name__ + '_srdft.yaml'
 
         if remake_tests:
             with open(filename, 'w') as outfile:
