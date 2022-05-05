@@ -15,7 +15,6 @@ recalculate = False
 remake_tests = False
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-cwd = os.getcwd()
 
 class HydrogenTest(unittest.TestCase):
 
@@ -28,9 +27,6 @@ class HydrogenTest(unittest.TestCase):
                                   symbols=['H', 'H'],
                                   charge=0,
                                   multiplicity=1)
-
-        print('work_dir:', cwd)
-
 
     def test_srdft(self):
 
@@ -55,12 +51,12 @@ class HydrogenTest(unittest.TestCase):
                                        ras_srdft_damp=0.5)
 
 
-        from pyqchem.cache import SqlCache as CacheSystem
+        #from pyqchem.cache import SqlCache as CacheSystem
 
-        cache = CacheSystem()
-        cache.list_database()
-        output = cache.retrieve_calculation_data(qc_input, 'fullout')
-        print(output)
+        #cache = CacheSystem()
+        #cache.list_database()
+        #output = cache.retrieve_calculation_data(qc_input, 'fullout')
+        #print(output)
 
         # calculate and parse qchem output
         output = get_output_from_qchem(qc_input,
@@ -158,7 +154,7 @@ class WaterTest(unittest.TestCase):
 
         self.molecule = parsed_data['optimized_molecule']
 
-    def _test_rasci(self):
+    def test_rasci(self):
         # create qchem input
         txt_input = create_qchem_input(self.molecule,
                                        jobtype='sp',
@@ -200,7 +196,7 @@ class WaterTest(unittest.TestCase):
         self.assertDictEqual(data, data_loaded)
 
 
-    def _test_srdft(self):
+    def test_srdft(self):
 
         # create qchem input
         txt_input = create_qchem_input(self.molecule,

@@ -411,6 +411,9 @@ def get_output_from_qchem(input_qchem,
 
     if scratch is None:
         scratch = os.getenv('QCSCRATCH')
+        if scratch is None:
+            warnings.warn('QCSCRATCH environment variable not defined, using workdir')
+            scratch = '.'
 
     work_dir = '{}/pyqchem_{}/'.format(scratch, os.getpid())
 
@@ -451,6 +454,7 @@ def get_output_from_qchem(input_qchem,
     qchem_input_file.write(input_txt)
     qchem_input_file.close()
 
+    exit()
     # generate extra files in calculation directory
     generate_additional_files(input_qchem, work_dir)
 
