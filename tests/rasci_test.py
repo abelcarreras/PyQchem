@@ -16,7 +16,6 @@ remake_tests = False
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 cwd = os.getcwd()
-print('work_dir:', cwd)
 
 class HydrogenTest(unittest.TestCase):
 
@@ -29,6 +28,8 @@ class HydrogenTest(unittest.TestCase):
                                   symbols=['H', 'H'],
                                   charge=0,
                                   multiplicity=1)
+
+        print('work_dir:', cwd)
 
     def test_srdft(self):
 
