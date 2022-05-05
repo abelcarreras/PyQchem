@@ -30,6 +30,10 @@ class HydrogenTest(unittest.TestCase):
                                   multiplicity=1)
 
         print('work_dir:', cwd)
+        import sqlite3
+        self._conn = sqlite3.connect('test_data.db')
+        print(self._conn)
+
 
     def test_srdft(self):
 
