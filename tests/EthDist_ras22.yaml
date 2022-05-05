@@ -450,7 +450,7 @@ excited_states:
   transition_moment: null
 - configurations:
   - alpha: '01'
-    amplitude: -0.6877443
+    amplitude: 0.6877443
     beta: '10'
     hole: ''
     occupations:
@@ -558,7 +558,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.6877443
+    amplitude: -0.6877443
     beta: '01'
     hole: ''
     occupations:
@@ -2014,7 +2014,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Singlet
   oscillator_strength: 0.036634
-  total_energy: -77.674017130634
+  total_energy: -77.674017130633
   total_energy_units: au
   transition_moment:
   - 0.5939

@@ -3322,7 +3322,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Triplet
   oscillator_strength: 0.002912
-  total_energy: -77.634914423963
+  total_energy: -77.634914423964
   total_energy_units: au
   transition_moment:
   - 0.1182

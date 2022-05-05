@@ -234,7 +234,7 @@ excited_states:
   transition_moment: null
 - configurations:
   - alpha: '110100'
-    amplitude: 0.6954754
+    amplitude: -0.6954754
     beta: '111000'
     hole: ''
     occupations:
@@ -342,7 +342,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '111000'
-    amplitude: -0.6954754
+    amplitude: 0.6954754
     beta: '110100'
     hole: ''
     occupations:
@@ -578,7 +578,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '110001'
-    amplitude: 0.1043152
+    amplitude: -0.1043152
     beta: '111000'
     hole: ''
     occupations:
@@ -794,7 +794,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '111000'
-    amplitude: -0.1043152
+    amplitude: 0.1043152
     beta: '110001'
     hole: ''
     occupations:
@@ -902,7 +902,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '110100'
-    amplitude: 0.1132026
+    amplitude: -0.1132026
     beta: '111100'
     hole: '5'
     occupations:
@@ -1010,7 +1010,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '111100'
-    amplitude: -0.1132026
+    amplitude: 0.1132026
     beta: '110100'
     hole: '5'
     occupations:
@@ -1130,7 +1130,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Triplet
   oscillator_strength: 0.0
-  total_energy: -77.747497481559
+  total_energy: -77.747497481558
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -1374,7 +1374,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '101100'
-    amplitude: 0.6501923
+    amplitude: -0.6501923
     beta: '111000'
     hole: ''
     occupations:
@@ -1590,7 +1590,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '111000'
-    amplitude: 0.6501923
+    amplitude: -0.6501923
     beta: '101100'
     hole: ''
     occupations:

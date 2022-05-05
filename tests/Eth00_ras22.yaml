@@ -686,7 +686,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.6890485
+    amplitude: -0.6890485
     beta: '11'
     hole: '7'
     occupations:
@@ -794,7 +794,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.6890485
+    amplitude: 0.6890485
     beta: '10'
     hole: '7'
     occupations:
@@ -1354,7 +1354,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.6652106
+    amplitude: -0.6652106
     beta: '11'
     hole: '7'
     occupations:
@@ -1462,7 +1462,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: 0.6652106
+    amplitude: -0.6652106
     beta: '10'
     hole: '7'
     occupations:
@@ -1590,7 +1590,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: -0.693639
+    amplitude: 0.693639
     beta: '10'
     hole: ''
     occupations:
@@ -1698,7 +1698,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '10'
-    amplitude: 0.693639
+    amplitude: -0.693639
     beta: '00'
     hole: ''
     occupations:

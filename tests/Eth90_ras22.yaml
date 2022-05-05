@@ -181,7 +181,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Triplet
   oscillator_strength: null
-  total_energy: -77.942732007253
+  total_energy: -77.942732007254
   total_energy_units: au
   transition_moment: null
 - configurations:
@@ -366,7 +366,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Singlet
   oscillator_strength: 0.0
-  total_energy: -77.93955027181
+  total_energy: -77.939550271811
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -1414,7 +1414,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Singlet
   oscillator_strength: 0.0
-  total_energy: -77.805633663276
+  total_energy: -77.805633663277
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -2106,7 +2106,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Unknown
   oscillator_strength: 5.0e-05
-  total_energy: -77.634939436412
+  total_energy: -77.634939436413
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -3322,7 +3322,7 @@ excited_states:
   excitation_energy_units: eV
   multiplicity: Unknown
   oscillator_strength: 0.0
-  total_energy: -77.620089217914
+  total_energy: -77.620089217915
   total_energy_units: au
   transition_moment:
   - 0.0
