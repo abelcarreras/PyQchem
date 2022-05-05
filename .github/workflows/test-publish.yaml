@@ -1,6 +1,6 @@
 # This workflow will upload a Python Package using Twine when a release is created
 
-name: Upload Python Package
+name: Test & upload to PyPI
 
 on: [push, pull_request]
 
