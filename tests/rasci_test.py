@@ -33,7 +33,7 @@ class HydrogenTest(unittest.TestCase):
 
         from pyqchem.cache import SqlCache as CacheSystem
 
-        cache = CacheSystem(filename='test_data.db')
+        cache = CacheSystem()
         cache.list_database()
 
 
