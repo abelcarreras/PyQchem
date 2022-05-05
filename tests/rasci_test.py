@@ -10,11 +10,8 @@ import os, sys
 
 redefine_calculation_data_filename('test_data.db')
 
-if 'USER' in os.environ and os.environ['USER'] == 'travis':
-    recalculate = False
-else:
-    recalculate = True
-
+#if 'USER' in os.environ and os.environ['USER'] == 'travis':
+recalculate = False
 remake_tests = False
 
 class HydrogenTest(unittest.TestCase):
