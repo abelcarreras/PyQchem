@@ -30,22 +30,11 @@ class HydrogenTest(unittest.TestCase):
                                   multiplicity=1)
 
         print('work_dir:', cwd)
-        import sqlite3
-        self._conn = sqlite3.connect('test_data.db')
-        print(self._conn)
-        cursor = self._conn.execute("SELECT * FROM DATA_TABLE")
-        rows = cursor.fetchall()
 
-        self._conn.close()
-        import numpy as np
-
-        calc_id_list = np.unique([r[0] for r in rows])
-        print('Calc_id_list 1', calc_id_list)
         from pyqchem.cache import SqlCache as CacheSystem
 
         cache = CacheSystem(filename='test_data.db')
-
-        print('Calc_id_list 2', cache.list_database())
+        cache.list_database()
 
 
 
