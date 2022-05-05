@@ -1,4 +1,4 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename
+from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename, QchemInput
 from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
@@ -31,17 +31,11 @@ class HydrogenTest(unittest.TestCase):
 
         print('work_dir:', cwd)
 
-        from pyqchem.cache import SqlCache as CacheSystem
-
-        cache = CacheSystem()
-        cache.list_database()
-
-
 
     def test_srdft(self):
 
         # create qchem input
-        txt_input = create_qchem_input(self.molecule,
+        qc_input = create_qchem_input(self.molecule,
                                        jobtype='sp',
                                        exchange='hf',
                                        correlation='rasci',
@@ -60,8 +54,16 @@ class HydrogenTest(unittest.TestCase):
                                        set_iter=30,
                                        ras_srdft_damp=0.5)
 
+
+        from pyqchem.cache import SqlCache as CacheSystem
+
+        cache = CacheSystem()
+        cache.list_database()
+        output = cache.retrieve_calculation_data(qc_input, 'fullout')
+        print(output)
+
         # calculate and parse qchem output
-        output = get_output_from_qchem(txt_input,
+        output = get_output_from_qchem(qc_input,
                                        processors=4,
                                        force_recalculation=recalculate,
                                        store_full_output=True)
