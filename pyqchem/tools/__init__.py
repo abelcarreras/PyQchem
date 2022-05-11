@@ -54,34 +54,70 @@ def plot_rasci_state_configurations(states):
     plt.show()
 
 
-def submit_notice(message, service='pushbullet', pb_token=None, sp_url=None):
+def submit_notice(message,
+                  service='pushbullet',
+                  pb_token=None,
+                  sp_url=None,
+                  gc_key=None, gc_token=None, gc_thread=None,
+                  slack_token=None, slack_channel=None, ):
     """
     Submit a notification using webhooks
 
     :param message: The message to send
-    :param service: pushbullet or samepage
+    :param service: pushbullet, samepage, google_chat
     :param pb_token: pushbullet token
     :param sp_url: samepage url
+    :param gc_key: google chat key
+    :param gc_token: google chat token
+    :param gc_thread: google chat thread
+    :param slack_token: slack bot token (xoxb-xxx.xxx.xxx),
+    :param slack_channel: slack channel
     :return:
     """
 
     if service.lower() == 'pushbullet':
+        if pb_token is None:
+            warnings.warn('Message: you have to specify {}'.format(['pb_token']))
         url = 'https://api.pushbullet.com/v2/pushes'
-        bot_message = {'body': message, 'type': 'note'}
+        bot_message = json.dumps({'body': message, 'type': 'note'})
         message_headers = {'Content-Type': 'application/json; charset=UTF-8',
                            'Access-Token': pb_token}
     elif service.lower() == 'samepage':
+        if sp_url is None:
+            warnings.warn('You have to specify {}'.format(['sp_url']))
+
         url = sp_url
+        bot_message = json.dumps({'text': message})
+        message_headers = {'Content-Type': 'application/json'}
+
+    elif service.lower() == 'google_chat':
+        if gc_key is None or gc_token is None or gc_thread is None:
+            warnings.warn('Message: you have to specify {}'.format(['gc_key', 'gc_token', 'gc_token']))
+
+        url = 'https://chat.googleapis.com/v1/spaces/<space>/messages?key={}\&token={}\&threadKey={}'.format(gc_key, gc_token, gc_thread)
         bot_message = {'text': message}
         message_headers = {'Content-Type': 'application/json'}
+
+    elif service.lower() == 'slack':
+        if slack_token is None or slack_channel is None:
+            warnings.warn('Message: you have to specify {}'.format(['slack_token', 'slack_channel']))
+
+        url = 'https://slack.com/api/chat.postMessage'
+        blocks = None
+        bot_message = {'token': slack_token,
+                       'channel': slack_channel,
+                       'text': message,
+                       'blocks': json.dumps(blocks) if blocks else None}
+        message_headers = {}
+
     else:
-        print('client not found!')
+        warnings.warn('Message: client not found!')
         return
 
     try:
         r = req.post(url=url,
                      headers=message_headers,
-                     data=json.dumps(bot_message))
+                     data=bot_message)
         r.close()
 
     except ConnectionError:
