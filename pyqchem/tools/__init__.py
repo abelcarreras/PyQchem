@@ -72,7 +72,7 @@ def submit_notice(message,
     :param gc_thread: google chat thread
     :param slack_token: slack bot token (xoxb-xxx.xxx.xxx),
     :param slack_channel: slack channel
-    :return:
+    :return: server response
     """
 
     if service.lower() == 'pushbullet':
@@ -115,10 +115,10 @@ def submit_notice(message,
         return
 
     try:
-        r = req.post(url=url,
-                     headers=message_headers,
-                     data=bot_message)
-        r.close()
+        with req.post(url=url, headers=message_headers, data=bot_message) as r:
+            response = r.json()
+
+        return response
 
     except ConnectionError:
         warnings.warn('Connection error: Message was not delivered')
