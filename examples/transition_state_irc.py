@@ -55,7 +55,7 @@ freq_data, ee = get_output_from_qchem(qc_input,
                                       processors=4,
                                       force_recalculation=True,
                                       parser=basic_frequencies,
-                                      read_fchk=True,
+                                      return_electronic_structure=True,
                                       store_full_output=True)
 
 # IRC calculation

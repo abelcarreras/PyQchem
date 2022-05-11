@@ -52,7 +52,7 @@ for dist in distances:
     data, ee = get_output_from_qchem(qc_input,
                                      processors=3,
                                      parser=parser_rasci,
-                                     read_fchk=True,
+                                     return_electronic_structure=True,
                                      # store_full_output=True,
                                      )
 

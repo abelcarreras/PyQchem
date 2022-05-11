@@ -366,7 +366,8 @@ def get_output_from_qchem(input_qchem,
                           processors=1,
                           use_mpi=False,
                           scratch=None,
-                          read_fchk=False,
+                          read_fchk=False,  # to be deprecated
+                          return_electronic_structure=False,
                           parser=None,
                           parser_parameters=None,
                           force_recalculation=False,
@@ -377,33 +378,42 @@ def get_output_from_qchem(input_qchem,
     """
     Runs qchem and returns the output in the following format:
 
-    1) If read_fchk is requested:
+    1) If return_electronic_structure is requested:
         [output, parsed_fchk]
-    2) If read_fchk is not requested:
+    2) If return_electronic_structure is not requested:
         [output]
 
     Note: if parser is set then output contains a dictionary with the parsed info
           else output contains the q-chem output in plain text
 
-    read_fchk: contains a dictionary with the parsed info inside fchk file.
-
     :param input_qchem: QcInput object containing the Q-Chem input
     :param processors: number of threads/processors to use in the calculation
     :param use_mpi: If False use OpenMP (threads) else use MPI (processors)
     :param scratch: Full Q-Chem scratch directory path. If None read from $QCSCRATCH
-    :param read_fchk: if True, returns the parsed FCHK file containing the electronic structure
+    :param return_electronic_structure: if True, returns the parsed FCHK file containing the electronic structure
+    :param read_fchk: same as return_electronic_structure (to be deprecated)
     :param parser: function to use to parse the Q-Chem output
     :param parser_parameters: additional parameters that parser function may have
     :param force_recalculation: Force to recalculate even identical calculation has already performed
-    :param fchk_only: If true, returns only the electronic structure data parsed from FCHK file
+    :param fchk_only: If true, returns electronic structure data from cache ignoring output (to be deprecated)
     :param remote: dictionary containing the data for remote calculation (beta)
     :param store_full_output: store full output in plain text in pkl file
     :param delete_scratch: delete all scratch files when calculation is finished
 
-    :return: output [, fchk_dict]
+    :return: output [, electronic_structure]
     """
     from pyqchem.parsers.parser_fchk import parser_fchk
     cache = CacheSystem()
+
+    # back-compatibility layer
+    if read_fchk:
+        warnings.warn("'read_fchk' will be deprecated, use return_electronic_structure instead",
+                      DeprecationWarning, stacklevel=2)
+        return_electronic_structure = read_fchk
+
+    if fchk_only:
+        warnings.warn("'fchk_only' option will be deprecated",
+                      DeprecationWarning, stacklevel=2)
 
     # Always generate fchk
     if input_qchem.gui is None or input_qchem.gui < 1:
@@ -430,21 +440,22 @@ def get_output_from_qchem(input_qchem,
     output = cache.retrieve_calculation_data(input_qchem, 'fullout')
 
     #output, err = cache.calculation_data[(hash(input_qchem), 'fullout')] if (hash(input_qchem), 'fullout') in cache.calculation_data else [None, None]
-    data_fchk = cache.retrieve_calculation_data(input_qchem, 'fchk')
+    elect_struct_data = cache.retrieve_calculation_data(input_qchem, 'fchk')
 
     # check if repeated calculation
     if not force_recalculation and not store_full_output:  # store_full_output always force re-parsing
         if parser is not None:
             parsed_data = cache.retrieve_calculation_data(hash(input_qchem), parser.__name__)
             if parsed_data is not None:
-                if read_fchk:
-                    return parsed_data, data_fchk
+                if return_electronic_structure:
+                    return parsed_data, elect_struct_data
                 else:
                     return parsed_data
         else:
-            if fchk_only and data_fchk is not None:
-                return output, data_fchk
+            if fchk_only and elect_struct_data is not None:
+                return output, elect_struct_data
 
+    # temp filenames generated in temp directory
     fchk_filename = 'qchem_temp_{}.fchk'.format(os.getpid())
     temp_filename = 'qchem_temp_{}.inp'.format(os.getpid())
 
@@ -474,9 +485,9 @@ def get_output_from_qchem(input_qchem,
             with open(os.path.join(work_dir, fchk_filename)) as f:
                 fchk_txt = f.read()
 
-            data_fchk = parser_fchk(fchk_txt)
-            data_fchk.update(retrieve_additional_files(input_qchem, data_fchk, work_dir))
-            cache.store_calculation_data(input_qchem, 'fchk', data_fchk)
+            elect_struct_data = parser_fchk(fchk_txt)
+            elect_struct_data.update(retrieve_additional_files(input_qchem, elect_struct_data, work_dir))
+            cache.store_calculation_data(input_qchem, 'fchk', elect_struct_data)
 
         if store_full_output:
             cache.store_calculation_data(input_qchem, 'fullout', output)
@@ -501,8 +512,8 @@ def get_output_from_qchem(input_qchem,
     if delete_scratch:
         shutil.rmtree(work_dir)
 
-    if read_fchk:
-        return output, data_fchk
+    if return_electronic_structure:
+        return output, elect_struct_data
     else:
         return output
 

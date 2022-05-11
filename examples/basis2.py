@@ -30,7 +30,7 @@ parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=4,
                                         parser=basic_optimization,
                                         force_recalculation=False,
-                                        read_fchk=True)
+                                        return_electronic_structure=True)
 
 opt_molecule = parsed_data['optimized_molecule']
 
@@ -51,6 +51,6 @@ qc_input = QchemInput(opt_molecule,
 parsed_data = get_output_from_qchem(qc_input,
                                     processors=4,
                                     parser=basic_parser_qchem,
-                                    force_recalculation=True)
+                                    force_recalculation=False)
 
 print('results: ', parsed_data)

@@ -80,7 +80,7 @@ parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=4,
                                         force_recalculation=False,
                                         parser=parser_rasci,
-                                        read_fchk=True,
+                                        return_electronic_structure=True,
                                         )
 
 write_to_fchk(ee, filename='dimer.fchk')

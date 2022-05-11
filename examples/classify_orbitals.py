@@ -36,18 +36,17 @@ parameters = {'jobtype': 'sp',
 qc_input = create_qchem_input(molecule, **parameters)
 
 # get data from Q-Chem calculation
-output, parsed_fchk = get_output_from_qchem(qc_input,
-                                            processors=4,
-                                            force_recalculation=False,
-                                            read_fchk=True,
-                                            fchk_only=True)
+_, electronic_structure = get_output_from_qchem(qc_input,
+                                                processors=4,
+                                                force_recalculation=False,
+                                                return_electronic_structure=True)
 
 # write .fchk file copy on disk (for checking purpose)
-txt_fchk = build_fchk(parsed_fchk)
+txt_fchk = build_fchk(electronic_structure)
 open('test_benzene.fchk', 'w').write(txt_fchk)
 
 # get orbital type
-orbital_types = get_orbital_classification(parsed_fchk,
+orbital_types = get_orbital_classification(electronic_structure,
                                            center=[0.0, 0.0, 0.0],
                                            orientation=[0.0, 0.0, 1.0])
 

@@ -37,7 +37,7 @@ qc_input = QchemInput(molecule,
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           parser=basic_optimization,
-                                                          read_fchk=True)
+                                                          return_electronic_structure=True)
 
 
 opt_molecule = parsed_data['optimized_molecule']

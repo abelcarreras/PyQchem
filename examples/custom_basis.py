@@ -26,7 +26,7 @@ print(qc_input.get_txt())
 output, electronic_structure = get_output_from_qchem(qc_input,
                                                      processors=4,
                                                      force_recalculation=False,
-                                                     read_fchk=True,
+                                                     return_electronic_structure=True,
                                                      parser=basic_parser_qchem,
                                                      store_full_output=False)
 

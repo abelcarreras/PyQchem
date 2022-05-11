@@ -34,7 +34,7 @@ qc_input = create_qchem_input(molecule,
 
 out, electronic_structure = get_output_from_qchem(qc_input,
                                                   processors=4,
-                                                  read_fchk=True,
+                                                  return_electronic_structure=True,
                                                   force_recalculation=True,
                                                   remote=remote_data,  # Set remote data
                                                   parser=basic_frequencies

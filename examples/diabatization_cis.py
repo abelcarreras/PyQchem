@@ -197,7 +197,7 @@ parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=14,
                                         force_recalculation=False,
                                         parser=basic_cis,
-                                        read_fchk=True
+                                        return_electronic_structure=True
                                         )
 
 symmetry_measures = get_state_symmetry(ee,

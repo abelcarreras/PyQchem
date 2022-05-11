@@ -48,7 +48,7 @@ data, electronic_structure = get_output_from_qchem(qc_input,
                                                    force_recalculation=True,
                                                    processors=4,
                                                    parser=basic_parser_qchem,
-                                                   read_fchk=True)
+                                                   return_electronic_structure=True)
 
 
 print('scf energy', data['scf_energy'], 'H')
