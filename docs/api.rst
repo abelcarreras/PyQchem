@@ -22,3 +22,9 @@ Utils
 -----
 .. automodule:: pyqchem.utils
     :members:
+
+.. automodule:: pyqchem.tools
+    :members:
+
+.. automodule:: pyqchem.tools.geometry
+    :members:
