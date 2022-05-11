@@ -24,6 +24,8 @@ Install
 
 1) From source code ::
 
+    git clone https://github.com/abelcarreras/PyQchem.git pyqchem
+    cd pyqchem
     python setup.py install --user
 
 2) From PyPI repository ::

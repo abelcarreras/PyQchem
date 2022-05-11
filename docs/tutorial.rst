@@ -391,7 +391,7 @@ This script is pretty convenient but it can be done even better. In order to tak
 calculation, the already optimized electronic structure (molecular orbitals) can be used as a initial guess in the frequencies
 calculation. To do this, it is necessary to get the orbitals coefficients, which are not present in the usual output.
 PyQchem obtains the electronic structure data from the *FChk* file. The request of the *FChk* generation is done directly
-in the **get_output_from_qchem** function by using the argument *read_fchk=True*. This modifies the output of this function
+in the **get_output_from_qchem** function by using the argument *return_electronic_structure=True*. This modifies the output of this function
 returning two pieces of data (a list of two elements): the parsed output & the parsed *FChK* data:
 
 ..  code-block:: python
@@ -403,7 +403,7 @@ returning two pieces of data (a list of two elements): the parsed output & the p
 
     parsed_opt_data, electronic_structure = get_output_from_qchem(opt_input,
                                                                   parser=basic_optimization,
-                                                                  read_fchk=True)
+                                                                  return_electronic_structure=True)
 
     print(electronic_structure)
 
