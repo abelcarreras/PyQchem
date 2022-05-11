@@ -22,6 +22,7 @@ number that indicates the degree of accuracy (from 0[None] to 1[Full]).
 ..  code-block:: python
 
     from pyqchem.symmetry import get_orbital_classification
+
     orbital_types = get_orbital_classification(electronic_structure,
                                                center=[0.0, 0.0, 0.0],
                                                orientation=[0.0, 0.0, 1.0])

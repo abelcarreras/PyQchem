@@ -1,7 +1,7 @@
 .. highlight:: rst
 
-Error treatment
-===============
+Error handling
+==============
 
 In the previous sections it is always assumed that Q-Chem calculations always finish successfully,
 but, in general, this is not true. Calculation may fail for several reasons, incorrect input parameters,

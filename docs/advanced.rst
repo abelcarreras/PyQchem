@@ -3,50 +3,6 @@
 Advanced input
 ==============
 
-The structure of the electronic structure dictionary is as follows:
-
-..  code-block:: bash
-
-    root
-     ├── basis
-     │   ├── name
-     │   ├── primitive_type
-     │   └── atoms(list)
-     │         ├── shells (list)
-     │         ├── symbol
-     │         └── atomic_number
-     ├── coefficients
-     │   ├── alpha
-     │   └── beta (optional)
-     ├── mo_energies
-     │   ├── alpha
-     │   └── beta (optional)
-     ├── number_of_electrons
-     │   ├── alpha
-     │   └── beta
-     ├── nato_coefficients (optional)
-     │   ├── alpha
-     │   └── beta
-     ├── nato_occupancies (optional)
-     │   ├── alpha
-     │   └── beta
-     ├── structure
-     └── overlap
-
-
-Using the information of this dictionary a Fchk file can be generated. This may be used to visualize the molecular
-orbitals using an external program.
-
-..  code-block:: python
-
-    from pyqchem.file_io import build_fchk
-    with open('file.fchk', 'w') as f:
-        f.write(build_fchk(electronic_structure))
-
-
-While electronic structure is a simple dictionary, its elements are designed to be interoperable along the
-pyqchem code. Some examples of this interoperability will be shown in the following sections.
-
 Custom guess
 ------------
 
@@ -118,8 +74,8 @@ as *basis*. Usual *basis* keyword defines the new basis and *basis2* keyword def
                           jobtype='sp',
                           exchange='hf',
                           basis='6-31g',
-                          basis2=ee['basis'],  # previous basis can also be read from electronic structure dictionary
-                          scf_guess=ee['coefficients'] # previous MO coefficients to be used as a guess
+                          basis2=ee['basis'],  # previous basis from electronic structure
+                          scf_guess=ee['coefficients'] # previous MO coeff as a guess
                           )
 
 Usage of Solvent
