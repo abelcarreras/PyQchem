@@ -34,12 +34,25 @@ def get_array_txt(label, type, array, row_size=5):
 
 
 def write_to_fchk(parsed_data, filename):
+    """
+    write a FCHK file from electronic structure dictionary
+
+    :param parsed_data: electronic structure dictionary
+    :param filename: file name
+    :return: None
+    """
     txt = build_fchk(parsed_data)
     with open(filename, 'w') as f:
         f.write(txt)
 
 
 def build_fchk(parsed_data):
+    """
+    build a string containing in FCHK file format from an electronic structure dictionary
+
+    :param parsed_data: electronic structure dictionary
+    :return: string in FCHK file format
+    """
 
     structure = parsed_data['structure']
     basis = parsed_data['basis']

@@ -9,7 +9,12 @@ from copy import deepcopy
 
 
 def _txt_to_basis_dict(basis_txt):
-    # read basis in gaussian/qchem format
+    """
+    read basis in gaussian/qchem format
+
+    :param basis_txt: string containing the basis set in gaussian/qchem format
+    :return: basis set dicitonary
+    """
 
     symbol = basis_txt[0].split()[0]
 
@@ -55,6 +60,14 @@ def _txt_to_basis_dict(basis_txt):
 def get_basis_element_from_ccRepo(element,
                                   program='Gaussian',
                                   basis='cc-pVDZ'):
+    """
+    Downloads basis set for a particular atomic element from ccRepo database
+
+    :param element: atomic element
+    :param program: format of basis set
+    :param basis: basis name
+    :return: citation, description, basis set dictionary
+    """
 
     # Check main page element list
     with req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/") as resp:
@@ -209,9 +222,14 @@ def get_basis_from_BSE(structure, basis, full=False, if_missing=None):
 
 
 def basis_to_txt(basis):
-    # write basis in qchem/gaussian format
-    basis_txt = ''
+    """
+    convert from basis set dictionary to string in Gaussian/Q-Chem format
 
+    :param basis: basis set dictionary
+    :return: basis set string in gaussian/Q-Chem format
+    """
+
+    basis_txt = ''
     for atom in basis['atoms']:
         basis_txt += atom['symbol'] + '  0\n'
         for shell in atom['shells']:
@@ -233,6 +251,13 @@ def basis_to_txt(basis):
 
 
 def get_purecard(basis):
+    """
+    returns a string indicating for each shell wether is pure or Cartesian.
+    To be used in Purecard keyword in Q-Chem input
+
+    :param basis: basis set dictionary
+    :return: string for purecard keyword
+    """
 
     # default 2111
     keyword = {'d': 1, 'f': 1, 'g': 1, 'h': 2}

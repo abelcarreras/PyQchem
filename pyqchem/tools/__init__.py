@@ -10,6 +10,14 @@ from requests.exceptions import ConnectionError
 
 
 def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken_rasci=False):
+    """
+    Prints excited states in nice format. It works for CIS/TDDFT/RASCI methods
+
+    :param parsed_data: parsed data (excited states) dictionary entry from CIS/RASCI/TDDFT calculation
+    :param include_conf_rasci: print also configuration data (only RASCI method)
+    :param include_mulliken_rasci: print also mulliken analysis (only RASCI method)
+    :return: None
+    """
     for i, state in enumerate(parsed_data):
         print('\nState {}'.format(i+1))
         if 'multiplicity' in state:
@@ -37,6 +45,11 @@ def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken
 
 
 def plot_rasci_state_configurations(states):
+    """
+    Prints
+    :param states: parsed data (excited states) dictionary entry from RASCI calculation
+    :return: None
+    """
     for i, state in enumerate(states):
         plt.figure(figsize=(len(state['configurations']), 5))
         plt.title('State {}'.format(i+1))

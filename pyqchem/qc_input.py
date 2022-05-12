@@ -690,6 +690,11 @@ class CustomSection:
         return int(digest, 16)
 
     def get_txt(self):
+        """
+        create string with appropiate Q-Chem input section format
+
+        :return: string in Q-Chem input section format
+        """
         txt_input = '${}\n'.format(self._tile)
         for prop, value in self._data.items():
             txt_input += ' {} {}\n'.format(prop, value)

@@ -214,7 +214,7 @@ class Structure:
 
     def get_valence_electrons(self):
         """
-        gets number of valence electrons
+        get number of valence electrons
 
         :return: number of valence electrons
         """
@@ -249,13 +249,19 @@ class Structure:
         return txt
 
     def get_connectivity(self, thresh=1.2):
+        """
+        get the connectivity as a list of pairs of indices of atoms
+        from atomic radii
+
+        :param thresh: radii threshold used to determine the connectivity
+        :return:
+        """
         from scipy.spatial import distance_matrix
-        from warnings import warn
 
         try:
             radius = [atom_data[sym][4] for sym in self.get_atomic_numbers()]
         except KeyError:
-            warn('failed to generate connectivity, no connectivity will be used')
+            warnings.warn('failed to generate connectivity, no connectivity will be used')
             return None
 
         distances_matrix = distance_matrix(self.get_coordinates(), self.get_coordinates())
@@ -266,7 +272,7 @@ class Structure:
         try:
             relative_differences = np.abs(radii_matrix - distances_matrix) / radii_matrix
         except ValueError:
-            warn('failed to generate connectivity')
+            warnings.warn('failed to generate connectivity')
             return None
 
         if not (np.array(np.where(relative_differences < thresh - 1)).T + 1).tolist():

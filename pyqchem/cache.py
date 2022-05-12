@@ -7,10 +7,15 @@ import numpy as np
 from datetime import datetime
 
 
-# Singleton class to handle cache
+# Singleton classes to handle cache
 
 
 class SimpleCache(object):
+    """
+    Class that makes use of pickle module to hadle data cache
+
+    :param filename: name of the file storing the cache data
+    """
 
     class __SimpleCache:
         def __init__(self, filename='calculation_data.pkl'):
@@ -33,6 +38,12 @@ class SimpleCache(object):
                 self.calculation_data = {}
 
         def redefine_calculation_data_filename(self, filename):
+            """
+            redefine the file that contains the cache
+
+            :param filename: cache file name
+            :return:
+            """
 
             self._calculation_data_filename = filename
             print('Set data file to {}'.format(self._calculation_data_filename))
@@ -46,6 +57,15 @@ class SimpleCache(object):
                 self.calculation_data = {}
 
         def store_calculation_data(self, input_qchem, keyword, data, timeout=60):
+            """
+            Store data in the cache file
+
+            :param input_qchem: QchemInput instance
+            :param keyword: string that will be used as a key to store the data
+            :param data: the data dictionary to be stored
+            :param timeout: time out in seconds to wait if other precesses are accesing the file at the same time
+            :return:
+            """
 
             # Py2 compatibility
             if sys.version_info[0] < 3:
@@ -82,10 +102,22 @@ class SimpleCache(object):
                 break
 
         def retrieve_calculation_data(self, input_qchem, keyword):
+            """
+            retrieve calculation data from cache file
+
+            :param input_qchem: QchemInput instance
+            :param keyword: string that was used as a key to store the data
+            :return:
+            """
             return self.calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem),
                                                                            keyword) in self.calculation_data else None
 
         def get_all_data(self):
+            """
+            return a list of all data stored in the cache file
+
+            :return: list of data
+            """
 
             calc_id_list = np.unique([r[0] for r in self.calculation_data.keys()])
             calc_list = []
@@ -113,6 +145,11 @@ class SimpleCache(object):
 
 
 class SqlCache:
+    """
+    Class that makes use a SQLlite database to hadle data cache
+
+    :param filename: name of the database file storing the cache data
+    """
     __instance__ = None
 
     def __new__(cls, *args, **kwargs):
@@ -158,15 +195,29 @@ class SqlCache:
         self._conn.close()
 
     def redefine_calculation_data_filename(self, filename):
+        """
+        redefine the file that contains the cache
+
+        :param filename: cache file name
+        :return:
+        """
         self._calculation_data_filename = filename
         self.__init__()
 
     def store_calculation_data(self, input_qchem, keyword, data):
+        """
+        Store data in the cache file
+
+        :param input_qchem: QchemInput instance
+        :param keyword: string that will be used as a key to store the data
+        :param data: the data dictionary to be stored
+        :param timeout: time out in seconds to wait if other precesses are accesing the file at the same time
+        :return:
+        """
 
         date_time = datetime.now()
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
-
 
         serialized_data = pickle.dumps(data, protocol=2)
 
@@ -188,7 +239,13 @@ class SqlCache:
         self._conn.close()
 
     def retrieve_calculation_data(self, input_qchem, keyword):
+        """
+        retrieve calculation data from cache file
 
+        :param input_qchem: QchemInput instance
+        :param keyword: string that was used as a key to store the data
+        :return:
+        """
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
         cursor = self._conn.execute("SELECT qcdata FROM DATA_TABLE WHERE input_hash=? AND parser=?",
@@ -201,10 +258,11 @@ class SqlCache:
 
     def retrieve_calculation_data_from_id(self, id, keyword=None):
         """
-        Only for SQL cache
+        return data using database entry ID
+        [Only for SQL database cache]
 
-        :param id:
-        :param keyword:
+        :param id: databse entry ID
+        :param keyword: string that was used as a key to store the data
         :return:
         """
 
@@ -229,9 +287,10 @@ class SqlCache:
 
     def list_database(self):
         """
-        Only for SQL cache
+        prints data inside database
+        [Only for SQL databse cache]
 
-        :return:
+        :return: None
         """
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
@@ -252,6 +311,12 @@ class SqlCache:
         self._conn.close()
 
     def integrity_check(self):
+        """
+        Check integrity of the database
+        [Only for SQL databse cache]
+
+        :return:
+        """
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
         cursor = self._conn.execute("PRAGMA integrity_check")
@@ -261,7 +326,14 @@ class SqlCache:
 
         pass
 
-    def fix_database(self, file):
+    def fix_database(self, filename):
+        """
+        fix correupted database
+        [Only for SQL databse cache]
+
+        :param filename: databse filename
+        :return:
+        """
 
         import subprocess, os
 
@@ -284,13 +356,13 @@ class SqlCache:
             f.write(data)
 
         try:
-            os.remove(file)
+            os.remove(filename)
         except FileNotFoundError:
             pass
 
         schema = subprocess.run(
             ['sqlite3',
-             file,
+             filename,
              '.read {}'.format(dump_file)
              ],
             capture_output=True
@@ -314,6 +386,11 @@ class SqlCache:
         print(schema.stdout)
 
     def get_all_data(self):
+        """
+        return a list of all data stored in the cache file
+
+        :return: list of data
+        """
 
         self._conn = sqlite3.connect(self._calculation_data_filename)
 

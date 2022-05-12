@@ -109,7 +109,8 @@ def get_state_symmetry(parsed_fchk,
                        check_consistency=True,
                        full_vector=False):
     """
-    Determines electronic state symmetry (only for closed shell configurations)
+    Determine electronic state symmetry (only for closed shell configurations)
+
     :param parsed_fchk: electronic structure
     :param rasci_states: parsed rasci output dictionary
     :param center: center of the molecule
