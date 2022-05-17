@@ -3,11 +3,11 @@ import numpy as np
 
 def spin_matrices(s_bra, s_ket):
     """
-    Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s,m') such that
+    Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s',m') such that
     sx = < m' | Sx | m >, sy = < m' | Sy | m > and sz = < m' | Sz | m >
 
-    :param s_bra: spin state (s,m')
-    :param s_ket: spin state (s,m)
+    :param s_bra: total spin (s) of (s',m') state
+    :param s_ket: total spin (s) of (s,m) state
     :return: Sx, Sy, Sz
     """
 
