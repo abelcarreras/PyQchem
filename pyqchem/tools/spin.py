@@ -1,6 +1,26 @@
 import numpy as np
 
 
+def s2_to_s(s2):
+    """
+    get total spin (s) from s2
+
+    :param s2: s2
+    :return: total spin (s)
+    """
+    return 0.5*(-1 + np.sqrt(1 + 4 * s2))
+
+
+def s_to_s2(s):
+    """
+    get s2 from total spin (s)
+
+    :param s: total spin (s)
+    :return: s2
+    """
+    return s * (s + 1)
+
+
 def spin_matrices(s_bra, s_ket):
     """
     Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s',m') such that
@@ -35,35 +55,15 @@ def spin_matrices(s_bra, s_ket):
 
             elif are_equal(sz_bra,  sz_ket + 1):
                 s = s_bra
-                Sx[i, j] = 0.5 * np.sqrt(s * (s + 1) - sz_bra * sz_ket)
-                Sy[i, j] = -0.5j * np.sqrt(s * (s + 1) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
 
             elif are_equal(sz_bra, sz_ket - 1):
                 s = s_bra
-                Sx[i, j] = 0.5 * np.sqrt(s * (s + 1) - sz_bra * sz_ket)
-                Sy[i, j] = 0.5j * np.sqrt(s * (s + 1) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
 
     return Sx, Sy, Sz
-
-
-def s2_to_s(s2):
-    """
-    get total spin (s) from s2
-
-    :param s2: s2
-    :return: total spin (s)
-    """
-    return 0.5*(-1 + np.sqrt(1 + 4 * s2))
-
-
-def s_to_s2(s):
-    """
-    get s2 from total spin (s)
-
-    :param s: total spin (s)
-    :return: s2
-    """
-    return s * (s + 1)
 
 
 def get_s_sz_from_configuration(n_alpha, n_beta, s2):
