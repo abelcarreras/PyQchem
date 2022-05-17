@@ -99,11 +99,11 @@ if __name__ == '__main__':
     s2 = 3.7500
     # s2 = s_to_s2(1.5)
 
-    s_bra, Sz_bra = get_s_sz_from_configuration(n_alpha, n_beta, s2)
-    s_ket, Sz_ket = get_s_sz_from_configuration(n_alpha, n_beta, s2)
+    s_bra, sz_bra = get_s_sz_from_configuration(n_alpha, n_beta, s2)
+    s_ket, sz_ket = get_s_sz_from_configuration(n_alpha, n_beta, s2)
 
-    print("KET: S ,Sz = {}, {}".format(s_ket, Sz_ket))
-    print("BRA: S ,Sz = {}, {}".format(s_bra, Sz_bra))
+    print("KET: S ,Sz = {}, {}".format(s_ket, sz_ket))
+    print("BRA: S ,Sz = {}, {}".format(s_bra, sz_bra))
 
     Sx, Sy, Sz = spin_matrices(s_bra, s_ket)
 
