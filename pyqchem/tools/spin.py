@@ -79,17 +79,17 @@ def spin_matrices_2(s):
     multiplicity = len(sz_values(s))
 
     delta = np.identity(multiplicity)
-    delta_1 = np.diag(np.ones(multiplicity), k=1)[:-1, :-1]
-    delta_2 = np.diag(np.ones(multiplicity), k=-1)[:-1, :-1]
+    delta_plus = np.diag(np.ones(multiplicity), k=1)[:-1, :-1]
+    delta_minus = np.diag(np.ones(multiplicity), k=-1)[:-1, :-1]
 
     factor = np.sqrt(s_to_s2(s) - np.outer(sz_values(s), sz_values(s)))
 
     Sz = delta * sz_values(s)
-    Sx = 0.5 * (delta_1 + delta_2) * factor
-    Sy = 0.5j * (delta_1 - delta_2) * factor
+    Sx = 0.5 * (delta_plus + delta_minus) * factor
+    Sy = 0.5j * (delta_plus - delta_minus) * factor
 
-    Sp = delta_1 * factor  # S_+
-    Sm = delta_2 * factor  # S_-
+    Sp = delta_plus * factor  # S_+
+    Sm = delta_minus * factor  # S_-
     S2 = delta * s_to_s2(s)
 
     return Sx, Sy, Sz
