@@ -31,15 +31,15 @@ def spin_matrices(s_bra, s_ket):
     :return: Sx, Sy, Sz
     """
 
-    def get_multiplicity(s):
-        return int(2 * s + 1)
-
     def are_equal(a, b,  thresh=1e-4):
         return abs(a - b) < thresh
 
+    def sz_values(s):
+        return np.arange(-s, s + 1)
+
     # spin-multiplicities
-    mul_bra = get_multiplicity(s_bra)
-    mul_ket = get_multiplicity(s_ket)
+    mul_bra = len(sz_values(s_bra))
+    mul_ket = len(sz_values(s_ket))
 
     # initialize Sx, Sy, Sz
     Sx = np.zeros((mul_bra, mul_ket), dtype=complex)
@@ -47,21 +47,19 @@ def spin_matrices(s_bra, s_ket):
     Sz = np.zeros((mul_bra, mul_ket), dtype=complex)
 
     # build spin matrices
-    for i, sz_bra in enumerate(np.arange(-s_bra, s_bra + 1)):
-        for j, sz_ket in enumerate(np.arange(-s_ket, s_ket + 1)):
+    for i, sz_bra in enumerate(sz_values(s_bra)):
+        for j, sz_ket in enumerate(sz_values(s_ket)):
 
             if are_equal(sz_bra, sz_ket):
                 Sz[i, j] = sz_ket
 
             elif are_equal(sz_bra,  sz_ket + 1):
-                s = s_bra
-                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
-                Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
+                Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
 
             elif are_equal(sz_bra, sz_ket - 1):
-                s = s_bra
-                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
-                Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
+                Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
 
     return Sx, Sy, Sz
 
