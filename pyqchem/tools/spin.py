@@ -21,13 +21,12 @@ def s_to_s2(s):
     return s * (s + 1)
 
 
-def spin_matrices(s_bra, s_ket):
+def spin_matrices(s):
     """
-    Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s',m') such that
+    Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s,m') such that
     sx = < m' | Sx | m >, sy = < m' | Sy | m > and sz = < m' | Sz | m >
 
-    :param s_bra: total spin (s) of (s',m') state
-    :param s_ket: total spin (s) of (s,m) state
+    :param s: total spin (s)
     :return: Sx, Sy, Sz
     """
 
@@ -38,28 +37,60 @@ def spin_matrices(s_bra, s_ket):
         return np.arange(-s, s + 1)
 
     # spin-multiplicities
-    mul_bra = len(sz_values(s_bra))
-    mul_ket = len(sz_values(s_ket))
+    multiplicity = len(sz_values(s))
 
     # initialize Sx, Sy, Sz
-    Sx = np.zeros((mul_bra, mul_ket), dtype=complex)
-    Sy = np.zeros((mul_bra, mul_ket), dtype=complex)
-    Sz = np.zeros((mul_bra, mul_ket), dtype=complex)
+    Sx = np.zeros((multiplicity, multiplicity), dtype=complex)
+    Sy = np.zeros((multiplicity, multiplicity), dtype=complex)
+    Sz = np.zeros((multiplicity, multiplicity), dtype=complex)
 
     # build spin matrices
-    for i, sz_bra in enumerate(sz_values(s_bra)):
-        for j, sz_ket in enumerate(sz_values(s_ket)):
+    for i, sz_bra in enumerate(sz_values(s)):
+        for j, sz_ket in enumerate(sz_values(s)):
 
             if are_equal(sz_bra, sz_ket):
                 Sz[i, j] = sz_ket
 
             if are_equal(sz_bra,  sz_ket + 1):
-                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
-                Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
 
             if are_equal(sz_bra, sz_ket - 1):
-                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
-                Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
+                Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+                Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s) - sz_bra * sz_ket)
+
+    return Sx, Sy, Sz
+
+
+# Alternative implementation (based on https://easyspin.org/easyspin/documentation/spinoperators.html)
+def spin_matrices_2(s):
+    """
+    Get spin matrices Sx, Sy, Sz between two spin states (s,m) and (s,m') such that
+    sx = < m' | Sx | m >, sy = < m' | Sy | m > and sz = < m' | Sz | m >
+
+    :param s: total spin (s)
+    :return: Sx, Sy, Sz
+    """
+
+    def sz_values(s):
+        return np.arange(-s, s + 1)
+
+    # spin-multiplicities
+    multiplicity = len(sz_values(s))
+
+    delta = np.identity(multiplicity)
+    delta_1 = np.diag(np.ones(multiplicity), k=1)[:-1, :-1]
+    delta_2 = np.diag(np.ones(multiplicity), k=-1)[:-1, :-1]
+
+    factor = np.sqrt(s_to_s2(s) - np.outer(sz_values(s), sz_values(s)))
+
+    Sz = delta * sz_values(s)
+    Sx = 0.5 * (delta_1 + delta_2) * factor
+    Sy = 0.5j * (delta_1 - delta_2) * factor
+
+    Sp = delta_1 * factor  # S_+
+    Sm = delta_2 * factor  # S_-
+    S2 = delta * s_to_s2(s)
 
     return Sx, Sy, Sz
 
@@ -97,13 +128,11 @@ if __name__ == '__main__':
     s2 = 3.7500
     # s2 = s_to_s2(1.5)
 
-    s_bra, sz_bra = get_s_sz_from_configuration(n_alpha, n_beta, s2)
-    s_ket, sz_ket = get_s_sz_from_configuration(n_alpha, n_beta, s2)
+    s, sz = get_s_sz_from_configuration(n_alpha, n_beta, s2)
+    print("S ,Sz = {}, {}".format(s, sz))
 
-    print("KET: S ,Sz = {}, {}".format(s_ket, sz_ket))
-    print("BRA: S ,Sz = {}, {}".format(s_bra, sz_bra))
-
-    Sx, Sy, Sz = spin_matrices(s_bra, s_ket)
+    Sx, Sy, Sz = spin_matrices(s)
+    # Sx, Sy, Sz = spin_matrices_2(s)
 
     print('Spin matrices')
     print(Sx.real)
