@@ -53,11 +53,11 @@ def spin_matrices(s_bra, s_ket):
             if are_equal(sz_bra, sz_ket):
                 Sz[i, j] = sz_ket
 
-            elif are_equal(sz_bra,  sz_ket + 1):
+            if are_equal(sz_bra,  sz_ket + 1):
                 Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
                 Sy[i, j] = -0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
 
-            elif are_equal(sz_bra, sz_ket - 1):
+            if are_equal(sz_bra, sz_ket - 1):
                 Sx[i, j] = 0.5 * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
                 Sy[i, j] = 0.5j * np.sqrt(s_to_s2(s_bra) - sz_bra * sz_ket)
 
