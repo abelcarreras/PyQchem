@@ -1,5 +1,6 @@
 import numpy as np
 from pyqchem.structure import Structure
+from pyqchem.errors import ParserError
 
 
 def basis_format(basis_set_name,
@@ -26,17 +27,23 @@ def basis_format(basis_set_name,
     :return:
     """
 
-    # print(n_primitives)
+    class TypeList:
+        def __getitem__(self, item):
+            typeList = {'0': ['s', 1],
+                        '1': ['p', 3],
+                        '2': ['d', 6],
+                        '3': ['f', 10],
+                        '4': ['g', 15],
+                        '-1': ['sp', 4],
+                        '-2': ['d_', 5],
+                        '-3': ['f_', 7],
+                        '-4': ['g_', 9]}
+            if item in typeList:
+                return typeList[item]
+            else:
+                raise ParserError('Basis function of type {} not implemented'.format(item), __name__)
 
-    typeList = {'0': ['s', 1],
-                '1': ['p', 3],
-                '2': ['d', 6],
-                '3': ['f', 10],
-                '4': ['g', 15],
-                '-1': ['sp', 4],
-                '-2': ['d_', 5],
-                '-3': ['f_', 7],
-                '-4': ['g_', 9]}
+    type_list = TypeList()
 
     atomic_numbers = [int(an) for an in atomic_numbers]
     atom_map = np.array(atom_map, dtype=int)
@@ -44,7 +51,7 @@ def basis_format(basis_set_name,
     basis_set = {'name': basis_set_name,
                  'primitive_type': 'gaussian'}
 
-    shell_type_index = [0] + np.cumsum([typeList['{}'.format(s)][1]
+    shell_type_index = [0] + np.cumsum([type_list['{}'.format(s)][1]
                                         for s in shell_type]).tolist()
     prim_from_shell_index = [0] + np.cumsum(np.array(n_primitives, dtype=int)).tolist()
 
@@ -65,7 +72,7 @@ def basis_format(basis_set_name,
 
         shells_data = []
         for ishell in range(shell_from_atom_counts[iatom]):
-            st = typeList['{}'.format(shell_type[shell_from_atom_index[iatom] + ishell])]
+            st = type_list['{}'.format(shell_type[shell_from_atom_index[iatom] + ishell])]
             # print(st, ishell)
             ini_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell]
             fin_prim = prim_from_shell_index[shell_from_atom_index[iatom] + ishell+1]
