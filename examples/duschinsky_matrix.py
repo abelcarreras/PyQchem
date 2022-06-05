@@ -5,11 +5,10 @@ from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.tools import get_geometry_from_pubchem
 from pyqchem.tools.duschinsky import get_duschinsky
-
 import numpy as np
 
 
-# define molecule
+# get ethene molecule from PubChem database
 ethene = get_geometry_from_pubchem('ethene')
 
 basis_set = 'cc-pVDZ'
@@ -92,11 +91,13 @@ es_output = get_output_from_qchem(qc_input,
 # where q_i and q_f are the normal mode coordinates of the initial and final electronic states
 # S the rotation matrix and d the vector of displacements
 
+# build duschinsky object
 duschinsky = get_duschinsky(gs_output, es_output)
 
 # align structures along principal axis of inertia
 duschinsky.align_coordinates()
 
+# compute and print data
 with np.printoptions(precision=3, suppress=True, linewidth=100):
     s = duschinsky.get_s_matrix()
     print('Rotation matrix')
