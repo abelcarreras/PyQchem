@@ -244,23 +244,21 @@ class Duschinsky:
 
 
 
-def get_duschinsky(gs_structure, sg_structure, gs_output, sg_output):
+def get_duschinsky(origin_frequency_output, target_frequency_output):
     """
     build Duschinsky instance object from frequency parser dictionary
 
-    :param gs_structure: Structure of ground state
-    :param sg_structure: Structure of target state (excited state)
-    :param gs_output: frequency parsed output of ground state
-    :param sg_output: frequency parsed output of target state (excited state)
+    :param origin_frequency_output: frequency parsed output of origin state (typically ground state)
+    :param target_frequency_output: frequency parsed output of target state (typically excited state)
     :return: Duschinsky object
     """
 
-    return Duschinsky(coordinates_initial=gs_structure.get_coordinates(),
-                      coordinates_final=sg_structure.get_coordinates(),
-                      modes_initial=[mode['displacement'] for mode in gs_output['modes']],
-                      modes_final=[mode['displacement'] for mode in sg_output['modes']],
-                      r_mass_initial=[mode['reduced_mass'] for mode in gs_output['modes']],
-                      r_mass_final=[mode['reduced_mass'] for mode in sg_output['modes']],
-                      symbols_initial=sg_structure.get_symbols(),
-                      symbols_final=gs_structure.get_symbols()
+    return Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
+                      coordinates_final=target_frequency_output['structure'].get_coordinates(),
+                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
+                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
+                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
+                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
+                      symbols_initial=origin_frequency_output['structure'].get_symbols(),
+                      symbols_final=target_frequency_output['structure'].get_symbols()
                       )
