@@ -245,6 +245,15 @@ class Duschinsky:
 
 
 def get_duschinsky(gs_structure, sg_structure, gs_output, sg_output):
+    """
+    build Duschinsky instance object from frequency parser dictionary
+
+    :param gs_structure: Structure of ground state
+    :param sg_structure: Structure of target state (excited state)
+    :param gs_output: frequency parsed output of ground state
+    :param sg_output: frequency parsed output of target state (excited state)
+    :return: Duschinsky object
+    """
 
     return Duschinsky(coordinates_initial=gs_structure.get_coordinates(),
                       coordinates_final=sg_structure.get_coordinates(),
