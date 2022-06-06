@@ -123,16 +123,16 @@ class NormalModes:
         mass = self.get_atomic_masses()
         moments, axis = get_principal_axis_and_moments_of_inertia(self._coordinates, mass)
 
-        angle_x = np.arccos(np.dot(axis[0], vector_1)/np.linalg.norm(axis[0]))
-        axis_px = np.cross(axis[0], vector_1)
+        angle_x = np.arccos(np.dot(axis[2], vector_1)/np.linalg.norm(axis[2]))
+        axis_px = np.cross(axis[2], vector_1)
 
-        self.apply_rotation(-angle_x, axis_px)
+        if not (np.linalg.norm(axis_px) == 0):
+            self.apply_rotation(-angle_x, axis_px)
 
         moments, axis = get_principal_axis_and_moments_of_inertia(self._coordinates, mass)
 
         angle_y = np.arccos(np.dot(axis[1], vector_2)/np.linalg.norm(axis[1]))
-        self.apply_rotation(-angle_y, axis[0])
-
+        self.apply_rotation(-angle_y, vector_1)
 
 
 class Duschinsky:
@@ -157,7 +157,7 @@ class Duschinsky:
         :return:
         """
 
-        vector_1 = [1, 0, 0]
+        vector_1 = [0, 0, 1]
         vector_2 = [0, 1, 0]
 
         self._modes_initial.set_center_of_mass()
