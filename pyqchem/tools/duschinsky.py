@@ -167,7 +167,7 @@ class Duschinsky:
         self._modes_final.align_axis_of_inertia(vector_1, vector_2)
 
 
-    def align_coordinates_2(self):
+    def align_coordinates_rsm(self):
         """
         Align molecules by minimizing RSM between the two geometries
 
@@ -176,9 +176,6 @@ class Duschinsky:
 
         self._modes_final.set_center_of_mass()
         self._modes_initial.set_center_of_mass()
-
-        # self._modes_initial.apply_reflection(1)
-        # self._modes_final.apply_rotation([-1.23, 0.12, -2.01])
 
         c_initial = self._modes_initial.get_coordinates()
         c_final = self._modes_final.get_coordinates()
