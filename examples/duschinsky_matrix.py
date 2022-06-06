@@ -1,21 +1,27 @@
-# Example of the calculation of the Duschinsky matrix for ethene
+# Example of the calculation of the Duschinsky matrix for methyl peroxy radical
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.tools import get_geometry_from_pubchem
 from pyqchem.tools.duschinsky import get_duschinsky
+from pyqchem import Structure
 import numpy as np
 
+molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
+                                  [-0.246002,   0.596152,   0.000000],
+                                  [-1.312366,  -0.230256,   0.000000],
+                                  [ 1.810765,   0.567203,   0.000000],
+                                  [ 1.036648,  -0.805445,  -0.904798],
+                                  [ 1.036648,  -0.805445,   0.904798]],
+                     symbols=['C', 'O', 'O', 'H', 'H', 'H'],
+                     multiplicity=2)
 
-# get ethene molecule from PubChem database
-ethene = get_geometry_from_pubchem('ethene')
-
-basis_set = 'cc-pVDZ'
+basis_set = '6-31+G*'
 n_state = 1  # excited state number
 
 # Optimization of ground state geometry
-qc_input = QchemInput(ethene,
+qc_input = QchemInput(molecule,
                       jobtype='opt',
                       exchange='b3lyp',
                       basis=basis_set,
@@ -26,32 +32,9 @@ output = get_output_from_qchem(qc_input,
                                force_recalculation=False,
                                parser=basic_optimization,
                                )
-
-gs_structure = output['optimized_molecule']
-
-# Optimization of the first excited state state geometry
-qc_input = QchemInput(ethene,
-                      jobtype='opt',
-                      exchange='b3lyp',
-                      basis=basis_set,
-                      cis_n_roots=8,
-                      cis_singlets=True,
-                      cis_triplets=False,
-                      cis_convergence=8,
-                      cis_state_deriv=n_state,
-                      )
-
-output = get_output_from_qchem(qc_input,
-                               processors=4,
-                               force_recalculation=False,
-                               parser=basic_optimization,
-                               )
-
-es_structure = output['optimized_molecule']
-
 
 # Ground state frequencies calculation
-qc_input = QchemInput(gs_structure,
+qc_input = QchemInput(output['optimized_molecule'],
                       jobtype='freq',
                       exchange='b3lyp',
                       basis=basis_set,
@@ -64,17 +47,38 @@ gs_output = get_output_from_qchem(qc_input,
                                   store_full_output=True,
                                   )
 
+# Optimization of the first excited state state geometry
+qc_input = QchemInput(molecule,
+                      jobtype='opt',
+                      exchange='b3lyp',
+                      basis=basis_set,
+                      cis_n_roots=10,
+                      cis_singlets=True,
+                      cis_triplets=False,
+                      #cis_convergence=6,
+                      cis_state_deriv=n_state,
+                      extra_rem_keywords={'XC_GRID': '000075000302'}
+                      )
+
+output = get_output_from_qchem(qc_input,
+                               processors=4,
+                               force_recalculation=False,
+                               parser=basic_optimization,
+                               )
+
+
 # Excited state frequencies calculation
-qc_input = QchemInput(es_structure,
+qc_input = QchemInput(output['optimized_molecule'],
                       jobtype='freq',
                       exchange='b3lyp',
                       basis=basis_set,
-                      cis_n_roots=8,
+                      cis_n_roots=10,
                       cis_singlets=True,
                       cis_triplets=False,
-                      cis_convergence=8,
+                      #cis_convergence=6,
                       cis_state_deriv=n_state,
                       mem_static=200,
+                      extra_rem_keywords={'XC_GRID': '000075000302'}
                       )
 
 es_output = get_output_from_qchem(qc_input,

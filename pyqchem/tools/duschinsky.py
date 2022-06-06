@@ -2,7 +2,8 @@ import numpy as np
 from pyqchem.tools import rotate_coordinates
 from scipy.optimize import minimize
 from pyqchem.structure import atom_data
-from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS
+from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU
+import warnings
 
 
 def do_reflection(coordinates, axis):
@@ -36,14 +37,22 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
 
 
 class NormalModes:
-    def __init__(self, coordinates, symbols, modes, reduced_mass):
+    def __init__(self, coordinates, symbols, modes, reduced_mass, frequencies):
         self._coordinates = np.array(coordinates)
         self._modes = modes
         self._reduced_mass = reduced_mass
         self._symbols = symbols
+        self._frequencies = frequencies
+
+        is_freq_negative = np.array(self._frequencies) < 0
+        if is_freq_negative.any():
+            warnings.warn('Some modes have negative frequency')
 
     def get_coordinates(self):
         return self._coordinates
+
+    def get_frequencies(self):
+        return self._frequencies
 
     def get_atomic_masses(self):
         atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper()) for element in self._symbols]
@@ -134,6 +143,20 @@ class NormalModes:
         angle_y = np.arccos(np.dot(axis[1], vector_2)/np.linalg.norm(axis[1]))
         self.apply_rotation(-angle_y, vector_1)
 
+    def trim_negative_frequency_modes(self):
+        modes = []
+        frequencies = []
+        reduced_mass = []
+        for i, f in enumerate(self._frequencies):
+            if f > 0:
+                modes.append(self._modes[i])
+                frequencies.append(self._frequencies[i])
+                reduced_mass.append(self._reduced_mass[i])
+
+        self._modes = modes
+        self._frequencies = frequencies
+        self._reduced_mass = reduced_mass
+
 
 class Duschinsky:
     def __init__(self,
@@ -144,11 +167,25 @@ class Duschinsky:
                  r_mass_initial,
                  r_mass_final,
                  symbols_initial,
-                 symbols_final
+                 symbols_final,
+                 frequencies_initial,
+                 frequencies_final
                  ):
 
-        self._modes_initial = NormalModes(coordinates_initial, symbols_initial, modes_initial, r_mass_initial)
-        self._modes_final = NormalModes(coordinates_final, symbols_final, modes_final, r_mass_final)
+        self._modes_initial = NormalModes(coordinates_initial,
+                                          symbols_initial,
+                                          modes_initial,
+                                          r_mass_initial,
+                                          frequencies_initial)
+
+        self._modes_final = NormalModes(coordinates_final,
+                                        symbols_final,
+                                        modes_final,
+                                        r_mass_final,
+                                        frequencies_final)
+
+        self._modes_initial.trim_negative_frequency_modes()
+        self._modes_final.trim_negative_frequency_modes()
 
     def align_coordinates(self):
         """
@@ -239,6 +276,56 @@ class Duschinsky:
 
         return d
 
+    def _get_lambda_matrices(self):
+
+        units_factor = BOHR_TO_CM * 2 * np.pi * SPEEDOFLIGHT_AU
+
+        freq_vector_ini = np.diag([np.sqrt(f*units_factor) for f in self._modes_initial.get_frequencies()])
+        freq_vector_fin = np.diag([np.sqrt(f*units_factor) for f in self._modes_final.get_frequencies()])
+
+        return freq_vector_ini, freq_vector_fin
+
+    def get_j_matrix(self):
+        """
+        J = Lmb_f * S * Lmb_i^(-1)
+
+        :return: J matrix
+        """
+        lmb_ini, lmb_fin = self._get_lambda_matrices()
+        s = self.get_s_matrix()
+
+        return np.dot(np.dot(lmb_fin, s), np.linalg.inv(lmb_ini))
+
+    def get_q_matrix(self):
+        """
+        Q = (1 + J^T * J)^(-1)
+
+        :return: Q matrix
+        """
+        j_matrix = self.get_j_matrix()
+        return np.linalg.inv(np.identity(len(j_matrix)) + np.dot(j_matrix.T, j_matrix))
+
+    def get_p_matrix(self):
+        """
+        P = J * Q * J^T
+
+        :return: P matrix
+        """
+        j_matrix = self.get_j_matrix()
+        q_matrix = self.get_q_matrix()
+
+        return np.dot(np.dot(j_matrix, q_matrix), j_matrix.T)
+
+    def get_r_matrix(self):
+        """
+        R = Q * J^T
+
+        :return: R matrix
+        """
+        j_matrix = self.get_j_matrix()
+        q_matrix = self.get_q_matrix()
+
+        return np.dot(q_matrix, j_matrix.T)
 
 
 def get_duschinsky(origin_frequency_output, target_frequency_output):
@@ -257,5 +344,7 @@ def get_duschinsky(origin_frequency_output, target_frequency_output):
                       r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
                       r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
                       symbols_initial=origin_frequency_output['structure'].get_symbols(),
-                      symbols_final=target_frequency_output['structure'].get_symbols()
+                      symbols_final=target_frequency_output['structure'].get_symbols(),
+                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
+                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
                       )
