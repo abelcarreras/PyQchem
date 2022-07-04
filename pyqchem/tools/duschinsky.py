@@ -327,6 +327,17 @@ class Duschinsky:
 
         return np.dot(q_matrix, j_matrix.T)
 
+    def get_dt_vector(self):
+        """
+        dt = Lmb_f * d
+
+        :return: dt vector
+        """
+        lmb_ini, lmb_fin = self._get_lambda_matrices()
+        d = self.get_d_vector()
+
+        return np.dot(lmb_fin, d)
+
 
 def get_duschinsky(origin_frequency_output, target_frequency_output):
     """
