@@ -325,6 +325,7 @@ def get_occupied_electrons(configuration, structure):
     # works for closed shell only
     alpha_e = np.sum([int(c) for c in configuration['alpha']])
     beta_e = np.sum([int(c) for c in configuration['beta']])
+
     hole = 0 if configuration['hole'] == '' else 1
     part = 0 if configuration['part'] == '' else 1
 

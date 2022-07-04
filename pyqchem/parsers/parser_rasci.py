@@ -226,7 +226,7 @@ def parser_rasci(output):
                           'part': row.split('|')[4].strip(),
                           'amplitude': float(row.split('|')[5]) + 0.0})
             table[-1]['occupations'] = get_rasci_occupations_list(table[-1],
-                                                                  data_dict['structure'],
+                                                                  doubly_occ,
                                                                   basic_data['n_basis_functions'])
 
         table = sorted(table, key=operator.itemgetter('hole', 'alpha', 'beta', 'part'))

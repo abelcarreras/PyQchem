@@ -57,8 +57,8 @@ def get_cis_occupations_list(number_of_orbitals,
             'beta': beta_occupation}
 
 
-def get_rasci_occupations_list(configuration, structure, total_orbitals):
-    occupied_orbitals = get_occupied_electrons(configuration, structure)
+def get_rasci_occupations_list(configuration, occupied_orbitals, total_orbitals):
+    # occupied_orbitals = get_occupied_electrons(configuration, structure)
     n_extra = total_orbitals - occupied_orbitals - len(configuration['alpha'])
     vector_alpha = [1] * occupied_orbitals + [int(c) for c in configuration['alpha']] + [0] * n_extra
 
