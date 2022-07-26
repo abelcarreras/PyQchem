@@ -53,6 +53,7 @@ class QchemInput:
                  ras_occ=None,
                  ras_spin_mult=1,
                  ras_sts_tm=False,
+                 ras_fod=False,
                  ras_natorb=False,
                  ras_natorb_state=None,
                  ras_print=1,
@@ -118,6 +119,7 @@ class QchemInput:
                  symmetry=True,
                  sym_ignore=False,
                  # other
+                 nto_pairs=None,
                  n_frozen_core=None,
                  n_frozen_virt=0,
                  mom_start=False,
@@ -314,6 +316,8 @@ class QchemInput:
                 input_file += 'ras_print {}\n'.format(self._ras_print)
                 input_file += 'ras_natorb {}\n'.format(self._ras_natorb)
                 input_file += 'ras_sts_tm {}\n'.format(self._ras_sts_tm)
+                input_file += 'ras_fod {}\n'.format(self._ras_fod)
+
                 # input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
                 # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
 
@@ -434,6 +438,9 @@ class QchemInput:
 
         if self._sym_tol is not None:
             input_file += 'sym_tol {}\n'.format(self._sym_tol)
+
+        if self._nto_pairs is not None:
+            input_file += 'nto_pairs {}\n'.format(self._nto_pairs)
 
         # optimization
         if self._jobtype.lower() in ['opt', 'ts']:

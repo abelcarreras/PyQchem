@@ -1,4 +1,5 @@
-from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input, redefine_calculation_data_filename, QchemInput
+from pyqchem.qchem_core import create_qchem_input, redefine_calculation_data_filename, QchemInput
+from pyqchem import QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.structure import Structure
@@ -31,10 +32,13 @@ class HydrogenTest(unittest.TestCase):
     def test_srdft(self):
 
         # create qchem input
-        qc_input = create_qchem_input(self.molecule,
+        qc_input = QchemInput(self.molecule,
                                        jobtype='sp',
                                        exchange='hf',
                                        correlation='rasci',
+                                       thresh=14,
+                                       scf_convergence=8,
+                                       cis_convergence=8,
                                        basis='6-31G(d,p)',
                                        ras_act=2,
                                        ras_elec=2,
@@ -89,6 +93,9 @@ class HydrogenTest(unittest.TestCase):
                                        jobtype='sp',
                                        exchange='hf',
                                        correlation='rasci',
+                                       thresh=14,
+                                       scf_convergence=8,
+                                       cis_convergence=8,
                                        basis='sto-3g',
                                        ras_act=2,
                                        ras_elec=2,
@@ -140,6 +147,8 @@ class WaterTest(unittest.TestCase):
         txt_input = create_qchem_input(molecule,
                                        jobtype='opt',
                                        exchange='hf',
+                                       thresh=14,
+                                       scf_convergence=8,
                                        basis='sto-3g',
                                        geom_opt_tol_gradient=300,
                                        geom_opt_tol_energy=100,
@@ -160,6 +169,9 @@ class WaterTest(unittest.TestCase):
                                        jobtype='sp',
                                        exchange='hf',
                                        correlation='rasci',
+                                       thresh=14,
+                                       scf_convergence=8,
+                                       cis_convergence=8,
                                        basis='sto-3g',
                                        ras_act=4,
                                        ras_elec=4,
@@ -203,6 +215,9 @@ class WaterTest(unittest.TestCase):
                                        jobtype='sp',
                                        exchange='hf',
                                        correlation='rasci',
+                                       thresh=14,
+                                       scf_convergence=8,
+                                       cis_convergence=8,
                                        basis='6-31G(d,p)',
                                        ras_act=4,
                                        ras_elec=4,

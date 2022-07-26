@@ -178,24 +178,24 @@ def _get_all_nto(output):
     return nto_coefficients_list, nto_occupancies_list
 
 
-def _get_all_nto_new_format(output):
+def _get_all_nto_new_format(output, label):
     import re
 
     nto_data_dict = {}
-    for m in re.finditer('NTOs U coefficients SOC', output):
+    for m in re.finditer('NTOs U coefficients {}'.format(label), output):
         indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
         n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
         nbas = int(np.sqrt(n_elements))
         data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
         nto_data_dict[tuple(indices)] = {'U': np.array(data, dtype=float).reshape(nbas, nbas).tolist()}
 
-    for i, m in enumerate(re.finditer('NTOs occupancies SOC', output)):
+    for i, m in enumerate(re.finditer('NTOs occupancies {}'.format(label), output)):
         indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
         n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
         data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
         nto_data_dict[tuple(indices)]['occupancies'] = np.array(data, dtype=float).tolist()
 
-    for i, m in enumerate(re.finditer('NTOs V coefficients SOC', output)):
+    for i, m in enumerate(re.finditer('NTOs V coefficients {}'.format(label), output)):
         indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
         n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
         nbas = int(np.sqrt(n_elements))
@@ -206,6 +206,7 @@ def _get_all_nto_new_format(output):
 
 
 def parser_fchk(output):
+    print(output)
 
     def convert_to_type(item_type, item):
         item_types = {'I': int,
@@ -225,7 +226,8 @@ def parser_fchk(output):
                 'Total SCF Density', 'Spin SCF Density', 'Alpha NATO coefficients', 'Beta NATO coefficients',
                 'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
                 'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
-                'Natural Transition Orbital V coefficients', 'NTOs occupancies SOC',
+                'Natural Transition Orbital V coefficients', 'NTOs occupancies SOC', 'NTOs occupancies RAS',
+                'Fractional occupation density'
                 ]
 
     basis_set = output.split('\n')[1].split()[-1]
@@ -307,6 +309,9 @@ def parser_fchk(output):
     if 'Spin SCF Density' in data:
         final_dict['spin_density'] = vect_to_mat(data['Spin SCF Density']).tolist()
 
+    if 'Fractional occupation density' in data:
+        final_dict['fractional_occupation_density'] = vect_to_mat(data['Fractional occupation density']).tolist()
+
     if 'Core Hamiltonian Matrix' in data:
         final_dict['core_hamiltonian'] = vect_to_mat(data['Core Hamiltonian Matrix']).tolist()
 
@@ -335,9 +340,14 @@ def parser_fchk(output):
             final_dict['nto_coefficients_multi'] = nat_coefficients_list
             final_dict['nto_occupancies_multi'] = nat_occupancies_list
 
-    # Parse new format RAS NTO's
+    # Parse new format RAS SOC NTO's
     NTOS_dict = dict(filter(lambda item: "NTOs occupancies SOC" in item[0], data.items()))
     if len(NTOS_dict) > 0:
-        final_dict['ntos'] = _get_all_nto_new_format(output)
+        final_dict['ntos_soc'] = _get_all_nto_new_format(output, 'SOC')
+
+    # Parse new format RAS NTO's
+    NTOS_dict = dict(filter(lambda item: "NTOs occupancies RAS" in item[0], data.items()))
+    if len(NTOS_dict) > 0:
+        final_dict['ntos_ras'] = _get_all_nto_new_format(output, 'RAS')
 
     return final_dict
