@@ -206,7 +206,6 @@ def _get_all_nto_new_format(output, label):
 
 
 def parser_fchk(output):
-    print(output)
 
     def convert_to_type(item_type, item):
         item_types = {'I': int,
