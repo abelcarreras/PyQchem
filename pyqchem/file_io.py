@@ -150,6 +150,10 @@ def build_fchk(parsed_data):
         scf_density = mat_to_vect(total_density)
         txt_fchk += get_array_txt('Total SCF Density', 'R', scf_density)
 
+    if 'spin_density' in parsed_data:
+        spin_density = mat_to_vect(parsed_data['spin_density'])
+        txt_fchk += get_array_txt('Spin SCF Density', 'R', spin_density)
+
     txt_fchk += get_array_txt('Alpha MO coefficients', 'R', alpha_mo_coeff)
 
     if 'beta' in parsed_data['coefficients']:
@@ -159,6 +163,25 @@ def build_fchk(parsed_data):
 
         txt_fchk += get_array_txt('Beta MO coefficients', 'R', beta_mo_coeff)
         txt_fchk += get_array_txt('Beta Orbital Energies', 'R', beta_mo_energies)
+
+    # Fractional occupation density
+    if 'fractional_occupation_density' in parsed_data:
+        fod = mat_to_vect(parsed_data['fractional_occupation_density'])
+        txt_fchk += get_array_txt('Fractional occupation density', 'R', fod)
+
+
+    # Natural orbitals
+    if 'nato_coefficients' in parsed_data:
+        for type, nato_coeff  in parsed_data['nato_coefficients'].items():
+            nato_coeff = np.array(nato_coeff).flatten().tolist()
+            trans_dict = {'alpha': 'Alpha', 'beta': 'Beta'}
+            txt_fchk += get_array_txt('{} NATO coefficients '.format(trans_dict[type]), 'R', nato_coeff)
+
+    if 'nato_occupancies' in parsed_data:
+        for type, nato_occ  in parsed_data['nato_occupancies'].items():
+            nato_occ = np.array(nato_occ).flatten().tolist()
+            trans_dict = {'alpha': 'Alpha', 'beta': 'Beta'}
+            txt_fchk += get_array_txt('{} Natural Orbital occupancies '.format(trans_dict[type]), 'R', nato_occ)
 
     return txt_fchk
 
