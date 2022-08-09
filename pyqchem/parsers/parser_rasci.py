@@ -183,7 +183,7 @@ def parser_rasci(output):
         # print('ll found', m.start(), m.end())
 
         section_state = output[m.end():m.end() + 10000]  # 10000: assumed to max of section
-        section_state = section_state[:section_state.find('********')]
+        section_state = section_state[:section_state.find('*****************')]
 
         enum = section_state.find('RAS-CI total energy for state')
         section_state = section_state[:enum]
@@ -192,7 +192,11 @@ def parser_rasci(output):
         tot_energy = float(section_state.split()[1])
         exc_energy_units = section_state.split()[4][1:-1]
         exc_energy = float(section_state.split()[6])
-        state_multiplicity = section_state.split()[8] if section_state.split()[8] != ':' else section_state.split()[9]
+
+        # multiplicity
+        n_multi = section_state.find('<S^2>')
+        multi_data = section_state[n_multi:n_multi + 30].split(':')[1]
+        state_multiplicity = float(multi_data.split()[0])
 
         # dipole moment
         enum = section_state.find('Dipole Moment')
