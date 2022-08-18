@@ -1,7 +1,7 @@
 excited_states:
 - configurations:
   - alpha: '01'
-    amplitude: -0.1104838
+    amplitude: -0.11076978254667
     beta: '01'
     hole: ''
     occupations:
@@ -29,7 +29,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.9915672
+    amplitude: 0.99124218910216
     beta: '10'
     hole: ''
     occupations:
@@ -57,9 +57,9 @@ excited_states:
       - 0
     part: ''
   contributions_fwn:
-    active: 99.54
+    active: 99.48
     hole: 0.0
-    part: 0.46
+    part: 0.52
   dipole_moment:
   - 0.0
   - 0.0
@@ -67,14 +67,14 @@ excited_states:
   dipole_moment_units: ua
   excitation_energy: 0.0
   excitation_energy_units: eV
-  multiplicity: Singlet
+  multiplicity: 0.0
   oscillator_strength: null
-  total_energy: -1.058464773202
+  total_energy: -1.058011517453
   total_energy_units: au
   transition_moment: null
 - configurations:
   - alpha: '01'
-    amplitude: -0.7017953
+    amplitude: -0.70143696942572
     beta: '10'
     hole: ''
     occupations:
@@ -102,7 +102,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.7017953
+    amplitude: 0.70143696942572
     beta: '01'
     hole: ''
     occupations:
@@ -130,19 +130,19 @@ excited_states:
       - 0
     part: ''
   contributions_fwn:
-    active: 98.5
+    active: 98.4
     hole: 0.0
-    part: 1.5
+    part: 1.6
   dipole_moment:
   - 0.0
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 4.1657
+  excitation_energy: 4.151933914203
   excitation_energy_units: eV
-  multiplicity: Triplet
+  multiplicity: 2.0
   oscillator_strength: 0.0
-  total_energy: -0.905377480254
+  total_energy: -0.905430750441
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -152,19 +152,15 @@ interstate_properties:
   ? !!python/tuple
   - 1
   - 2
-  : gamma_anti_sym: 0.623005
-    gamma_sym: 0.782129
-    gamma_total: 0.999931
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.622698
+    gamma_sym: 0.782369
+    gamma_total: 0.999927
     state_a: 1
     state_b: 2
-  ? !!python/tuple
-  - 2
-  - 1
-  : gamma_anti_sym: 0.623005
-    gamma_sym: 0.782129
-    gamma_total: 0.999931
-    state_a: 2
-    state_b: 1
 rasci_dimensions:
   active_configurations: 4
   doubly_occupied: 0
