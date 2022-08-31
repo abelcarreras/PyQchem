@@ -2,30 +2,31 @@
 from pyqchem import get_output_from_qchem, QchemInput, Structure
 import numpy as np
 
+# define molecule
 molecule = Structure(coordinates=[[0.0, 0.0, 0.0],
                                   [0.0, 0.0, 0.9]],
                      symbols=['H', 'F'],
                      charge=0,
                      multiplicity=1)
 
-# create qchem input
+# create Q-Chem input
 qc_input = QchemInput(molecule,
                       jobtype='sp',
                       exchange='hf',
                       basis='sto-3g',
                       extra_rem_keywords={'SAVE_AO_INTEGRALS': 1,
-                                          'USE_NEW_PATH2': False,
-                                          'scf_final_print': 2},
-                      symmetry=False,
+                                          'USE_NEW_PATH2': False,  # required for SAVE_AO_INTEGRALS
+                                          'scf_final_print': 2},  # print JK energies for comparison
+                      symmetry=False,  # required for SAVE_AO_INTEGRALS
                       )
 
-# calculate and parse qchem output
+# calculate and parse q-chem output
 data, ee = get_output_from_qchem(qc_input,
-                                 processors=1,
-                                 force_recalculation=False,
+                                 processors=1,  # SAVE_AO_INTEGRALS works for single core only
                                  return_electronic_structure=True,
                                  )
 
+# print output (for comparison)
 print(data)
 
 
