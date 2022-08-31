@@ -303,7 +303,7 @@ def parser_fchk(output):
             final_dict['scf_density'] = {'alpha': np.ndarray.tolist(total/2),
                                          'beta': np.ndarray.tolist(total/2)}
 
-        final_dict['total_scf_density'] = vect_to_mat(data['Total SCF Density'])
+        final_dict['total_scf_density'] = vect_to_mat(data['Total SCF Density']).tolist()
 
     if 'Spin SCF Density' in data:
         final_dict['spin_density'] = vect_to_mat(data['Spin SCF Density']).tolist()

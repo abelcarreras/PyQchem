@@ -191,6 +191,51 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
 
     return output, err
 
+def local_run_stream(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1, print_stream=True):
+    """
+    Run Q-Chem locally
+
+    :param input_file_name: Q-Chem input file in plain text format
+    :param work_dir:  Scratch directory where calculation run
+    :param fchk_file: filename of fchk
+    :param use_mpi: use mpi instead of openmp
+    :param print_stream: set True to print output stream during execution
+
+    :return: output, err: Q-Chem standard output and standard error
+    """
+
+    if not use_mpi:
+        os.environ["QCTHREADS"] = "{}".format(processors)
+        os.environ["OMP_NUM_THREADS"] = "{}".format(processors)
+        os.environ["MKL_NUM_THREADS"] = "1"
+
+    os.environ["GUIFILE"] = fchk_file
+    qc_dir = os.getenv('QC')
+    binary = "{}/exe/qcprog.exe".format(qc_dir)
+    # command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
+    command = binary + ' {} '.format(os.path.join(work_dir, input_file_name)) + ' {} '.format(work_dir)
+
+    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True, cwd=work_dir)
+
+    output = ''
+    err = ''
+    while True:
+        line_out = qchem_process.stdout.readline()
+        line_err = qchem_process.stderr.readline()
+
+        if not line_out and not line_err:
+            break
+
+        if print_stream:
+            print(line_out.strip().decode(errors='ignore'))
+
+        sys.stdout.flush()
+
+        output += line_out.decode(errors='ignore')
+        err += line_err.decode(errors='ignore')
+
+    return output, err
+
 
 def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=False, processors=1):
     """
@@ -358,6 +403,13 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
             data = np.fromfile(f, dtype=float)
             hessian = data.reshape(-1, natom*3)
             additional_data['hessian'] = hessian.tolist()
+
+    # AO_INTS_DEBUG
+    if '21.0' in file_list:
+        with open(work_dir + '21.0', 'r') as f:
+            data = np.fromfile(f, dtype=float)
+            ao_integrals = data.reshape(-1, nbas, nbas, nbas)
+            additional_data['ao_integrals'] = ao_integrals.tolist()
 
     return additional_data
 
