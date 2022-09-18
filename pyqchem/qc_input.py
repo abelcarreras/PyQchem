@@ -42,7 +42,7 @@ class QchemInput:
                  scf_algorithm='diis',
                  purecart=None,
                  # RASCI
-                 ras_roots=1,
+                 ras_roots=None,
                  ras_do_hole=True,
                  ras_do_part=True,
                  ras_act=None,
@@ -149,21 +149,20 @@ class QchemInput:
                 setattr(self, '_' + name, value)
 
         # set ras_occ
-        if correlation is not None:
-            if correlation.lower() == 'rasci':
-                if exchange is None:
-                    self._exchange = 'hf'
-                if ras_occ is None:
-                    if ras_elec is not None:
-                        self._ras_occ = (np.sum(
-                            molecule.get_atomic_numbers()) - ras_elec - molecule.charge) // 2
-                    elif ras_elec_alpha is not None or ras_elec_beta is not None:
-                        self._ras_occ = (np.sum(
-                            molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
-                    else:
-                        self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
-                    self._ras_occ = int(self._ras_occ)
-                    warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
+        if ras_roots is not None:
+            if exchange is None:
+                self._exchange = 'hf'
+            if ras_occ is None:
+                if ras_elec is not None:
+                    self._ras_occ = (np.sum(
+                        molecule.get_atomic_numbers()) - ras_elec - molecule.charge) // 2
+                elif ras_elec_alpha is not None or ras_elec_beta is not None:
+                    self._ras_occ = (np.sum(
+                        molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
+                else:
+                    self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
+                self._ras_occ = int(self._ras_occ)
+                warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
 
         # Handle custom basis set
         if type(basis) is not str:
@@ -301,77 +300,77 @@ class QchemInput:
         if self._correlation is not None:
             input_file += 'correlation {}\n'.format(self._correlation)
 
-            # RasCI variables
-            if self._correlation.upper() == 'RASCI':
+        # RasCI variables
+        if self._ras_roots is not None:
 
-                if self._ras_natorb_state is not None:
-                    input_file += 'ras_natorb_state {}\n'.format(self._ras_natorb_state)
-                    self._ras_natorb = True
+            if self._ras_natorb_state is not None:
+                input_file += 'ras_natorb_state {}\n'.format(self._ras_natorb_state)
+                self._ras_natorb = True
 
-                input_file += 'ras_roots {}\n'.format(self._ras_roots)
-                input_file += 'ras_do_hole {}\n'.format(self._ras_do_hole)
-                input_file += 'ras_do_part {}\n'.format(self._ras_do_part)
-                input_file += 'ras_occ {}\n'.format(self._ras_occ)
-                input_file += 'ras_spin_mult {}\n'.format(self._ras_spin_mult)
-                input_file += 'ras_print {}\n'.format(self._ras_print)
-                input_file += 'ras_natorb {}\n'.format(self._ras_natorb)
-                input_file += 'ras_sts_tm {}\n'.format(self._ras_sts_tm)
-                input_file += 'ras_fod {}\n'.format(self._ras_fod)
+            input_file += 'ras_roots {}\n'.format(self._ras_roots)
+            input_file += 'ras_do_hole {}\n'.format(self._ras_do_hole)
+            input_file += 'ras_do_part {}\n'.format(self._ras_do_part)
+            input_file += 'ras_occ {}\n'.format(self._ras_occ)
+            input_file += 'ras_spin_mult {}\n'.format(self._ras_spin_mult)
+            input_file += 'ras_print {}\n'.format(self._ras_print)
+            input_file += 'ras_natorb {}\n'.format(self._ras_natorb)
+            input_file += 'ras_sts_tm {}\n'.format(self._ras_sts_tm)
+            input_file += 'ras_fod {}\n'.format(self._ras_fod)
 
-                # input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
-                # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
+            # input_file += 'max_cis_cycles {}\n'.format(self._max_cis_cycles)
+            # input_file += 'RAS_RESTR_TYPE {}\n'.format(True)
 
-                if self._ras_elec is not None:
-                    input_file += 'ras_elec {}\n'.format(self._ras_elec)
+            if self._ras_elec is not None:
+                input_file += 'ras_elec {}\n'.format(self._ras_elec)
+            else:
+                if self._ras_elec_alpha is None and self._ras_elec_beta is None:
+                    raise QchemInputError('{} not defined'.format('ras_elec'))
+
+            if self._ras_elec_alpha is not None:
+                input_file += 'ras_elec_alpha {}\n'.format(self._ras_elec_alpha)
+            if self._ras_elec_beta is not None:
+                input_file += 'ras_elec_beta {}\n'.format(self._ras_elec_beta)
+
+            if self._ras_act is not None:
+                input_file += 'ras_act {}\n'.format(self._ras_act)
+            else:
+                raise QchemInputError('{} not defined'.format('ras_act'))
+
+            if self._ras_act_orb is not None:
+                input_file += 'ras_act_orb [' + ','.join([str(num) for num in self._ras_act_orb]) + ']\n'
+
+            # Sr-DFT
+            if self._ras_srdft:
+                input_file += 'ras_srdft {}\n'.format('True')
+                input_file += 'ras_srdft_damp {}\n'.format(self._ras_srdft_damp)
+                input_file += 'ras_srdft_spinpol {}\n'.format(self._ras_srdft_spinpol)
+                input_file += 'ras_omega {}\n'.format(self._ras_omega)
+
+                if self._ras_srdft_exc is not None:
+                    input_file += 'ras_srdft_exc {}\n'.format(self._ras_srdft_exc)
+
+                if self._ras_srdft_cor is not None:
+                    input_file += 'ras_srdft_cor {}\n'.format(self._ras_srdft_cor)
                 else:
-                    if self._ras_elec_alpha is None and self._ras_elec_beta is None:
-                        raise QchemInputError('{} not defined'.format('ras_elec'))
+                    raise QchemInputError('{} not defined'.format('ras_srdft_cor'))
 
-                if self._ras_elec_alpha is not None:
-                    input_file += 'ras_elec_alpha {}\n'.format(self._ras_elec_alpha)
-                if self._ras_elec_beta is not None:
-                    input_file += 'ras_elec_beta {}\n'.format(self._ras_elec_beta)
+            # Diabatization
+            diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3, 'Gamma': 4}
+            if self._ras_diabatization_states is not None:
+                input_file += 'sts_multi_nroots {}\n'.format(len(self._ras_diabatization_states))
+                input_file += 'cis_diabath_decompose {}\n'.format(len(self._ras_diabatization_scheme))
 
-                if self._ras_act is not None:
-                    input_file += 'ras_act {}\n'.format(self._ras_act)
-                else:
-                    raise QchemInputError('{} not defined'.format('ras_act'))
+                input_file += 'ras_diab_seq_data ['
+                for seq in self._ras_diabatization_scheme:
+                    input_file += '{} '.format([num for num in seq['states']] +
+                                               [diab_methods[seq['method']]] +
+                                               [seq['parameters'] if 'parameters' in seq else 0.0]).replace(' ', '')[1:-1]
+                    input_file += ','
+                input_file = input_file[:-1] + ']\n'
+                input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
 
-                if self._ras_act_orb is not None:
-                    input_file += 'ras_act_orb [' + ','.join([str(num) for num in self._ras_act_orb]) + ']\n'
-
-                # Sr-DFT
-                if self._ras_srdft:
-                    input_file += 'ras_srdft {}\n'.format('True')
-                    input_file += 'ras_srdft_damp {}\n'.format(self._ras_srdft_damp)
-                    input_file += 'ras_srdft_spinpol {}\n'.format(self._ras_srdft_spinpol)
-                    input_file += 'ras_omega {}\n'.format(self._ras_omega)
-
-                    if self._ras_srdft_exc is not None:
-                        input_file += 'ras_srdft_exc {}\n'.format(self._ras_srdft_exc)
-
-                    if self._ras_srdft_cor is not None:
-                        input_file += 'ras_srdft_cor {}\n'.format(self._ras_srdft_cor)
-                    else:
-                        raise QchemInputError('{} not defined'.format('ras_srdft_cor'))
-
-                # Diabatization
-                diab_methods = {'ER': 1, 'Boys': 2, 'DQ': 3, 'Gamma': 4}
-                if self._ras_diabatization_states is not None:
-                    input_file += 'sts_multi_nroots {}\n'.format(len(self._ras_diabatization_states))
-                    input_file += 'cis_diabath_decompose {}\n'.format(len(self._ras_diabatization_scheme))
-
-                    input_file += 'ras_diab_seq_data ['
-                    for seq in self._ras_diabatization_scheme:
-                        input_file += '{} '.format([num for num in seq['states']] +
-                                                   [diab_methods[seq['method']]] +
-                                                   [seq['parameters'] if 'parameters' in seq else 0.0]).replace(' ', '')[1:-1]
-                        input_file += ','
-                    input_file = input_file[:-1] + ']\n'
-                    input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
-
-                # Borrowed keywords
-                input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
+            # Borrowed keywords
+            input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
 
         #if self._method.upper() in ['EOM-CCSD'] or self._correlation.upper() in ['CCSD']:
         if self._method is not None:
