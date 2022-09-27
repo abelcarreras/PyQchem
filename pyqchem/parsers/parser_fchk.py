@@ -177,6 +177,17 @@ def _get_all_nto(output):
 
     return nto_coefficients_list, nto_occupancies_list
 
+def _get_all_fod(output):
+    import re
+
+    fod_list = []
+    for i, m in enumerate(re.finditer('Fractional occupation density', output)):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        fod_list.append(vect_to_mat(np.array(data, dtype=float)).tolist())
+
+    return fod_list
+
 
 def _get_all_nto_new_format(output, label):
     import re
@@ -338,6 +349,11 @@ def parser_fchk(output):
         if len(nat_occupancies_list) > 1:
             final_dict['nto_coefficients_multi'] = nat_coefficients_list
             final_dict['nto_occupancies_multi'] = nat_occupancies_list
+
+    if 'Fractional occupation density' in data:
+        fod_list = _get_all_fod(output)
+        if len(fod_list) > 1:
+            final_dict['fractional_occupation_density_multi'] = fod_list
 
     # Parse new format RAS SOC NTO's
     NTOS_dict = dict(filter(lambda item: "NTOs occupancies SOC" in item[0], data.items()))
