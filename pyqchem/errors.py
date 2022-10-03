@@ -1,7 +1,8 @@
 class ParserError(Exception):
-    def __init__(self, parser_name, message):
+    def __init__(self, parser_name, message, output):
         self.parser_name = parser_name
         self.message = message
+        self.full_output = output
 
     def __str__(self):
         return 'Error found while parsing output using "{}" parser: {}'.format(self.parser_name, self.message)

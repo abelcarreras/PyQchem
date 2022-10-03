@@ -557,7 +557,7 @@ def get_output_from_qchem(input_qchem,
         try:
             output = parser(output, **parser_parameters)
         except:
-            raise ParserError(parser.__name__, 'Undefined error')
+            raise ParserError(parser.__name__, 'Undefined error', output)
 
         cache.store_calculation_data(input_qchem, parser.__name__, output)
 
