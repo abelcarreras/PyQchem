@@ -1,8 +1,9 @@
 import numpy as np
 from pyqchem.tools import rotate_coordinates
 from scipy.optimize import minimize
+from itertools import product
 from pyqchem.structure import atom_data
-from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU
+from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU, AU_TO_EV, KB_EV
 import warnings
 
 
@@ -33,7 +34,6 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
     moments_of_inertia = e_values
 
     return moments_of_inertia, axis_of_inertia
-
 
 
 class NormalModes:
@@ -158,6 +158,103 @@ class NormalModes:
         self._reduced_mass = reduced_mass
 
 
+class VibrationalState:
+    def __init__(self, q_index=0, vector_rep=(), frequencies=()):
+        """
+        Define a vibrational state
+
+        :param q_index: index of electronic state associated to this vibrational state
+        :param vector_rep: vector representation of vibrational state
+        :param frequencies: list of frequencies associated to the vector_rep
+
+        """
+        self.q_index = q_index
+        self.vector_rep = vector_rep
+        self.frequencies = frequencies
+
+    def get_label(self):
+        """
+        get label of the vibrational state
+
+        :return: label string
+        """
+        label = '{}('.format(self.q_index)
+        c = 0
+        for i, v in enumerate(self.vector_rep):
+            if v != 0:
+                if c > 0:
+                    label += ','
+
+                label += '{}v{}'.format(v, i)
+                c += 1
+        if np.sum(self.vector_rep) == 0:
+            label += '0'
+
+        label += ')'
+        return label
+
+    def total_quanta(self):
+        return np.sum(self.vector_rep)
+
+    def get_vib_energy(self):
+        return np.sum(self.frequencies * self.vector_rep) * AU_TO_EV
+
+class VibrationalTransition:
+    def __init__(self, origin, target, fcf, excitation_energy=0.0):
+        """
+        Define a transition between two vibrational states
+
+        :param origin: origin VibrationalState
+        :param target: target VibrationalState
+        :param fcf: Franck-Condon factor
+        :param intensity: intensity of spectrum peak
+        :param excitation_energy: electronic excitation energy [eV]
+        """
+        self.excitation_energy = excitation_energy
+        self.origin = origin
+        self.target = target
+        self.fcf = fcf
+        #self.intensity = fcf*fcf
+
+        #self.intensity = fcf*fcf * np.exp(-self.origin.get_vib_energy() / (600 * KB_EV))
+
+    @property
+    def energy(self):
+        """
+        energy associated to the vibrational transition (vib + electronic) [eV]
+
+        :return: energy
+        """
+        return self.excitation_energy + (self.target.get_vib_energy() - self.origin.get_vib_energy())
+
+
+    @property
+    def e_prime_prime(self):
+        """
+        energy of origin vibrational state (to be used to modulate intensity as function of initial population)
+
+        :return: vib energy
+        """
+        return self.origin.get_vib_energy()
+
+    def get_label(self):
+        """
+        get label of the vibrational transition
+
+        :return: label string
+        """
+        return '{} -> {}'.format(self.origin.get_label(), self.target.get_label())
+
+    def get_intensity(self, temperature=300):
+        """
+        get transition intensity as a function of the temperature
+
+        :param temperature: the temperature in Kelvin
+        :return: intensity
+        """
+        return self.fcf**2 * np.exp(-self.origin.get_vib_energy() / (temperature * KB_EV))
+
+
 class Duschinsky:
     def __init__(self,
                  coordinates_initial,
@@ -272,7 +369,7 @@ class Duschinsky:
         d = np.dot(np.dot(l_f.T, np.sqrt(t)), diff)
 
         # switch to atomic units
-        d *= ANGSTROM_TO_AU * np.sqrt(AMU_TO_ELECTRONMASS);
+        d *= ANGSTROM_TO_AU * np.sqrt(AMU_TO_ELECTRONMASS)
 
         return d
 
@@ -338,24 +435,210 @@ class Duschinsky:
 
         return np.dot(lmb_fin, d)
 
+    def _get_frequencies(self):
+        """
+        frequencies in A.U.
 
-def get_duschinsky(origin_frequency_output, target_frequency_output):
+        :return:
+        """
+        ifreq = np.array(self._modes_initial.get_frequencies())
+        ffreq = np.array(self._modes_final.get_frequencies())
+
+        units_factor = BOHR_TO_CM * 2 * np.pi * SPEEDOFLIGHT_AU
+
+        return ifreq * units_factor, ffreq * units_factor
+
+    def get_transitions(self,
+                        max_vib_origin=1,
+                        max_vib_target=2,
+                        excitation_energy=0.0):
+
+        freq_origin, freq_target = self._get_frequencies()
+        s = self.get_s_matrix()
+        q = self.get_q_matrix()
+        p = self.get_p_matrix()
+        r = self.get_r_matrix()
+        dt = self.get_dt_vector()
+        n_modes = len(s)
+
+        # compute FCF <0|0>
+        freq_rel_prod = np.product(np.divide(freq_origin, freq_target))
+        exponential = np.exp(-1 / 2 * np.dot(dt, np.dot(np.identity(n_modes) - p, dt)))
+        pre_factor = 2**(n_modes / 2) / np.sqrt(abs(np.linalg.det(s)))
+        fcf_00 = pre_factor * freq_rel_prod ** (-1 / 4) * np.sqrt(np.linalg.det(q)) * exponential
+
+        # evaluate pre-factor for FCF matrices
+        ompd = np.sqrt(2) * np.dot(np.identity(n_modes) - p, dt)
+        tpmo = 2 * self.get_p_matrix() - np.identity(len(self.get_p_matrix()))
+        tqmo = 2 * self.get_q_matrix() - np.identity(len(self.get_p_matrix()))
+        tr = 2 * self.get_r_matrix()
+        rd = np.sqrt(2) * np.dot(r, dt)
+
+        # evaluate FCF
+        def evalSingleFCFpy(s0, kk, s1, kp):
+
+            if np.sum(s1.vector_rep) == 0 and np.sum(s0.vector_rep) == 0:
+                return fcf_00
+
+            if kk == 0:
+                ksi = 0
+                while (s1.vector_rep[ksi] == 0):
+                    ksi = ksi + 1
+                s1.vector_rep[ksi] -= 1
+
+                fcf = ompd[ksi] * evalSingleFCFpy(s0, 0, s1, kp - 1)
+
+                if kp > 1:
+                    for theta in range(ksi, n_modes):
+                        if s1.vector_rep[theta] > 0:
+                            tmp_dbl = tpmo[ksi, theta] * np.sqrt(s1.vector_rep[theta])
+                            s1.vector_rep[theta] -= 1
+                            tmp_dbl *= evalSingleFCFpy(s0, 0, s1, kp - 2)
+                            fcf += tmp_dbl
+                            s1.vector_rep[theta] += 1
+                fcf /= np.sqrt(s1.vector_rep[ksi] + 1)
+                s1.vector_rep[ksi] += 1
+
+            else:
+                ksi = 0
+                # print('->', s0.get_label(), s1.get_label())
+                while (s0.vector_rep[ksi] == 0):
+                    ksi = ksi + 1
+
+                s0.vector_rep[ksi] -= 1
+                fcf = -rd[ksi] * evalSingleFCFpy(s0, kk - 1, s1, kp)
+
+                for theta in range(ksi, n_modes):
+                    if s0.vector_rep[theta] > 0:
+                        tmp_dbl = tqmo[ksi, theta] * np.sqrt(s0.vector_rep[theta])
+                        s0.vector_rep[theta] -= 1
+                        tmp_dbl *= evalSingleFCFpy(s0, kk - 2, s1, kp)
+                        fcf += tmp_dbl
+                        s0.vector_rep[theta] += 1
+
+                if kp > 0:
+                    for theta in range(0, n_modes):
+                        if s1.vector_rep[theta] > 0:
+                            tmp_dbl = tr[ksi, theta] * np.sqrt(s1.vector_rep[theta])
+                            s1.vector_rep[theta] -= 1
+                            tmp_dbl *= evalSingleFCFpy(s0, kk - 1, s1, kp - 1)
+                            fcf += tmp_dbl
+                            s1.vector_rep[theta] += 1
+
+                fcf /= np.sqrt(s0.vector_rep[ksi] + 1)
+                s0.vector_rep[ksi] += 1
+
+            return fcf
+
+        def get_state_list(n, q_index=1, frequencies=()):
+            state_list = []
+            for conf in product(range(0, n_modes), repeat=n_modes):
+                if np.sum(conf) == n:
+                    state_list.append(VibrationalState(q_index=q_index,
+                                                       vector_rep=list(conf),
+                                                       frequencies=frequencies))
+
+            return state_list
+
+        s0_origin = VibrationalState(q_index=0, vector_rep=[0] * n_modes, frequencies=freq_origin)
+        s0_target = VibrationalState(q_index=1, vector_rep=[0] * n_modes, frequencies=freq_target)
+
+        # (0)->(0) transition
+        transition_list = [VibrationalTransition(s0_origin, s0_target,
+                                                 fcf=fcf_00,
+                                                 excitation_energy=excitation_energy)]
+
+
+        # (0)->(n) transitions
+        origin_state = s0_origin
+        for i in range(0, max_vib_target):
+            state_list = get_state_list(i+1, q_index=1, frequencies=freq_target)
+            for target_state in state_list:
+
+                fcf = evalSingleFCFpy(origin_state, 0, target_state, i+1)
+                transition_list.append(VibrationalTransition(origin_state, target_state,
+                                                             fcf=fcf,
+                                                             excitation_energy=excitation_energy))
+
+
+        # (m)->(n) transitions [Hot bands]
+        state_list_origin = []
+        for i in range(0, max_vib_origin):
+            state_list_origin += get_state_list(i+1, q_index=0, frequencies=freq_origin)
+
+        state_list_target = [s0_target]
+        for i in range(0, max_vib_target):
+            state_list_target += get_state_list(i+1, q_index=1, frequencies=freq_target)
+
+        for origin_state in state_list_origin:
+            for target_state in state_list_target:
+                # print(origin_state.get_label(), ' - ', target_state.get_label())
+
+                k_origin = origin_state.total_quanta()
+                k_target = target_state.total_quanta()
+
+                fcf = evalSingleFCFpy(origin_state, k_origin, target_state, k_target)
+                transition_list.append(VibrationalTransition(origin_state, target_state,
+                                                             fcf=fcf,
+                                                             excitation_energy=excitation_energy))
+
+        # sort transition list by energy
+        transition_list.sort(key=lambda x: x.energy, reverse=False)
+
+        return transition_list
+
+    def get_spectrum(self, temperature, cuttoff=0, sigma=0.01, excitation_energy=0.0, plot=True):
+
+        import matplotlib.pyplot as plt
+
+        def gaussian(x, s, m):
+            return 1/np.sqrt(2*np.pi*s**2)*np.exp(-0.5*((x-m)/s)**2)
+
+        transitions = self.get_transitions(excitation_energy=excitation_energy)
+
+        min = transitions[0].energy
+        max = transitions[-1].energy
+
+        energies = np.linspace(min, max, 500)
+        intensities = np.zeros_like(energies)
+        for trans in transitions:
+            if trans.get_intensity(1) > cuttoff:
+                for i, e in enumerate(energies):
+                    intensities[i] += gaussian(e, sigma, trans.energy)*trans.get_intensity(temperature)
+            if trans.get_intensity(1) > 0.01:
+                height = gaussian(0, sigma, 0) * trans.get_intensity(temperature)
+                plt.text(trans.energy, height, trans.get_label(), rotation=80)
+
+        if plot:
+            plt.xlabel('Energy [eV]')
+            plt.yticks([], [])
+            plt.plot(energies, intensities)
+            plt.show()
+
+        return energies, intensities
+
+
+def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):
     """
     build Duschinsky instance object from frequency parser dictionary
 
     :param origin_frequency_output: frequency parsed output of origin state (typically ground state)
     :param target_frequency_output: frequency parsed output of target state (typically excited state)
+    :param n_max_modes: restrict calculation to the first n modes
     :return: Duschinsky object
     """
 
+    if n_max_modes is None:
+        n_max_modes = len(target_frequency_output['modes'])
+
     return Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
                       coordinates_final=target_frequency_output['structure'].get_coordinates(),
-                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
-                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
-                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
-                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
+                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']][:n_max_modes],
+                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']][:n_max_modes],
+                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']][:n_max_modes],
+                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']][:n_max_modes],
                       symbols_initial=origin_frequency_output['structure'].get_symbols(),
                       symbols_final=target_frequency_output['structure'].get_symbols(),
-                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
-                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
+                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']][:n_max_modes],
+                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']][:n_max_modes],
                       )
