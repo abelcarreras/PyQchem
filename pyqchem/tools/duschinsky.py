@@ -478,58 +478,57 @@ class Duschinsky:
         rd = np.sqrt(2) * np.dot(r, dt)
 
         # evaluate FCF
-        def evalSingleFCFpy(origin_state, k_origin, target_state, k_target):
+        def evalSingleFCFpy(origin_vector, k_origin, target_vector, k_target):
 
-            if np.sum(target_state.vector_rep) == 0 and np.sum(origin_state.vector_rep) == 0:
+            if np.sum(origin_vector) == 0 and np.sum(target_vector) == 0:
                 return fcf_00
 
             if k_origin == 0:
                 ksi = 0
-                while (target_state.vector_rep[ksi] == 0):
+                while target_vector[ksi] == 0:
                     ksi = ksi + 1
-                target_state.vector_rep[ksi] -= 1
+                target_vector[ksi] -= 1
 
-                fcf = ompd[ksi] * evalSingleFCFpy(origin_state, 0, target_state, k_target - 1)
+                fcf = ompd[ksi] * evalSingleFCFpy(origin_vector, 0, target_vector, k_target - 1)
 
                 if k_target > 1:
                     for theta in range(ksi, n_modes):
-                        if target_state.vector_rep[theta] > 0:
-                            tmp_dbl = tpmo[ksi, theta] * np.sqrt(target_state.vector_rep[theta])
-                            target_state.vector_rep[theta] -= 1
-                            tmp_dbl *= evalSingleFCFpy(origin_state, 0, target_state, k_target - 2)
+                        if target_vector[theta] > 0:
+                            tmp_dbl = tpmo[ksi, theta] * np.sqrt(target_vector[theta])
+                            target_vector[theta] -= 1
+                            tmp_dbl *= evalSingleFCFpy(origin_vector, 0, target_vector, k_target - 2)
                             fcf += tmp_dbl
-                            target_state.vector_rep[theta] += 1
-                fcf /= np.sqrt(target_state.vector_rep[ksi] + 1)
-                target_state.vector_rep[ksi] += 1
+                            target_vector[theta] += 1
+                fcf /= np.sqrt(target_vector[ksi] + 1)
+                target_vector[ksi] += 1
 
             else:
                 ksi = 0
-                # print('->', s0.get_label(), s1.get_label())
-                while (origin_state.vector_rep[ksi] == 0):
+                while origin_vector[ksi] == 0:
                     ksi = ksi + 1
 
-                origin_state.vector_rep[ksi] -= 1
-                fcf = -rd[ksi] * evalSingleFCFpy(origin_state, k_origin - 1, target_state, k_target)
+                origin_vector[ksi] -= 1
+                fcf = -rd[ksi] * evalSingleFCFpy(origin_vector, k_origin - 1, target_vector, k_target)
 
                 for theta in range(ksi, n_modes):
-                    if origin_state.vector_rep[theta] > 0:
-                        tmp_dbl = tqmo[ksi, theta] * np.sqrt(origin_state.vector_rep[theta])
-                        origin_state.vector_rep[theta] -= 1
-                        tmp_dbl *= evalSingleFCFpy(origin_state, k_origin - 2, target_state, k_target)
+                    if origin_vector[theta] > 0:
+                        tmp_dbl = tqmo[ksi, theta] * np.sqrt(origin_vector[theta])
+                        origin_vector[theta] -= 1
+                        tmp_dbl *= evalSingleFCFpy(origin_vector, k_origin - 2, target_vector, k_target)
                         fcf += tmp_dbl
-                        origin_state.vector_rep[theta] += 1
+                        origin_vector[theta] += 1
 
                 if k_target > 0:
                     for theta in range(0, n_modes):
-                        if target_state.vector_rep[theta] > 0:
-                            tmp_dbl = tr[ksi, theta] * np.sqrt(target_state.vector_rep[theta])
-                            target_state.vector_rep[theta] -= 1
-                            tmp_dbl *= evalSingleFCFpy(origin_state, k_origin - 1, target_state, k_target - 1)
+                        if target_vector[theta] > 0:
+                            tmp_dbl = tr[ksi, theta] * np.sqrt(target_vector[theta])
+                            target_vector[theta] -= 1
+                            tmp_dbl *= evalSingleFCFpy(origin_vector, k_origin - 1, target_vector, k_target - 1)
                             fcf += tmp_dbl
-                            target_state.vector_rep[theta] += 1
+                            target_vector[theta] += 1
 
-                fcf /= np.sqrt(origin_state.vector_rep[ksi] + 1)
-                origin_state.vector_rep[ksi] += 1
+                fcf /= np.sqrt(origin_vector[ksi] + 1)
+                origin_vector[ksi] += 1
 
             return fcf
 
@@ -557,7 +556,7 @@ class Duschinsky:
             state_list = get_state_list(i+1, q_index=1, frequencies=freq_target)
             for target_state in state_list:
 
-                fcf = evalSingleFCFpy(s0_origin, 0, target_state, i+1)
+                fcf = evalSingleFCFpy(s0_origin.vector_rep, 0, target_state.vector_rep, i+1)
                 transition_list.append(VibrationalTransition(s0_origin, target_state,
                                                              fcf=fcf,
                                                              excitation_energy=excitation_energy))
@@ -579,7 +578,7 @@ class Duschinsky:
                 k_origin = origin_state.total_quanta()
                 k_target = target_state.total_quanta()
 
-                fcf = evalSingleFCFpy(origin_state, k_origin, target_state, k_target)
+                fcf = evalSingleFCFpy(origin_state.vector_rep, k_origin, target_state.vector_rep, k_target)
                 transition_list.append(VibrationalTransition(origin_state, target_state,
                                                              fcf=fcf,
                                                              excitation_energy=excitation_energy))
