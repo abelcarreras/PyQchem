@@ -41,7 +41,7 @@ def basis_format(basis_set_name,
             if item in typeList:
                 return typeList[item]
             else:
-                raise ParserError('Basis function of type {} not implemented'.format(item), __name__)
+                raise ParserError('Basis function of type {} not implemented'.format(item), __name__, '')
 
     type_list = TypeList()
 

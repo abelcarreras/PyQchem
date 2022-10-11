@@ -126,7 +126,7 @@ def basic_cis(output):
                         elif spin == 'beta':
                             beta_transitions.append({'origin': origin, 'target': target + basic_data['n_beta']})
                         else:
-                            raise ParserError('basic_cis', 'Error reading configurations')
+                            raise ParserError('basic_cis', 'Error reading configurations', output)
 
                         transitions.append({'origin': origin,
                                             'target': target,
@@ -204,7 +204,7 @@ def basic_cis(output):
                         state['multiplicity'] = m
 
                     except ValueError:
-                        raise ParserError('basic_cis', 'State multiplicity error')
+                        raise ParserError('basic_cis', 'State multiplicity error', output)
 
             return labels, nt-1, ns-1
 
@@ -221,7 +221,7 @@ def basic_cis(output):
                 elif label[0] == 'S' and label2[0] == 'S':
                     data_interstate[(i+1, j+1)] = {'1e_soc_mat': [[0j]], 'soc_units': 'cm-1'}
                 else:
-                    raise ParserError('basic_cis', 'State multiplicity error')
+                    raise ParserError('basic_cis', 'State multiplicity error', output)
 
         for i, label in enumerate(labels):
             for k2, ms2 in enumerate([-1, 0, 1]):
@@ -250,7 +250,7 @@ def basic_cis(output):
                                     data_interstate[(j+1, i+1)]['1e_soc_mat'][0][k] = _list_to_complex(line.split()[1:4])
                                     break
                     else:
-                        raise ParserError('basic_cis', 'SOC reading error')
+                        raise ParserError('basic_cis', 'SOC reading error', output)
 
                 enum = soc_section.find('SOC between the singlet ground state and excited triplet states (ms={})'.format(ms2))
                 for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
