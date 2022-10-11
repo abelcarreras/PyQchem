@@ -1,4 +1,5 @@
-# Example of the calculation of the absorption spectrum for methyl peroxy radical
+# Example of the calculation of the emission/absorption spectrum for methyl peroxy radical
+# Reorganization energy is not included in the simulation
 from pyqchem.qchem_core import get_output_from_qchem
 from pyqchem.qc_input import QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
@@ -20,7 +21,8 @@ molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
                      multiplicity=2)
 
 basis_set = '6-31+G*'
-n_state = 1  # excited state number
+n_state = 1  # excited state number (target)
+temperature = 300
 
 # Optimization of ground state geometry
 qc_input = QchemInput(molecule,
@@ -56,7 +58,7 @@ gs_output = get_output_from_qchem(qc_input,
                                   )
 
 print('GS frequencies done')
-print('frequency         displacements')
+print('frequency(cm-1)         displacements')
 for mode in gs_output['modes']:
     print('{:10}'.format(mode['frequency']), mode['displacement'])
 
@@ -68,7 +70,7 @@ qc_input = QchemInput(molecule,
                       cis_n_roots=10,
                       cis_singlets=True,
                       cis_triplets=False,
-                      #cis_convergence=6,
+                      # cis_convergence=6,
                       cis_state_deriv=n_state,
                       extra_rem_keywords={'XC_GRID': '000075000302'}
                       )
@@ -92,7 +94,7 @@ qc_input = QchemInput(output['optimized_molecule'],
                       cis_n_roots=10,
                       cis_singlets=True,
                       cis_triplets=False,
-                      #cis_convergence=6,
+                      # cis_convergence=6,
                       cis_state_deriv=n_state,
                       mem_static=200,
                       extra_rem_keywords={'XC_GRID': '000075000302'}
@@ -106,7 +108,7 @@ es_output = get_output_from_qchem(qc_input,
                                   )
 
 print('ES frequencies done')
-print('frequency         displacements')
+print('frequency(cm-1)         displacements')
 for mode in es_output['modes']:
     print('{:10}'.format(mode['frequency']), mode['displacement'])
 
@@ -115,20 +117,24 @@ excitation_energy = (es_energy - gs_energy) * AU_TO_EV
 print('\nexcitation energy (state {}): {}'.format(n_state, excitation_energy))
 
 
-# build duschinsky object
+# build Duschinsky object
 duschinsky = get_duschinsky(gs_output, es_output, n_max_modes=6)
 
 # align structures along principal axis of inertia
 duschinsky.align_coordinates()
 
 # compute and print data
-transitions = duschinsky.get_transitions(max_vib_origin=1, max_vib_target=2, excitation_energy=excitation_energy)
+transitions = duschinsky.get_transitions(max_vib_origin=3, max_vib_target=3,
+                                         excitation_energy=excitation_energy,
+                                         add_hot_bands=False)
 
-temperature = 300
-
-print('\n {:^10} {:^10} {:^10}  '.format('Energy', 'FCF', 'Intensity'), 'Transition')
+print('\n {:^10} {:^10} {:^10}  {}'.format('Energy', 'FCF', 'Int. abs.',  'Int. em.', 'Transition'))
 for s in transitions:
-    print('{:10.5f} {:10.5f} {:10.5f}  '.format(s.energy, s.get_intensity(temperature), s.fcf), s.get_label())
+    print('{:10.5f} {:10.5f} {:10.5f} {:10.5f}   {}'.format(s.energy,
+                                                            s.get_intensity_absorption(temperature),
+                                                            s.get_intensity_emission(temperature),
+                                                            s.fcf,
+                                                            s.get_label()))
 
 
 def gaussian(x, s, m):
@@ -137,20 +143,35 @@ def gaussian(x, s, m):
 
 # plot spectrum
 sigma = 0.01
+cutoff = 0.001
+cutoff_labels = 0.02
 min = transitions[0].energy
 max = transitions[-1].energy
 
 energies = np.linspace(min, max, 500)
-intensities = np.zeros_like(energies)
+intensities_abs = np.zeros_like(energies)
+intensities_em = np.zeros_like(energies)
+
 for trans in transitions:
-    if trans.get_intensity(1) > 0.001:
+    # absorption
+    if trans.get_intensity_absorption(1) > cutoff:
         for i, e in enumerate(energies):
-            intensities[i] += gaussian(e, sigma, trans.energy)*trans.get_intensity(temperature)
-    if trans.get_intensity(1) > 0.01:
-        height = gaussian(0, sigma, 0) * trans.get_intensity(temperature)
-        plt.text(trans.energy, height, trans.get_label(), rotation=80)
+            intensities_abs[i] += gaussian(e, sigma, trans.energy) * trans.get_intensity_absorption(temperature)
+    if trans.get_intensity_absorption(1) > cutoff_labels:
+        height = gaussian(0, sigma, 0) * trans.get_intensity_absorption(temperature)
+        plt.text(trans.energy, height, trans.get_label(), rotation=80, color='blue')
+
+    # emission
+    if trans.get_intensity_emission(1) > cutoff:  # cutoff for plot
+        for i, e in enumerate(energies):
+            intensities_em[i] += gaussian(e, sigma, trans.energy) * trans.get_intensity_emission(temperature)
+    if trans.get_intensity_emission(1) > cutoff_labels:
+        height = gaussian(0, sigma, 0) * trans.get_intensity_emission(temperature)
+        plt.text(trans.energy, height, trans.get_label(is_emission=True), rotation=80, color='orange')
 
 plt.xlabel('Energy [eV]')
 plt.yticks([], [])
-plt.plot(energies, intensities)
+plt.plot(energies, intensities_abs, label='absorption')
+plt.plot(energies, intensities_em, label='emission')
+plt.legend()
 plt.show()
