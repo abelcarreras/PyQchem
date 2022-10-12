@@ -593,7 +593,7 @@ class Duschinsky:
 
         # (n)<->(0) transitions
         for i in range(0, max_vib_origin):
-            state_list = get_state_list(i+1, q_index=1, frequencies=freq_origin)
+            state_list = get_state_list(i+1, q_index=0, frequencies=freq_origin)
             for origin_state in state_list:
 
                 fcf = evalSingleFCFpy(origin_state.vector_rep, i+1, s0_target.vector_rep, 0)
