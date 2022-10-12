@@ -203,7 +203,7 @@ class VibrationalState:
         return np.sum(self.frequencies * self.vector_rep) * AU_TO_EV
 
 class VibrationalTransition:
-    def __init__(self, origin, target, fcf, excitation_energy=0.0):
+    def __init__(self, origin, target, fcf, excitation_energy=0.0, reorganization_energy=0.0):
         """
         Define a transition between two vibrational states
 
@@ -212,8 +212,10 @@ class VibrationalTransition:
         :param fcf: Franck-Condon factor
         :param intensity: intensity of spectrum peak
         :param excitation_energy: electronic excitation energy [eV]
+        :param reorganization_energy: total reorganization energy [eV]
         """
         self.excitation_energy = excitation_energy
+        self.reorganization_energy = reorganization_energy
         self.origin = origin
         self.target = target
         self.fcf = fcf
@@ -229,6 +231,28 @@ class VibrationalTransition:
         :return: energy
         """
         return self.excitation_energy + (self.target.get_vib_energy() - self.origin.get_vib_energy())
+
+    @property
+    def energy_absorption(self):
+        """
+        energy associated to the vibrational transition (vib + electronic) [eV]
+        corrected with reorganization energy for absorption spectrum
+
+        :return: energy
+        """
+        delta_vib_energy = self.target.get_vib_energy() - self.origin.get_vib_energy()
+        return self.excitation_energy + delta_vib_energy + self.reorganization_energy/2
+
+    @property
+    def energy_emission(self):
+        """
+        energy associated to the vibrational transition (vib + electronic) [eV]
+        corrected with reorganization energy for emission spectrum
+
+        :return: energy
+        """
+        delta_vib_energy = self.target.get_vib_energy() - self.origin.get_vib_energy()
+        return self.excitation_energy + delta_vib_energy - self.reorganization_energy/2
 
     def get_label(self, is_emission=False):
         """
@@ -457,6 +481,7 @@ class Duschinsky:
                         max_vib_origin=2,
                         max_vib_target=2,
                         excitation_energy=0.0,
+                        reorganization_energy=0.0,
                         add_hot_bands=True):
 
         freq_origin, freq_target = self._get_frequencies()
@@ -551,7 +576,8 @@ class Duschinsky:
         # (0)->(0) transition
         transition_list = [VibrationalTransition(s0_origin, s0_target,
                                                  fcf=fcf_00,
-                                                 excitation_energy=excitation_energy)]
+                                                 excitation_energy=excitation_energy,
+                                                 reorganization_energy=reorganization_energy)]
 
 
         # (0)<->(n) transitions
@@ -562,7 +588,8 @@ class Duschinsky:
                 fcf = evalSingleFCFpy(s0_origin.vector_rep, 0, target_state.vector_rep, i+1)
                 transition_list.append(VibrationalTransition(s0_origin, target_state,
                                                              fcf=fcf,
-                                                             excitation_energy=excitation_energy))
+                                                             excitation_energy=excitation_energy,
+                                                             reorganization_energy=reorganization_energy))
 
         # (n)<->(0) transitions
         for i in range(0, max_vib_origin):
@@ -572,7 +599,8 @@ class Duschinsky:
                 fcf = evalSingleFCFpy(origin_state.vector_rep, i+1, s0_target.vector_rep, 0)
                 transition_list.append(VibrationalTransition(origin_state, s0_target,
                                                              fcf=fcf,
-                                                             excitation_energy=excitation_energy))
+                                                             excitation_energy=excitation_energy,
+                                                             reorganization_energy=reorganization_energy))
 
         if add_hot_bands:
             # (m)<->(n) transitions [Hot bands]
@@ -594,7 +622,8 @@ class Duschinsky:
                     fcf = evalSingleFCFpy(origin_state.vector_rep, k_origin, target_state.vector_rep, k_target)
                     transition_list.append(VibrationalTransition(origin_state, target_state,
                                                                  fcf=fcf,
-                                                                 excitation_energy=excitation_energy))
+                                                                 excitation_energy=excitation_energy,
+                                                                 reorganization_energy=reorganization_energy))
 
         # sort transition list by energy
         transition_list.sort(key=lambda x: x.energy, reverse=False)
@@ -610,18 +639,18 @@ class Duschinsky:
 
         transitions = self.get_transitions(excitation_energy=excitation_energy)
 
-        min = transitions[0].energy
-        max = transitions[-1].energy
+        min = transitions[0].energy_absorption
+        max = transitions[-1].energy_absorption
 
         energies = np.linspace(min, max, 500)
         intensities = np.zeros_like(energies)
         for trans in transitions:
             if trans.get_intensity_absorption(1) > cuttoff:
                 for i, e in enumerate(energies):
-                    intensities[i] += gaussian(e, sigma, trans.energy) * trans.get_intensity_absorption(temperature)
+                    intensities[i] += gaussian(e, sigma, trans.energy_absorption) * trans.get_intensity_absorption(temperature)
             if trans.get_intensity_absorption(1) > 0.01:
                 height = gaussian(0, sigma, 0) * trans.get_intensity_absorption(temperature)
-                plt.text(trans.energy, height, trans.get_label(), rotation=80)
+                plt.text(trans.energy_absorption, height, trans.get_label(), rotation=80)
 
         if plot:
             plt.title('Absorption')
@@ -641,18 +670,18 @@ class Duschinsky:
 
         transitions = self.get_transitions(excitation_energy=excitation_energy)
 
-        min = transitions[0].energy - 0.1
-        max = transitions[-1].energy + 0.1
+        min = transitions[0].energy_emission - 0.1
+        max = transitions[-1].energy_emission + 0.1
 
         energies = np.linspace(min, max, 500)
         intensities = np.zeros_like(energies)
         for trans in transitions:
             if trans.get_intensity_emission(1) > cuttoff:
                 for i, e in enumerate(energies):
-                    intensities[i] += gaussian(e, sigma, trans.energy) * trans.get_intensity_emission(temperature)
+                    intensities[i] += gaussian(e, sigma, trans.energy_emission) * trans.get_intensity_emission(temperature)
             if trans.get_intensity_emission(1) > 0.01:
                 height = gaussian(0, sigma, 0) * trans.get_intensity_emission(temperature)
-                plt.text(trans.energy, height, trans.get_label(is_emission=True), rotation=80)
+                plt.text(trans.energy_emission, height, trans.get_label(is_emission=True), rotation=80)
 
         if plot:
             plt.title('Emission')
