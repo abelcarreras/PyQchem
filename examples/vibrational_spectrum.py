@@ -193,8 +193,8 @@ def gaussian(x, s, m):
 sigma = np.sqrt(KB_EV*temperature*reorganization)  # Marcus model for band amplitude
 cutoff = 0.001
 cutoff_labels = 0.02
-min = transitions[0].energy
-max = transitions[-1].energy
+min = transitions[0].energy_emission
+max = transitions[-1].energy_absorption
 
 energies = np.linspace(min, max, 500)
 intensities_abs = np.zeros_like(energies)
