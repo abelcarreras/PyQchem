@@ -3,6 +3,7 @@ from pyqchem.tools import rotate_coordinates
 from scipy.optimize import minimize
 from itertools import product
 from pyqchem.structure import atom_data
+from pyqchem.tools.gaussian import gaussian
 from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU, AU_TO_EV, KB_EV
 import warnings
 
@@ -313,7 +314,7 @@ class Duschinsky:
         self._modes_initial.trim_negative_frequency_modes()
         self._modes_final.trim_negative_frequency_modes()
 
-    def align_coordinates(self):
+    def align_coordinates_pmi(self):
         """
         Align principal axis of inertia of molecules along x,y,z axis
 
@@ -482,7 +483,7 @@ class Duschinsky:
                         max_vib_target=2,
                         excitation_energy=0.0,
                         reorganization_energy=0.0,
-                        add_hot_bands=True):
+                        add_hot_bands=False):
 
         freq_origin, freq_target = self._get_frequencies()
         s = self.get_s_matrix()
@@ -630,14 +631,18 @@ class Duschinsky:
 
         return transition_list
 
-    def get_spectrum_absorption(self, temperature, cuttoff=0, sigma=0.01, excitation_energy=0.0, plot=True):
+    def get_spectrum_absorption(self, temperature, cuttoff=0,
+                                excitation_energy=0.0, reorganization_energy=0.0, plot=True,
+                                max_vib_target=2, max_vib_origin=2):
+
+        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
 
         import matplotlib.pyplot as plt
 
-        def gaussian(x, s, m):
-            return 1/np.sqrt(2*np.pi*s**2)*np.exp(-0.5*((x-m)/s)**2)
-
-        transitions = self.get_transitions(excitation_energy=excitation_energy)
+        transitions = self.get_transitions(excitation_energy=excitation_energy,
+                                           reorganization_energy=reorganization_energy,
+                                           max_vib_target=max_vib_target,
+                                           max_vib_origin=max_vib_origin)
 
         min = transitions[0].energy_absorption
         max = transitions[-1].energy_absorption
@@ -661,14 +666,17 @@ class Duschinsky:
 
         return energies, intensities
 
-    def get_spectrum_emission(self, temperature, cuttoff=0, sigma=0.01, excitation_energy=0.0, plot=True):
+    def get_spectrum_emission(self, temperature, cuttoff=0,
+                              excitation_energy=0.0, reorganization_energy=0.0, plot=True,
+                              max_vib_target=2, max_vib_origin=2):
 
         import matplotlib.pyplot as plt
 
-        def gaussian(x, s, m):
-            return 1/np.sqrt(2*np.pi*s**2)*np.exp(-0.5*((x-m)/s)**2)
+        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
 
-        transitions = self.get_transitions(excitation_energy=excitation_energy)
+        transitions = self.get_transitions(excitation_energy=excitation_energy,
+                                           reorganization_energy=reorganization_energy,
+                                           max_vib_target=max_vib_target, max_vib_origin=max_vib_origin)
 
         min = transitions[0].energy_emission - 0.1
         max = transitions[-1].energy_emission + 0.1
@@ -691,6 +699,35 @@ class Duschinsky:
             plt.show()
 
         return energies, intensities
+
+    def get_fcwd(self, temperature, reorganization_energy, max_vib_target=2, max_vib_origin=2):
+        """
+        numerical estimation of FCWD
+
+        :param temperature: temperature
+        :param reorganization_energy: reorganization energy
+        :return:
+        """
+
+        transitions = self.get_transitions(reorganization_energy=reorganization_energy,
+                                           max_vib_target=max_vib_target, max_vib_origin=max_vib_origin)
+
+        min = transitions[0].energy_emission
+        max = transitions[-1].energy_absorption
+
+        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
+
+        energies = np.linspace(min, max, 1000)
+
+        intensities_abs = np.zeros_like(energies)
+        intensities_em = np.zeros_like(energies)
+
+        for trans in transitions:
+            for i, e in enumerate(energies):
+                intensities_abs[i] += gaussian(e, sigma, trans.energy_absorption) * trans.get_intensity_absorption(temperature)
+                intensities_em[i] += gaussian(e, sigma, trans.energy_emission) * trans.get_intensity_emission(temperature)
+
+        return np.trapz(intensities_abs*intensities_em, energies)
 
 
 def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):

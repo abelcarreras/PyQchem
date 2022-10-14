@@ -103,7 +103,7 @@ for mode in gs_output['modes']:
 duschinsky = get_duschinsky(gs_output, es_output)
 
 # align structures along principal axis of inertia
-duschinsky.align_coordinates()
+duschinsky.align_coordinates_pmi()
 
 # compute and print data
 with np.printoptions(precision=3, suppress=True, linewidth=100):

@@ -1,17 +1,15 @@
 # Example of the calculation of the emission/absorption spectrum for methyl peroxy radical
 # Reorganization energy is not included in the simulation
-from pyqchem.qchem_core import get_output_from_qchem
-from pyqchem.qc_input import QchemInput
+from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_cis import basic_cis
 from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.tools.duschinsky import get_duschinsky
-from pyqchem import Structure
+from pyqchem.tools.gaussian import gaussian
+from pyqchem.units import AU_TO_EV, KB_EV
 import numpy as np
 import matplotlib.pyplot as plt
-from pyqchem.units import AU_TO_EV
-from pyqchem.units import KB_EV
 
 
 molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
@@ -74,7 +72,6 @@ qc_input = QchemInput(output['optimized_molecule'],
                       cis_singlets=True,
                       cis_triplets=False,
                       # cis_convergence=6,
-                      cis_state_deriv=n_state,
                       extra_rem_keywords={'XC_GRID': '000075000302'}
                       )
 
@@ -159,42 +156,36 @@ excitation_energy = (es_energy - gs_energy) * AU_TO_EV
 print('\nexcitation energy (state {}): {:7.4f} eV'.format(n_state, excitation_energy))
 
 # reorganization energy
-reorganization = ((gs_es_energy - gs_energy) + (es_gs_energy - es_energy)) * AU_TO_EV
+reorganization = ((es_gs_energy - gs_energy) + (gs_es_energy - es_energy)) * AU_TO_EV
 print('Reorganization energy (total): {:7.4f} eV'.format(reorganization))
-
-
 
 # build Duschinsky object
 duschinsky = get_duschinsky(gs_output, es_output, n_max_modes=6)
 
 # align structures along principal axis of inertia
-duschinsky.align_coordinates()
+duschinsky.align_coordinates_pmi()
 
-# compute and print data
+# compute and print vibrational transitions
 transitions = duschinsky.get_transitions(max_vib_origin=3, max_vib_target=3,
                                          excitation_energy=excitation_energy,
                                          reorganization_energy=reorganization,
                                          add_hot_bands=False)
 
-print('\n {:^10} {:^10} {:^10}  {}'.format('Energy', 'FCF', 'Int. abs.',  'Int. em.', 'Transition'))
+print('\n {:^10} {:^10}  {:^10} {:^10}'.format('Energy', 'FCF', 'Int. abs.',  'Int. em.', 'Transition'))
 for s in transitions:
     print('{:10.5f} {:10.5f} {:10.5f} {:10.5f}   {}'.format(s.energy,
+                                                            s.fcf,
                                                             s.get_intensity_absorption(temperature),
                                                             s.get_intensity_emission(temperature),
-                                                            s.fcf,
                                                             s.get_label()))
 
-
-def gaussian(x, s, m):
-    return 1/np.sqrt(2*np.pi*s**2)*np.exp(-0.5*((x-m)/s)**2)
-
-
 # plot spectrum
-sigma = np.sqrt(KB_EV*temperature*reorganization)  # Marcus model for band amplitude
+sigma = np.sqrt(2*KB_EV*temperature*reorganization)  # Marcus model for band amplitude
+
 cutoff = 0.001
 cutoff_labels = 0.02
-min = transitions[0].energy_emission
-max = transitions[-1].energy_absorption
+min = transitions[0].energy_emission-sigma
+max = transitions[-1].energy_absorption+sigma
 
 energies = np.linspace(min, max, 500)
 intensities_abs = np.zeros_like(energies)
@@ -218,9 +209,14 @@ for trans in transitions:
         plt.text(trans.energy_emission, height, trans.get_label(is_emission=True), rotation=80, color='orange')
 
 plt.xlabel('Energy [eV]')
+plt.ylabel('Intensity [eV-1]')
 plt.yticks([], [])
 plt.title('Spectrum at {} K'.format(temperature))
 plt.plot(energies, intensities_abs, label='absorption')
 plt.plot(energies, intensities_em, label='emission')
 plt.legend()
 plt.show()
+
+print('integral absorption: ', np.trapz(intensities_abs, energies))  # should be clode to 1
+print('integral emission: ', np.trapz(intensities_em, energies))  # should be clode to 1
+print('FCWD: {}'.format(duschinsky.get_fcwd(temperature, reorganization)))
