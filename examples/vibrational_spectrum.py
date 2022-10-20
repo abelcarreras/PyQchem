@@ -24,6 +24,7 @@ molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
 basis_set = '6-31+G*'
 n_state = 1  # excited state number (target)
 temperature = 50
+plot_marcus = False
 
 # Optimization of ground state geometry
 qc_input = QchemInput(molecule,
@@ -191,6 +192,9 @@ energies = np.linspace(min, max, 500)
 intensities_abs = np.zeros_like(energies)
 intensities_em = np.zeros_like(energies)
 
+#ax = plt.gca()
+#fig = plt.figure()
+
 for trans in transitions:
     # absorption
     if trans.get_intensity_absorption(1) > cutoff:
@@ -198,25 +202,55 @@ for trans in transitions:
             intensities_abs[i] += gaussian(e, sigma, trans.energy_absorption) * trans.get_intensity_absorption(temperature)
     if trans.get_intensity_absorption(1) > cutoff_labels:
         height = gaussian(0, sigma, 0) * trans.get_intensity_absorption(temperature)
-        plt.text(trans.energy_absorption, height, trans.get_label(), rotation=80, color='blue')
-
+        plt.text(trans.energy_absorption, height, trans.get_label(sign=1), rotation=80, color='C0')
+        plt.stem(trans.energy_absorption, height*0.9, markerfmt='', linefmt='C0-')
     # emission
     if trans.get_intensity_emission(1) > cutoff:  # cutoff for plot
         for i, e in enumerate(energies):
             intensities_em[i] += gaussian(e, sigma, trans.energy_emission) * trans.get_intensity_emission(temperature)
     if trans.get_intensity_emission(1) > cutoff_labels:
         height = gaussian(0, sigma, 0) * trans.get_intensity_emission(temperature)
-        plt.text(trans.energy_emission, height, trans.get_label(is_emission=True), rotation=80, color='orange')
+        plt.text(trans.energy_emission, height, trans.get_label(sign=0), rotation=80, color='C1')
+        plt.stem(trans.energy_emission, height*0.9, markerfmt='', linefmt='C1-')
 
 plt.xlabel('Energy [eV]')
 plt.ylabel('Intensity [eV-1]')
 plt.yticks([], [])
 plt.title('Spectrum at {} K'.format(temperature))
-plt.plot(energies, intensities_abs, label='absorption')
-plt.plot(energies, intensities_em, label='emission')
-plt.legend()
-plt.show()
+plt.plot(energies, intensities_abs, label='absorption', color='C0')
+plt.plot(energies, intensities_em, label='emission', color='C1')
+
+# marcus
+def marcus_emission(e, de, lmb):
+    prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
+    return prefactor * np.exp(-(de - e + lmb)**2/(4*KB_EV*temperature*lmb))
+
+def marcus_absorption(e, de, lmb):
+    prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
+    return prefactor * np.exp(-(-de + e + lmb)**2/(4*KB_EV*temperature*lmb))
+
+if plot_marcus:
+    marcus_em = np.zeros_like(energies)
+    marcus_abs = np.zeros_like(energies)
+    for i, e in enumerate(energies):
+        marcus_em[i] = marcus_emission(e, excitation_energy, reorganization)
+        marcus_abs[i] = marcus_absorption(e, excitation_energy, reorganization)
+
+    plt.plot(energies, marcus_em, '--', label='marcus emission', color='C0')
+    plt.plot(energies, marcus_abs, '--', label='marcus absorption', color='C1')
+
 
 print('integral absorption: ', np.trapz(intensities_abs, energies))  # should be clode to 1
 print('integral emission: ', np.trapz(intensities_em, energies))  # should be clode to 1
-print('FCWD: {}'.format(duschinsky.get_fcwd(temperature, reorganization)))
+
+if plot_marcus:
+    print('integral marcus absorption: ', np.trapz(marcus_abs, energies))  # should be clode to 1
+    print('integral marcus emission: ', np.trapz(marcus_em, energies))  # should be clode to 1
+
+# print('FCWD: {}'.format(duschinsky.get_fcwd(temperature, reorganization)))
+print('FCWD: {}'.format(np.trapz(intensities_abs * intensities_em, energies)))
+if plot_marcus:
+    print('FCWD Marcus: {}'.format(np.trapz(marcus_em * marcus_abs, energies)))
+
+plt.legend()
+plt.show()

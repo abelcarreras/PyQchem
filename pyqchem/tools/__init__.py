@@ -210,7 +210,8 @@ def get_geometry_from_pubchem(entry, type='name'):
 
     return Structure(coordinates=positions,
                      atomic_numbers=atomic_numbers,
-                     charge=charge)
+                     charge=charge,
+                     name=str(entry))
 
 
 if __name__ == '__main__':

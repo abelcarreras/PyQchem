@@ -255,16 +255,18 @@ class VibrationalTransition:
         delta_vib_energy = self.target.get_vib_energy() - self.origin.get_vib_energy()
         return self.excitation_energy + delta_vib_energy - self.reorganization_energy/2
 
-    def get_label(self, is_emission=False):
+    def get_label(self, sign=None):
         """
         get label of the vibrational transition
 
         :return: label string
         """
-        if is_emission:
+        if sign == 0:
             return '{} <- {}'.format(self.origin.get_label(), self.target.get_label())
-        else:
+        elif sign == 1:
             return '{} -> {}'.format(self.origin.get_label(), self.target.get_label())
+        else:
+            return '{} <-> {}'.format(self.origin.get_label(), self.target.get_label())
 
     def get_intensity_absorption(self, temperature=300):
         """
