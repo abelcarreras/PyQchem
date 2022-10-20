@@ -194,8 +194,6 @@ energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
 intensities_em = np.zeros_like(energies)
 
-#ax = plt.gca()
-#fig = plt.figure()
 
 for trans in transitions:
     # absorption
