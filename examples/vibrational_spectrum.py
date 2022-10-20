@@ -185,10 +185,12 @@ sigma = np.sqrt(2*KB_EV*temperature*reorganization)  # Marcus model for band amp
 
 cutoff = 0.001
 cutoff_labels = 0.02
+n_points = 500
+
 min = transitions[0].energy_emission-sigma
 max = transitions[-1].energy_absorption+sigma
 
-energies = np.linspace(min, max, 500)
+energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
 intensities_em = np.zeros_like(energies)
 
