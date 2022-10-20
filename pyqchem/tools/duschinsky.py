@@ -485,7 +485,10 @@ class Duschinsky:
                         max_vib_target=2,
                         excitation_energy=0.0,
                         reorganization_energy=0.0,
-                        add_hot_bands=False):
+                        add_hot_bands=False,
+                        q_index_origin=0,
+                        q_index_target=1
+                        ):
 
         freq_origin, freq_target = self._get_frequencies()
         s = self.get_s_matrix()
@@ -563,7 +566,7 @@ class Duschinsky:
 
             return fcf
 
-        def get_state_list(n, q_index=1, frequencies=()):
+        def get_state_list(n, q_index, frequencies=()):
             state_list = []
             for conf in product(range(0, n_modes), repeat=n_modes):
                 if np.sum(conf) == n:
@@ -573,8 +576,8 @@ class Duschinsky:
 
             return state_list
 
-        s0_origin = VibrationalState(q_index=0, vector_rep=[0] * n_modes, frequencies=freq_origin)
-        s0_target = VibrationalState(q_index=1, vector_rep=[0] * n_modes, frequencies=freq_target)
+        s0_origin = VibrationalState(q_index=q_index_origin, vector_rep=[0] * n_modes, frequencies=freq_origin)
+        s0_target = VibrationalState(q_index=q_index_target, vector_rep=[0] * n_modes, frequencies=freq_target)
 
         # (0)->(0) transition
         transition_list = [VibrationalTransition(s0_origin, s0_target,
@@ -585,7 +588,7 @@ class Duschinsky:
 
         # (0)<->(n) transitions
         for i in range(0, max_vib_target):
-            state_list = get_state_list(i+1, q_index=1, frequencies=freq_target)
+            state_list = get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target)
             for target_state in state_list:
 
                 fcf = evalSingleFCFpy(s0_origin.vector_rep, 0, target_state.vector_rep, i+1)
@@ -596,7 +599,7 @@ class Duschinsky:
 
         # (n)<->(0) transitions
         for i in range(0, max_vib_origin):
-            state_list = get_state_list(i+1, q_index=0, frequencies=freq_origin)
+            state_list = get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin)
             for origin_state in state_list:
 
                 fcf = evalSingleFCFpy(origin_state.vector_rep, i+1, s0_target.vector_rep, 0)
@@ -609,11 +612,11 @@ class Duschinsky:
             # (m)<->(n) transitions [Hot bands]
             state_list_origin = []
             for i in range(0, max_vib_origin):
-                state_list_origin += get_state_list(i+1, q_index=0, frequencies=freq_origin)
+                state_list_origin += get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin)
 
             state_list_target = []
             for i in range(0, max_vib_target):
-                state_list_target += get_state_list(i+1, q_index=1, frequencies=freq_target)
+                state_list_target += get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target)
 
             for origin_state in state_list_origin:
                 for target_state in state_list_target:
@@ -632,104 +635,6 @@ class Duschinsky:
         transition_list.sort(key=lambda x: x.energy, reverse=False)
 
         return transition_list
-
-    def get_spectrum_absorption(self, temperature, cuttoff=0,
-                                excitation_energy=0.0, reorganization_energy=0.0, plot=True,
-                                max_vib_target=2, max_vib_origin=2):
-
-        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
-
-        import matplotlib.pyplot as plt
-
-        transitions = self.get_transitions(excitation_energy=excitation_energy,
-                                           reorganization_energy=reorganization_energy,
-                                           max_vib_target=max_vib_target,
-                                           max_vib_origin=max_vib_origin)
-
-        min = transitions[0].energy_absorption
-        max = transitions[-1].energy_absorption
-
-        energies = np.linspace(min, max, 500)
-        intensities = np.zeros_like(energies)
-        for trans in transitions:
-            if trans.get_intensity_absorption(1) > cuttoff:
-                for i, e in enumerate(energies):
-                    intensities[i] += gaussian(e, sigma, trans.energy_absorption) * trans.get_intensity_absorption(temperature)
-            if trans.get_intensity_absorption(1) > 0.01:
-                height = gaussian(0, sigma, 0) * trans.get_intensity_absorption(temperature)
-                plt.text(trans.energy_absorption, height, trans.get_label(), rotation=80)
-
-        if plot:
-            plt.title('Absorption')
-            plt.xlabel('Energy [eV]')
-            plt.yticks([], [])
-            plt.plot(energies, intensities)
-            plt.show()
-
-        return energies, intensities
-
-    def get_spectrum_emission(self, temperature, cuttoff=0,
-                              excitation_energy=0.0, reorganization_energy=0.0, plot=True,
-                              max_vib_target=2, max_vib_origin=2):
-
-        import matplotlib.pyplot as plt
-
-        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
-
-        transitions = self.get_transitions(excitation_energy=excitation_energy,
-                                           reorganization_energy=reorganization_energy,
-                                           max_vib_target=max_vib_target, max_vib_origin=max_vib_origin)
-
-        min = transitions[0].energy_emission - 0.1
-        max = transitions[-1].energy_emission + 0.1
-
-        energies = np.linspace(min, max, 500)
-        intensities = np.zeros_like(energies)
-        for trans in transitions:
-            if trans.get_intensity_emission(1) > cuttoff:
-                for i, e in enumerate(energies):
-                    intensities[i] += gaussian(e, sigma, trans.energy_emission) * trans.get_intensity_emission(temperature)
-            if trans.get_intensity_emission(1) > 0.01:
-                height = gaussian(0, sigma, 0) * trans.get_intensity_emission(temperature)
-                plt.text(trans.energy_emission, height, trans.get_label(is_emission=True), rotation=80)
-
-        if plot:
-            plt.title('Emission')
-            plt.xlabel('Energy [eV]')
-            plt.yticks([], [])
-            plt.plot(energies, intensities)
-            plt.show()
-
-        return energies, intensities
-
-    def get_fcwd(self, temperature, reorganization_energy, max_vib_target=2, max_vib_origin=2):
-        """
-        numerical estimation of FCWD
-
-        :param temperature: temperature
-        :param reorganization_energy: reorganization energy
-        :return:
-        """
-
-        transitions = self.get_transitions(reorganization_energy=reorganization_energy,
-                                           max_vib_target=max_vib_target, max_vib_origin=max_vib_origin)
-
-        min = transitions[0].energy_emission
-        max = transitions[-1].energy_absorption
-
-        sigma = np.sqrt(2*KB_EV * temperature * reorganization_energy)  # Marcus model for band amplitude
-
-        energies = np.linspace(min, max, 1000)
-
-        intensities_abs = np.zeros_like(energies)
-        intensities_em = np.zeros_like(energies)
-
-        for trans in transitions:
-            for i, e in enumerate(energies):
-                intensities_abs[i] += gaussian(e, sigma, trans.energy_absorption) * trans.get_intensity_absorption(temperature)
-                intensities_em[i] += gaussian(e, sigma, trans.energy_emission) * trans.get_intensity_emission(temperature)
-
-        return np.trapz(intensities_abs*intensities_em, energies)
 
 
 def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):
