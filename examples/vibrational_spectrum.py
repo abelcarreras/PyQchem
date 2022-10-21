@@ -1,5 +1,5 @@
 # Example of the calculation of the emission/absorption spectrum for methyl peroxy radical
-# Reorganization energy is not included in the simulation
+# This includes the calculation of the Franck Condon Weithed Density (FCWD)
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
@@ -247,7 +247,6 @@ if plot_marcus:
     print('integral marcus absorption: ', np.trapz(marcus_abs, energies))  # should be clode to 1
     print('integral marcus emission: ', np.trapz(marcus_em, energies))  # should be clode to 1
 
-# print('FCWD: {}'.format(duschinsky.get_fcwd(temperature, reorganization)))
 print('FCWD: ', get_fcwd(transitions, temperature))
 if plot_marcus:
     print('FCWD Marcus: {}'.format(np.trapz(marcus_em * marcus_abs, energies)))
