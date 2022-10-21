@@ -7,6 +7,7 @@ from pyqchem.parsers.parser_cis import basic_cis
 from pyqchem.parsers.basic import basic_parser_qchem
 from pyqchem.tools.duschinsky import get_duschinsky
 from pyqchem.tools.gaussian import gaussian
+from pyqchem.tools.spectrum import get_fcwd
 from pyqchem.units import AU_TO_EV, KB_EV
 import numpy as np
 import matplotlib.pyplot as plt
@@ -194,7 +195,6 @@ energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
 intensities_em = np.zeros_like(energies)
 
-
 for trans in transitions:
     # absorption
     if trans.get_intensity_absorption(1) > cutoff:
@@ -248,7 +248,7 @@ if plot_marcus:
     print('integral marcus emission: ', np.trapz(marcus_em, energies))  # should be clode to 1
 
 # print('FCWD: {}'.format(duschinsky.get_fcwd(temperature, reorganization)))
-print('FCWD: {}'.format(np.trapz(intensities_abs * intensities_em, energies)))
+print('FCWD: ', get_fcwd(transitions, temperature))
 if plot_marcus:
     print('FCWD Marcus: {}'.format(np.trapz(marcus_em * marcus_abs, energies)))
 
