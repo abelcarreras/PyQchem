@@ -636,6 +636,23 @@ class Duschinsky:
 
         return transition_list
 
+    def get_huang_rys(self):
+        freq_origin, freq_target = self._get_frequencies()
+        l_i2 = np.dot(np.array(self._modes_initial.get_displacements()).T,np.array(self._modes_initial.get_displacements()))
+        l_f2 = np.dot(np.array(self._modes_final.get_displacements()).T,np.array(self._modes_final.get_displacements()))
+
+        l_i2 = np.diag(l_i2)
+        l_f2 = np.diag(l_f2)
+
+        lmb_i = 0.5*freq_origin**2 * l_i2
+        s_i = lmb_i/(freq_origin)
+
+        lmb_f = 0.5*freq_target**2 * l_f2
+        s_f = lmb_f/(freq_target)
+
+        return s_i, s_f
+
+
 
 def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):
     """
