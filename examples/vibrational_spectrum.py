@@ -25,7 +25,7 @@ molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
 basis_set = '6-31+G*'
 n_state = 1  # excited state number (target)
 temperature = 50
-plot_marcus = False
+plot_marcus = True
 
 # Optimization of ground state geometry
 qc_input = QchemInput(molecule,
@@ -188,8 +188,8 @@ cutoff = 0.001
 cutoff_labels = 0.02
 n_points = 500
 
-min = transitions[0].energy_emission-sigma
-max = transitions[-1].energy_absorption+sigma
+max = transitions[0].energy_emission-sigma
+min = transitions[-1].energy_absorption+sigma
 
 energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
@@ -221,11 +221,11 @@ plt.plot(energies, intensities_abs, label='absorption', color='C0')
 plt.plot(energies, intensities_em, label='emission', color='C1')
 
 # marcus
-def marcus_emission(e, de, lmb):
+def marcus_absorption(e, de, lmb):
     prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
     return prefactor * np.exp(-(de - e + lmb)**2/(4*KB_EV*temperature*lmb))
 
-def marcus_absorption(e, de, lmb):
+def marcus_emission(e, de, lmb):
     prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
     return prefactor * np.exp(-(-de + e + lmb)**2/(4*KB_EV*temperature*lmb))
 
