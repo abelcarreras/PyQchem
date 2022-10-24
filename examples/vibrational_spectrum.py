@@ -25,7 +25,7 @@ molecule = Structure(coordinates=[[ 1.004123,  -0.180454,   0.000000],
 basis_set = '6-31+G*'
 n_state = 1  # excited state number (target)
 temperature = 50
-plot_marcus = True
+plot_marcus = False
 
 # Optimization of ground state geometry
 qc_input = QchemInput(molecule,
@@ -188,8 +188,8 @@ cutoff = 0.001
 cutoff_labels = 0.02
 n_points = 500
 
-max = transitions[0].energy_emission-sigma
-min = transitions[-1].energy_absorption+sigma
+max = transitions[0].energy_emission+sigma
+min = transitions[-1].energy_absorption-sigma
 
 energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
@@ -240,16 +240,14 @@ if plot_marcus:
     plt.plot(energies, marcus_abs, '--', label='marcus absorption', color='C1')
 
 
-print('integral absorption: ', np.trapz(intensities_abs, energies))  # should be clode to 1
-print('integral emission: ', np.trapz(intensities_em, energies))  # should be clode to 1
+print('\nintegral absorption: {:7.4f}'.format(np.trapz(intensities_abs, energies)))  # should be clode to 1
+print('integral emission: {:7.4f}'.format(np.trapz(intensities_em, energies)))  # should be clode to 1
+print('FCWD: {:7.4f} eV^-1'.format(get_fcwd(transitions, temperature)))
 
 if plot_marcus:
-    print('integral marcus absorption: ', np.trapz(marcus_abs, energies))  # should be clode to 1
-    print('integral marcus emission: ', np.trapz(marcus_em, energies))  # should be clode to 1
-
-print('FCWD: ', get_fcwd(transitions, temperature))
-if plot_marcus:
-    print('FCWD Marcus: {}'.format(np.trapz(marcus_em * marcus_abs, energies)))
+    print('\nintegral marcus absorption: {:7.4f}'.format(np.trapz(marcus_abs, energies)))  # should be clode to 1
+    print('integral marcus emission: {:7.4f}'.format(np.trapz(marcus_em, energies)))  # should be clode to 1
+    print('FCWD Marcus: {:7.4f} eV^-1'.format(np.trapz(marcus_em * marcus_abs, energies)))
 
 plt.legend()
 plt.show()
