@@ -144,20 +144,26 @@ class NormalModes:
         angle_y = np.arccos(np.dot(axis[1], vector_2)/np.linalg.norm(axis[1]))
         self.apply_rotation(-angle_y, vector_1)
 
-    def trim_negative_frequency_modes(self):
+    def trim_modes(self, modes_list):
         modes = []
         frequencies = []
         reduced_mass = []
-        for i, f in enumerate(self._frequencies):
-            if f > 0:
-                modes.append(self._modes[i])
-                frequencies.append(self._frequencies[i])
-                reduced_mass.append(self._reduced_mass[i])
+        for i in modes_list:
+            modes.append(self._modes[i])
+            frequencies.append(self._frequencies[i])
+            reduced_mass.append(self._reduced_mass[i])
 
         self._modes = modes
         self._frequencies = frequencies
         self._reduced_mass = reduced_mass
 
+    def trim_negative_frequency_modes(self):
+
+        trim_list = []
+        for i, f in enumerate(self._frequencies):
+            if f > 0:
+                trim_list.append(i)
+        self.trim_modes(trim_list)
 
 class VibrationalState:
     def __init__(self, q_index=0, vector_rep=(), frequencies=()):
@@ -298,7 +304,8 @@ class Duschinsky:
                  symbols_initial,
                  symbols_final,
                  frequencies_initial,
-                 frequencies_final
+                 frequencies_final,
+                 n_max_modes = None,
                  ):
 
         self._modes_initial = NormalModes(coordinates_initial,
@@ -315,6 +322,73 @@ class Duschinsky:
 
         self._modes_initial.trim_negative_frequency_modes()
         self._modes_final.trim_negative_frequency_modes()
+
+        #if n_max_modes is not None:
+            # select the best n_max_modes modes and discard the others
+            # self._trim_modes(n_max_modes)
+            # self._modes_initial.trim_modes([0, 1, 2, 3, 4, 5])
+            # self._modes_final.trim_modes([0, 1, 2, 3, 4, 5])
+
+        self._modes_origin_indices, self._modes_target_indices = self._get_restricted_modes(n_max_modes)
+
+
+    def _get_restricted_modes(self, n_max_modes):
+        """
+        compute the list of restricted modes to use for origin and target
+        :param n_max_modes: max nodes to use
+        :return:
+        """
+
+
+        if n_max_modes is None:
+            n_modes_total = len(self._modes_final)
+            return list(range(n_modes_total)), list(range(n_modes_total))
+
+        s = self.get_s_matrix()
+        d = self.get_d_vector()
+
+        q_vector = np.zeros_like(d)
+        for i in range(n_max_modes):
+            q_vector[i] = 1
+
+        sdot_inital = np.dot(s, q_vector) + d
+        sdot_final = np.dot(s.T, q_vector - d)
+
+        indices_origin = np.abs(sdot_inital).argsort()[::-1]
+        indices_target = np.abs(sdot_final).argsort()[::-1]
+
+        modes_origin_indices = set()
+        modes_target_indices = set()
+
+        for i in range(n_max_modes):
+            modes_origin_indices.add(i)
+            modes_origin_indices.add(indices_origin[i])
+
+            modes_target_indices.add(i)
+            modes_target_indices.add(indices_target[i])
+
+        n_dif = len(modes_origin_indices) - len(modes_target_indices)
+
+        j = n_max_modes
+        if n_dif < 0:
+            len_final = len(modes_target_indices)
+            while(len(modes_origin_indices) < len_final):
+                modes_origin_indices.add(indices_target[j])
+                j += 1
+        else:
+            len_final = len(modes_origin_indices)
+            while(len(modes_target_indices) < len_final):
+                modes_target_indices.add(indices_target[j])
+                j += 1
+
+        return modes_origin_indices, modes_target_indices
+
+    def get_restricted_modes(self):
+        """
+        return restricted modes used for origin and target
+        :return: lists of normal modes indices for origin and target
+        """
+        return self._modes_origin_indices, self._modes_target_indices
 
     def align_coordinates_pmi(self):
         """
@@ -492,6 +566,8 @@ class Duschinsky:
 
         freq_origin, freq_target = self._get_frequencies()
         s = self.get_s_matrix()
+        assert np.abs(np.linalg.det(s)) > 1e-2
+
         q = self.get_q_matrix()
         p = self.get_p_matrix()
         r = self.get_r_matrix()
@@ -566,13 +642,35 @@ class Duschinsky:
 
             return fcf
 
-        def get_state_list(n, q_index, frequencies=()):
+        def generate_configurations(n, restrict_list=None):
+            """
+            generate vector configuration of lengh n_modes and filled with total quanta == n
+            :param n: total quanta
+            :param restrict_list: list of allowed vibrational modes
+            :return:
+            """
+
+            def transform(conf, n_modes):
+                new_conf = np.zeros((n_modes), dtype=int)
+                for i, j in enumerate(restrict_list):
+                    new_conf[j] = conf[i]
+                return new_conf
+
+            if restrict_list is None:
+                for conf in product(range(0, n + 1), repeat=n_modes):
+                    if np.sum(conf) == n:
+                        yield conf
+            else:
+                for conf in product(range(0, n + 1), repeat=len(restrict_list)):
+                    if np.sum(conf) == n:
+                        yield transform(conf, n_modes)
+
+        def get_state_list(n, q_index, frequencies=(), restrict_list=None):
             state_list = []
-            for conf in product(range(0, n_modes), repeat=n_modes):
-                if np.sum(conf) == n:
-                    state_list.append(VibrationalState(q_index=q_index,
-                                                       vector_rep=list(conf),
-                                                       frequencies=frequencies))
+            for conf in generate_configurations(n, restrict_list):
+                state_list.append(VibrationalState(q_index=q_index,
+                                                   vector_rep=list(conf),
+                                                   frequencies=frequencies))
 
             return state_list
 
@@ -588,7 +686,7 @@ class Duschinsky:
 
         # (0)<->(n) transitions
         for i in range(0, max_vib_target):
-            state_list = get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target)
+            state_list = get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target, restrict_list=self._modes_target_indices)
             for target_state in state_list:
 
                 fcf = evalSingleFCFpy(s0_origin.vector_rep, 0, target_state.vector_rep, i+1)
@@ -599,7 +697,7 @@ class Duschinsky:
 
         # (n)<->(0) transitions
         for i in range(0, max_vib_origin):
-            state_list = get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin)
+            state_list = get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin, restrict_list=self._modes_origin_indices)
             for origin_state in state_list:
 
                 fcf = evalSingleFCFpy(origin_state.vector_rep, i+1, s0_target.vector_rep, 0)
@@ -612,11 +710,11 @@ class Duschinsky:
             # (m)<->(n) transitions [Hot bands]
             state_list_origin = []
             for i in range(0, max_vib_origin):
-                state_list_origin += get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin)
+                state_list_origin += get_state_list(i + 1, q_index=q_index_origin, frequencies=freq_origin, restrict_list=self._modes_origin_indices)
 
             state_list_target = []
             for i in range(0, max_vib_target):
-                state_list_target += get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target)
+                state_list_target += get_state_list(i + 1, q_index=q_index_target, frequencies=freq_target, restrict_list=self._modes_target_indices)
 
             for origin_state in state_list_origin:
                 for target_state in state_list_target:
@@ -666,6 +764,32 @@ def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes
 
     if n_max_modes is None:
         n_max_modes = len(target_frequency_output['modes'])
+
+    dus =  Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
+                      coordinates_final=target_frequency_output['structure'].get_coordinates(),
+                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
+                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
+                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
+                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
+                      symbols_initial=origin_frequency_output['structure'].get_symbols(),
+                      symbols_final=target_frequency_output['structure'].get_symbols(),
+                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
+                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
+                      n_max_modes=n_max_modes,
+                      )
+
+    return dus
+
+    s = dus.get_s_matrix()
+    d = dus.get_d_vector()
+
+    q_vector = np.zeros_like(d)
+    for i in range(n_max_modes):
+        q_vector[i] = 1
+
+    sdot = np.dot(s, q_vector) + d
+    max_values = np.abs(sdot).argsort()[-n_max_modes:][::-1]
+
 
     return Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
                       coordinates_final=target_frequency_output['structure'].get_coordinates(),
