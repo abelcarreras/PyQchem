@@ -49,6 +49,9 @@ class NormalModes:
         if is_freq_negative.any():
             warnings.warn('Some modes have negative frequency')
 
+    def __len__(self):
+        return len(self._modes)
+
     def get_coordinates(self):
         return self._coordinates
 
@@ -323,12 +326,13 @@ class Duschinsky:
         self._modes_initial.trim_negative_frequency_modes()
         self._modes_final.trim_negative_frequency_modes()
 
-        #if n_max_modes is not None:
-            # select the best n_max_modes modes and discard the others
-            # self._trim_modes(n_max_modes)
-            # self._modes_initial.trim_modes([0, 1, 2, 3, 4, 5])
-            # self._modes_final.trim_modes([0, 1, 2, 3, 4, 5])
+        # make sure duschinsky matrix will be square after trim negative
+        if len(self._modes_initial) != len(self._modes_final):
+            n = np.min([len(self._modes_initial), len(self._modes_final)])
+            self._modes_initial.trim_modes(list(range(n)))
+            self._modes_final.trim_modes(list(range(n)))
 
+        # Define restrictions of necessary
         self._modes_origin_indices, self._modes_target_indices = self._get_restricted_modes(n_max_modes)
 
 
@@ -347,14 +351,18 @@ class Duschinsky:
         s = self.get_s_matrix()
         d = self.get_d_vector()
 
+        if n_max_modes > len(d):
+            warnings.warn('n_max_modes ({}) > n_modes ({}).'.format(n_max_modes, len(d)))
+            n_max_modes = len(d)
+
         q_vector = np.zeros_like(d)
         for i in range(n_max_modes):
             q_vector[i] = 1
 
-        sdot_inital = np.dot(s, q_vector) + d
+        sdot_initial = np.dot(s, q_vector) + d
         sdot_final = np.dot(s.T, q_vector - d)
 
-        indices_origin = np.abs(sdot_inital).argsort()[::-1]
+        indices_origin = np.abs(sdot_initial).argsort()[::-1]
         indices_target = np.abs(sdot_final).argsort()[::-1]
 
         modes_origin_indices = set()
