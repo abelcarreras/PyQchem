@@ -167,6 +167,12 @@ duschinsky = get_duschinsky(gs_output, es_output, n_max_modes=6)
 # align structures along principal axis of inertia
 duschinsky.align_coordinates_pmi()
 
+# print modes included in the calculation
+m1, m2 = duschinsky.get_restricted_modes()
+print('Normal modes included:')
+print('GS: ', m1)
+print('ES: ', m2)
+
 # compute and print vibrational transitions
 transitions = duschinsky.get_transitions(max_vib_origin=3, max_vib_target=3,
                                          excitation_energy=excitation_energy,

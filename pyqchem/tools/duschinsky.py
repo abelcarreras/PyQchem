@@ -367,20 +367,6 @@ class Duschinsky:
             modes_target_indices.add(i)
             modes_target_indices.add(indices_target[i])
 
-        n_dif = len(modes_origin_indices) - len(modes_target_indices)
-
-        j = n_max_modes
-        if n_dif < 0:
-            len_final = len(modes_target_indices)
-            while(len(modes_origin_indices) < len_final):
-                modes_origin_indices.add(indices_target[j])
-                j += 1
-        else:
-            len_final = len(modes_origin_indices)
-            while(len(modes_target_indices) < len_final):
-                modes_target_indices.add(indices_target[j])
-                j += 1
-
         return modes_origin_indices, modes_target_indices
 
     def get_restricted_modes(self):
@@ -762,43 +748,15 @@ def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes
     :return: Duschinsky object
     """
 
-    if n_max_modes is None:
-        n_max_modes = len(target_frequency_output['modes'])
-
-    dus =  Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
-                      coordinates_final=target_frequency_output['structure'].get_coordinates(),
-                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
-                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
-                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
-                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
-                      symbols_initial=origin_frequency_output['structure'].get_symbols(),
-                      symbols_final=target_frequency_output['structure'].get_symbols(),
-                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
-                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
-                      n_max_modes=n_max_modes,
-                      )
-
-    return dus
-
-    s = dus.get_s_matrix()
-    d = dus.get_d_vector()
-
-    q_vector = np.zeros_like(d)
-    for i in range(n_max_modes):
-        q_vector[i] = 1
-
-    sdot = np.dot(s, q_vector) + d
-    max_values = np.abs(sdot).argsort()[-n_max_modes:][::-1]
-
-
-    return Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
-                      coordinates_final=target_frequency_output['structure'].get_coordinates(),
-                      modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']][:n_max_modes],
-                      modes_final=[mode['displacement'] for mode in target_frequency_output['modes']][:n_max_modes],
-                      r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']][:n_max_modes],
-                      r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']][:n_max_modes],
-                      symbols_initial=origin_frequency_output['structure'].get_symbols(),
-                      symbols_final=target_frequency_output['structure'].get_symbols(),
-                      frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']][:n_max_modes],
-                      frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']][:n_max_modes],
-                      )
+    return  Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
+                       coordinates_final=target_frequency_output['structure'].get_coordinates(),
+                       modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
+                       modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
+                       r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
+                       r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
+                       symbols_initial=origin_frequency_output['structure'].get_symbols(),
+                       symbols_final=target_frequency_output['structure'].get_symbols(),
+                       frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
+                       frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
+                       n_max_modes=n_max_modes,
+                       )
