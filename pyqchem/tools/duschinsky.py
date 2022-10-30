@@ -581,7 +581,18 @@ class Duschinsky:
         tr = 2 * self.get_r_matrix()
         rd = np.sqrt(2) * np.dot(r, dt)
 
-        # evaluate FCF
+        # cache function to accelarate FCF
+        def cache_fcf(func):
+            cache = {}
+            def wrapper(v1, k1, v2, k2):
+                key = (tuple(v1), k1, tuple(v2), k2)
+                if key not in cache:
+                    cache[key] = func(v1, k1, v2, k2)
+                return cache[key]
+
+            return wrapper
+
+        @cache_fcf
         def evalSingleFCFpy(origin_vector, k_origin, target_vector, k_target):
 
             if np.sum(origin_vector) == 0 and np.sum(target_vector) == 0:
