@@ -364,19 +364,19 @@ modes frequencies of a previously optimized structure. This can be done in PyQch
 
     (...)
 
-    opt_input = create_qchem_input(molecule,
-                                   jobtype='opt',
-                                   exchange='hf',
-                                   basis='sto-3g')
+    opt_input = QchemInput(molecule,
+                           jobtype='opt',
+                           exchange='hf',
+                           basis='sto-3g')
 
     parsed_opt_data = get_output_from_qchem(opt_input, parser=basic_optimization)
 
     opt_molecule = parsed_opt_data['optimized_molecule']
 
-    freq_input = create_qchem_input(opt_molecule,
-                                    jobtype='freq',
-                                    exchange='hf',
-                                    basis='sto-3g')
+    freq_input = QchemInput(opt_molecule,
+                            jobtype='freq',
+                            exchange='hf',
+                            basis='sto-3g')
 
     parsed_data = get_output_from_qchem(freq_input, parser=basic_frequencies)
 
@@ -416,11 +416,11 @@ of the molecular orbitals coefficients as an initial guess:
 
     mo_coefficients = electronic_structure['coefficients']
 
-    freq_input = create_qchem_input(opt_molecule,
-                                    jobtype='freq',
-                                    exchange='hf',
-                                    basis='sto-3g',
-                                    scf_guess=mo_coefficients)
+    freq_input = QchemInput(opt_molecule,
+                            jobtype='freq',
+                            exchange='hf',
+                            basis='sto-3g',
+                            scf_guess=mo_coefficients)
 
 In this case, **electronic_structure['coefficients']** contains a NxN square matrix with the coefficients of the
 molecular orbitals where each row corresponds to a molecular orbital.
@@ -428,11 +428,11 @@ molecular orbitals where each row corresponds to a molecular orbital.
 Practical exercises
 """""""""""""""""""
 
-a) Use PyQchem to optimize the SO2 molecule using HF and minimum basis set (STO-3G). From
+a) Use PyQchem to optimize the water molecule (H2O) using HF and minimum basis set (STO-3G). From
 the optimized structure perform 3 additional optimizations using larger 3 different basis sets: SV, DZ & TZ.
 Get the scf_energies from each optimization and store the optimized structures in XYZ files.
 
-b) (ADVANCED) Perform a frequencies calculation of the SO2 molecule using PyQchem (with HF/STO-3G) and create
+b) (ADVANCED) Perform a frequencies calculation of the methane molecule (CH4) using PyQchem (with HF/STO-3G) and create
 a movie in a XYZ file that shows the vibration of each normal mode. Print the results of the **basic_frequencies** parser
 and investigate its contents to find the necessary information (*displacements*).
 (https://github.com/abelcarreras/PyQchem/blob/master/pyqchem/parsers/parser_frequencies.py)
