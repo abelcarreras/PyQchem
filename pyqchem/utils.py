@@ -422,3 +422,19 @@ def get_occupated_list(configuration, structure, total_orbitals):
             vector_beta[int(configuration['part']) - 1] = 1
 
     return {'alpha': vector_alpha, 'beta': vector_beta}
+
+
+def get_sdm(matrix_1, matrix_2):
+    """
+    get differences square matrix between to matrices
+    :param matrix_1: the matrix 1
+    :param matrix_2: the matrix 2
+    :return: difference square matrix
+    """
+    matrix = []
+    for i_c in np.array(matrix_2).T:
+        row = []
+        for n_c in np.array(matrix_1).T:
+            row.append(np.linalg.norm(i_c - n_c))
+        matrix.append(row)
+    return np.square(matrix)

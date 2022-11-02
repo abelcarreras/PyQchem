@@ -1,5 +1,6 @@
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
+from pyqchem.utils import get_sdm
 from subprocess import Popen, PIPE
 import os, shutil
 import numpy as np
@@ -366,23 +367,38 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
         norb = np.shape(data_fchk['coefficients']['alpha'])[0]
         nbas = np.shape(data_fchk['coefficients']['alpha'])[1]
 
-    # # MO_COEFS (Already in fchk)
-    # if '53.0' in file_list:
-    #     with open(work_dir + '53.0', 'r') as f:
-    #         # dt = np.dtype([('time', [('min', np.int64), ('sec', np.int64)]), ('temp', float)])
-    #         dt = float
-    #         data = np.fromfile(f, dtype=dt)
-    #         mo_alpha = data[:norb*nbas].reshape(-1, norb).tolist()
-    #         mo_beta = data[norb*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
-    #         additional_data['coefficients_internal'] = {'alpha': mo_alpha, 'beta': mo_beta}
+
+    # MO_COEFS (Already in fchk) in internal order
+    if '53.0' in file_list:
+        with open(work_dir + '53.0', 'r') as f:
+            data = np.fromfile(f, dtype=float)
+            mo_alpha = data[:norb*nbas].reshape(-1, norb).tolist()
+            mo_beta = data[norb*nbas: 2*norb_beta*nbas].reshape(-1, norb_beta).tolist()
+            # additional_data['coefficients_internal'] = {'alpha': mo_alpha, 'beta': mo_beta}
+
+            # obtain the order indices between fchk order and Q-Chem internal order of basis functions
+            diff_square = get_sdm(data_fchk['coefficients']['alpha'], mo_alpha)
+            indices = np.argmin(diff_square, axis=0)
+
+            # store q-chem index order for later use (e.g  guess)
+            data_fchk['coefficients']['qchem_order'] = indices.tolist()
+    else:
+        indices = list(range(nbas))
 
     # FOCK_MATRIX
     if '58.0' in file_list:
         with open(work_dir + '58.0', 'r') as f:
             data = np.fromfile(f, dtype=float)
-            fock_alpha = data[:nbas*nbas].reshape(-1, nbas).tolist()
-            fock_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas).tolist()
-            additional_data['fock_matrix'] = {'alpha': fock_alpha, 'beta': fock_beta}
+            fock_alpha = data[:nbas*nbas].reshape(-1, nbas)
+            fock_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas)
+
+            # put in fchk order
+            fock_alpha = fock_alpha[:, indices]
+            fock_alpha = fock_alpha[indices, :]
+            fock_beta = fock_beta[:, indices]
+            fock_beta = fock_beta[indices, :]
+
+            additional_data['fock_matrix'] = {'alpha': fock_alpha.tolist(), 'beta': fock_beta.tolist()}
 
     # # FILE_ENERGY (Not really worth to read it)
     # if '99.0' in file_list:
@@ -393,9 +409,14 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
     # if '54.0' in file_list:
     #     with open(work_dir + '54.0', 'r') as f:
     #         data = np.fromfile(f, dtype=float)
-    #         density_alpha = data[:nbas*nbas].reshape(-1, nbas).tolist()
-    #         density_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas).tolist()
-    #         additional_data['scf_density_internal'] = {'alpha': density_alpha, 'beta': density_beta}
+    #         density_alpha = data[:nbas*nbas].reshape(-1, nbas)
+    #         density_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas)
+    #         put in fchk order
+    #         density_alpha = density_alpha[:, indices]
+    #         density_alpha = density_alpha[indices, :]
+    #         density_beta = density_beta[:, indices]
+    #         density_beta = density_beta[indices, :]
+    #         additional_data['scf_density_internal'] = {'alpha': density_alpha.tolist(), 'beta': density_beta.tolist()}
 
     # HESSIAN_MATRIX
     if '132.0' in file_list:
@@ -409,6 +430,13 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
         with open(work_dir + '21.0', 'r') as f:
             data = np.fromfile(f, dtype=float)
             ao_integrals = data.reshape(-1, nbas, nbas, nbas)
+
+            # put in fchk order
+            ao_integrals = ao_integrals[:, :, :, indices]
+            ao_integrals = ao_integrals[:, :, indices, :]
+            ao_integrals = ao_integrals[:, indices, :, :]
+            ao_integrals = ao_integrals[indices, :, :, :]
+
             additional_data['ao_integrals'] = ao_integrals.tolist()
 
     return additional_data

@@ -590,6 +590,12 @@ class QchemInput:
         else:
             mo_coeffb = mo_coeffa
 
+        if 'qchem_order' in guess_coeff:
+            indices = guess_coeff['qchem_order']
+            reverse_indices = [list(indices).index(j) for j in range(len(indices))]
+            mo_coeffa = mo_coeffa[:, reverse_indices]
+            mo_coeffb = mo_coeffb[:, reverse_indices]
+
         if guess_energies is not None:
             mo_enea = np.array(guess_energies['alpha'], dtype=np.float)
             if 'beta' in guess_coeff:
