@@ -328,10 +328,10 @@ class SqlCache:
 
     def fix_database(self, filename):
         """
-        fix correupted database
+        fix correupted database and store the recovered data in a new recovered database file
         [Only for SQL databse cache]
 
-        :param filename: databse filename
+        :param filename: recovered database filename
         :return:
         """
 

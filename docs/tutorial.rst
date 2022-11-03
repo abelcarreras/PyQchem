@@ -446,3 +446,103 @@ and investigate its contents to find the necessary information (*displacements*)
 
         video_xyz = frame1_xyz + frame2_xyz + frame3_xyz
 
+
+The cache system
+----------------
+PyQchem provides a cache system to avoid redundant calculations. This system works seamless in the background storing
+the data of previous calculations in a cache file (by default: calculation_data.db). This is an SQL database file that
+can be opened/edited using SQL-compatible utilities. To manually access to with this file PyQchem provides a simple
+ORM class. Here an example about how to use:
+
+1. Load the cache file
+..  code-block:: python
+
+    from pyqchem.cache import SqlCache
+
+    cache = SqlCache(filename='calculation_data.db')
+
+
+2. List the data
+..  code-block:: python
+
+
+    cache.list_database()
+
+
+output:
+
+..  code-block:: console
+
+               ID                      KEYWORD                    DATE
+    --------------------------------------------------------------------------------
+    1837001741792534522       basic_optimization        2022-09-22 17:04:17.809714
+    1922769254804187209       fchk                      2022-09-22 17:14:42.626054
+    1922769254804187209       basic_parser_qchem        2022-09-22 17:14:42.628925
+    861204412201835456        fchk                      2022-09-22 17:15:12.654232
+    861204412201835456        basic_parser_qchem        2022-09-22 17:15:12.657227
+    924488890157922159        basic_parser_qchem        2022-09-22 17:16:31.919593
+
+where *ID* is a unique identifier that corresponds to a particular input, *keyword* is a word to identify
+a particular output associated to the input (usually corresponds to different parsers) and *date* contains the
+information relative to the time at which the calculation was performed.
+
+3. Access to the data using *ID* and *keyword*
+
+..  code-block:: python
+
+    data = cache.retrieve_calculation_data_from_id('1837001741792534522', keyword='basic_optimization')
+    print(data)
+
+*data* in general contains a Python dictonary with the parsed data.
+
+.. note::
+
+    It is important to note that PyQchem only stores data associated to a particular parser and fchk.
+    The name of the parser is obtained from the parser function name. Using two or more parsers with
+    the same exact name may lead to issues.
+
+If a parser is not provided in **get_output_from_qchem** the full output will not be stored by default.
+For development purpuses it is possible to store the full output defining **store_full_output=True**.
+
+..  code-block:: python
+
+    full_ouput = get_output_from_qchem(opt_input, store_full_output=True)
+
+Using this option the full output of the calculation will be stored in the database. If the calculation
+is repetaed using a parser, then the output data will be parsed everytime from the stored full output
+even if the same data has already been parsed. This can be usefull for developing parsers.
+
+.. note::
+
+    Keep in mind that using **store_full_output=True** may rapidly increase the size of the database file.
+
+It is possible to change the name of the database file to be used for a particular calculation.
+This may be usefull to run multiple simultaneours calculations in the same directory.
+
+..  code-block:: python
+
+    from pyqchem.qchem_core import redefine_calculation_data_filename
+    redefine_calculation_data_filename('database_file.db')
+
+
+Database corruption
+"""""""""""""""""""
+
+Ocassionaly, running multiple simulateneous calculations using the same database file, may lead to corruption
+of the database file. This may also happend if the calculation cashes during the I/O access to the file.
+If this happends PyQchem provides a method to fix this file recovering (at least partially) the non corrupted
+data of the data of the file:
+
+1. Check the integrity of the datafile
+
+..  code-block:: python
+
+    cache.integrity_check()
+
+2. Recover the data in the correupted file and store them in a new database file
+
+..  code-block:: python
+
+    cache.fix_database('recovered_database.db')
+
+
