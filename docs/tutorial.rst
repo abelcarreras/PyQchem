@@ -455,6 +455,7 @@ can be opened/edited using SQL-compatible utilities. To manually access to with 
 ORM class. Here an example about how to use:
 
 1. Load the cache file
+
 ..  code-block:: python
 
     from pyqchem.cache import SqlCache
@@ -463,6 +464,7 @@ ORM class. Here an example about how to use:
 
 
 2. List the data
+
 ..  code-block:: python
 
 
