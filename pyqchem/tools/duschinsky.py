@@ -36,14 +36,30 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
 
     return moments_of_inertia, axis_of_inertia
 
+def get_reduced_mass(structure, modes):
+
+    mass_vector = []
+    for m in structure.get_atomic_masses():
+        for _ in range(3):
+            mass_vector.append(m)
+
+    r_mass = []
+    for mode in modes:
+        mode = np.array(mode).flatten()
+        mode = mode * np.sqrt(mass_vector)
+        mode = mode / np.linalg.norm(mode)
+        mode = mode / np.sqrt(mass_vector)
+        r_mass.append(1 / np.dot(mode, mode))
+
+    return r_mass
 
 class NormalModes:
-    def __init__(self, coordinates, symbols, modes, reduced_mass, frequencies):
-        self._coordinates = np.array(coordinates)
+    def __init__(self, structure, modes, frequencies):
+        self._coordinates = np.array(structure.get_coordinates())
         self._modes = modes
-        self._reduced_mass = reduced_mass
-        self._symbols = symbols
+        self._symbols = structure.get_symbols()
         self._frequencies = frequencies
+        self._reduced_mass = get_reduced_mass(structure, modes)
 
         is_freq_negative = np.array(self._frequencies) < 0
         if is_freq_negative.any():
@@ -298,29 +314,21 @@ class VibrationalTransition:
 
 class Duschinsky:
     def __init__(self,
-                 coordinates_initial,
-                 coordinates_final,
+                 structure_initial,
+                 structure_final,
                  modes_initial,
                  modes_final,
-                 r_mass_initial,
-                 r_mass_final,
-                 symbols_initial,
-                 symbols_final,
                  frequencies_initial,
                  frequencies_final,
                  n_max_modes = None,
                  ):
 
-        self._modes_initial = NormalModes(coordinates_initial,
-                                          symbols_initial,
+        self._modes_initial = NormalModes(structure_initial,
                                           modes_initial,
-                                          r_mass_initial,
                                           frequencies_initial)
 
-        self._modes_final = NormalModes(coordinates_final,
-                                        symbols_final,
+        self._modes_final = NormalModes(structure_final,
                                         modes_final,
-                                        r_mass_final,
                                         frequencies_final)
 
         self._modes_initial.trim_negative_frequency_modes()
@@ -767,14 +775,10 @@ def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes
     :return: Duschinsky object
     """
 
-    return  Duschinsky(coordinates_initial=origin_frequency_output['structure'].get_coordinates(),
-                       coordinates_final=target_frequency_output['structure'].get_coordinates(),
+    return  Duschinsky(structure_initial=origin_frequency_output['structure'],
+                       structure_final=target_frequency_output['structure'],
                        modes_initial=[mode['displacement'] for mode in origin_frequency_output['modes']],
                        modes_final=[mode['displacement'] for mode in target_frequency_output['modes']],
-                       r_mass_initial=[mode['reduced_mass'] for mode in origin_frequency_output['modes']],
-                       r_mass_final=[mode['reduced_mass'] for mode in target_frequency_output['modes']],
-                       symbols_initial=origin_frequency_output['structure'].get_symbols(),
-                       symbols_final=target_frequency_output['structure'].get_symbols(),
                        frequencies_initial=[mode['frequency'] for mode in origin_frequency_output['modes']],
                        frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
                        n_max_modes=n_max_modes,
