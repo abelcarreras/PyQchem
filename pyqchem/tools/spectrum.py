@@ -14,7 +14,7 @@ def get_fcwd(transitions, temperature=300):
     fcwd = 0
     for t1 in transitions:
         for t2 in transitions:
-            reorganization = (t1.reorganization_energy + t2.reorganization_energy)/2
+            reorganization = (t1.reorganization_energy + t2.reorganization_energy)/4
             sigma = np.sqrt(2 * KB_EV * temperature * reorganization)  # Marcus model for band amplitude
             intensity = t1.get_intensity_absorption(temperature) * t2.get_intensity_emission(temperature)
             fcwd += intensity * gaussian(t1.energy_absorption, sigma*np.sqrt(2), t2.energy_emission)
