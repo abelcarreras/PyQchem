@@ -3,7 +3,6 @@ from pyqchem.tools import rotate_coordinates
 from scipy.optimize import minimize
 from itertools import product
 from pyqchem.structure import atom_data
-from pyqchem.tools.gaussian import gaussian
 from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU, AU_TO_EV, KB_EV
 import warnings
 
@@ -36,7 +35,16 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
 
     return moments_of_inertia, axis_of_inertia
 
-def get_reduced_mass(structure, modes):
+
+def get_reduced_mass(structure, modes, mass_weighted=True):
+    """
+    compute the reduced mass of normal modes (AMU)
+
+    :param structure: Structure object
+    :param modes: normal modes
+    :param mass_weighted: if True, Normal modes are assumed mass weighted, else False
+    :return: reduced mass in AMU
+    """
 
     mass_vector = []
     for m in structure.get_atomic_masses():
@@ -46,50 +54,54 @@ def get_reduced_mass(structure, modes):
     r_mass = []
     for mode in modes:
         mode = np.array(mode).flatten()
-        mode = mode * np.sqrt(mass_vector)
-        mode = mode / np.linalg.norm(mode)
+
+        if mass_weighted:
+            mode = mode * np.sqrt(mass_vector)
+            mode = mode / np.linalg.norm(mode)
+
         mode = mode / np.sqrt(mass_vector)
         r_mass.append(1 / np.dot(mode, mode))
 
     return r_mass
 
+
 class NormalModes:
     def __init__(self, structure, modes, frequencies):
         self._coordinates = np.array(structure.get_coordinates())
-        self._modes = modes
+        self._modes = modes  # in mass weighted coordinates
         self._symbols = structure.get_symbols()
-        self._frequencies = frequencies
-        self._reduced_mass = get_reduced_mass(structure, modes)
+        self._frequencies = frequencies  # cm-1
+        self._reduced_mass = get_reduced_mass(structure, modes)  # AMU
 
         is_freq_negative = np.array(self._frequencies) < 0
         if is_freq_negative.any():
             warnings.warn('Some modes have negative frequency')
 
     def __len__(self):
-        return len(self._modes)
+        return len(self._modes)  # mass weighted coordinates
 
     def get_coordinates(self):
-        return self._coordinates
+        return self._coordinates  # angstrom
 
     def get_frequencies(self):
-        return self._frequencies
+        return self._frequencies  # cm-1
+
+    def get_reduced_mass(self):
+        return self._reduced_mass  # AMU
 
     def get_atomic_masses(self):
         atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper()) for element in self._symbols]
         return [atom_data[an][3] for an in atomic_numbers]
 
-    def get_mass_weighted_displacements(self):
-        return [np.array(mode).flatten().tolist() for mode in self._modes ]
-
     def get_displacements(self):
 
         mass_atoms = np.array([[m] * 3 for m in self.get_atomic_masses()]).flatten()
-        modes = self.get_mass_weighted_displacements()
+        modes = np.array([np.array(mode).flatten().tolist() for mode in self._modes])
 
         rot_modes = []
         for mode, rm in zip(modes, self._reduced_mass):
             m_b = np.sqrt(rm / np.array(mass_atoms))
-            rot_modes.append(np.array(mode)/m_b)
+            rot_modes.append(mode/m_b)
 
         return np.array(rot_modes).T
 
@@ -314,13 +326,13 @@ class VibrationalTransition:
 
 class Duschinsky:
     def __init__(self,
-                 structure_initial,
-                 structure_final,
-                 modes_initial,
-                 modes_final,
-                 frequencies_initial,
-                 frequencies_final,
-                 n_max_modes = None,
+                 structure_initial,  # angstrom
+                 structure_final,  # angstrom
+                 modes_initial,  # mass weighted coordinates
+                 modes_final,  # mass weighted coordinates
+                 frequencies_initial,  # cm -1
+                 frequencies_final,  # cm -1
+                 n_max_modes=None,
                  ):
 
         self._modes_initial = NormalModes(structure_initial,
@@ -343,7 +355,6 @@ class Duschinsky:
         # Define restrictions of necessary
         self._modes_origin_indices, self._modes_target_indices = self._get_restricted_modes(n_max_modes)
 
-
     def _get_restricted_modes(self, n_max_modes):
         """
         compute the list of restricted modes to use for origin and target
@@ -351,24 +362,23 @@ class Duschinsky:
         :return:
         """
 
-
         if n_max_modes is None:
             n_modes_total = len(self._modes_final)
             return list(range(n_modes_total)), list(range(n_modes_total))
 
         s = self.get_s_matrix()
-        d = self.get_d_vector()
+        d_ini, d_fin = self.get_d_vector()
 
-        if n_max_modes > len(d):
-            warnings.warn('n_max_modes ({}) > n_modes ({}).'.format(n_max_modes, len(d)))
-            n_max_modes = len(d)
+        if n_max_modes > len(d_fin):
+            warnings.warn('n_max_modes ({}) > n_modes ({}).'.format(n_max_modes, len(d_fin)))
+            n_max_modes = len(d_fin)
 
-        q_vector = np.zeros_like(d)
+        q_vector = np.zeros_like(d_fin)
         for i in range(n_max_modes):
             q_vector[i] = 1
 
-        sdot_initial = np.dot(s, q_vector) + d
-        sdot_final = np.dot(s.T, q_vector - d)
+        sdot_initial = np.dot(s, q_vector) + d_fin
+        sdot_final = np.dot(s.T, q_vector - d_fin)
 
         indices_origin = np.abs(sdot_initial).argsort()[::-1]
         indices_target = np.abs(sdot_final).argsort()[::-1]
@@ -460,33 +470,32 @@ class Duschinsky:
 
     def get_d_vector(self):
         """
-        compute vector of displacements
+        compute displacement vector of displacements
 
-        :return: the vector
+        :return: the displacement vector in A.U.
         """
 
-        mass_vector = np.array([[m] * 3 for m in self._modes_initial.get_atomic_masses()]).flatten()
+        mass_vector = np.array([[m] * 3 for m in self._modes_initial.get_atomic_masses()]).flatten() * AMU_TO_ELECTRONMASS
         coor_initial = self._modes_initial.get_coordinates()
         coor_final = self._modes_final.get_coordinates()
 
+        l_i = np.array(self._modes_initial.get_displacements())
         l_f = np.array(self._modes_final.get_displacements())
+
         t = np.diag(mass_vector)
 
+        diff = np.subtract(coor_initial, coor_final).flatten() * ANGSTROM_TO_AU
+        d_fin = np.dot(np.dot(l_f.T, np.sqrt(t)), diff)
+        d_ini = np.dot(np.dot(l_i.T, np.sqrt(t)), diff)
 
-        diff = np.subtract(coor_initial, coor_final).flatten()
-        d = np.dot(np.dot(l_f.T, np.sqrt(t)), diff)
-
-        # switch to atomic units
-        d *= ANGSTROM_TO_AU * np.sqrt(AMU_TO_ELECTRONMASS)
-
-        return d
+        return d_ini, d_fin
 
     def _get_lambda_matrices(self):
 
-        units_factor = BOHR_TO_CM * 2 * np.pi * SPEEDOFLIGHT_AU
+        initial_freq, final_freq = self._get_frequencies()
 
-        freq_vector_ini = np.diag([np.sqrt(f*units_factor) for f in self._modes_initial.get_frequencies()])
-        freq_vector_fin = np.diag([np.sqrt(f*units_factor) for f in self._modes_final.get_frequencies()])
+        freq_vector_ini = np.diag(np.sqrt(initial_freq))
+        freq_vector_fin = np.diag(np.sqrt(final_freq))
 
         return freq_vector_ini, freq_vector_fin
 
@@ -539,22 +548,23 @@ class Duschinsky:
         :return: dt vector
         """
         lmb_ini, lmb_fin = self._get_lambda_matrices()
-        d = self.get_d_vector()
+        d_ini, d_fin = self.get_d_vector()
 
-        return np.dot(lmb_fin, d)
+        return np.dot(lmb_fin, d_fin)
 
     def _get_frequencies(self):
         """
-        frequencies in A.U.
+        angular frequencies in A.U.
 
         :return:
         """
-        ifreq = np.array(self._modes_initial.get_frequencies())
-        ffreq = np.array(self._modes_final.get_frequencies())
 
-        units_factor = BOHR_TO_CM * 2 * np.pi * SPEEDOFLIGHT_AU
+        units_factor = BOHR_TO_CM * 2 * np.pi * SPEEDOFLIGHT_AU  # from ordinary frequency in cm-1 to angular in A.U.
 
-        return ifreq * units_factor, ffreq * units_factor
+        i_freq = np.array(self._modes_initial.get_frequencies()) * units_factor
+        f_freq = np.array(self._modes_final.get_frequencies()) * units_factor
+
+        return i_freq, f_freq
 
     def get_transitions(self,
                         max_vib_origin=2,
@@ -749,20 +759,31 @@ class Duschinsky:
 
     def get_huang_rys(self):
         freq_origin, freq_target = self._get_frequencies()
-        l_i2 = np.dot(np.array(self._modes_initial.get_displacements()).T,np.array(self._modes_initial.get_displacements()))
-        l_f2 = np.dot(np.array(self._modes_final.get_displacements()).T,np.array(self._modes_final.get_displacements()))
 
-        l_i2 = np.diag(l_i2)
-        l_f2 = np.diag(l_f2)
+        d_ini, d_fin = self.get_d_vector()
 
-        lmb_i = 0.5*freq_origin**2 * l_i2
+        lmb_i = 0.5*freq_origin**2 * d_ini**2
+        lmb_f = 0.5*freq_target**2 * d_fin**2
+
         s_i = lmb_i/(freq_origin)
-
-        lmb_f = 0.5*freq_target**2 * l_f2
         s_f = lmb_f/(freq_target)
 
         return s_i, s_f
 
+    def get_reorganization_energies(self):
+        """
+        individual reorganization energies for each mode in eV
+
+        :return:
+        """
+        freq_origin, freq_target = self._get_frequencies()
+
+        d_ini, d_fin = self.get_d_vector()
+
+        lmb_i = 0.5*freq_origin**2 * d_ini**2 * AU_TO_EV
+        lmb_f = 0.5*freq_target**2 * d_fin**2 * AU_TO_EV
+
+        return lmb_i , lmb_f
 
 
 def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):
