@@ -1,5 +1,5 @@
 # Example of the calculation of the emission/absorption spectrum for methyl peroxy radical
-# This includes the calculation of the Franck Condon Weithed Density (FCWD)
+# This includes the calculation of the Franck Condon Weighted Density (FCWD)
 from pyqchem import get_output_from_qchem, Structure, QchemInput
 from pyqchem.parsers.parser_frequencies import basic_frequencies
 from pyqchem.parsers.parser_optimization import basic_optimization
