@@ -378,10 +378,19 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
 
             # obtain the order indices between fchk order and Q-Chem internal order of basis functions
             diff_square = get_sdm(data_fchk['coefficients']['alpha'], mo_alpha)
-            indices = np.argmin(diff_square, axis=0)
+
+            # get non-repeating indices
+            indices = []
+            for row in diff_square.T:
+                for i in np.argsort(row):
+                    if i not in indices:
+                        indices.append(int(i))
+                        break
+
+            # indices = np.argmin(diff_square, axis=0).tolist()
 
             # store q-chem index order for later use (e.g  guess)
-            data_fchk['coefficients']['qchem_order'] = indices.tolist()
+            data_fchk['coefficients']['qchem_order'] = indices
     else:
         indices = list(range(nbas))
 
