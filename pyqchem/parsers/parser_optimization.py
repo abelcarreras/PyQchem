@@ -3,6 +3,35 @@ import numpy as np
 import re
 
 
+def parse_molecule(opt_section, charge=0, multiplicity=0):
+
+    num = opt_section.find('Coordinates')
+    if num < 0:
+        num = opt_section.find('Standard Nuclear Orientation')
+        coordinates_section = opt_section[num:].split('\n')[3:]
+    else:
+        coordinates_section = opt_section[num:].split('\n')[2:]
+
+    # check number of atoms
+    n_atoms = 0
+    for i in coordinates_section:
+        if len(i.split()) != 5:
+            break
+        n_atoms += 1
+
+    coordinates_section = coordinates_section[:n_atoms]
+
+    symbols = [line.split()[1] for line in coordinates_section]
+    coordinates = [line.split()[2:] for line in coordinates_section]
+
+    molecule = Structure(coordinates=np.array(coordinates, dtype=float).tolist(),
+                         symbols=symbols,
+                         charge=charge,
+                         multiplicity=multiplicity)
+
+    return molecule
+
+
 def basic_optimization(output, print_data=False):
 
     data_dict = {}
@@ -23,13 +52,8 @@ def basic_optimization(output, print_data=False):
     for ini, fin in zip(list_iterations, list_iterations[1:] + [len(output)]):
         step_section = output[ini:fin]
         enum = step_section.find('Coordinates (Angstroms)')
-        atoms_list = step_section[enum:].split('\n')[2:n_atoms+2]
-        coordinates_step = np.array([atom.split()[2:] for atom in atoms_list], dtype=float).tolist()
 
-        step_molecule = Structure(coordinates=coordinates_step,
-                                  symbols=symbols,
-                                  charge=charge,
-                                  multiplicity=multiplicity)
+        step_molecule = parse_molecule(step_section, charge, multiplicity)
 
         enum = step_section.find('Energy is')
         step_energy = float(step_section[enum: enum+50].split()[2])
@@ -56,13 +80,8 @@ def basic_optimization(output, print_data=False):
 
         final_energy = float(output[ne+enum-200: enum].split()[3])
         optimization_section = output[enum:]
-        coordinates_section = optimization_section.split('\n')
-        coordinates_final = [line.split()[2:5] for line in coordinates_section[5:5+n_atoms]]
 
-        optimized_molecule = Structure(coordinates=np.array(coordinates_final, dtype=float).tolist(),
-                                       symbols=symbols,
-                                       charge=charge,
-                                       multiplicity=multiplicity)
+        optimized_molecule = parse_molecule(optimization_section, charge, multiplicity)
 
         data_dict['optimized_molecule'] = optimized_molecule
         data_dict['energy'] = final_energy
