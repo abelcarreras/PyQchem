@@ -1,6 +1,7 @@
 import numpy as np
 from pyqchem.structure import Structure
 from pyqchem.errors import ParserError
+import re
 
 
 def basis_format(basis_set_name,
@@ -122,7 +123,6 @@ def vect_to_mat(vector):
 
 
 def _get_all_nato(output):
-    import re
 
     nato_coefficients_list = []
     nato_occupancies_list = []
@@ -153,7 +153,6 @@ def _get_all_nato(output):
 
 
 def _get_all_nto(output):
-    import re
 
     nto_coefficients_list = []
     nto_occupancies_list = []
@@ -178,7 +177,6 @@ def _get_all_nto(output):
     return nto_coefficients_list, nto_occupancies_list
 
 def _get_all_fod(output):
-    import re
 
     fod_list = []
     for i, m in enumerate(re.finditer('Fractional occupation density', output)):
@@ -190,7 +188,6 @@ def _get_all_fod(output):
 
 
 def _get_all_nto_new_format(output, label):
-    import re
 
     nto_data_dict = {}
     for m in re.finditer('NTOs U coefficients {}'.format(label), output):
@@ -215,6 +212,17 @@ def _get_all_nto_new_format(output, label):
 
     return nto_data_dict
 
+def _get_all_tdm(output):
+
+    tdm_data_dict = {}
+    for i, m in enumerate(re.finditer('Transition density', output)):
+        indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
+        n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
+        tdm_data_dict[tuple(indices)] = np.array(data, dtype=float).tolist()
+
+    return tdm_data_dict
+
 
 def parser_fchk(output):
 
@@ -237,7 +245,7 @@ def parser_fchk(output):
                 'Alpha Natural Orbital occupancies', 'Beta Natural Orbital occupancies',
                 'Natural Transition Orbital occupancies', 'Natural Transition Orbital U coefficients',
                 'Natural Transition Orbital V coefficients', 'NTOs occupancies SOC', 'NTOs occupancies RAS',
-                'Fractional occupation density'
+                'Fractional occupation density', 'Transition density',
                 ]
 
     basis_set = output.split('\n')[1].split()[-1]
@@ -364,5 +372,10 @@ def parser_fchk(output):
     NTOS_dict = dict(filter(lambda item: "NTOs occupancies RAS" in item[0], data.items()))
     if len(NTOS_dict) > 0:
         final_dict['ntos_ras'] = _get_all_nto_new_format(output, 'RAS')
+
+    # Parse transisiton density
+    TDM_dict = dict(filter(lambda item: "Transition density" in item[0], data.items()))
+    if len(TDM_dict) > 0:
+        final_dict['transition_density'] = _get_all_tdm(output)
 
     return final_dict
