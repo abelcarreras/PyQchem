@@ -120,7 +120,7 @@ def basic_cis(output):
                     alpha_transitions = []
                     beta_transitions = []
                     try:
-                        spin = line[21:].split()[3]
+                        spin = line[21:].split()[-1]
                         if spin == 'alpha':
                             alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
                         elif spin == 'beta':
