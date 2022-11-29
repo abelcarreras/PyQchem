@@ -107,7 +107,7 @@ for i, state in enumerate(parsed_data['excited_states']):
     print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
 
 
-# RASCI qchem input
+# CIS qchem input
 qc_input = QchemInput(dimer,
                       exchange='hf',
                       basis='6-311g',
