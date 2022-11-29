@@ -279,7 +279,7 @@ class VibrationalTransition:
         :return: energy
         """
         delta_vib_energy = self.target.get_vib_energy() - self.origin.get_vib_energy()
-        return self.excitation_energy - delta_vib_energy - self.reorganization_energy/2
+        return self.excitation_energy + delta_vib_energy + self.reorganization_energy/2
 
     @property
     def energy_emission(self):
@@ -290,7 +290,7 @@ class VibrationalTransition:
         :return: energy
         """
         delta_vib_energy = self.target.get_vib_energy() - self.origin.get_vib_energy()
-        return self.excitation_energy - delta_vib_energy + self.reorganization_energy/2
+        return self.excitation_energy + delta_vib_energy - self.reorganization_energy/2
 
     def get_label(self, sign=None):
         """
@@ -380,8 +380,8 @@ class Duschinsky:
         sdot_initial = np.dot(s, q_vector) + d_fin
         sdot_final = np.dot(s.T, q_vector - d_fin)
 
-        indices_origin = np.abs(sdot_initial).argsort()[::-1]
-        indices_target = np.abs(sdot_final).argsort()[::-1]
+        indices_origin = np.abs(sdot_final).argsort()[::-1]
+        indices_target = np.abs(sdot_initial).argsort()[::-1]
 
         modes_origin_indices = set()
         modes_target_indices = set()

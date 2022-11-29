@@ -167,6 +167,7 @@ duschinsky = get_duschinsky(gs_output, es_output, n_max_modes=6)
 
 # align structures along principal axis of inertia
 duschinsky.align_coordinates_pmi()
+duschinsky.align_coordinates_rsm()
 
 # print modes included in the calculation
 m1, m2 = duschinsky.get_restricted_modes()
@@ -195,8 +196,8 @@ cutoff = 0.001
 cutoff_labels = 0.02
 n_points = 500
 
-max = transitions[0].energy_emission+sigma
-min = transitions[-1].energy_absorption-sigma
+min = transitions[0].energy_emission-sigma
+max = transitions[-1].energy_absorption+sigma
 
 energies = np.linspace(min, max, n_points)
 intensities_abs = np.zeros_like(energies)
@@ -235,11 +236,11 @@ print('FCWD: {:7.4f} eV^-1'.format(get_fcwd(transitions, temperature)))
 # Marcus
 def marcus_absorption(e, de, lmb):
     prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
-    return prefactor * np.exp(-(de - e + lmb)**2/(4*KB_EV*temperature*lmb))
+    return prefactor * np.exp(-(-de + e + lmb)**2/(4*KB_EV*temperature*lmb))
 
 def marcus_emission(e, de, lmb):
     prefactor = 1/np.sqrt(np.pi*4*KB_EV*temperature*lmb)
-    return prefactor * np.exp(-(-de + e + lmb)**2/(4*KB_EV*temperature*lmb))
+    return prefactor * np.exp(-(de - e + lmb)**2/(4*KB_EV*temperature*lmb))
 
 if plot_marcus:
     marcus_em = np.zeros_like(energies)
@@ -277,9 +278,9 @@ def lj_function(e, de, l_cl, huang_rhys, frequencies):
     return 1.0 / (np.sqrt(4 * np.pi * KB_EV * temperature * l_cl)) * fcwd_term
 
 def lj_absorption(e, de, lmb, huang_rhys, frequencies):
-    return lj_function(e, de, lmb, huang_rhys, frequencies)
-def lj_emission(e, de, lmb, huang_rhys, frequencies):
     return lj_function(e, -de, lmb, huang_rhys, frequencies)
+def lj_emission(e, de, lmb, huang_rhys, frequencies):
+    return lj_function(e, de, lmb, huang_rhys, frequencies)
 
 
 if plot_lj:
@@ -305,8 +306,8 @@ if plot_lj:
         lj_em[i] = lj_emission(e, excitation_energy, reorganization/2, s_f, freq_f)
         lj_abs[i] = lj_absorption(e, excitation_energy, reorganization/2, s_i, freq_i)
 
-    print('\nintegral marcus absorption: {:7.4f}'.format(np.trapz(lj_em, energies)))  # should be close to 1
-    print('integral marcus emission: {:7.4f}'.format(np.trapz(lj_abs, energies)))  # should be close to 1
+    print('\nintegral LJ absorption: {:7.4f}'.format(np.trapz(lj_em, energies)))  # should be close to 1
+    print('integral LJ emission: {:7.4f}'.format(np.trapz(lj_abs, energies)))  # should be close to 1
     print('FCWD LJ: {:7.4f} eV^-1'.format(np.trapz(lj_em * lj_abs, energies)))
 
     plt.plot(energies, lj_em, ':', label='LJ emission', color='C0')
