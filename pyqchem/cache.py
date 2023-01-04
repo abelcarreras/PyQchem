@@ -23,9 +23,7 @@ class SimpleCache(object):
             self._pickle_protocol = pickle.HIGHEST_PROTOCOL
 
             # Py2 compatibility
-            try:
-                BlockingIOError
-            except:
+            if 'BlockingIOError' not in vars():
                 BlockingIOError = IOError
 
             try:
@@ -70,9 +68,7 @@ class SimpleCache(object):
             """
 
             # Py2 compatibility
-            try:
-                FileNotFoundError
-            except:
+            if 'FileNotFoundError' not in vars():
                 FileNotFoundError = IOError
 
             for iter in range(100):
