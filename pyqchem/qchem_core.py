@@ -9,9 +9,10 @@ import pickle
 import warnings
 import sys
 
-if sys.version_info[0] < 3 or sys.platform.startswith('win'):
+if sys.version_info[0] < 3 or sys.platform.startswith('win') or os.getenv('PYQCHEM_CACHE') == '1':
     # For python 2.x or Windows use pickle based cache system
     from pyqchem.cache import SimpleCache as CacheSystem
+    warnings.warn('Using SimpleCache')
 else:
     # For python 3.x use SQL Database based cache system
     from pyqchem.cache import SqlCache as CacheSystem

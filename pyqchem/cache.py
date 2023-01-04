@@ -23,7 +23,9 @@ class SimpleCache(object):
             self._pickle_protocol = pickle.HIGHEST_PROTOCOL
 
             # Py2 compatibility
-            if sys.version_info[0] < 3:
+            try:
+                BlockingIOError
+            except:
                 BlockingIOError = IOError
 
             try:
@@ -68,7 +70,9 @@ class SimpleCache(object):
             """
 
             # Py2 compatibility
-            if sys.version_info[0] < 3:
+            try:
+                FileNotFoundError
+            except:
                 FileNotFoundError = IOError
 
             for iter in range(100):
@@ -179,9 +183,9 @@ class SqlCache:
         try:
             self._conn.execute('''CREATE TABLE DATA_TABLE
                               (input_hash  INT ,
-                               parser      TEXT,
-                               qcdata      TEXT,
-                               date        TEXT);''')
+                               parser      LONGTEXT,
+                               qcdata      LONGTEXT,
+                               date        LONGTEXT);''')
             self._conn.commit()
             # print('Initialized database')
 
