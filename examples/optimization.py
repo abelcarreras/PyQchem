@@ -55,12 +55,12 @@ except OutputError as e:
     print('Last energy:', parsed_data['optimization_steps'][-1]['energy'])
 
 
-energies = [step['energy'] for step in  parsed_data['optimization_steps']]
+energies = [step['energy'] for step in parsed_data['optimization_steps']]
 gradients = [step['gradient'] for step in parsed_data['optimization_steps']]
 displacements = [step['displacement'] for step in parsed_data['optimization_steps']]
 
 # Plot data
-fig, axs = plt.subplots(3, sharex=True, gridspec_kw={'hspace': 0})
+fig, axs = plt.subplots(3, gridspec_kw={'hspace': 0})
 fig.suptitle('Optimization steps')
 axs[0].set(ylabel='Energy')
 axs[0].plot(energies, color='b')
