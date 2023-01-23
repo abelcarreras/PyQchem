@@ -240,6 +240,7 @@ class VibrationalState:
     def get_vib_energy(self):
         return np.sum(self.frequencies * self.vector_rep) * AU_TO_EV
 
+
 class VibrationalTransition:
     def __init__(self, origin, target, fcf, excitation_energy=0.0, reorganization_energy=0.0):
         """
