@@ -94,7 +94,7 @@ def parser_rasci(output):
 
     # RASCI dimensions
     ini_section = output.find('RAS-CI Dimensions')
-    end_section = search_bars(output, from_position=enum, bar_type='\*\*\*')[1]
+    end_section = search_bars(output, from_position=ini_section, bar_type='\*\*\*')[0]
     dimension_section = output[ini_section: end_section]
 
     enum = dimension_section.find('Doubly Occ')
@@ -182,16 +182,15 @@ def parser_rasci(output):
     for m in re.finditer('RAS-CI total energy for state', output):
         # print('ll found', m.start(), m.end())
 
-        section_state = output[m.end():m.end() + 10000]  # 10000: assumed to max of section
-        section_state = section_state[:section_state.find('*****************')]
-
-        enum = section_state.find('RAS-CI total energy for state')
-        section_state = section_state[:enum]
+        end_section = search_bars(output, from_position=m.start(), bar_type='\*\*\*\*\*\*\*')[0]
+        section_state = output[m.start():end_section]
 
         # energies
-        tot_energy = float(section_state.split()[1])
-        exc_energy_units = section_state.split()[4][1:-1]
-        exc_energy = float(section_state.split()[6])
+        enum = section_state.find('total energy for state')
+        tot_energy = float(section_state[enum: enum + 50].split()[5])
+        enum = section_state.find('Excitation energy')
+        exc_energy_units = section_state[enum: enum + 30].split()[2].strip('(').strip(')')
+        exc_energy = float(section_state[enum: enum + 30].split()[4])
 
         # multiplicity
         n_multi = section_state.find('<S^2>')
@@ -206,15 +205,27 @@ def parser_rasci(output):
 
         # Transition moment
         enum = section_state.find('Trans. Moment')
+        trans_mom = strength = None
         if enum > -1:
             trans_mom = [float(section_state[enum:].split()[2]) + 0.0,
                          float(section_state[enum:].split()[4]) + 0.0,
                          float(section_state[enum:].split()[6]) + 0.0]
             trans_mom = standardize_vector(trans_mom)
             strength = float(section_state[enum:].split()[10])
-        else:
-            trans_mom = None
-            strength = None
+
+        # Natural orbitals
+        nato_occ = None
+        enum = section_state.find('NATURAL OCCUPATION NUMBERS')
+        if enum > -1:
+            lines = []
+            for line in section_state[enum:].split('\n')[2::2]:
+                if len(line) == 0:
+                    break
+                if line.split()[0].isnumeric():
+                    lines += line.split()[1:]
+                else:
+                    break
+            nato_occ = [float(num) for num in lines]
 
         # configurations table
         enum = section_state.find('AMPLITUDE')
@@ -243,17 +254,23 @@ def parser_rasci(output):
 
         # complete dictionary
         tot_energy_units = 'au'
-        excited_states.append({'total_energy': tot_energy,
-                               'total_energy_units': tot_energy_units,
-                               'excitation_energy': exc_energy,
-                               'excitation_energy_units': exc_energy_units,
-                               'multiplicity': state_multiplicity,
-                               'dipole_moment': dipole_mom,
-                               'transition_moment': trans_mom,
-                               'dipole_moment_units': 'ua',
-                               'oscillator_strength': strength,
-                               'configurations': table,
-                               'contributions_fwn': contributions})
+
+        state_dict = {'total_energy': tot_energy,
+                      'total_energy_units': tot_energy_units,
+                      'excitation_energy': exc_energy,
+                      'excitation_energy_units': exc_energy_units,
+                      'multiplicity': state_multiplicity,
+                      'dipole_moment': dipole_mom,
+                      'transition_moment': trans_mom,
+                      'dipole_moment_units': 'ua',
+                      'oscillator_strength': strength,
+                      'configurations': table,
+                      'contributions_fwn': contributions}
+
+        if nato_occ is not None:
+            state_dict.update({'natural_occupation_numbers': nato_occ})
+
+        excited_states.append(state_dict)
 
     data_dict.update({'excited_states': excited_states})
 
