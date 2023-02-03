@@ -228,6 +228,17 @@ excited_states:
   excitation_energy: 0.0
   excitation_energy_units: eV
   multiplicity: 0.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 1.9110686
+  - 0.0885575
+  - 0.0003738
   oscillator_strength: null
   total_energy: -78.06602454107
   total_energy_units: au
@@ -458,9 +469,21 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 4.407963617406
+  excitation_energy: 4.4
   excitation_energy_units: eV
   multiplicity: 2.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 0.9999341
+  - 0.9999341
+  - 6.59e-05
+  - 6.59e-05
   oscillator_strength: 0.0
   total_energy: -77.904034855395
   total_energy_units: au
@@ -470,7 +493,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '01'
-    amplitude: 0.14055934784771
+    amplitude: -0.14055934784771
     beta: '11'
     hole: '5'
     occupations:
@@ -578,7 +601,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.14055934784772
+    amplitude: 0.14055934784772
     beta: '01'
     hole: '5'
     occupations:
@@ -794,7 +817,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: 0.68904848347275
+    amplitude: 0.68904848347276
     beta: '10'
     hole: '7'
     occupations:
@@ -910,9 +933,21 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 9.556214774915
+  excitation_energy: 9.55
   excitation_energy_units: eV
   multiplicity: 2.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 1.9604861
+  - 1.9489594
+  - 1.0504244
+  - 1.0292196
+  - 0.0102943
+  - 0.0006162
   oscillator_strength: 0.0
   total_energy: -77.714840102632
   total_energy_units: au
@@ -922,7 +957,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: 0.17213907232533
+    amplitude: 0.17213907232523
     beta: '10'
     hole: ''
     occupations:
@@ -1030,7 +1065,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '10'
-    amplitude: 0.17213907232534
+    amplitude: 0.17213907232523
     beta: '00'
     hole: ''
     occupations:
@@ -1246,7 +1281,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.16212744155817
+    amplitude: -0.16212744155818
     beta: '01'
     hole: '5'
     occupations:
@@ -1354,7 +1389,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.66521057773374
+    amplitude: -0.66521057773376
     beta: '11'
     hole: '7'
     occupations:
@@ -1462,7 +1497,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: 0.66521057773371
+    amplitude: -0.66521057773374
     beta: '10'
     hole: '7'
     occupations:
@@ -1578,9 +1613,21 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 9.940994841414
+  excitation_energy: 9.94
   excitation_energy_units: eV
   multiplicity: 0.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 1.9474294
+  - 1.8829283
+  - 1.1149898
+  - 0.9922334
+  - 0.0603372
+  - 0.0020819
   oscillator_strength: 0.0
   total_energy: -77.70069969508
   total_energy_units: au
@@ -1590,7 +1637,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: 0.69363903297743
+    amplitude: -0.69363903297739
     beta: '10'
     hole: ''
     occupations:
@@ -1698,7 +1745,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '10'
-    amplitude: -0.69363903297742
+    amplitude: 0.6936390329774
     beta: '00'
     hole: ''
     occupations:
@@ -1814,9 +1861,21 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 10.2574493197
+  excitation_energy: 10.25
   excitation_energy_units: eV
   multiplicity: 2.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 1.9975493
+  - 1.9940588
+  - 0.9840729
+  - 0.9697398
+  - 0.0327109
+  - 0.0218683
   oscillator_strength: 0.0
   total_energy: -77.689070206745
   total_energy_units: au
@@ -1826,7 +1885,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: -0.6924576007992
+    amplitude: 0.6924576007992
     beta: '10'
     hole: ''
     occupations:
@@ -1934,7 +1993,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '10'
-    amplitude: 0.6924576007992
+    amplitude: -0.69245760079919
     beta: '00'
     hole: ''
     occupations:
@@ -2050,9 +2109,21 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 10.426495762387
+  excitation_energy: 10.42
   excitation_energy_units: eV
   multiplicity: 2.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 1.9997599
+  - 1.9894703
+  - 0.9955746
+  - 0.9742751
+  - 0.025965
+  - 0.0149551
   oscillator_strength: 0.0
   total_energy: -77.682857864155
   total_energy_units: au
@@ -2286,9 +2357,19 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 10.488683972607
+  excitation_energy: 10.48
   excitation_energy_units: eV
   multiplicity: 0.0
+  natural_occupation_numbers:
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 2.0
+  - 0.999999
+  - 0.999999
   oscillator_strength: 0.604822
   total_energy: -77.680572489433
   total_energy_units: au
@@ -2371,6 +2452,18 @@ interstate_properties:
     state_b: 7
   ? !!python/tuple
   - 2
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.544209
+    gamma_sym: 0.837441
+    gamma_total: 0.998734
+    state_a: 2
+    state_b: 1
+  ? !!python/tuple
+  - 2
   - 3
   : angular_momentum:
     - !!python/complex '0.0'
@@ -2431,6 +2524,30 @@ interstate_properties:
     state_b: 7
   ? !!python/tuple
   - 3
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.677576
+    gamma_sym: 0.677576
+    gamma_total: 0.958238
+    state_a: 3
+    state_b: 1
+  ? !!python/tuple
+  - 3
+  - 2
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.494443
+    gamma_sym: 0.494443
+    gamma_total: 0.699248
+    state_a: 3
+    state_b: 2
+  ? !!python/tuple
+  - 3
   - 4
   : angular_momentum:
     - !!python/complex '0.0'
@@ -2479,6 +2596,42 @@ interstate_properties:
     state_b: 7
   ? !!python/tuple
   - 4
+  - 1
+  : angular_momentum:
+    - !!python/complex '1.4237597j'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.672655
+    gamma_sym: 0.672655
+    gamma_total: 0.951279
+    state_a: 4
+    state_b: 1
+  ? !!python/tuple
+  - 4
+  - 2
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.494682
+    gamma_sym: 0.494682
+    gamma_total: 0.699586
+    state_a: 4
+    state_b: 2
+  ? !!python/tuple
+  - 4
+  - 3
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.000527
+    gamma_sym: 0.919378
+    gamma_total: 0.919378
+    state_a: 4
+    state_b: 3
+  ? !!python/tuple
+  - 4
   - 5
   : angular_momentum:
     - !!python/complex '0.0'
@@ -2515,6 +2668,54 @@ interstate_properties:
     state_b: 7
   ? !!python/tuple
   - 5
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.68302
+    gamma_sym: 0.68302
+    gamma_total: 0.965936
+    state_a: 5
+    state_b: 1
+  ? !!python/tuple
+  - 5
+  - 2
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '-0.354729985j'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.498999
+    gamma_sym: 0.498999
+    gamma_total: 0.705691
+    state_a: 5
+    state_b: 2
+  ? !!python/tuple
+  - 5
+  - 3
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.062719
+    gamma_sym: 0.062719
+    gamma_total: 0.088698
+    state_a: 5
+    state_b: 3
+  ? !!python/tuple
+  - 5
+  - 4
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.126436
+    gamma_sym: 0.126436
+    gamma_total: 0.178807
+    state_a: 5
+    state_b: 4
+  ? !!python/tuple
+  - 5
   - 6
   : angular_momentum:
     - !!python/complex '0.0'
@@ -2539,6 +2740,66 @@ interstate_properties:
     state_b: 7
   ? !!python/tuple
   - 6
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.686066
+    gamma_sym: 0.686066
+    gamma_total: 0.970244
+    state_a: 6
+    state_b: 1
+  ? !!python/tuple
+  - 6
+  - 2
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.499014
+    gamma_sym: 0.499014
+    gamma_total: 0.705713
+    state_a: 6
+    state_b: 2
+  ? !!python/tuple
+  - 6
+  - 3
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.001975
+    gamma_sym: 0.143679
+    gamma_total: 0.143693
+    state_a: 6
+    state_b: 3
+  ? !!python/tuple
+  - 6
+  - 4
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.003237
+    gamma_sym: 0.258301
+    gamma_total: 0.258321
+    state_a: 6
+    state_b: 4
+  ? !!python/tuple
+  - 6
+  - 5
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.486103
+    gamma_sym: 0.486103
+    gamma_total: 0.687453
+    state_a: 6
+    state_b: 5
+  ? !!python/tuple
+  - 6
   - 7
   : angular_momentum:
     - !!python/complex '0.0'
@@ -2549,6 +2810,78 @@ interstate_properties:
     gamma_total: 0.705903
     state_a: 6
     state_b: 7
+  ? !!python/tuple
+  - 7
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.828056
+    gamma_sym: 0.553688
+    gamma_total: 0.996116
+    state_a: 7
+    state_b: 1
+  ? !!python/tuple
+  - 7
+  - 2
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.089991
+    gamma_sym: 0.987744
+    gamma_total: 0.991835
+    state_a: 7
+    state_b: 2
+  ? !!python/tuple
+  - 7
+  - 3
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.499064
+    gamma_sym: 0.499064
+    gamma_total: 0.705782
+    state_a: 7
+    state_b: 3
+  ? !!python/tuple
+  - 7
+  - 4
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.499069
+    gamma_sym: 0.499069
+    gamma_total: 0.70579
+    state_a: 7
+    state_b: 4
+  ? !!python/tuple
+  - 7
+  - 5
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.499154
+    gamma_sym: 0.499154
+    gamma_total: 0.705911
+    state_a: 7
+    state_b: 5
+  ? !!python/tuple
+  - 7
+  - 6
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.499149
+    gamma_sym: 0.499149
+    gamma_total: 0.705903
+    state_a: 7
+    state_b: 6
 rasci_dimensions:
   active_configurations: 4
   doubly_occupied: 7
@@ -2592,9 +2925,9 @@ structure: !!python/object:pyqchem.structure.Structure
       - 0
     - false
     - !!binary |
-      SOF6FK5H5T8AAAAAAAAAAAAAAAAAAACASOF6FK5H5b8AAAAAAAAAgAAAAAAAAAAAwk8cQL+v879M
-      32sIjkvtPwAAAAAAAAAAwk8cQL+v879M32sIjkvtvwAAAAAAAAAAwk8cQL+v8z9M32sIjkvtPwAA
-      AAAAAACAwk8cQL+v8z9M32sIjkvtvwAAAAAAAACA
+      SOF6FK5H5T8AAAAAAAAAgAAAAAAAAACASOF6FK5H5b8AAAAAAAAAAAAAAAAAAAAAwk8cQL+v879M
+      32sIjkvtPwAAAAAAAACAwk8cQL+v879M32sIjkvtvwAAAAAAAAAAwk8cQL+v8z9M32sIjkvtPwAA
+      AAAAAACAwk8cQL+v8z9M32sIjkvtvwAAAAAAAAAA
   _multiplicity: 1
   _name: null
   _number_of_atoms: null
