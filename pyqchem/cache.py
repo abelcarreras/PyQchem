@@ -1,6 +1,5 @@
 import pickle
 import time
-import fcntl
 import sys
 import sqlite3
 import numpy as np
@@ -93,7 +92,9 @@ class SimpleCache(object):
             for iter in range(100):
                 try:
                     with open(self._calculation_data_filename, 'wb') as f:
-                        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        if sys.platform not in ["win32", "cygwin"]:
+                            import fcntl
+                            fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
                         pickle.dump(self.calculation_data, f, self._pickle_protocol)
                 except BlockingIOError:
                     # print('read_try: {}'.format(iter))
