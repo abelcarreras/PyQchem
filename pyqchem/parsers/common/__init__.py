@@ -1,6 +1,8 @@
 import numpy as np
 import re
 from pyqchem.utils import get_occupied_electrons
+from pyqchem.structure import atom_data
+from pyqchem.structure import Structure
 
 
 def read_symmetry_info(output):
@@ -29,6 +31,38 @@ def read_basic_info(output):
             'n_beta': n_beta,
             'n_shells': nshell,
             'n_basis_functions': nbas}
+
+def read_input_structure(output):
+
+    enum = output.find('Standard Nuclear Orientation')
+    end_section = search_bars(output, from_position=enum, bar_type='\-\-\-\-\-')
+    section_structure = output[end_section[0]: end_section[1]].split('\n')
+
+    symbols = []
+    coordinates = []
+    for line in section_structure[1:-1]:
+        symbols.append(line.split()[1])
+        coordinates.append(line.split()[2:5])
+
+    coordinates = np.array(coordinates, dtype=float).tolist()
+
+    # basic info
+    enum = output.find('Nuclear Repulsion Energy')
+    basic_data = read_basic_info(output[enum:enum + 5000])
+
+    n_nucleus = 0
+    for s in symbols:
+        for i, row in enumerate(atom_data):
+            if row[1] == s:
+                n_nucleus += i
+
+    charge = n_nucleus - (basic_data['n_alpha'] + basic_data['n_alpha'])
+    multiplicity = abs(basic_data['n_alpha'] - basic_data['n_beta'])
+
+    return Structure(coordinates=coordinates,
+                     symbols=symbols,
+                     charge=charge,
+                     multiplicity=multiplicity)
 
 
 def get_cis_occupations_list(number_of_orbitals,

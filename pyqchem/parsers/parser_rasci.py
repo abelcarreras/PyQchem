@@ -3,8 +3,8 @@ __author__ = 'Abel Carreras'
 import re
 import operator
 import numpy as np
-from pyqchem.structure import Structure
-from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list, search_bars, standardize_vector
+from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
+from pyqchem.parsers.common import search_bars, standardize_vector, read_input_structure
 
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
@@ -53,31 +53,10 @@ def parser_rasci(output):
     """
 
     data_dict = {}
+
     # Molecule
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
-
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(symbols)
-
-    # structure
-    structure_input = Structure(coordinates=coordinates,
-                                symbols=symbols,
-                                charge=charge,
-                                multiplicity=multiplicity)
-
-    enum = output.find('Standard Nuclear Orientation')
-    section_structure = output[enum:enum + 200*structure_input.get_number_of_atoms()].split('\n')
-    section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
-    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
-
-    data_dict['structure'] = Structure(coordinates=coordinates,
-                                       symbols=symbols,
-                                       charge=charge,
-                                       multiplicity=multiplicity)
+    data_dict['structure'] = read_input_structure(output)
+    n_atoms = data_dict['structure'].get_number_of_atoms()
 
     # basic info
     enum = output.find('Nuclear Repulsion Energy')
@@ -323,7 +302,10 @@ def parser_rasci(output):
 
                 if '1-elec SOC matrix (cm-1)' in line:
                     pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [nb, na])
-                    pair_dict['1e_socc'] = float(lines[i+2 + nb].split()[-2:][0])
+
+                if '1-elec SOCC' in line:
+                    pair_dict['1e_socc'] = float(line.split()[3])
+
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
                     r, c = lines[i+1].split()[-2:]
                     pair_dict['hso_l-'] = float(r) + float(c) * 1j
