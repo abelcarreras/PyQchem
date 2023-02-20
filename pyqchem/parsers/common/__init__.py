@@ -57,7 +57,7 @@ def read_input_structure(output):
                 n_nucleus += i
 
     charge = n_nucleus - (basic_data['n_alpha'] + basic_data['n_alpha'])
-    multiplicity = abs(basic_data['n_alpha'] - basic_data['n_beta'])
+    multiplicity = abs(basic_data['n_alpha'] - basic_data['n_beta']) + 1
 
     return Structure(coordinates=coordinates,
                      symbols=symbols,

@@ -370,7 +370,7 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
 
 
     # MO_COEFS (Already in fchk) in internal order
-    if '53.0' in file_list:
+    if '53.0' in file_list and 'coefficients' in data_fchk:
         with open(work_dir + '53.0', 'r') as f:
             data = np.fromfile(f, dtype=float)
             mo_alpha = data[:norb*nbas].reshape(-1, norb).tolist()

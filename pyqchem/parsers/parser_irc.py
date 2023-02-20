@@ -1,4 +1,5 @@
 from pyqchem.structure import Structure
+from pyqchem.parsers.common import read_input_structure
 import numpy as np
 import re
 
@@ -7,15 +8,10 @@ def basic_irc(output, print_data=False):
 
     branch_mark = True
     data_dict = {}
-    # Molecule
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
 
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates = np.array([np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(coordinates)
+    # Molecule
+    structure = read_input_structure(output)
+    n_atoms = structure.get_number_of_atoms()
 
     forward_steps = []
     backward_steps = []
@@ -32,9 +28,9 @@ def basic_irc(output, print_data=False):
             step_energy = float(step_section[l.end(): l.end()+50].split()[1])
 
         step_molecule = Structure(coordinates=coordinates_step,
-                                  symbols=symbols,
-                                  charge=charge,
-                                  multiplicity=multiplicity)
+                                  symbols=structure.get_symbols(),
+                                  charge=structure.charge,
+                                  multiplicity=structure.multiplicity)
 
         if (step_section.find('IRC -- maximum number of cycles reached') > 0
                 or step_section.find('IRC -- convergence criterion reached') > 0):
