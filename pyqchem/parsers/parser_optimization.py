@@ -1,4 +1,5 @@
 from pyqchem.structure import Structure
+from pyqchem.parsers.common import read_input_structure
 import numpy as np
 import re
 
@@ -35,15 +36,9 @@ def parse_molecule(opt_section, charge=0, multiplicity=0):
 def basic_optimization(output, print_data=False):
 
     data_dict = {}
-    # Molecule
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
 
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates = np.array([np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(coordinates)
+    # Molecule
+    structure = read_input_structure(output)
 
     step_s2 = None
     # Optimization steps
@@ -53,7 +48,7 @@ def basic_optimization(output, print_data=False):
         step_section = output[ini:fin]
         enum = step_section.find('Coordinates (Angstroms)')
 
-        step_molecule = parse_molecule(step_section, charge, multiplicity)
+        step_molecule = parse_molecule(step_section, structure.charge, structure.multiplicity)
 
         enum = step_section.find('Energy is')
         step_energy = float(step_section[enum: enum+50].split()[2])
@@ -81,7 +76,7 @@ def basic_optimization(output, print_data=False):
         final_energy = float(output[ne+enum-200: enum].split()[3])
         optimization_section = output[enum:]
 
-        optimized_molecule = parse_molecule(optimization_section, charge, multiplicity)
+        optimized_molecule = parse_molecule(optimization_section, structure.charge, structure.multiplicity)
 
         data_dict['optimized_molecule'] = optimized_molecule
         data_dict['energy'] = final_energy
