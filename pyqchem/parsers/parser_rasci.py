@@ -263,7 +263,8 @@ def parser_rasci(output):
         interstate_dict = {}
         for m in re.finditer('State A: Root', interstate_section):
             section_pair = interstate_section[m.start():m.start() + 10000]
-            section_pair = section_pair[:section_pair.find('********')]
+            end_section = search_bars(section_pair, bar_type='\*'*20)[0]
+            section_pair = section_pair[:end_section]
 
             lines = section_pair.split('\n')
 
