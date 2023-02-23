@@ -4,6 +4,7 @@
 import sys
 import numpy as np
 
+from pyqchem.parsers.parser_rasci import parser_rasci
 
 def get_SCF_energy(ras_input):
     """
@@ -203,6 +204,63 @@ def get_SOCC_values(input, totalstates):
 
     SOCC_values = np.array(elements, dtype=float)
     return SOCC_values
+
+
+def get_spin_orbit_couplings_pyqchem(file_ras, totalstates, n_states, selected_SOC):
+    """
+    Spin-orbit coupling values are written in matrix with 'bra' in rows
+    and 'ket' in columns, with spin order -1/2 , +1/2.
+    :param selected_SOC, totalstates, n_states, file_ras: type of SOC
+    considered, number of states, states selected, output Q-Chem
+    :return SOC_matrix: SOC matrix
+    """
+    with open(file_ras,encoding="utf8") as f:
+        output = f.read()
+
+    output = parser_rasci(output)
+    data = output['interstate_properties']
+
+    state_multiplicities = []
+    for i, state in enumerate(output['excited_states']):
+        state_multiplicities.append( state['multiplicity'] )
+
+    s2_max = max(state_multiplicities)
+    s_max = 0.5 * (-1 + np.sqrt(1 + 4 * s2_max))
+    sz_list = list( np.arange(-s_max, s_max+1, 1) )
+
+    soc = np.zeros((totalstates * len(sz_list), totalstates * len(sz_list)), dtype=complex)
+
+    for i in range(0, totalstates):
+        for j in range(0, totalstates):
+
+            if i != j:
+                i_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[i]))
+                j_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[j]))
+
+                i_index = sz_list.index(i_multip)
+                j_index = sz_list.index(j_multip)
+
+                i_position = i_index + len(sz_list) * i
+                j_position = j_index + len(sz_list) * j
+
+                # print('state i j:', i, j, 'multip i j:', i_multip, j_multip, 'index i j:', i_index, j_index,
+                #       'i j position:', j_position, i_position)
+
+                i_j_soc_matrix = data[(i+1, j+1)]['total_soc_mat']
+
+                for sz_1 in range(0, len(i_j_soc_matrix) ):
+                    for sz_2 in range(0, len(i_j_soc_matrix[0]) ):
+                        soc[j_position+sz_1, i_position+sz_2] = i_j_soc_matrix[sz_1][sz_2]
+                        # print('j i positions:', j_position+sz_1, i_position+sz_2, 'sz1 2:', sz_1, sz_2)
+
+    print('\n'.join([''.join(['{:^20}'.format(item) for item in row])\
+                     for row in np.round((soc[:,:]),5)]))
+    print(" ")
+    exit()
+
+    soc = soc / 219474.63068  # From cm-1 to a.u.
+    exit()
+    return soc
 
 
 def get_spin_orbit_couplings(file_ras, totalstates, n_states, selected_SOC):
