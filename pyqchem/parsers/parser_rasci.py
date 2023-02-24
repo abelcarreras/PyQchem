@@ -39,6 +39,35 @@ def _read_soc_matrix(lines, dimensions):
     return matrix
 
 
+def _complete_interstate_pairs(interstate_dict):
+    additional_items = {}
+    for key, value in interstate_dict.items():
+        if not key[::-1] in interstate_dict:
+            dict_entry = {}
+            for k, v in interstate_dict[key].items():
+                if k == 'state_a':
+                    dict_entry.update({k: key[1]})
+                elif k == 'state_b':
+                    dict_entry.update({k: key[0]})
+                elif k == 'angular_momentum':
+                    dict_entry.update({k: np.conjugate(v).tolist()})
+                elif k == '1e_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                elif k == 'hso_l-':
+                    dict_entry.update({k: (-np.array(v)).tolist()})
+                elif k == 'hso_l+':
+                    dict_entry.update({k: (-np.array(v)).tolist()})
+                elif k == '2e_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                elif k == 'total_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                else:
+                    dict_entry.update({k: v})
+            additional_items.update({key[::-1]: dict_entry})
+
+    interstate_dict.update(additional_items)
+
+
 def parser_rasci(output):
     """
     Parser for RAS-CI calculations
@@ -324,6 +353,8 @@ def parser_rasci(output):
                     pair_dict['units'] = line.split()[-1]
 
             interstate_dict[(state_a, state_b)] = pair_dict
+
+        _complete_interstate_pairs(interstate_dict)
         data_dict.update({'interstate_properties': interstate_dict})
 
     return data_dict
