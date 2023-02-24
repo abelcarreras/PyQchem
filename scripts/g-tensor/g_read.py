@@ -206,141 +206,6 @@ def get_SOCC_values(input, totalstates):
     return SOCC_values
 
 
-def get_spin_orbit_couplings_pyqchem(file_ras, totalstates, selected_states, selected_SOC):
-    """
-    Spin-orbit coupling values are written in matrix with 'bra' in rows
-    and 'ket' in columns, with spin order -1/2 , +1/2.
-    :param selected_SOC, totalstates, n_states, file_ras: type of SOC
-    considered, number of states, states selected, output Q-Chem
-    :return SOC_matrix: SOC matrix
-    """
-    with open(file_ras,encoding="utf8") as f:
-        output = f.read()
-    output = parser_rasci(output)
-    data = output['interstate_properties']
-
-    def get_states_sz(output):
-        """
-        Get S² and Sz of all states
-        :param: output
-        :return: all_multip, all_sz
-        """
-        all_multip = []
-        for i, state in enumerate(output['excited_states']):
-            all_multip.append( state['multiplicity'] )
-
-        s2_max = max(all_multip)
-        s_max = 0.5 * (-1 + np.sqrt(1 + 4 * s2_max))
-        all_sz = list( np.arange(-s_max, s_max+1, 1) )
-
-        return all_multip, all_sz
-
-    def get_all_soc(data, totalstates, state_multiplicities, sz_list):
-        """
-        Get SOC matrix. For all the states it put values from maximum Sz to -Sz.
-        If Sz does not exist (i.e., we consider Sz=-1.5 and Sz of the state is 0.5),
-        then the SOC value is 0.
-        :param: data, state_multiplicities, sz_list
-        :return: soc_matrix
-        """
-        soc_matrix = np.zeros((totalstates * len(sz_list), totalstates * len(sz_list)), dtype=complex)
-
-        for i in range(0, totalstates):
-            for j in range(0, totalstates):
-
-                if i != j:
-
-                    i_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[i]))
-                    j_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[j]))
-
-                    i_index = sz_list.index(i_multip)
-                    j_index = sz_list.index(j_multip)
-
-                    i_position = i_index + len(sz_list) * i
-                    j_position = j_index + len(sz_list) * j
-
-                    # print('state i j:', i, j, 'multip i j:', i_multip, j_multip, 'index i j:', i_index, j_index,
-                    #       'i j position:', j_position, i_position)
-
-                    i_j_soc_matrix = data[(i + 1, j + 1)]['total_soc_mat']
-
-                    for sz_1 in range(0, len(i_j_soc_matrix)):
-                        for sz_2 in range(0, len(i_j_soc_matrix[0])):
-                            soc_matrix[j_position + sz_1, i_position + sz_2] = i_j_soc_matrix[sz_1][sz_2]
-                            # print('j i positions:', j_position+sz_1, i_position+sz_2, 'sz1 2:', sz_1, sz_2)
-
-        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
-        #                  for row in np.round((soc_matrix[:, :]), 5)]))
-        # print(" ")
-        # exit()
-        return soc_matrix
-
-    def get_selected_states_soc(selected_states, sz_list, all_soc):
-        """
-        Get SOC matrix between selected states. For all the states it put values
-        from maximum Sz to -Sz. If Sz does not exist (i.e., we consider Sz=-1.5 and
-        Sz of the state is 0.5), then the SOC value is 0.
-        :param: selected_states, sz_list, all_soc
-        :return: soc_matrix
-        """
-        soc = np.zeros((len(selected_states) * len(sz_list), len(selected_states) * len(sz_list)), dtype=complex)
-
-        for i, all_i in enumerate(selected_states):
-            for j, all_j in enumerate(selected_states):
-
-                for sz_1 in range(0, len(sz_list)):
-                    for sz_2 in range(0, len(sz_list)):
-
-                        i_index = i * len(sz_list) + sz_1
-                        j_index = j * len(sz_list) + sz_2
-                        all_i_index = (all_i - 1) * len(sz_list) + sz_1
-                        all_j_index = (all_j - 1) * len(sz_list) + sz_2
-
-                        soc[i_index][j_index] = all_soc[all_i_index][all_j_index]
-
-        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
-        #                  for row in np.round((soc[:, :]), 5)]))
-        # print(" ")
-        # exit()
-        return soc
-
-    def get_doublets_soc(selected_states, selected_soc):
-        """
-        Get SOC matrix between selected states in doublets,
-        meaning Sz = -0.5, 0.5.
-        :param: selected_states, sz_list, all_soc
-        :return: soc_matrix
-        """
-        doublet_soc = np.zeros((len(selected_states) * 2, len(selected_states) * 2), dtype=complex)
-
-        for i, selected_i in enumerate(selected_states):
-            for j, selected_j in enumerate(selected_states):
-
-                for sz_1 in range(0, 2):
-                    for sz_2 in range(0, 2):
-
-                        i_index = i * 2 + sz_1
-                        j_index = j * 2 + sz_2
-                        all_i_index = i * len(sz_list) +  (len(sz_list)//2 - 1) + sz_1
-                        all_j_index = j * len(sz_list) +  (len(sz_list)//2 - 1) + sz_2
-
-                        doublet_soc[i_index][j_index] = selected_soc[all_i_index][all_j_index]
-        #
-        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
-        #                  for row in np.round((doublet_soc[:, :]), 5)]))
-        # print(" ---")
-        # exit()
-        return doublet_soc
-
-    state_multiplicities, sz_list = get_states_sz(output)
-    all_soc = get_all_soc(data, totalstates, state_multiplicities, sz_list)
-    selected_soc = get_selected_states_soc(selected_states, sz_list, all_soc)
-    doublet_soc = get_doublets_soc(selected_states, selected_soc)
-
-    doublet_soc = doublet_soc / 219474.63068  # From cm-1 to a.u.
-    return doublet_soc
-
-
 def get_spin_orbit_couplings(file_ras, totalstates, n_states, selected_SOC):
     """
     WRITTEN WHEN INTERSTATE PROPERTIES BETWEEN 2 STATES
@@ -671,13 +536,13 @@ def get_orbital_matrices(file_ras, totalstates, n_states):
                         bra_index + 1, ket_index + 1, k]
                 nel = nel + 3
 
-    # print('Angular momentums (x,y,z):')
-    # for k in range(0,3):
-    #    print('Dimension: ', k)
-    #    print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
-    #                     for row in np.round((orbital_matrix[:,:,k]),5)]))
-    #    print(" ")
-    # exit()
+    print('Angular momentums (x,y,z):')
+    for k in range(0,3):
+       print('Dimension: ', k)
+       print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
+                        for row in np.round((orbital_matrix[:,:,k]),12)]))
+       print(" ")
+    exit()
     return orbital_matrix
 
 
@@ -726,3 +591,245 @@ def get_ground_state_orbital_momentum(input, totalstates):
 
         nstate += 1
     return orbital_momentum
+
+
+def get_spin_orbit_couplings_pyqchem(file_ras, totalstates, selected_states, selected_SOC):
+    """
+    Spin-orbit coupling values are written in matrix with 'bra' in rows
+    and 'ket' in columns, with spin order -1/2 , +1/2.
+    :param selected_SOC, totalstates, n_states, file_ras: type of SOC
+    considered, number of states, states selected, output Q-Chem
+    :return SOC_matrix: SOC matrix
+    """
+    with open(file_ras, encoding="utf8") as f:
+        output = f.read()
+    output = parser_rasci(output)
+    data = output['interstate_properties']
+
+    def get_states_sz(output):
+        """
+        Get S² and Sz of all states
+        :param: output
+        :return: all_multip, all_sz
+        """
+        all_multip = []
+        for i, state in enumerate(output['excited_states']):
+            all_multip.append(state['multiplicity'])
+
+        s2_max = max(all_multip)
+        s_max = 0.5 * (-1 + np.sqrt(1 + 4 * s2_max))
+        all_sz = list(np.arange(-s_max, s_max + 1, 1))
+
+        return all_multip, all_sz
+
+    def get_all_soc(data, totalstates, state_multiplicities, sz_list):
+        """
+        Get SOC matrix. For all the states it put values from maximum Sz to -Sz.
+        If Sz does not exist (i.e., we consider Sz=-1.5 and Sz of the state is 0.5),
+        then the SOC value is 0.
+        :param: data, state_multiplicities, sz_list
+        :return: soc_matrix
+        """
+        soc_matrix = np.zeros((totalstates * len(sz_list), totalstates * len(sz_list)), dtype=complex)
+
+        for i in range(0, totalstates):
+            for j in range(0, totalstates):
+
+                if i != j:
+
+                    i_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[i]))
+                    j_multip = -0.5 * (-1 + np.sqrt(1 + 4 * state_multiplicities[j]))
+
+                    i_index = sz_list.index(i_multip)
+                    j_index = sz_list.index(j_multip)
+
+                    i_position = i_index + len(sz_list) * i
+                    j_position = j_index + len(sz_list) * j
+
+                    # print('state i j:', i, j, 'multip i j:', i_multip, j_multip, 'index i j:', i_index, j_index,
+                    #       'i j position:', j_position, i_position)
+
+                    i_j_soc_matrix = data[(i + 1, j + 1)]['total_soc_mat']
+
+                    for sz_1 in range(0, len(i_j_soc_matrix)):
+                        for sz_2 in range(0, len(i_j_soc_matrix[0])):
+                            soc_matrix[j_position + sz_1, i_position + sz_2] = i_j_soc_matrix[sz_1][sz_2]
+                            # print('j i positions:', j_position+sz_1, i_position+sz_2, 'sz1 2:', sz_1, sz_2)
+
+        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
+        #                  for row in np.round((soc_matrix[:, :]), 5)]))
+        # print(" ")
+        # exit()
+        return soc_matrix
+
+    def get_selected_states_soc(selected_states, sz_list, all_soc):
+        """
+        Get SOC matrix between selected states. For all the states it put values
+        from maximum Sz to -Sz. If Sz does not exist (i.e., we consider Sz=-1.5 and
+        Sz of the state is 0.5), then the SOC value is 0.
+        :param: selected_states, sz_list, all_soc
+        :return: soc_matrix
+        """
+        soc = np.zeros((len(selected_states) * len(sz_list), len(selected_states) * len(sz_list)), dtype=complex)
+
+        for i, all_i in enumerate(selected_states):
+            for j, all_j in enumerate(selected_states):
+
+                for sz_1 in range(0, len(sz_list)):
+                    for sz_2 in range(0, len(sz_list)):
+                        i_index = i * len(sz_list) + sz_1
+                        j_index = j * len(sz_list) + sz_2
+                        all_i_index = (all_i - 1) * len(sz_list) + sz_1
+                        all_j_index = (all_j - 1) * len(sz_list) + sz_2
+
+                        soc[i_index][j_index] = all_soc[all_i_index][all_j_index]
+
+        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
+        #                  for row in np.round((soc[:, :]), 5)]))
+        # print(" ")
+        # exit()
+        return soc
+
+    def get_doublets_soc(selected_states, selected_soc):
+        """
+        Get SOC matrix between selected states in doublets,
+        meaning Sz = -0.5, 0.5.
+        :param: selected_states, sz_list, all_soc
+        :return: soc_matrix
+        """
+        doublet_soc = np.zeros((len(selected_states) * 2, len(selected_states) * 2), dtype=complex)
+
+        for i, selected_i in enumerate(selected_states):
+            for j, selected_j in enumerate(selected_states):
+
+                for sz_1 in range(0, 2):
+                    for sz_2 in range(0, 2):
+                        i_index = i * 2 + sz_1
+                        j_index = j * 2 + sz_2
+                        all_i_index = i * len(sz_list) + (len(sz_list) // 2 - 1) + sz_1
+                        all_j_index = j * len(sz_list) + (len(sz_list) // 2 - 1) + sz_2
+
+                        doublet_soc[i_index][j_index] = selected_soc[all_i_index][all_j_index]
+        #
+        # print('\n'.join([''.join(['{:^20}'.format(item) for item in row]) \
+        #                  for row in np.round((doublet_soc[:, :]), 5)]))
+        # print(" ---")
+        # exit()
+        return doublet_soc
+
+    state_multiplicities, sz_list = get_states_sz(output)
+    all_soc = get_all_soc(data, totalstates, state_multiplicities, sz_list)
+    selected_soc = get_selected_states_soc(selected_states, sz_list, all_soc)
+    doublet_soc = get_doublets_soc(selected_states, selected_soc)
+
+    doublet_soc = doublet_soc / 219474.63068  # From cm-1 to a.u.
+    return doublet_soc
+
+
+def get_orbital_matrices_pyqchem(file_ras, totalstates, selected_states):
+    """
+    Orbital angular momentum values are written in matrix with
+    'bra' in rows and 'ket' in columns, with spin order -1/2 , +1/2.
+    Third dimension is the direction.
+    :param file_ras, totalstates, n_states: output Q-Chem, number of
+    states, states selected
+    :return: orbital_matrix
+    """
+    def get_all_Lk(data, totalstates):
+        """
+        Get Lk between all the states in x,y,z dimensions.
+        | A > in columns, < B | in rows.
+        :param: data, totalstates
+        :return: Lk_matrix
+        """
+        Lk_matrix = np.zeros((totalstates, totalstates, 3), dtype=complex)
+
+        for i in range(0, totalstates):
+            for j in range(0, totalstates):
+
+                    if i != j:
+
+                        element = data[(i + 1, j + 1)]['angular_momentum']
+
+                        for k in range(0, 3):
+                            Lk_matrix[j,i,k] = element[k]
+
+        # print('Angular momentums (x,y,z):')
+        # for k in range(0,3):
+        #    print('Dimension: ', k)
+        #    print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
+        #                     for row in np.round((Lk_matrix[:,:,k]),5)]))
+        #    print(" ")
+        # exit()
+        return Lk_matrix
+
+
+    def get_selected_states_Lk(selected_states, all_momentum):
+        """
+        Get Lk between the selected states in x,y,z dimensions.
+        :param: selected_states, sz_list, all_soc
+        :return: Lk_matrix
+        """
+        selected_Lk = np.zeros((len(selected_states), len(selected_states), 3), dtype=complex)
+
+        for k in range(0,3):
+            for i, all_i in enumerate(selected_states):
+                for j, all_j in enumerate(selected_states):
+                        # print('i, j; ', i, j, 'all_i, all_j:', all_i-1, all_j-1)
+                        selected_Lk[i][j][k] = all_momentum[all_i-1][all_j-1][k]
+
+        # print('Angular momentums (x,y,z):')
+        # for k in range(0, 3):
+        #     print('Dimension: ', k)
+        #     print('\n'.join([''.join(['{:^15}'.format(item) for item in row]) \
+        #                      for row in np.round((selected_Lk[:, :, k]), 5)]))
+        #     print(" ")
+        # exit()
+        return selected_Lk
+
+
+    def get_Lk_for_doublets(selected_Lk):
+        """
+        Get Lk between the selected states in x,y,z dimensions for doublets,
+        i.e. in each row (column) there are state A,-1/2 and A,+1/2.
+        :param: selected_states, sz_list, all_soc
+        :return: Lk_matrix
+        """
+        doublets_Lk = np.zeros((len(selected_Lk) * 2, len(selected_states) * 2, 3)
+                               , dtype=complex)
+
+        for k in range(0,3):
+            for i in range(0, len(selected_Lk)*2,2):
+                for j in range(0, len(selected_Lk)*2,2):
+
+                    doublets_Lk[i, j][k] = selected_Lk[i//2][j//2][k]
+                    doublets_Lk[i+1, j+1][k] = selected_Lk[i // 2][j // 2][k]
+
+        # print('Angular momentums (x,y,z):')
+        # for k in range(0, 3):
+        #     print('Dimension: ', k)
+        #     print('\n'.join([''.join(['{:^15}'.format(item) for item in row]) \
+        #                      for row in np.round((doublets_Lk[:, :, k]), 5)]))
+        #     print(" ")
+        # exit()
+        return doublets_Lk
+
+
+    with open(file_ras, encoding="utf8") as f:
+        output = f.read()
+    output = parser_rasci(output)
+    data = output['interstate_properties']
+
+    all_Lk = get_all_Lk(data, totalstates)
+    selected_Lk = get_selected_states_Lk(selected_states, all_Lk)
+    doublets_Lk = get_Lk_for_doublets(selected_Lk)
+
+    # print('Angular momentums (x,y,z):')
+    # for k in range(0,3):
+    #    print('Dimension: ', k)
+    #    print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
+    #                     for row in np.round((doublets_Lk[:,:,k]),5)]))
+    #    print(" ")
+    # exit()
+    return doublets_Lk
+

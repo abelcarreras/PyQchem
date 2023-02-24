@@ -214,7 +214,7 @@ def from_energies_SOC_to_g_values(input, states_ras, totalstates, excitation_ene
     :param: input, states, totalstates, excitation_energies, SOC
     :return: G_matrix, G_tensor_results
     """
-    from g_read import get_spin_matrices, get_orbital_matrices
+    from g_read import get_spin_matrices, get_orbital_matrices, get_orbital_matrices_pyqchem
 
     Hamiltonian_ras = get_Hamiltonian_construction(states_ras, excitation_energies_ras, SOC_ras)
 
@@ -222,7 +222,7 @@ def from_energies_SOC_to_g_values(input, states_ras, totalstates, excitation_ene
 
     spin_matrix = get_spin_matrices(input, states_ras)
 
-    l_matrix = get_orbital_matrices(input, totalstates, states_ras)
+    l_matrix = get_orbital_matrices_pyqchem(input, totalstates, states_ras)
 
     sigma_matrix = angular_matrixes_obtention(eigenvalues, eigenvector, kramers_states, spin_matrix)
 
