@@ -146,3 +146,11 @@ def standardize_vector(vector):
 
     return vector
 
+# handle asterisks and convert them to nan
+class float_asterisk(float):
+    def __new__(cls, value):
+        if '**' in value:
+            return super(float_asterisk, cls).__new__(cls, 'nan')
+        return super(float_asterisk, cls).__new__(cls, value)
+    def __init__(self, value):
+        super(float_asterisk, self).__init__()

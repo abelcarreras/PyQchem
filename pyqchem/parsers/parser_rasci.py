@@ -5,16 +5,8 @@ import operator
 import numpy as np
 from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
 from pyqchem.parsers.common import search_bars, standardize_vector, read_input_structure
+from pyqchem.parsers.common import float_asterisk as float
 
-# handle asterisks and convert them to nan
-class float_asterisk(float):
-    def __new__(cls, value):
-        if '**' in value:
-            return super(float_asterisk, cls).__new__(cls, 'nan')
-        return super(float_asterisk, cls).__new__(cls, value)
-    def __init__(self, value):
-        super(float_asterisk, self).__init__()
-float = float_asterisk
 
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
