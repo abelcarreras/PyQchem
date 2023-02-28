@@ -19,8 +19,8 @@ else:
 
 
 # Backwards Compatibility
-def redefine_calculation_data_filename(filename):
-    cache = CacheSystem(filename=filename)
+def redefine_calculation_data_filename(filename, compress=False):
+    cache = CacheSystem(filename=filename, compress=compress)
 
 
 # Check if calculation finished ok

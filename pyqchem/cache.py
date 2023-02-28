@@ -4,6 +4,7 @@ import sys
 import sqlite3
 import numpy as np
 from datetime import datetime
+import zlib
 
 
 # Singleton classes to handle cache
@@ -17,9 +18,10 @@ class SimpleCache(object):
     """
 
     class __SimpleCache:
-        def __init__(self, filename='calculation_data.pkl'):
+        def __init__(self, filename='calculation_data.pkl', compress=False):
             self._calculation_data_filename = filename
             self._pickle_protocol = pickle.HIGHEST_PROTOCOL
+            self._compress = compress
 
             # Py2 compatibility
             if 'BlockingIOError' not in vars():
@@ -87,6 +89,9 @@ class SimpleCache(object):
                     continue
                 break
 
+            if self._compress:
+                data = zlib.compress(pickle.dumps(data, protocol=2))
+
             self.calculation_data[(hash(input_qchem), keyword)] = data
 
             for iter in range(100):
@@ -110,8 +115,13 @@ class SimpleCache(object):
             :param keyword: string that was used as a key to store the data
             :return:
             """
-            return self.calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem),
+            data = self.calculation_data[(hash(input_qchem), keyword)] if (hash(input_qchem),
                                                                            keyword) in self.calculation_data else None
+
+            if self._compress and data is not None:
+                data = pickle.loads(zlib.decompress(data))
+
+            return data
 
         def get_all_data(self):
             """
@@ -126,7 +136,11 @@ class SimpleCache(object):
                 data_dict = {}
                 for r in self.calculation_data:
                     if r[0] == id:
-                        data_dict.update({r[1]: self.calculation_data[(id, r[1])]})
+                        value = self.calculation_data[(id, r[1])]
+                        if self._compress:
+                            data_dict.update({r[1]: pickle.loads(zlib.decompress(value))})
+                        else:
+                            data_dict.update({r[1]: value})
                 calc_list.append(data_dict)
 
             return calc_list
@@ -162,10 +176,11 @@ class SqlCache:
         cls.__instance__ = super(SqlCache, cls, ).__new__(cls)
         return cls.__instance__
 
-    def __init__(self, filename=None):
+    def __init__(self, filename=None, compress=False):
         """
         Constructor
         """
+        self._compress = compress
 
         if filename is not None:
             self._calculation_data_filename = filename
@@ -222,9 +237,12 @@ class SqlCache:
 
         serialized_data = pickle.dumps(data, protocol=2)
 
+        if self._compress:
+            serialized_data = zlib.compress(serialized_data)
+
         # python 2 compatibility
         if sys.version_info[0] < 3:
-            serialized_data = buffer(serialized_data)
+            serialized_data = buffer(serialized_data) # noqa
 
         self._conn.execute("DELETE FROM DATA_TABLE WHERE input_hash=? AND parser=?",
                            (hash(input_qchem), keyword))
@@ -255,6 +273,9 @@ class SqlCache:
 
         self._conn.close()
 
+        if self._compress:
+            return pickle.loads(zlib.decompress(rows[0][0])) if len(rows) > 0 else None
+
         return pickle.loads(rows[0][0]) if len(rows) > 0 else None
 
     def retrieve_calculation_data_from_id(self, id, keyword=None):
@@ -282,9 +303,15 @@ class SqlCache:
         if len(rows) <= 0:
             return None
         elif len(rows) == 1:
-            return pickle.loads(rows[0][0]) if len(rows) > 0 else None
+            if self._compress:
+                return pickle.loads(zlib.decompress(rows[0][0])) if len(rows) > 0 else None
+            else:
+                return pickle.loads(rows[0][0]) if len(rows) > 0 else None
         else:
-            return [pickle.loads(r[0]) for r in rows]
+            if self._compress:
+                return [pickle.loads(zlib.decompress(r[0])) for r in rows]
+            else:
+                return [pickle.loads(r[0]) for r in rows]
 
     def list_database(self):
         """
@@ -407,7 +434,10 @@ class SqlCache:
             data_dict = {}
             for r in rows:
                 if r[0] == id:
-                    data_dict.update({r[1]: pickle.loads(r[2])})
+                    if self._compress:
+                        data_dict.update({r[1]: pickle.loads(zlib.decompress(r[2]))})
+                    else:
+                        data_dict.update({r[1]: pickle.loads(r[2])})
             calc_list.append(data_dict)
 
         return calc_list
@@ -421,7 +451,11 @@ class SqlCache:
 
         self._calculation_data = {}
         for row in cursor:
-            self._calculation_data[(row[0], row[1])] = pickle.loads(row[2])
+
+            if self._compress:
+                self._calculation_data[(row[0], row[1])] = pickle.loads(zlib.decompress(row[2]))
+            else:
+                self._calculation_data[(row[0], row[1])] = pickle.loads(row[2])
 
         self._conn.close()
 
@@ -433,8 +467,13 @@ class SqlCache:
         self._conn = sqlite3.connect(self._calculation_data_filename)
 
         for key, value in calculation_data.items():
+
+            serialized_data = pickle.dumps(value, protocol=2)
+            if self._compress:
+                serialized_data = zlib.compress(serialized_data)
+
             self._conn.execute("INSERT or REPLACE into DATA_TABLE (input_hash, parser, qcdata)  VALUES (?, ?, ?)",
-                               (key[0], key[1], pickle.dumps(value, protocol=2)))
+                               (key[0], key[1], serialized_data))
 
         self._conn.commit()
         self._conn.close()
