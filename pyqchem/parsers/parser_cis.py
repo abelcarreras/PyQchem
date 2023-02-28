@@ -4,7 +4,7 @@ AU_TO_EV = 27.21138
 from pyqchem.structure import Structure
 from pyqchem.errors import ParserError
 from pyqchem.parsers.common import search_bars, standardize_vector
-from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list, read_symmetry_info
+from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list, read_symmetry_info, read_input_structure
 import numpy as np
 import re
 
@@ -32,30 +32,8 @@ def basic_cis(output):
     data_dict = {}
 
     # Molecule
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
-
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(symbols)
-
-    # structure
-    structure_input = Structure(coordinates=coordinates,
-                                symbols=symbols,
-                                charge=charge,
-                                multiplicity=multiplicity)
-
-    enum = output.find('Standard Nuclear Orientation')
-    section_structure = output[enum:enum + 200*structure_input.get_number_of_atoms()].split('\n')
-    section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
-    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
-
-    data_dict['structure'] = Structure(coordinates=coordinates,
-                                       symbols=symbols,
-                                       charge=charge,
-                                       multiplicity=multiplicity)
+    data_dict['structure'] = read_input_structure(output)
+    n_atoms = data_dict['structure'].get_number_of_atoms()
 
     # scf_energy
     enum = output.find('Total energy in the final basis set')
@@ -120,7 +98,7 @@ def basic_cis(output):
                     alpha_transitions = []
                     beta_transitions = []
                     try:
-                        spin = line[21:].split()[3]
+                        spin = line[21:].split()[-1]
                         if spin == 'alpha':
                             alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
                         elif spin == 'beta':

@@ -138,7 +138,7 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 4.151933914203
+  excitation_energy: 4.15
   excitation_energy_units: eV
   multiplicity: 2.0
   oscillator_strength: 0.0
@@ -161,6 +161,18 @@ interstate_properties:
     gamma_total: 0.999927
     state_a: 1
     state_b: 2
+  ? !!python/tuple
+  - 2
+  - 1
+  : angular_momentum:
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    - !!python/complex '0.0'
+    gamma_anti_sym: 0.622698
+    gamma_sym: 0.782369
+    gamma_total: 0.999927
+    state_a: 2
+    state_b: 1
 rasci_dimensions:
   active_configurations: 4
   doubly_occupied: 0

@@ -9,9 +9,10 @@ import pickle
 import warnings
 import sys
 
-if sys.version_info[0] < 3 or sys.platform.startswith('win'):
+if sys.version_info[0] < 3 or sys.platform in ["win32", "cygwin"] or os.getenv('PYQCHEM_CACHE') == '1':
     # For python 2.x or Windows use pickle based cache system
     from pyqchem.cache import SimpleCache as CacheSystem
+    warnings.warn('Using SimpleCache')
 else:
     # For python 3.x use SQL Database based cache system
     from pyqchem.cache import SqlCache as CacheSystem
@@ -369,7 +370,7 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
 
 
     # MO_COEFS (Already in fchk) in internal order
-    if '53.0' in file_list:
+    if '53.0' in file_list and 'coefficients' in data_fchk:
         with open(work_dir + '53.0', 'r') as f:
             data = np.fromfile(f, dtype=float)
             mo_alpha = data[:norb*nbas].reshape(-1, norb).tolist()

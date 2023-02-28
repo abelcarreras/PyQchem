@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from pyqchem.structure import Structure
+from pyqchem.parsers.common import read_input_structure
 
 
 # parser for frequencies calculations
@@ -13,25 +13,9 @@ def basic_frequencies(output, print_data=False):
     :return:
     """
 
-    # Input moelcular data
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates_input = np.array([ np.array(line.split()[1:4], dtype=float) for line in molecule_region[1:]])
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(coordinates_input)
-
-    # Standard oriented structure
-    enum = output.find('Standard Nuclear Orientation')
-    section_structure = output[enum:enum + 200*n_atoms].split('\n')
-    section_structure = section_structure[3:n_atoms+3]
-    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
-
-    structure = Structure(coordinates=coordinates,
-                          symbols=symbols,
-                          charge=charge,
-                          multiplicity=multiplicity)
+    # Molecule
+    structure = read_input_structure(output)
+    n_atoms = structure.get_number_of_atoms()
 
     # Energy
     n = output.find('Total energy in the final basis set =')

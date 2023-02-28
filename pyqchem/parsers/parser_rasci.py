@@ -3,8 +3,10 @@ __author__ = 'Abel Carreras'
 import re
 import operator
 import numpy as np
-from pyqchem.structure import Structure
-from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list, search_bars, standardize_vector
+from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
+from pyqchem.parsers.common import search_bars, standardize_vector, read_input_structure
+from pyqchem.parsers.common import float_asterisk as float
+
 
 
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
@@ -39,6 +41,35 @@ def _read_soc_matrix(lines, dimensions):
     return matrix
 
 
+def _complete_interstate_pairs(interstate_dict):
+    additional_items = {}
+    for key, value in interstate_dict.items():
+        if not key[::-1] in interstate_dict:
+            dict_entry = {}
+            for k, v in interstate_dict[key].items():
+                if k == 'state_a':
+                    dict_entry.update({k: key[1]})
+                elif k == 'state_b':
+                    dict_entry.update({k: key[0]})
+                elif k == 'angular_momentum':
+                    dict_entry.update({k: np.conjugate(v).tolist()})
+                elif k == '1e_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                elif k == 'hso_l-':
+                    dict_entry.update({k: (-np.array(v)).tolist()})
+                elif k == 'hso_l+':
+                    dict_entry.update({k: (-np.array(v)).tolist()})
+                elif k == '2e_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                elif k == 'total_soc_mat':
+                    dict_entry.update({k: np.conjugate(v).T.tolist()})
+                else:
+                    dict_entry.update({k: v})
+            additional_items.update({key[::-1]: dict_entry})
+
+    interstate_dict.update(additional_items)
+
+
 def parser_rasci(output):
     """
     Parser for RAS-CI calculations
@@ -53,31 +84,10 @@ def parser_rasci(output):
     """
 
     data_dict = {}
+
     # Molecule
-    n = output.find('$molecule')
-    n2 = output[n:].find('$end')
-
-    molecule_region = output[n:n+n2-1].replace('\t', ' ').split('\n')[1:]
-    charge, multiplicity = [int(num) for num in molecule_region[0].split()]
-    coordinates = [[float(l) for l in line.split()[1:4]] for line in molecule_region[1:]]
-    symbols = [line.split()[0].capitalize() for line in molecule_region[1:]]
-    n_atoms = len(symbols)
-
-    # structure
-    structure_input = Structure(coordinates=coordinates,
-                                symbols=symbols,
-                                charge=charge,
-                                multiplicity=multiplicity)
-
-    enum = output.find('Standard Nuclear Orientation')
-    section_structure = output[enum:enum + 200*structure_input.get_number_of_atoms()].split('\n')
-    section_structure = section_structure[3:structure_input.get_number_of_atoms()+3]
-    coordinates = [[float(num) for num in s.split()[2:]] for s in section_structure]
-
-    data_dict['structure'] = Structure(coordinates=coordinates,
-                                       symbols=symbols,
-                                       charge=charge,
-                                       multiplicity=multiplicity)
+    data_dict['structure'] = read_input_structure(output)
+    n_atoms = data_dict['structure'].get_number_of_atoms()
 
     # basic info
     enum = output.find('Nuclear Repulsion Energy')
@@ -94,7 +104,7 @@ def parser_rasci(output):
 
     # RASCI dimensions
     ini_section = output.find('RAS-CI Dimensions')
-    end_section = search_bars(output, from_position=enum, bar_type='\*\*\*')[1]
+    end_section = search_bars(output, from_position=ini_section, bar_type='\*\*\*')[0]
     dimension_section = output[ini_section: end_section]
 
     enum = dimension_section.find('Doubly Occ')
@@ -182,16 +192,15 @@ def parser_rasci(output):
     for m in re.finditer('RAS-CI total energy for state', output):
         # print('ll found', m.start(), m.end())
 
-        section_state = output[m.end():m.end() + 10000]  # 10000: assumed to max of section
-        section_state = section_state[:section_state.find('*****************')]
-
-        enum = section_state.find('RAS-CI total energy for state')
-        section_state = section_state[:enum]
+        end_section = search_bars(output, from_position=m.start(), bar_type='\*\*\*\*\*\*\*')[0]
+        section_state = output[m.start():end_section]
 
         # energies
-        tot_energy = float(section_state.split()[1])
-        exc_energy_units = section_state.split()[4][1:-1]
-        exc_energy = float(section_state.split()[6])
+        enum = section_state.find('total energy for state')
+        tot_energy = float(section_state[enum: enum + 50].split()[5])
+        enum = section_state.find('Excitation energy')
+        exc_energy_units = section_state[enum: enum + 30].split()[2].strip('(').strip(')')
+        exc_energy = float(section_state[enum: enum + 30].split()[4])
 
         # multiplicity
         n_multi = section_state.find('<S^2>')
@@ -206,15 +215,27 @@ def parser_rasci(output):
 
         # Transition moment
         enum = section_state.find('Trans. Moment')
+        trans_mom = strength = None
         if enum > -1:
             trans_mom = [float(section_state[enum:].split()[2]) + 0.0,
                          float(section_state[enum:].split()[4]) + 0.0,
                          float(section_state[enum:].split()[6]) + 0.0]
             trans_mom = standardize_vector(trans_mom)
             strength = float(section_state[enum:].split()[10])
-        else:
-            trans_mom = None
-            strength = None
+
+        # Natural orbitals
+        nato_occ = None
+        enum = section_state.find('NATURAL OCCUPATION NUMBERS')
+        if enum > -1:
+            lines = []
+            for line in section_state[enum:].split('\n')[2::2]:
+                if len(line) == 0:
+                    break
+                if line.split()[0].isnumeric():
+                    lines += line.split()[1:]
+                else:
+                    break
+            nato_occ = [float(num) for num in lines]
 
         # configurations table
         enum = section_state.find('AMPLITUDE')
@@ -243,17 +264,23 @@ def parser_rasci(output):
 
         # complete dictionary
         tot_energy_units = 'au'
-        excited_states.append({'total_energy': tot_energy,
-                               'total_energy_units': tot_energy_units,
-                               'excitation_energy': exc_energy,
-                               'excitation_energy_units': exc_energy_units,
-                               'multiplicity': state_multiplicity,
-                               'dipole_moment': dipole_mom,
-                               'transition_moment': trans_mom,
-                               'dipole_moment_units': 'ua',
-                               'oscillator_strength': strength,
-                               'configurations': table,
-                               'contributions_fwn': contributions})
+
+        state_dict = {'total_energy': tot_energy,
+                      'total_energy_units': tot_energy_units,
+                      'excitation_energy': exc_energy,
+                      'excitation_energy_units': exc_energy_units,
+                      'multiplicity': state_multiplicity,
+                      'dipole_moment': dipole_mom,
+                      'transition_moment': trans_mom,
+                      'dipole_moment_units': 'ua',
+                      'oscillator_strength': strength,
+                      'configurations': table,
+                      'contributions_fwn': contributions}
+
+        if nato_occ is not None:
+            state_dict.update({'natural_occupation_numbers': nato_occ})
+
+        excited_states.append(state_dict)
 
     data_dict.update({'excited_states': excited_states})
 
@@ -267,7 +294,8 @@ def parser_rasci(output):
         interstate_dict = {}
         for m in re.finditer('State A: Root', interstate_section):
             section_pair = interstate_section[m.start():m.start() + 10000]
-            section_pair = section_pair[:section_pair.find('********')]
+            end_section = search_bars(section_pair, bar_type='\*'*20)[0]
+            section_pair = section_pair[:end_section]
 
             lines = section_pair.split('\n')
 
@@ -306,7 +334,10 @@ def parser_rasci(output):
 
                 if '1-elec SOC matrix (cm-1)' in line:
                     pair_dict['1e_soc_mat'] = _read_soc_matrix(lines[i+1:], [nb, na])
-                    pair_dict['1e_socc'] = float(lines[i+2 + nb].split()[-2:][0])
+
+                if '1-elec SOCC' in line:
+                    pair_dict['1e_socc'] = float(line.split()[3])
+
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
                     r, c = lines[i+1].split()[-2:]
                     pair_dict['hso_l-'] = float(r) + float(c) * 1j
@@ -324,6 +355,8 @@ def parser_rasci(output):
                     pair_dict['units'] = line.split()[-1]
 
             interstate_dict[(state_a, state_b)] = pair_dict
+
+        _complete_interstate_pairs(interstate_dict)
         data_dict.update({'interstate_properties': interstate_dict})
 
     return data_dict

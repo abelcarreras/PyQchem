@@ -101,11 +101,13 @@ qc_input = QchemInput(molecule,
 parsed_data, electronic_structure = get_output_from_qchem(qc_input,
                                                           processors=4,
                                                           force_recalculation=False,
-                                                          parser=parser_rasci,
+                                                          # parser=parser_rasci,
                                                           read_fchk=True,
                                                           store_full_output=True,
                                                           )
 
+print(parsed_data)
+exit()
 # open('reference.fchk', 'w').write(build_fchk(electronic_structure))
 
 # get orbital type

@@ -1,6 +1,5 @@
 import pickle
 import time
-import fcntl
 import sys
 import sqlite3
 import numpy as np
@@ -23,7 +22,7 @@ class SimpleCache(object):
             self._pickle_protocol = pickle.HIGHEST_PROTOCOL
 
             # Py2 compatibility
-            if sys.version_info[0] < 3:
+            if 'BlockingIOError' not in vars():
                 BlockingIOError = IOError
 
             try:
@@ -68,7 +67,7 @@ class SimpleCache(object):
             """
 
             # Py2 compatibility
-            if sys.version_info[0] < 3:
+            if 'FileNotFoundError' not in vars():
                 FileNotFoundError = IOError
 
             for iter in range(100):
@@ -93,7 +92,9 @@ class SimpleCache(object):
             for iter in range(100):
                 try:
                     with open(self._calculation_data_filename, 'wb') as f:
-                        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        if sys.platform not in ["win32", "cygwin"]:
+                            import fcntl
+                            fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
                         pickle.dump(self.calculation_data, f, self._pickle_protocol)
                 except BlockingIOError:
                     # print('read_try: {}'.format(iter))
@@ -179,9 +180,9 @@ class SqlCache:
         try:
             self._conn.execute('''CREATE TABLE DATA_TABLE
                               (input_hash  INT ,
-                               parser      TEXT,
-                               qcdata      TEXT,
-                               date        TEXT);''')
+                               parser      LONGTEXT,
+                               qcdata      LONGTEXT,
+                               date        LONGTEXT);''')
             self._conn.commit()
             # print('Initialized database')
 
