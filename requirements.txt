@@ -9,3 +9,6 @@ scipy
 matplotlib
 PyYAML
 six
+
+# optional modules
+# paramiko
