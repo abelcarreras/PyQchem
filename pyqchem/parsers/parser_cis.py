@@ -100,13 +100,16 @@ def basic_cis(output):
                     try:
                         spin = line[21:].split()[-1]
                         if spin == 'alpha':
-                            alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
+                            target = target + basic_data['n_alpha']
+                            alpha_transitions.append({'origin': origin, 'target': target})
                         elif spin == 'beta':
-                            beta_transitions.append({'origin': origin, 'target': target + basic_data['n_beta']})
+                            target = target + basic_data['n_beta']
+                            beta_transitions.append({'origin': origin, 'target': target})
                         else:
                             raise ParserError('basic_cis', 'Error reading configurations', output)
 
-                        transitions.append({'origin': origin,
+                        transitions.append({'spin': spin,
+                                            'origin': origin,
                                             'target': target,
                                             'amplitude': amplitude,
                                             'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
@@ -119,8 +122,9 @@ def basic_cis(output):
                         # This supposes single electron transition
                         alpha_transitions.append({'origin': origin, 'target': target + basic_data['n_alpha']})
 
-                        transitions.append({'origin': origin,
-                                            'target': target,
+                        transitions.append({'spin': 'alpha',
+                                            'origin': origin,
+                                            'target': target + basic_data['n_alpha'],
                                             'amplitude': amplitude/np.sqrt(2),
                                             'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
                                                                                     basic_data['n_alpha'],
@@ -128,8 +132,9 @@ def basic_cis(output):
                                                                                     alpha_transitions=alpha_transitions,
                                                                                     beta_transitions=beta_transitions)})
 
-                        transitions.append({'origin': origin,
-                                            'target': target,
+                        transitions.append({'spin': 'beta',
+                                            'origin': origin,
+                                            'target': target + basic_data['n_beta'],
                                             'amplitude': amplitude/np.sqrt(2) if mul == 'Singlet' else -amplitude/np.sqrt(2),
                                             'occupations': get_cis_occupations_list(basic_data['n_basis_functions'],
                                                                                     basic_data['n_alpha'],
@@ -140,6 +145,9 @@ def basic_cis(output):
                 if len(line) < 5:
                     break
 
+            # sort transitions by amplitude
+            sorted_transitions = sorted(transitions, key=lambda x: abs(x['amplitude']), reverse=True)
+
             excited_states.append({'total_energy': tot_energy,
                                    'total_energy_units': tot_energy_units,
                                    'excitation_energy': exc_energy,
@@ -147,7 +155,7 @@ def basic_cis(output):
                                    'multiplicity': mul,
                                    'transition_moment': standardize_vector(trans_mom),
                                    'strength': strength,
-                                   'configurations': transitions})
+                                   'configurations': sorted_transitions})
 
     data_dict['excited_states'] = excited_states
 
