@@ -10,7 +10,6 @@ def get_Hamiltonian_construction(selected_states, eigenenergies, spin_orbit_coup
     :return: Hamiltonian
     """
     Hamiltonian = np.zeros((len(selected_states) * 2, len(selected_states) * 2), dtype=complex)
-    # spin_orbit_coupling[:,:] = 0
 
     for i in range(0, len(selected_states) * 2):
         for j in range(0, len(selected_states) * 2):
@@ -37,21 +36,6 @@ def Hamiltonian_diagonalization(Hamiltonian):
     :return eigenvalues, eigenvectors, kramer_st: kramer_st is the index
     of the state set as Kramer doublet * 2
     """
-    # def normalize_vector(vector):
-    #     """
-    #     Normalize a complex vector
-    #     :param vector:
-    #     :return:
-    #     """
-    #     sum_of_coefficients = 0
-    #     for i in range(0, len(vector)):
-    #         coefficient = vector.real[i]**2 + vector.imag[i]**2
-    #         sum_of_coefficients += coefficient
-    #
-    #     module = sqrt( sum_of_coefficients )
-    #     vector[:] = vector[:] / module
-    #     return vector, module
-
     eigenvalues, eigenvectors = linalg.eigh(Hamiltonian)
 
     # Reorder eigenvectors (and eigenenergies) by weight coefficients
@@ -68,22 +52,6 @@ def Hamiltonian_diagonalization(Hamiltonian):
                 eigenvalues[v_1] = eigenvalues[v_2]
                 eigenvalues[v_2] = change_order.real[0]
 
-    # Normalize the eigenvectors
-    # for i in range(0, len(eigenvalues)):
-    #     print('Before eigenvector:', eigenvectors[:, i])
-    #     module = sqrt(sum( ( abs(eigenvectors[:, i]) )** 2) )
-    #     eigenvectors[:, i] = eigenvectors[:, i] / module
-    #     print('After eigenvector:', eigenvectors[:, i])
-    #     print('module:', module)
-    #     print()
-    # print('-------------------------------------')
-    # for i in range(0, len(eigenvalues)):
-    #     eigenvectors[:, i],module = normalize_vector(eigenvectors[:,i])
-    #     print('eigenvalue:', eigenvalues[i])
-    #     print('eigenvector:', eigenvectors[:, i])
-    #     print('module:', module)
-    #     print()
-
     # Kramer doublets selection:
     minimum_energy = min(eigenvalues)
     eigenvalues_list = list(eigenvalues)
@@ -93,11 +61,6 @@ def Hamiltonian_diagonalization(Hamiltonian):
     # Kramer doublets are [kramer_st, kramer_st+1]
     if (kramer_st % 2) != 0:
         kramer_st = kramer_st - 1
-
-    # for i in range(0, len(eigenvalues)):
-    #     print('eigenvalue:', eigenvalues[i])
-    #     print('eigenvector:', eigenvectors[:, i])
-    #     print()
 
     return eigenvalues, eigenvectors, kramer_st
 
@@ -180,24 +143,9 @@ def g_factor_calculation(lambda_matrix, sigma_matrix):
                 G_matrix_diagonal[j] = G_matrix_diagonal[i]
                 G_matrix_diagonal[i] = change_order.real[0]
 
-    # Obtain the g-factor: g = O^(1r) * X * sqrt(Gdiag) * O
-    # X_mat = np.identity(3)
-    # g_value = (np.transpose(rotation_matrix)).dot(X_mat).dot(sqrt(G_matrix_diagonal)).dot(rotation_matrix)
-    # g_value = ( (g_value) - lande_factor ) * 1000
-
     g_tensor_values = np.zeros(3, dtype=complex)
     for i in range(0, 3):
         g_tensor_values[i] = (sqrt(G_matrix_diagonal[i]) - lande_factor) * 1000
-
-    # print('G_tensor matrix:')
-    # print(''.join(['{:^15}'.format(item) for item in ['x','y','z']]) )
-    # print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
-    #                  for row in np.round((G_matrix[:,:]),5)]))
-    # print('')
-    # print(np.round(g_tensor_values.real[0], 3), np.round(g_tensor_values.real[1], 3), \
-    #       np.round(g_tensor_values.real[2], 3))
-    # print('')
-
     return G_matrix, g_tensor_values
 
 

@@ -15,7 +15,6 @@ ras_input = '../scripts/h2o.out'
 selected_states = 1 # 0: use "state_ras" ; 1: use all states ; 2: use states by selected symmetry
 states_ras = [1,2,3,4,5] # States to be included when "selected_states = 0"
 symmetry_selection = 'B2u' # Symmetry selected states
-selected_SOC = 0 # 0: Total mean-field SOC matrix; 1: 1-elec SOC matrix; 2: 2-elec mean-field SOC matrix
 
 #####################################
 #      G-VALUE CALCULATION
@@ -27,7 +26,7 @@ states_ras = get_selected_states(ras_input, totalstates, states_ras, selected_st
 
 eigenenergies_ras, excitation_energies_ras = get_eigenenergies(ras_input, totalstates, states_ras)
 
-soc_ras = get_spin_orbit_couplings_pyqchem(ras_input, totalstates, states_ras, selected_SOC)
+soc_ras = get_spin_orbit_couplings_pyqchem(ras_input, totalstates, states_ras)
 
 ras_G_matrix, ras_g_values, eigenvalues, eigenvector = from_energies_SOC_to_g_values(ras_input, states_ras,
                                                                                      totalstates,

@@ -349,7 +349,7 @@ def get_orbital_matrices(file_ras, totalstates, n_states):
     return orbital_matrix
 
 
-def get_spin_orbit_couplings_pyqchem(file_ras, totalstates, selected_states, selected_SOC):
+def get_spin_orbit_couplings_pyqchem(file_ras, totalstates, selected_states):
     """
     Spin-orbit coupling values are written in matrix with 'bra' in rows
     and 'ket' in columns, with spin order -1/2 , +1/2.
@@ -506,21 +506,12 @@ def get_orbital_matrices_pyqchem(file_ras, totalstates, selected_states):
 
         for i in range(0, totalstates):
             for j in range(0, totalstates):
-
                     if i != j:
 
                         element = data[(i + 1, j + 1)]['angular_momentum']
 
                         for k in range(0, 3):
                             Lk_matrix[j,i,k] = element[k]
-
-        # print('Angular momentums (x,y,z):')
-        # for k in range(0,3):
-        #    print('Dimension: ', k)
-        #    print('\n'.join([''.join(['{:^15}'.format(item) for item in row])\
-        #                     for row in np.round((Lk_matrix[:,:,k]),5)]))
-        #    print(" ")
-        # exit()
         return Lk_matrix
 
 
@@ -535,16 +526,7 @@ def get_orbital_matrices_pyqchem(file_ras, totalstates, selected_states):
         for k in range(0,3):
             for i, all_i in enumerate(selected_states):
                 for j, all_j in enumerate(selected_states):
-                        # print('i, j; ', i, j, 'all_i, all_j:', all_i-1, all_j-1)
                         selected_Lk[i][j][k] = all_momentum[all_i-1][all_j-1][k]
-
-        # print('Angular momentums (x,y,z):')
-        # for k in range(0, 3):
-        #     print('Dimension: ', k)
-        #     print('\n'.join([''.join(['{:^15}'.format(item) for item in row]) \
-        #                      for row in np.round((selected_Lk[:, :, k]), 5)]))
-        #     print(" ")
-        # exit()
         return selected_Lk
 
 
@@ -564,14 +546,6 @@ def get_orbital_matrices_pyqchem(file_ras, totalstates, selected_states):
 
                     doublets_Lk[i, j][k] = selected_Lk[i//2][j//2][k]
                     doublets_Lk[i+1, j+1][k] = selected_Lk[i // 2][j // 2][k]
-
-        # print('Angular momentums (x,y,z):')
-        # for k in range(0, 3):
-        #     print('Dimension: ', k)
-        #     print('\n'.join([''.join(['{:^15}'.format(item) for item in row]) \
-        #                      for row in np.round((doublets_Lk[:, :, k]), 5)]))
-        #     print(" ")
-        # exit()
         return doublets_Lk
 
 
