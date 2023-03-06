@@ -12,9 +12,9 @@ from g_operations import from_energies_SOC_to_g_values, print_g_calculation
 
 from g_excited_states_analysis import get_excited_states_analysis, improved_active_space
 
-from g_take_eom_states import get_eom_transitions_analysis
-
-from g_ras_eom_change import ras_and_eom_energy_exchange
+# from g_take_eom_states import get_eom_transitions_analysis
+#
+# from g_ras_eom_change import ras_and_eom_energy_exchange
 
 from g_plots import get_bar_chart, sos_analysis_and_plot
 
@@ -24,7 +24,8 @@ from g_plots import get_bar_chart, sos_analysis_and_plot
 
 # G-TENSOR CALCULATION
 g_calculation = 1
-ras_input = '../../../../Desktop/1_gfactor/g-tensor/g-tensor_final_results/cucl4_2-_def2tzvp_17_9_d10_15_states_copia.out' # str(sys.argv[1])
+ras_input = '../../../../PycharmProjects/my_g-tensor/' \
+'RASCI_results/cucl4_2-/cucl4_2-_def2tzvp_11_6.out' # str(sys.argv[1])
 
 selected_states = 1 # 0: use "state_ras" ; 1: use all states ; 2: use states by selected symmetry
 states_ras = [1,2,3,4,5,6,7,8,9,10,11] # States to be included when "selected_states = 0"
@@ -124,21 +125,21 @@ if (bar_plots == 1):
 #####################################
 #      eom COMPARISON
 #####################################
-if eom_information == 1:
-    get_eom_transitions_analysis(eom_input)
-
-if (eom_change_energies == 1):
-    comparison_presentation_list, G_tensor, G_tensor_results = ras_and_eom_energy_exchange(eom_input, ras_input, states_ras, ras_states_to_change, eom_states_to_change)
-
-    print('g-factor (x y z dimensions) with ras energies:')
-    print(np.round(ras_g_values.real[0], 3), np.round(ras_g_values.real[1], 3),np.round(ras_g_values.real[2], 3))
-    print('')
-
-    print('g-factor (x y z dimensions) with eom eigenenergies:')
-    print(np.round(G_tensor_results.real[0], 3), np.round(G_tensor_results.real[1], 3),np.round(G_tensor_results.real[2], 3))
-    print('')
-
-    print("ras file selected: ", ras_input)
-    print("eom-CC file selected: ", eom_input)
-    print('\n'.join([''.join(['{:^30}'.format(item) for item in row]) \
-                     for row in (comparison_presentation_list)]))
+# if eom_information == 1:
+#     get_eom_transitions_analysis(eom_input)
+#
+# if (eom_change_energies == 1):
+#     comparison_presentation_list, G_tensor, G_tensor_results = ras_and_eom_energy_exchange(eom_input, ras_input, states_ras, ras_states_to_change, eom_states_to_change)
+#
+#     print('g-factor (x y z dimensions) with ras energies:')
+#     print(np.round(ras_g_values.real[0], 3), np.round(ras_g_values.real[1], 3),np.round(ras_g_values.real[2], 3))
+#     print('')
+#
+#     print('g-factor (x y z dimensions) with eom eigenenergies:')
+#     print(np.round(G_tensor_results.real[0], 3), np.round(G_tensor_results.real[1], 3),np.round(G_tensor_results.real[2], 3))
+#     print('')
+#
+#     print("ras file selected: ", ras_input)
+#     print("eom-CC file selected: ", eom_input)
+#     print('\n'.join([''.join(['{:^30}'.format(item) for item in row]) \
+#                      for row in (comparison_presentation_list)]))
