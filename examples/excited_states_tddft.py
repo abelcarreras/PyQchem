@@ -57,7 +57,7 @@ for i_state, state in enumerate(data['excited_states']):
     print('\nState {}'.format(i_state+ 1))
     print('Excitation energy: {} {}'.format(state['excitation_energy'], state['excitation_energy_units']))
     print('Multiplicity: {}'.format(state['multiplicity']))
-    print('TDM {} ({:^8.4f})'.format(state['transition_moment'], state['strength']))
+    print('TDM {} ({:^8.4f})'.format(state['transition_moment'], state['oscillator_strength']))
 
     for configuration in state['configurations']:
 

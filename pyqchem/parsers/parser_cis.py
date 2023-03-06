@@ -154,7 +154,7 @@ def basic_cis(output):
                                    'excitation_energy_units': exc_energy_units,
                                    'multiplicity': mul,
                                    'transition_moment': standardize_vector(trans_mom),
-                                   'strength': strength,
+                                   'oscillator_strength': strength,
                                    'configurations': sorted_transitions})
 
     data_dict['excited_states'] = excited_states
