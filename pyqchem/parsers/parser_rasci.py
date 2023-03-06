@@ -146,7 +146,10 @@ def parser_rasci(output):
         mulliken_adiabatic = []
         enum = output.find('Mulliken analysis of Adiabatic State')
         for m in re.finditer('Mulliken analysis of Adiabatic State', output[enum:]):
-            section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
+            end_section = search_bars(output, from_position=m.end(), bar_type='\-\-\-\-\-\-')[3]
+            section_mulliken = output[m.end() + enum: m.end() + enum + end_section]
+
+            #section_mulliken = output[m.end() + enum: m.end() + 20000 + enum]  # 10000: assumed to max of section
             section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
             section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
 
@@ -157,7 +160,10 @@ def parser_rasci(output):
         mulliken_diabatic = []
         enum = output.find('showing H in diabatic representation')
         for m in re.finditer('Mulliken Analysis of Diabatic State', output[enum:]):
-            section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
+            end_section = search_bars(output, from_position=m.end(), bar_type='\-\-\-\-\-\-')[3]
+            section_mulliken = output[m.end() + enum: m.end() + enum + end_section]
+
+            # section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
             section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
             section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
 
@@ -171,7 +177,7 @@ def parser_rasci(output):
 
         diabatic_tdm = []
         for m in re.finditer('TDM', tdm_section):
-            diabatic_tdm.append([float(n) for n in tdm_section[m.end(): m.end()+70][14:].split()[:3]])
+            diabatic_tdm.append([float(n) for n in tdm_section[m.end(): m.end()+70].split(':')[1].split()[:3]])
 
         diabatic_states = []
         for i, tdm in enumerate(diabatic_tdm):
@@ -200,7 +206,7 @@ def parser_rasci(output):
         tot_energy = float(section_state[enum: enum + 50].split()[5])
         enum = section_state.find('Excitation energy')
         exc_energy_units = section_state[enum: enum + 30].split()[2].strip('(').strip(')')
-        exc_energy = float(section_state[enum: enum + 30].split()[4])
+        exc_energy = float(section_state[enum: enum + 50].split()[4])
 
         # multiplicity
         n_multi = section_state.find('<S^2>')
@@ -222,6 +228,20 @@ def parser_rasci(output):
                          float(section_state[enum:].split()[6]) + 0.0]
             trans_mom = standardize_vector(trans_mom)
             strength = float(section_state[enum:].split()[10])
+
+        # Mulliken population analysis
+        mulliken_population = None
+        enum = section_state.find('Mulliken population analysis')
+        if enum > -1:
+            max = search_bars(section_state, from_position=enum, bar_type='\-'*30)
+            pop_charges = []
+            pop_spin = []
+            for line in section_state[max[1]: max[2]].split('\n')[1:n_atoms+1]:
+                c, s = line.split()[2:4]
+                pop_charges.append(float(c))
+                pop_spin.append(float(s))
+
+            mulliken_population = {'charge': pop_charges, 'spin': pop_spin, 'units': 'au'}
 
         # Natural orbitals
         nato_occ = None
@@ -255,6 +275,7 @@ def parser_rasci(output):
                                                                   basic_data['n_basis_functions'])
 
         table = sorted(table, key=operator.itemgetter('hole', 'alpha', 'beta', 'part'))
+        table = sorted(table, key=lambda x: abs(x['amplitude']), reverse=True)
 
         # Contributions RASCI wfn
         contributions_section = section_state[enum2:]
@@ -279,6 +300,9 @@ def parser_rasci(output):
 
         if nato_occ is not None:
             state_dict.update({'natural_occupation_numbers': nato_occ})
+
+        if mulliken_population is not None:
+            state_dict.update({'mulliken_population': mulliken_population})
 
         excited_states.append(state_dict)
 
