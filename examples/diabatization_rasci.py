@@ -77,7 +77,7 @@ qc_input = QchemInput(dimer,
 
 parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=4,
-                                        force_recalculation=False,
+                                        force_recalculation=True,
                                         parser=parser_rasci,
                                         return_electronic_structure=True,
                                         )
