@@ -4,6 +4,7 @@ from pyqchem.basis import basis_to_txt, get_purecard
 import hashlib, json
 import warnings
 from pyqchem.errors import QchemInputWarning, QchemInputError
+warnings.filterwarnings("default", category=DeprecationWarning)  # make DeprecationWarning visible
 
 
 def normalize_values(value):
@@ -121,7 +122,8 @@ class QchemInput:
                  # other
                  nto_pairs=None,
                  n_frozen_core=None,
-                 n_frozen_virt=0,
+                 n_frozen_virt=None,  # to be deprecated in the future
+                 n_frozen_virtual=0,
                  mom_start=False,
                  reorder_orbitals=None,
                  namd_nsurfaces=None,
@@ -267,6 +269,10 @@ class QchemInput:
         if self._method:
             input_file += 'method {}\n'.format(self._method)
 
+        if self._n_frozen_virt is not None:
+            self._n_frozen_virtual = self._n_frozen_virt
+            warnings.warn('"n_frozen_virt" keyword will be deprecated. Use "n_frozen_virtual" instead', DeprecationWarning)
+
         input_file += 'basis {}\n'.format(self._basis)
         input_file += 'thresh {}\n'.format(self._thresh)
         input_file += 'scf_convergence {}\n'.format(self._scf_convergence)
@@ -277,7 +283,7 @@ class QchemInput:
         input_file += 'RPA {}\n'.format(self._RPA)
         input_file += 'mem_total {}\n'.format(self._mem_total)
         input_file += 'mem_static {}\n'.format(self._mem_static)
-        input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virt)
+        input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virtual)
         input_file += 'mom_start {}\n'.format(self._mom_start)
         input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
         input_file += 'scf_guess_mix {}\n'.format(self._scf_guess_mix)
