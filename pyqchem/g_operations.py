@@ -1,10 +1,3 @@
-"""
-    G-TENSOR CALCULATION WITH ORBITAL AND SPIN
-    ANGULAR MOMENTUM AND SOC BETWEEN STATES
- Analysis of the excited states and print of those
- orbitals involved in the configurations with the
- highest amplitudes in the excited states
-"""
 import numpy as np
 from numpy import linalg, sqrt
 
@@ -253,44 +246,3 @@ def print_g_calculation(input, totalstates, selected_states, symmetry_selection,
     print(np.round(G_tensor_results_ras.real[0], 3), np.round(G_tensor_results_ras.real[1], 3), \
           np.round(G_tensor_results_ras.real[2], 3))
     print('')
-
-
-def perturbative_method(totalstates, eigenenergies, spin_orbit_coupling):
-    """
-    The coefficients that previously were on the eigenvectors
-    are now calculated using equation 27: they are called "eta". Similar
-    process to the one used in Hamiltonian construction, BUT considering
-    also the eigenvalues substraction in the denominator: en[a] - en[b],
-    where the "a" corresponds to the row number and the "b" to the column number
-    """
-    coef = np.zeros((len(states_ras) * 2, len(states_ras) * 2), dtype=complex)
-    k1 = 0
-    k2 = 0
-    for y in range(0, len(totalstates) * 2):
-        k1 = 0
-        for x in range(0, len(totalstates) * 2):
-            if (y == x) or (x % 2 != 0 and x - 1 == y):
-                coef[x][y] = 0
-                k1 = k1 + 1
-            elif (y % 2 == 0):
-                coef[x][y] = spin_orbit_coupling[x - k1 + k2][0] / (eigenenergies[x] - eigenenergies[y])
-                coef[x][y + 1] = spin_orbit_coupling[x - k1 + k2][1] / (eigenenergies[x] - eigenenergies[y + 1])
-        k2 = k2 + len(states_ras) - 1
-
-    # The procedure is the same than for the Hamiltonian case. Coefficients matrix
-    # obtained by perturbation expressions is symmetric, meaning multiplication does not
-    # change if it is done by columns or by rows
-    # gpt_mat_ras = np.zeros((len(states_ras) * 2, len(states_ras) * 2, 3), dtype=complex)
-    # for z in range(0, 3):
-    #     for y in range(0, len(states_ras) * 2, 2):
-    #         for x in range(0, len(states_ras) * 2):
-    #             if (y == x) or (x % 2 != 0 and x - 1 == y):
-    #                 gpt_mat_ras[y, x, z] = 0
-    #                 gpt_mat_ras[x, y, z] = 0
-    #             elif (x % 2 == 0):
-    #                 gpt_mat_ras[x, y, z] = -4000 * etacoeff_ras[y, x] * l_matrix[x // 2, y // 2, z]
-    #                 gpt_mat_ras[x + 1, y, z] = -4000 * etacoeff_ras[y, x + 1] * l_matrix[x // 2, y // 2, z]
-    #                 gpt_mat_ras[x, y + 1, z] = -4000 * etacoeff_ras[y + 1, x] * l_matrix[x // 2, y // 2, z]
-    #                 gpt_mat_ras[x + 1, y + 1, z] = -4000 * etacoeff_ras[y + 1, x + 1] * l_matrix[x // 2, y // 2, z]
-
-    return
