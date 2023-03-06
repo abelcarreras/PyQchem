@@ -104,7 +104,7 @@ def parser_rasci(output):
 
     # RASCI dimensions
     ini_section = output.find('RAS-CI Dimensions')
-    end_section = search_bars(output, from_position=ini_section, bar_type='\*\*\*')[0]
+    end_section = search_bars(output, from_position=ini_section, bar_type=r'\*\*\*')[0]
     dimension_section = output[ini_section: end_section]
 
     enum = dimension_section.find('Doubly Occ')
@@ -146,7 +146,7 @@ def parser_rasci(output):
         mulliken_adiabatic = []
         enum = output.find('Mulliken analysis of Adiabatic State')
         for m in re.finditer('Mulliken analysis of Adiabatic State', output[enum:]):
-            end_section = search_bars(output, from_position=m.end(), bar_type='\-\-\-\-\-\-')[3]
+            end_section = search_bars(output, from_position=m.end(), bar_type=r'\-\-\-\-\-\-')[3]
             section_mulliken = output[m.end() + enum: m.end() + enum + end_section]
 
             #section_mulliken = output[m.end() + enum: m.end() + 20000 + enum]  # 10000: assumed to max of section
@@ -160,7 +160,7 @@ def parser_rasci(output):
         mulliken_diabatic = []
         enum = output.find('showing H in diabatic representation')
         for m in re.finditer('Mulliken Analysis of Diabatic State', output[enum:]):
-            end_section = search_bars(output, from_position=m.end(), bar_type='\-\-\-\-\-\-')[3]
+            end_section = search_bars(output, from_position=m.end(), bar_type=r'\-\-\-\-\-\-')[3]
             section_mulliken = output[m.end() + enum: m.end() + enum + end_section]
 
             # section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
@@ -198,7 +198,7 @@ def parser_rasci(output):
     for m in re.finditer('RAS-CI total energy for state', output):
         # print('ll found', m.start(), m.end())
 
-        end_section = search_bars(output, from_position=m.start(), bar_type='\*\*\*\*\*\*\*')[0]
+        end_section = search_bars(output, from_position=m.start(), bar_type=r'\*\*\*\*\*\*\*')[0]
         section_state = output[m.start():end_section]
 
         # energies
@@ -233,7 +233,7 @@ def parser_rasci(output):
         mulliken_population = None
         enum = section_state.find('Mulliken population analysis')
         if enum > -1:
-            max = search_bars(section_state, from_position=enum, bar_type='\-'*30)
+            max = search_bars(section_state, from_position=enum, bar_type=r'\-'*30)
             pop_charges = []
             pop_spin = []
             for line in section_state[max[1]: max[2]].split('\n')[1:n_atoms+1]:
@@ -318,7 +318,7 @@ def parser_rasci(output):
         interstate_dict = {}
         for m in re.finditer('State A: Root', interstate_section):
             section_pair = interstate_section[m.start():m.start() + 10000]
-            end_section = search_bars(section_pair, bar_type='\*'*20)[0]
+            end_section = search_bars(section_pair, bar_type=r'\*'*20)[0]
             section_pair = section_pair[:end_section]
 
             lines = section_pair.split('\n')
