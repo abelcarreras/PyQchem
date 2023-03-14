@@ -635,7 +635,7 @@ class QchemInput:
 
     def store_energy_file(self, path='.'):
         energy_file = np.zeros(12)
-        warnings.warn('warining: FILE_ENERGY will be set to zeros, this may affect post HF methods')
+        warnings.warn('warning: FILE_ENERGY will be set to zeros, this may affect post HF methods')
         with open(path + '/99.0', 'w') as f:
             energy_file.tofile(f, sep='')
 
