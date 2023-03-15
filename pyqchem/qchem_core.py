@@ -2,12 +2,13 @@ from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
 from pyqchem.utils import get_sdm
 from subprocess import Popen, PIPE
-import os, shutil
+from pathlib import Path
+import os, shutil, sys
 import numpy as np
 import hashlib
 import pickle
 import warnings
-import sys
+
 
 if sys.version_info[0] < 3 or sys.platform in ["win32", "cygwin"] or os.getenv('PYQCHEM_CACHE') == '1':
     # For python 2.x or Windows use pickle based cache system
@@ -181,11 +182,12 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
 
     os.environ["GUIFILE"] = fchk_file
     qc_dir = os.getenv('QC')
-    binary = "{}/exe/qcprog.exe".format(qc_dir)
-    # command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
-    command = binary + ' {} '.format(os.path.join(work_dir, input_file_name)) + ' {} '.format(work_dir)
+    exe_dir = os.getenv('QC_EXE_DIR') if 'QC_EXE_DIR' in os.environ else 'exe'
 
-    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True, cwd=work_dir)
+    binary = Path(qc_dir).joinpath(exe_dir).joinpath('qcprog.exe')
+    command = [binary, Path(work_dir).joinpath(input_file_name), Path(work_dir)]
+
+    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=work_dir)
     (output, err) = qchem_process.communicate()
     qchem_process.wait()
     output = output.decode(errors='ignore')
@@ -213,11 +215,12 @@ def local_run_stream(input_file_name, work_dir, fchk_file, use_mpi=False, proces
 
     os.environ["GUIFILE"] = fchk_file
     qc_dir = os.getenv('QC')
-    binary = "{}/exe/qcprog.exe".format(qc_dir)
-    # command = binary + ' {} {} '.format(flag, processors) + ' {} '.format(temp_file_name)
-    command = binary + ' {} '.format(os.path.join(work_dir, input_file_name)) + ' {} '.format(work_dir)
 
-    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, shell=True, cwd=work_dir)
+    exe_dir = os.getenv('QC_EXE_DIR') if 'QC_EXE_DIR' in os.environ else 'exe'
+    binary = Path(qc_dir).joinpath(exe_dir).joinpath('qcprog.exe')
+    command = [binary, Path(work_dir).joinpath(input_file_name), Path(work_dir)]
+
+    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=work_dir)
 
     output = ''
     err = ''
@@ -272,7 +275,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     if remote_scratch is None:
         remote_scratch = stdout.read().decode().strip('\n').strip('\r')
 
-    remote_dir = '{}/temp_pyqchem_remote/'.format(remote_scratch)
+    remote_dir = os.path.join(remote_scratch, 'temp_pyqchem_remote')
 
     # Create temp directory in remote machine
     try:
