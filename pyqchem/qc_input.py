@@ -589,10 +589,10 @@ class QchemInput:
         guess_energies = self._scf_energies
 
         # set guess in place
-        mo_coeffa = np.array(guess_coeff['alpha'], dtype=np.float)
+        mo_coeffa = np.array(guess_coeff['alpha'], dtype=float)
 
         if 'beta' in guess_coeff:
-            mo_coeffb = np.array(guess_coeff['beta'], dtype=np.float)
+            mo_coeffb = np.array(guess_coeff['beta'], dtype=float)
         else:
             mo_coeffb = mo_coeffa
 
@@ -603,18 +603,17 @@ class QchemInput:
             mo_coeffb = mo_coeffb[:, reverse_indices]
 
         if guess_energies is not None:
-            mo_enea = np.array(guess_energies['alpha'], dtype=np.float)
+            mo_enea = np.array(guess_energies['alpha'], dtype=float)
             if 'beta' in guess_coeff:
-                mo_coeffb = np.array(guess_coeff['beta'], dtype=np.float)
-                mo_eneb = np.array(guess_energies['beta'], dtype=np.float)
+                mo_coeffb = np.array(guess_coeff['beta'], dtype=float)
+                mo_eneb = np.array(guess_energies['beta'], dtype=float)
             else:
                 mo_eneb = mo_enea
 
         else:
-            # here we set orbital energies to 0 (no problem if skip_scfman=False)
-            # since they will be recalculated
-            mo_enea = np.zeros(len(mo_coeffa))
-            mo_eneb = np.zeros(len(mo_coeffb))
+            # energies set with increasing values for q-chem to keep the order of orbitals
+            mo_enea = list(range(len(mo_coeffa)))
+            mo_eneb = list(range(len(mo_coeffb)))
 
         guess_file = np.vstack([mo_coeffa, mo_coeffb, mo_enea, mo_eneb]).flatten()
         with open(path + '/53.0', 'w') as f:
