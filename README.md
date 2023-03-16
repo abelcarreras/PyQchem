@@ -159,7 +159,7 @@ except OutputError as e:
 
 print('Energy: ', parsed_data['scf_energy'])
 ```
-Additional examples are found at the [examples folder](/../../examples)
+Additional examples are found at the [examples folder](/../../tree/master/examples)
 
 Contact info
 ------------
