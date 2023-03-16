@@ -1,4 +1,4 @@
-# splitting the calculation in Reference + Post HF (RASCI)
+# splitting the calculation in Optimization + Reference + 2 x Post HF (RASCI)
 from pyqchem import get_output_from_qchem, QchemInput
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_rasci import parser_rasci
