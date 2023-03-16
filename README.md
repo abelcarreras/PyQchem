@@ -12,9 +12,9 @@ Online manual: https://pyqchem.readthedocs.io/
 Main features
 -------------
 - Easy to use clean python interface for Q-Chem
-- No special q-chem compilation needed (reads Q-Chem environment)
+- No special q-chem installation needed (reads Q-Chem environment)
 - Output parser support
-- Cache system for calculations
+- Calculation Cache system
 - python 2.7.x/3.5+ compatibility
 
 Installation instructions
@@ -30,15 +30,15 @@ Installation instructions
 - paramiko (optional)
 - pymatgen (optional)
 
-2a. Installation from source
+2a. From pypi repository (recommended)
+```shell
+pip install pyqchem --user
+```
+
+2b. Installation from source
 
 ```shell
 python setup.py install --user
-```
-
-2b. From pypi repository 
-```shell
-pip install pyqchem --user
 ```
 
 Examples 
@@ -108,7 +108,7 @@ for i, mode in enumerate(parsed_data['modes']):
     print('force constant (mdyne/A):  {:10.5f}\n'.format(mode['force_constant']))
 
 ```
-**Custom basis without pain**
+**Custom basis support**
 
 ```python
 from pyqchem import QchemInput, Structure
@@ -130,7 +130,7 @@ qc_input = QchemInput(molecule,
 
 ```
 
-**Handle qchem errors like a pro!**
+**Handle qchem errors**
 
 
 ```python
