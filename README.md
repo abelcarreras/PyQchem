@@ -13,8 +13,9 @@ Main features
 -------------
 - Easy to use clean python interface for Q-Chem
 - No special q-chem installation needed (reads Q-Chem environment)
-- Output parser support
-- Calculation Cache system
+- Output parsers for different type of calculations 
+- Custom basis set and guess support using high level interface
+- Calculation Cache system powered by SQLite database
 - python 2.7.x/3.5+ compatibility
 
 Installation instructions
@@ -158,6 +159,7 @@ except OutputError as e:
 
 print('Energy: ', parsed_data['scf_energy'])
 ```
+Additional examples are found at the [examples folder](/../../examples)
 
 Contact info
 ------------
