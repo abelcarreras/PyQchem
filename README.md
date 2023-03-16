@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.com/abelcarreras/PyQchem.svg?branch=master)](https://app.travis-ci.com/github/abelcarreras/PyQchem)
+[![Build, Test & Upload](https://github.com/abelcarreras/PyQchem/actions/workflows/test-publish.yaml/badge.svg)](https://github.com/abelcarreras/PyQchem/actions/workflows/test-publish.yaml)
 [![Coverage Status](https://coveralls.io/repos/github/abelcarreras/PyQchem/badge.svg?branch=master)](https://coveralls.io/github/abelcarreras/PyQchem?branch=master)
 [![PyPI version](https://badge.fury.io/py/pyqchem.svg)](https://badge.fury.io/py/pyqchem)
 [![Documentation Status](https://readthedocs.org/projects/pyqchem/badge/?version=master)](https://pyqchem.readthedocs.io/en/master/?badge=master)
-[![Build, Test & Upload](https://github.com/abelcarreras/PyQchem/actions/workflows/test-publish.yaml/badge.svg)](https://github.com/abelcarreras/PyQchem/actions/workflows/test-publish.yaml)
 
 PyQchem
 =======
