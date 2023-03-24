@@ -60,7 +60,7 @@ data_ref, ee_reference = get_output_from_qchem(qc_input,
                                                processors=4,
                                                return_electronic_structure=True)
 
-# Compute RASCI (3 states) skipping SCF without hole/particle
+# Compute RASCI (3 states) without hole/particle
 qc_input = QchemInput(opt_molecule,
                       jobtype='sp',
                       exchange='hf',

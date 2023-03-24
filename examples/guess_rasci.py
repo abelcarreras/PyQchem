@@ -60,7 +60,7 @@ data_ref, ee_reference = get_output_from_qchem(qc_input,
                                                processors=4,
                                                return_electronic_structure=True)
 
-# Compute RASCI (3 states) skipping SCF
+# Compute RASCI (3 states) skipping SCF reading custom MO reference from previous calculation
 qc_input = QchemInput(opt_molecule,
                       jobtype='sp',
                       exchange='hf',
@@ -91,7 +91,8 @@ state_1, state_2, state_3 = ee_ras['ras_amplitudes']
 # create a new guess using states 1 and 3
 ras_guess = [state_1, state_3]
 
-# Compute RASCI (2 states)  skipping SCF and reading the custom guess for RASCI
+# Compute RASCI (2 states)  skipping SCF and reading custom MO reference
+# and custom guess for RASCI amplitudes from previous RASCI calculation
 qc_input = QchemInput(opt_molecule,
                       jobtype='sp',
                       exchange='hf',
