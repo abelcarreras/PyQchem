@@ -1,4 +1,4 @@
-# example to illustrate the use of custom guess in RAS-CI method
+# example to illustrate the use of custom reduced guess in RAS-CI method
 import numpy as np
 
 from pyqchem import get_output_from_qchem, QchemInput
