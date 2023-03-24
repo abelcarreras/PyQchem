@@ -60,6 +60,8 @@ class QchemInput:
                  ras_print=1,
                  ras_diabatization_scheme=None,
                  ras_diabatization_states=None,
+                 ras_guess=None,
+                 use_reduced_ras_guess=False,
                  # RASCI SrDFT
                  ras_omega=400,
                  ras_srdft=None,
@@ -375,6 +377,13 @@ class QchemInput:
                 input_file = input_file[:-1] + ']\n'
                 input_file += 'ras_diab_seq_list ' + '{}\n'.format([len(seq['states']) for seq in self._ras_diabatization_scheme]).replace(' ', '')
 
+            # RAS guess
+            if self._ras_guess is not None:
+                if self._use_reduced_ras_guess:
+                    input_file += 'set_redo {}\n'.format(1)
+                else:
+                    input_file += 'set_redo {}\n'.format(2)
+
             # Borrowed keywords
             input_file += 'cis_convergence {}\n'.format(self._cis_convergence)
 
@@ -643,8 +652,12 @@ class QchemInput:
         with open(path + '/132.0', 'w') as f:
             hessian_triu.tofile(f, sep='')
 
-    # Access to properties (only a reduced set should be accessible/editable)
+    def store_ras_guess_file(self, path='.'):
+        ras_guess_file = np.array(self._ras_guess, dtype=float).flatten()
+        with open(path + '/704.0', 'w') as f:
+            ras_guess_file.tofile(f, sep='')
 
+    # Access to properties (only a reduced set should be accessible/editable)
     @property
     def molecule(self):
         return self._molecule
@@ -664,6 +677,10 @@ class QchemInput:
     @property
     def hessian(self):
         return self._hessian
+
+    @property
+    def ras_guess(self):
+        return self._ras_guess
 
     @property
     def gui(self):

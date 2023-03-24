@@ -344,14 +344,19 @@ def generate_additional_files(input_qchem, work_dir):
     if input_qchem.hessian is not None:
         input_qchem.store_hessian_file(work_dir)
 
+    # write RAS-GUESS
+    if input_qchem.ras_guess is not None:
+        input_qchem.store_ras_guess_file(work_dir)
 
-def retrieve_additional_files(input_qchem, data_fchk, work_dir):
+
+def retrieve_additional_files(input_qchem, data_fchk, work_dir, scratch_read_level=0):
     """
     retrieve data from files in scratch data (on development, currently for test only)
 
     :param input_qchem: QChem input object
     :param data_fchk: FCHK parsed dictionary
     :param work_dir: scratch directory
+    :param scratch_read_level: defines what data to retrieve
     :return: dictionary with additional data
     """
 
@@ -405,7 +410,7 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
             fock_alpha = data[:nbas*nbas].reshape(-1, nbas)
             fock_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas)
 
-            # put in fchk order
+            # set basis functions in fchk order
             fock_alpha = fock_alpha[:, indices]
             fock_alpha = fock_alpha[indices, :]
             fock_beta = fock_beta[:, indices]
@@ -413,23 +418,24 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
 
             additional_data['fock_matrix'] = {'alpha': fock_alpha.tolist(), 'beta': fock_beta.tolist()}
 
-    # # FILE_ENERGY (Not really worth to read it)
-    # if '99.0' in file_list:
-    #     with open(work_dir + '99.0', 'r') as f:
-    #         data = np.fromfile(f, dtype=float)
+    if scratch_read_level == -1:
+        # FILE_ENERGY (Not really worth to read it)
+        if '99.0' in file_list:
+            with open(work_dir + '99.0', 'r') as f:
+                data = np.fromfile(f, dtype=float)
 
-    # # FILE_DENSITY_MATRIX (Already in fchk)
-    # if '54.0' in file_list:
-    #     with open(work_dir + '54.0', 'r') as f:
-    #         data = np.fromfile(f, dtype=float)
-    #         density_alpha = data[:nbas*nbas].reshape(-1, nbas)
-    #         density_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas)
-    #         put in fchk order
-    #         density_alpha = density_alpha[:, indices]
-    #         density_alpha = density_alpha[indices, :]
-    #         density_beta = density_beta[:, indices]
-    #         density_beta = density_beta[indices, :]
-    #         additional_data['scf_density_internal'] = {'alpha': density_alpha.tolist(), 'beta': density_beta.tolist()}
+        # FILE_DENSITY_MATRIX (Already in fchk)
+        if '54.0' in file_list:
+            with open(work_dir + '54.0', 'r') as f:
+                data = np.fromfile(f, dtype=float)
+                density_alpha = data[:nbas*nbas].reshape(-1, nbas)
+                density_beta = data[nbas*nbas: 2*nbas*nbas].reshape(-1, nbas)
+                # set basis functions in fchk order
+                density_alpha = density_alpha[:, indices]
+                density_alpha = density_alpha[indices, :]
+                density_beta = density_beta[:, indices]
+                density_beta = density_beta[indices, :]
+                additional_data['scf_density_internal'] = {'alpha': density_alpha.tolist(), 'beta': density_beta.tolist()}
 
     # HESSIAN_MATRIX
     if '132.0' in file_list:
@@ -444,13 +450,25 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir):
             data = np.fromfile(f, dtype=float)
             ao_integrals = data.reshape(-1, nbas, nbas, nbas)
 
-            # put in fchk order
+            # set basis functions in fchk order
             ao_integrals = ao_integrals[:, :, :, indices]
             ao_integrals = ao_integrals[:, :, indices, :]
             ao_integrals = ao_integrals[:, indices, :, :]
             ao_integrals = ao_integrals[indices, :, :, :]
 
             additional_data['ao_integrals'] = ao_integrals.tolist()
+
+    if scratch_read_level > 0:
+        # FILE_RAS_AMP
+        if '704.0' in file_list:
+            with open(work_dir + '705.0', 'r') as f:
+                ras_energies = np.fromfile(f, dtype=float)
+                n_ras_roots = len(ras_energies)
+
+            with open(work_dir + '704.0', 'r') as f:
+                data = np.fromfile(f, dtype=float)
+                ras_amplitudes = data.reshape(n_ras_roots, -1)
+                additional_data['ras_amplitudes'] = ras_amplitudes.tolist()
 
     return additional_data
 
@@ -467,7 +485,9 @@ def get_output_from_qchem(input_qchem,
                           fchk_only=False,
                           store_full_output=False,
                           delete_scratch=True,
-                          remote=None):
+                          remote=None,
+                          scratch_read_level=0):
+
     """
     Runs qchem and returns the output in the following format:
 
@@ -579,7 +599,10 @@ def get_output_from_qchem(input_qchem,
                 fchk_txt = f.read()
 
             elect_struct_data = parser_fchk(fchk_txt)
-            elect_struct_data.update(retrieve_additional_files(input_qchem, elect_struct_data, work_dir))
+            elect_struct_data.update(retrieve_additional_files(input_qchem,
+                                                               elect_struct_data,
+                                                               work_dir,
+                                                               scratch_read_level))
             cache.store_calculation_data(input_qchem, 'fchk', elect_struct_data)
 
         if store_full_output:
