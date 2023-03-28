@@ -1,7 +1,7 @@
 excited_states:
 - configurations:
   - alpha: '10'
-    amplitude: 0.99124218910217
+    amplitude: 0.99124218910216
     beta: '10'
     hole: ''
     occupations:
@@ -29,7 +29,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: -0.11076978254668
+    amplitude: -0.11076978254667
     beta: '01'
     hole: ''
     occupations:
@@ -74,12 +74,12 @@ excited_states:
   mulliken_population:
     charge:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - -0.0
+      - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     spin:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
+      - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     units: au
@@ -165,12 +165,12 @@ excited_states:
   mulliken_population:
     charge:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
+      - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
+      - -0.0
     spin:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
+      - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     units: au
