@@ -81,9 +81,6 @@ parsed_data, ee_ras = get_output_from_qchem(qc_input,
                                             return_electronic_structure=True,
                                             scratch_read_level=1)
 
-print(ee_ras.keys())
-print(np.linalg.norm(ee_ras['ras_amplitudes'], axis=1))
-
 print('\nRASCI states\n' + '-'*31)
 print_formatted_data(parsed_data)
 
@@ -100,7 +97,7 @@ qc_input = QchemInput(opt_molecule,
                       use_reduced_ras_guess=True,  # use guess as reduced (no hole/particle)
                       ras_do_hole=True,
                       ras_do_part=True,
-                      ras_roots=2,
+                      ras_roots=3,
                       ras_elec=2,
                       ras_act=2)
 

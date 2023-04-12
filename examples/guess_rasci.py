@@ -79,8 +79,6 @@ parsed_data, ee_ras = get_output_from_qchem(qc_input,
                                             return_electronic_structure=True,
                                             scratch_read_level=1) # this is necessary in order to read RAS_AMPLITUDES
 
-print(ee_ras.keys())
-print(np.linalg.norm(ee_ras['ras_amplitudes'], axis=1))
 
 print('\nRASCI states\n' + '-'*31)
 print_formatted_data(parsed_data)
@@ -108,6 +106,7 @@ qc_input = QchemInput(opt_molecule,
 parsed_data = get_output_from_qchem(qc_input,
                                     parser=parser_rasci,
                                     processors=4)
+
 
 
 print('\nRASCI states (from RAS guess)\n' + '-'*31)
