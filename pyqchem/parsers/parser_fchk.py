@@ -176,6 +176,7 @@ def _get_all_nto(output):
 
     return nto_coefficients_list, nto_occupancies_list
 
+
 def _get_all_fod(output):
 
     fod_list = []
@@ -185,6 +186,17 @@ def _get_all_fod(output):
         fod_list.append(vect_to_mat(np.array(data, dtype=float)).tolist())
 
     return fod_list
+
+
+def _get_all_scf(output):
+
+    scf_list = []
+    for i, m in enumerate(re.finditer('Total SCF Density', output)):
+        n_elements = int(output[m.end():m.end() + 100].replace('\n', ' ').split()[2])
+        data = output[m.end(): m.end() + n_elements*50].split()[3:n_elements+3]
+        scf_list.append(vect_to_mat(np.array(data, dtype=float)).tolist())
+
+    return scf_list
 
 
 def _get_all_nto_new_format(output, label):
@@ -312,17 +324,6 @@ def parser_fchk(output):
         final_dict['coefficients']['beta'] = np.array(data['Beta MO coefficients']).reshape(-1, nbas).tolist()
         final_dict['mo_energies']['beta'] = data['Beta Orbital Energies']
 
-    if 'Total SCF Density' in data:
-        total = vect_to_mat(data['Total SCF Density'])
-        if 'Spin SCF Density' in data:
-            spin = vect_to_mat(data['Spin SCF Density'])
-            final_dict['scf_density'] = {'alpha': np.ndarray.tolist((total + spin)/2),
-                                         'beta': np.ndarray.tolist((total - spin)/2)}
-        else:
-            final_dict['scf_density'] = {'alpha': np.ndarray.tolist(total/2),
-                                         'beta': np.ndarray.tolist(total/2)}
-
-        final_dict['total_scf_density'] = vect_to_mat(data['Total SCF Density']).tolist()
 
     if 'Spin SCF Density' in data:
         final_dict['spin_density'] = vect_to_mat(data['Spin SCF Density']).tolist()
@@ -362,6 +363,25 @@ def parser_fchk(output):
         fod_list = _get_all_fod(output)
         if len(fod_list) > 1:
             final_dict['fractional_occupation_density_multi'] = fod_list
+
+    if 'Total SCF Density' in data:
+        scf_list = _get_all_scf(output)
+        if len(scf_list) > 1:
+            final_dict['total_scf_density_multi'] = scf_list
+            total = scf_list[-1]
+
+        else:
+            total = vect_to_mat(data['Total SCF Density'])
+
+        if 'Spin SCF Density' in data:
+            spin = vect_to_mat(data['Spin SCF Density'])
+            final_dict['scf_density'] = {'alpha': np.ndarray.tolist((total + spin)/2),
+                                         'beta': np.ndarray.tolist((total - spin)/2)}
+        else:
+            final_dict['scf_density'] = {'alpha': np.ndarray.tolist(total/2),
+                                         'beta': np.ndarray.tolist(total/2)}
+
+        final_dict['total_scf_density'] = total
 
     # Parse new format RAS SOC NTO's
     NTOS_dict = dict(filter(lambda item: "NTOs occupancies SOC" in item[0], data.items()))
