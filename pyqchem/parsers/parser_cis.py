@@ -68,10 +68,15 @@ def basic_cis(output):
 
             exc_energy = float(state_cis_lines[0].split()[5])
             exc_energy_units = state_cis_lines[0].split()[3][1:-1]
-            tot_energy = float(state_cis_lines[1].split()[5])
 
             try:
-                tot_energy_units = state_cis_lines[1].split()[6]
+                tot_energy = float(state_cis_lines[1].split()[5])
+            except ValueError:
+                tot_energy = float(state_cis_lines[1].split()[4])
+
+            tot_energy_units = 'au'
+
+            try:
                 mul = state_cis_lines[2].split()[-1]
 
                 trans_mom = [float(mom) for mom in [state_cis_lines[3].split()[2],
@@ -81,7 +86,6 @@ def basic_cis(output):
             except ValueError:
                 # old version of qchem (< 5.01)
                 state_cis_words = output_cis[m.end():].split()
-                tot_energy_units = 'au'
                 mul = state_cis_words[13]
                 trans_mom = [float(mom) for mom in [state_cis_words[16],
                                                     state_cis_words[18],
