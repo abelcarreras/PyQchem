@@ -368,20 +368,20 @@ def parser_fchk(output):
         scf_list = _get_all_scf(output)
         if len(scf_list) > 1:
             final_dict['total_scf_density_multi'] = scf_list
-            total = scf_list[-1]
+            total = np.array(scf_list[-1])
 
         else:
-            total = vect_to_mat(data['Total SCF Density'])
+            total = np.array(vect_to_mat(data['Total SCF Density']))
 
         if 'Spin SCF Density' in data:
-            spin = vect_to_mat(data['Spin SCF Density'])
-            final_dict['scf_density'] = {'alpha': np.ndarray.tolist((total + spin)/2),
-                                         'beta': np.ndarray.tolist((total - spin)/2)}
+            spin = np.array(vect_to_mat(data['Spin SCF Density']))
+            final_dict['scf_density'] = {'alpha': list((total + spin)/2),
+                                         'beta': list((total - spin)/2)}
         else:
-            final_dict['scf_density'] = {'alpha': np.ndarray.tolist(total/2),
-                                         'beta': np.ndarray.tolist(total/2)}
+            final_dict['scf_density'] = {'alpha': list(total/2),
+                                         'beta': list(total/2)}
 
-        final_dict['total_scf_density'] = total
+        final_dict['total_scf_density'] = list(total)
 
     # Parse new format RAS SOC NTO's
     NTOS_dict = dict(filter(lambda item: "NTOs occupancies SOC" in item[0], data.items()))
