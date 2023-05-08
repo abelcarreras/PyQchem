@@ -43,7 +43,8 @@ def basic_optimization(output, print_data=False):
     step_s2 = None
     # Optimization steps
     optimization_steps = []
-    list_iterations = [l.end() for l in re.finditer('Optimization Cycle', output)]
+    list_iterations = [l.end() for l in re.finditer('Optimization Cycle', output, re.IGNORECASE)]
+    print(list_iterations)
     for ini, fin in zip(list_iterations, list_iterations[1:] + [len(output)]):
         step_section = output[ini:fin]
         enum = step_section.find('Coordinates (Angstroms)')
