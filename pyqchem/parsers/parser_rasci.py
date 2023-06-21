@@ -2,6 +2,8 @@ __author__ = 'Abel Carreras'
 
 import re
 import operator
+import warnings
+
 import numpy as np
 from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
 from pyqchem.parsers.common import search_bars, standardize_vector, read_input_structure
@@ -348,12 +350,14 @@ def parser_rasci(output):
                 nb = int(2 * s_b + 1)
 
                 if 'Spin Matrices' in line:
+                    warnings.warn('Spin Matrices parsing is deprecated')
                     spinmat_x = _read_soc_matrix(lines[i + 2:], [nb, na])
                     spinmat_y = _read_soc_matrix(lines[i + 4 + nb:], [nb, na])
                     spinmat_z = _read_soc_matrix(lines[i + 6 + 2*nb:], [nb, na])
                     pair_dict['spin_matrices'] = [spinmat_x, spinmat_y, spinmat_z]
 
                 if 'Spin matrices Sx, Sy and Sz for states' in line:
+                    warnings.warn('Spin Matrices parsing is deprecated')
                     pair_dict['spin_matrices'] = [np.zeros((nb, na)).tolist()]*3
 
                 if '1-elec SOC matrix (cm-1)' in line:
@@ -377,6 +381,20 @@ def parser_rasci(output):
                 if 'Mean-Field SOCC' in line:
                     pair_dict['mf_socc'] = float(line.split()[-2])
                     pair_dict['units'] = line.split()[-1]
+
+                if 'Skipping SOCs between states' in line:
+                    pair_dict['1e_soc_mat'] = np.zeros((nb, na)).tolist()
+                    pair_dict['1e_socc'] = 0.0
+
+                    pair_dict['hso_l-'] = complex(0.0)
+                    pair_dict['hso_l0'] = complex(0.0)
+                    pair_dict['hso_l+'] = complex(0.0)
+
+                    pair_dict['2e_soc_mat'] = np.zeros((nb, na)).tolist()
+                    pair_dict['total_soc_mat'] = np.zeros((nb, na)).tolist()
+
+                    pair_dict['mf_socc'] = 0.0
+                    pair_dict['units'] = 'cm-1'
 
             interstate_dict[(state_a, state_b)] = pair_dict
 
