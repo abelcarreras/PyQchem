@@ -1,8 +1,8 @@
-import numpy as np
-import re
 from pyqchem.utils import get_occupied_electrons
 from pyqchem.structure import atom_data
 from pyqchem.structure import Structure
+import numpy as np
+import re
 
 
 def read_symmetry_info(output):
@@ -35,7 +35,7 @@ def read_basic_info(output):
 def read_input_structure(output):
 
     enum = output.find('Standard Nuclear Orientation')
-    end_section = search_bars(output, from_position=enum, bar_type='\-\-\-\-\-')
+    end_section = search_bars(output, from_position=enum, bar_type=r'-----')
     section_structure = output[end_section[0]: end_section[1]].split('\n')
 
     symbols = []
@@ -127,7 +127,6 @@ def search_bars(output, from_position=0, bar_type='---'):
 
 
 def standardize_vector(vector):
-    import numpy as np
     if vector[0] != 0:
         if vector[0] < 0:
             vector = np.array(vector) * -1
@@ -145,6 +144,7 @@ def standardize_vector(vector):
         vector[i] = vector[i] + 0
 
     return vector
+
 
 # handle asterisks and convert them to nan
 class float_asterisk(float):
