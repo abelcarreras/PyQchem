@@ -230,8 +230,9 @@ def _get_all_tdm(output):
     for i, m in enumerate(re.finditer('Transition density', output)):
         indices = np.array(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[0].split('(')[1].split(','), dtype=int)
         n_elements = int(output[m.end() :m.end() + 100].replace('\n', ' ').split(')')[1].split()[2])
+        nbas = int(np.sqrt(n_elements))
         data = output[m.end(): m.end() + n_elements*50].split(')')[1].split()[3:n_elements+3]
-        tdm_data_dict[tuple(indices)] = np.array(data, dtype=float).tolist()
+        tdm_data_dict[tuple(indices)] = np.array(data, dtype=float).reshape(nbas, nbas).tolist()
 
     return tdm_data_dict
 
