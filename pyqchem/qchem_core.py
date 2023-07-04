@@ -8,6 +8,7 @@ import numpy as np
 import hashlib
 import pickle
 import warnings
+import copy
 
 
 if sys.version_info[0] < 3 or sys.platform in ["win32", "cygwin"] or os.getenv('PYQCHEM_CACHE') == '1':
@@ -255,6 +256,7 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     :return: output, err: Q-Chem standard output and standard error
     """
     import paramiko
+    remote_params = copy.deepcopy(remote_params)
 
     # get precommands
     commands = remote_params.pop('precommand', [])
@@ -584,8 +586,10 @@ def get_output_from_qchem(input_qchem,
     # Q-Chem calculation
     if output is None or force_recalculation is True:
         if remote is None:
+            print('local:')
             output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
         else:
+            print('Remote:')
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
         if not finish_ok(output):
