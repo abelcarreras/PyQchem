@@ -1,91 +1,7 @@
 excited_states:
 - configurations:
-  - alpha: '10'
-    amplitude: 0.70710678118658
-    beta: '01'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '01'
-    amplitude: -0.70710678118651
+    amplitude: 0.7071067811866
     beta: '10'
     hole: ''
     occupations:
@@ -168,7 +84,91 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  - alpha: '10'
+    amplitude: -0.70710678118649
+    beta: '01'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 100.0
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -199,17 +199,17 @@ excited_states:
       - 0.176601
     spin:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - 0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - 0.0
     units: au
   multiplicity: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 2.0
@@ -234,96 +234,12 @@ excited_states:
     - 1.0
   oscillator_strength: null
   total_energy: !!python/object/new:pyqchem.parsers.common.float_asterisk
-  - -77.942732007253
+  - -77.942732007254
   total_energy_units: au
   transition_moment: null
 - configurations:
-  - alpha: '01'
-    amplitude: 0.70708169912078
-    beta: '10'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '10'
-    amplitude: 0.70708169912071
+    amplitude: 0.7070816991208
     beta: '01'
     hole: ''
     occupations:
@@ -406,7 +322,91 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  - alpha: '01'
+    amplitude: 0.70708169912069
+    beta: '10'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 99.99
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -437,17 +437,17 @@ excited_states:
       - 0.175712
     spin:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - -0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - -0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - -0.0
     units: au
   multiplicity: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 0.0
@@ -473,7 +473,7 @@ excited_states:
   oscillator_strength: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 0.0
   total_energy: !!python/object/new:pyqchem.parsers.common.float_asterisk
-  - -77.939550271805
+  - -77.939550271806
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -481,7 +481,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '10'
-    amplitude: 0.64552426867226
+    amplitude: 0.64552426867116
     beta: '10'
     hole: ''
     occupations:
@@ -565,7 +565,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: -0.64552425261176
+    amplitude: -0.64552425261286
     beta: '01'
     hole: ''
     occupations:
@@ -649,7 +649,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: -0.17442531243739
+    amplitude: -0.1744253124371
     beta: '11'
     hole: '6'
     occupations:
@@ -733,7 +733,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.17442531243739
+    amplitude: -0.1744253124371
     beta: '10'
     hole: '6'
     occupations:
@@ -817,7 +817,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: -0.17442530814988
+    amplitude: -0.17442530815017
     beta: '11'
     hole: '5'
     occupations:
@@ -901,7 +901,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.17442530814988
+    amplitude: -0.17442530815017
     beta: '01'
     hole: '5'
     occupations:
@@ -984,7 +984,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 83.34
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -1019,11 +1019,11 @@ excited_states:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - -0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     units: au
@@ -1063,7 +1063,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '01'
-    amplitude: 0.64225524564218
+    amplitude: 0.64225524564108
     beta: '01'
     hole: ''
     occupations:
@@ -1147,7 +1147,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.64225522950958
+    amplitude: 0.64225522951067
     beta: '10'
     hole: ''
     occupations:
@@ -1231,7 +1231,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: 0.17523348057742
+    amplitude: 0.17523348057711
     beta: '11'
     hole: '5'
     occupations:
@@ -1315,7 +1315,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: 0.17523348057742
+    amplitude: 0.17523348057711
     beta: '01'
     hole: '5'
     occupations:
@@ -1399,7 +1399,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: -0.17523347613278
+    amplitude: -0.17523347613308
     beta: '11'
     hole: '6'
     occupations:
@@ -1483,7 +1483,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.17523347613278
+    amplitude: -0.17523347613308
     beta: '10'
     hole: '6'
     occupations:
@@ -1566,7 +1566,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 82.5
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -1599,13 +1599,13 @@ excited_states:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     units: au
@@ -1645,7 +1645,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: 0.48090779145549
+    amplitude: 0.48090779144817
     beta: '10'
     hole: ''
     occupations:
@@ -1729,7 +1729,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '10'
-    amplitude: -0.48090777396379
+    amplitude: -0.48090777395645
     beta: '00'
     hole: ''
     occupations:
@@ -1813,7 +1813,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '10'
-    amplitude: 0.40492126210817
+    amplitude: 0.40492126210392
     beta: '00'
     hole: ''
     occupations:
@@ -1897,7 +1897,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '00'
-    amplitude: -0.40492121432963
+    amplitude: -0.4049212143254
     beta: '10'
     hole: ''
     occupations:
@@ -1981,7 +1981,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '11'
-    amplitude: -0.28545514292702
+    amplitude: -0.28545514292356
     beta: '01'
     hole: '7'
     occupations:
@@ -2065,7 +2065,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: 0.28545512889178
+    amplitude: 0.28545512888834
     beta: '11'
     hole: '7'
     occupations:
@@ -2149,7 +2149,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: -0.12993473401408
+    amplitude: -0.12993473401244
     beta: '11'
     hole: '4'
     occupations:
@@ -2233,7 +2233,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: 0.1299346331992
+    amplitude: 0.12993463319755
     beta: '01'
     hole: '4'
     occupations:
@@ -2316,7 +2316,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.0
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -2387,7 +2387,7 @@ excited_states:
   oscillator_strength: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 5.0e-05
   total_energy: !!python/object/new:pyqchem.parsers.common.float_asterisk
-  - -77.634939436733
+  - -77.634939436734
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -2395,7 +2395,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: 0.48090775859892
+    amplitude: 0.4809077585936
     beta: '01'
     hole: ''
     occupations:
@@ -2479,7 +2479,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '01'
-    amplitude: -0.48090775859891
+    amplitude: -0.4809077585936
     beta: '00'
     hole: ''
     occupations:
@@ -2563,7 +2563,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '00'
-    amplitude: 0.40492117444665
+    amplitude: 0.40492117444021
     beta: '01'
     hole: ''
     occupations:
@@ -2647,7 +2647,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '01'
-    amplitude: -0.40492117444665
+    amplitude: -0.40492117444021
     beta: '00'
     hole: ''
     occupations:
@@ -2730,92 +2730,8 @@ excited_states:
       - 0
       - 0
     part: '11'
-  - alpha: '10'
-    amplitude: 0.28545512541412
-    beta: '11'
-    hole: '7'
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '11'
-    amplitude: -0.28545512541412
+    amplitude: -0.28545512541041
     beta: '10'
     hole: '7'
     occupations:
@@ -2899,7 +2815,91 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.12993499370481
+    amplitude: 0.2854551254104
+    beta: '11'
+    hole: '7'
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  - alpha: '10'
+    amplitude: 0.12993499370311
     beta: '11'
     hole: '4'
     occupations:
@@ -2983,7 +2983,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.12993499370481
+    amplitude: -0.12993499370311
     beta: '10'
     hole: '4'
     occupations:
@@ -3066,7 +3066,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.0
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3097,6 +3097,8 @@ excited_states:
       - -0.162007
     spin:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
+      - -0.0
+    - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - 0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
@@ -3105,9 +3107,7 @@ excited_states:
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
       - -0.0
     - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
-    - !!python/object/new:pyqchem.parsers.common.float_asterisk
-      - 0.0
+      - -0.0
     units: au
   multiplicity: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 2.0
@@ -3145,7 +3145,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '00'
-    amplitude: -0.48582762289983
+    amplitude: -0.48582762289869
     beta: '10'
     hole: ''
     occupations:
@@ -3229,7 +3229,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '10'
-    amplitude: -0.48582739361251
+    amplitude: -0.48582739361135
     beta: '00'
     hole: ''
     occupations:
@@ -3313,7 +3313,7 @@ excited_states:
       - 0
     part: '10'
   - alpha: '00'
-    amplitude: 0.48038685295609
+    amplitude: 0.48038685295723
     beta: '10'
     hole: ''
     occupations:
@@ -3397,7 +3397,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '10'
-    amplitude: 0.48038685097685
+    amplitude: 0.48038685097799
     beta: '00'
     hole: ''
     occupations:
@@ -3481,7 +3481,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '01'
-    amplitude: -0.12786868913874
+    amplitude: -0.12786868913873
     beta: '11'
     hole: '7'
     occupations:
@@ -3565,7 +3565,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '11'
-    amplitude: -0.12786851496164
+    amplitude: -0.12786851496175
     beta: '01'
     hole: '7'
     occupations:
@@ -3648,7 +3648,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.0
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3719,7 +3719,7 @@ excited_states:
   oscillator_strength: !!python/object/new:pyqchem.parsers.common.float_asterisk
   - 0.0
   total_energy: !!python/object/new:pyqchem.parsers.common.float_asterisk
-  - -77.620089218067
+  - -77.620089218068
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -3775,8 +3775,8 @@ interstate_properties:
   - 1
   - 5
   : angular_momentum:
-    - !!python/complex '0.575095243j'
-    - !!python/complex '-3.2e-07j'
+    - !!python/complex '-0.575095243j'
+    - !!python/complex '2.956e-06j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.5
@@ -3790,7 +3790,7 @@ interstate_properties:
   - 1
   - 6
   : angular_momentum:
-    - !!python/complex '-3.2e-07j'
+    - !!python/complex '-2.956e-06j'
     - !!python/complex '-0.57509514j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3805,7 +3805,7 @@ interstate_properties:
   - 1
   - 7
   : angular_momentum:
-    - !!python/complex '1.2e-08j'
+    - !!python/complex '-1.2e-08j'
     - !!python/complex '0.0'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3837,7 +3837,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-0.746556178j'
+    - !!python/complex '0.746556178j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.933113
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3852,7 +3852,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '9e-09j'
+    - !!python/complex '-9e-09j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.212609
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3927,7 +3927,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '0.746556178j'
+    - !!python/complex '-0.746556178j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.933113
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -3956,7 +3956,7 @@ interstate_properties:
   - 5
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '-2.4e-07j'
+    - !!python/complex '2.4e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.464607
@@ -3986,7 +3986,7 @@ interstate_properties:
   - 7
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '-0.625251133j'
+    - !!python/complex '0.625251133j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.463107
@@ -4017,7 +4017,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-9e-09j'
+    - !!python/complex '9e-09j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.212609
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4046,7 +4046,7 @@ interstate_properties:
   - 5
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '-1.36e-07j'
+    - !!python/complex '1.36e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.463156
@@ -4076,7 +4076,7 @@ interstate_properties:
   - 7
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '-0.371688183j'
+    - !!python/complex '0.371688183j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.461772
@@ -4090,8 +4090,8 @@ interstate_properties:
   - 5
   - 1
   : angular_momentum:
-    - !!python/complex '-0.575095243j'
-    - !!python/complex '3.2e-07j'
+    - !!python/complex '0.575095243j'
+    - !!python/complex '-2.956e-06j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.5
@@ -4121,7 +4121,7 @@ interstate_properties:
   - 3
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '2.4e-07j'
+    - !!python/complex '-2.4e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.464607
@@ -4136,7 +4136,7 @@ interstate_properties:
   - 4
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '1.36e-07j'
+    - !!python/complex '-1.36e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.463156
@@ -4152,7 +4152,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-0.002115464j'
+    - !!python/complex '0.002115464j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.003702
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4180,7 +4180,7 @@ interstate_properties:
   - 6
   - 1
   : angular_momentum:
-    - !!python/complex '3.2e-07j'
+    - !!python/complex '2.956e-06j'
     - !!python/complex '0.57509514j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4242,7 +4242,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '0.002115464j'
+    - !!python/complex '-0.002115464j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.003702
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4257,7 +4257,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-1e-09j'
+    - !!python/complex '1e-09j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.064308
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4270,7 +4270,7 @@ interstate_properties:
   - 7
   - 1
   : angular_momentum:
-    - !!python/complex '-1.2e-08j'
+    - !!python/complex '1.2e-08j'
     - !!python/complex '0.0'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4301,7 +4301,7 @@ interstate_properties:
   - 3
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '0.625251133j'
+    - !!python/complex '-0.625251133j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.463107
@@ -4316,7 +4316,7 @@ interstate_properties:
   - 4
   : angular_momentum:
     - !!python/complex '0.0'
-    - !!python/complex '0.371688183j'
+    - !!python/complex '-0.371688183j'
     - !!python/complex '0.0'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.461772
@@ -4347,7 +4347,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '1e-09j'
+    - !!python/complex '-1e-09j'
     gamma_anti_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 0.064308
     gamma_sym: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -4370,7 +4370,7 @@ scf_energy: !!python/object/new:pyqchem.parsers.common.float_asterisk
 structure: !!python/object:pyqchem.structure.Structure
   _atomic_masses: null
   _atomic_numbers: null
-  _charge: -2
+  _charge: 0
   _connectivity: null
   _coordinates: !!python/object/apply:numpy.core.multiarray._reconstruct
     args:
@@ -4400,9 +4400,9 @@ structure: !!python/object:pyqchem.structure.Structure
       - 0
     - false
     - !!binary |
-      AAAAAAAAAAAAAAAAAAAAgEjhehSuR+U/AAAAAAAAAIAAAAAAAAAAAEjhehSuR+W/TN9rCI5L7T8A
-      AAAAAAAAAMJPHEC/r/O/TN9rCI5L7b8AAAAAAAAAgMJPHEC/r/O/AAAAAAAAAIBM32sIjkvtP8JP
-      HEC/r/M/AAAAAAAAAABM32sIjkvtv8JPHEC/r/M/
+      AAAAAAAAAIAAAAAAAAAAgEjhehSuR+U/AAAAAAAAAAAAAAAAAAAAAEjhehSuR+W/TN9rCI5L7T8A
+      AAAAAAAAgMJPHEC/r/O/TN9rCI5L7b8AAAAAAAAAAMJPHEC/r/O/AAAAAAAAAABM32sIjkvtP8JP
+      HEC/r/M/AAAAAAAAAIBM32sIjkvtv8JPHEC/r/M/
   _multiplicity: 3
   _name: null
   _number_of_atoms: 6

@@ -56,7 +56,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 99.48
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -147,7 +147,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 98.4
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
