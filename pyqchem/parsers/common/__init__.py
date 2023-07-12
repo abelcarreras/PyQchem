@@ -35,7 +35,7 @@ def read_basic_info(output):
 def read_input_structure(output):
 
     enum = output.find('Standard Nuclear Orientation')
-    end_section = search_bars(output, from_position=enum, bar_type='\-\-\-\-\-')
+    end_section = search_bars(output, from_position=enum, bar_type=r'-----')
     section_structure = output[end_section[0]: end_section[1]].split('\n')
 
     symbols = []

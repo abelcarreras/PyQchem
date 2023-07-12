@@ -146,7 +146,11 @@ def build_fchk(parsed_data):
     # txt_fchk += get_array_txt('Beta Orbital Energies', 'R', beta_mo_energies)
 
     if 'scf_density' in parsed_data:
-        total_density = np.array(parsed_data['scf_density']['alpha']) + np.array(parsed_data['scf_density']['beta'])
+        if 'beta' in parsed_data['scf_density']:
+            total_density = np.array(parsed_data['scf_density']['alpha']) + np.array(parsed_data['scf_density']['beta'])
+        else:
+            total_density = np.array(parsed_data['scf_density']['alpha'])
+
         scf_density = mat_to_vect(total_density)
         txt_fchk += get_array_txt('Total SCF Density', 'R', scf_density)
 
