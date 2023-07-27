@@ -133,7 +133,7 @@ parsed_data = get_output_from_qchem(qc_input,
                                     store_full_output=True,
                                     )
 
-# parsed_data = rasci_parser(parsed_data)
+# parsed_data = basic_cis(parsed_data)
 # print(parsed_data)
 
 # print adiabatic states
