@@ -58,7 +58,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 98.89
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -213,7 +213,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 97.17
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -372,7 +372,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 97.15
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -531,7 +531,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 96.11
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -690,7 +690,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 97.2
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk
@@ -849,7 +849,7 @@ excited_states:
       - 0
       - 0
     part: ''
-  contributions_fwn:
+  contributions_wfn:
     active: !!python/object/new:pyqchem.parsers.common.float_asterisk
     - 97.25
     hole: !!python/object/new:pyqchem.parsers.common.float_asterisk

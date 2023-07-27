@@ -298,7 +298,7 @@ def parser_rasci(output):
                       'dipole_moment_units': 'ua',
                       'oscillator_strength': strength,
                       'configurations': table,
-                      'contributions_fwn': contributions}
+                      'contributions_wfn': contributions}
 
         if nato_occ is not None:
             state_dict.update({'natural_occupation_numbers': nato_occ})
