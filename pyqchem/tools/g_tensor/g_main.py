@@ -1,10 +1,9 @@
 """
 g-tensor calculation by USING ONLY GROUND STATE DOUBLETS
 """
+from pyqchem.tools.g_tensor.g_read import get_number_of_states, get_eigenenergies, get_selected_states, get_spin_orbit_couplings_pyqchem
+from pyqchem.tools.g_tensor.g_operations import from_energies_SOC_to_g_values, print_g_calculation
 
-from g_read import get_number_of_states, get_eigenenergies, get_selected_states, get_spin_orbit_couplings_pyqchem
-
-from g_operations import from_energies_SOC_to_g_values, print_g_calculation
 
 #####################################
 #            INPUT VALUES
