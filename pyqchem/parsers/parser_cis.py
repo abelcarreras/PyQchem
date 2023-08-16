@@ -31,6 +31,18 @@ def basic_cis(output):
     """
     data_dict = {}
 
+    # input echo data
+
+    # get diabatic states numbers (starting by zero)
+    re_ini = re.search('\$localized_diabatization', output, re.IGNORECASE)
+    list_diabat = []
+    if re_ini is not None:
+        enum_i = re_ini.end()
+        enum_f = re.search('\$end', output[enum_i: enum_i+1000], re.IGNORECASE).start()
+        diabat_input_section = output[enum_i: enum_i+enum_f]
+        enum = re.search('adiabatic states', diabat_input_section, re.IGNORECASE).end()
+        list_diabat = [int(val)-1 for val in diabat_input_section[enum:].split('\n')[1].split()]
+
     # Molecule
     data_dict['structure'] = read_input_structure(output)
     n_atoms = data_dict['structure'].get_number_of_atoms()
@@ -300,8 +312,10 @@ def basic_cis(output):
         enum = output.find('Mulliken & Loewdin analysis of')
         for m in re.finditer('Mulliken analysis of TDA State', output[enum:]):
             section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
-            section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
-            section_attachment = section_mulliken.split('\n')[10 + n_atoms: 10 + n_atoms * 2]
+
+            enum_i = search_bars(section_mulliken)[2]
+            section_mulliken = section_mulliken[:enum_i]
+            section_attachment = section_mulliken.split('\n')[4: 4 + n_atoms]
 
             mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
                                       'detach': [float(l.split()[2]) for l in section_attachment],
@@ -314,7 +328,7 @@ def basic_cis(output):
                                   'transition_moment': [],
                                   'dipole_moment_units': 'ua'}
             if len(mulliken_diabatic) > 0:
-                diabat_states_data['mulliken'] = mulliken_diabatic[i]
+                diabat_states_data['mulliken'] = mulliken_diabatic[list_diabat[i]]
 
             diabatic_states.append(diabat_states_data)
         diabat_data['diabatic_states'] = diabatic_states
