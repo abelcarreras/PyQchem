@@ -41,7 +41,7 @@ def basic_cis(output):
         enum_f = re.search('\$end', output[enum_i: enum_i+1000], re.IGNORECASE).start()
         diabat_input_section = output[enum_i: enum_i+enum_f]
         enum = re.search('adiabatic states', diabat_input_section, re.IGNORECASE).end()
-        list_diabat = [int(val)-1 for val in diabat_input_section[enum:].split('\n')[1].split()]
+        list_diabat = [int(val) for val in diabat_input_section[enum:].split('\n')[1].split()]
 
     # Molecule
     data_dict['structure'] = read_input_structure(output)
@@ -307,8 +307,8 @@ def basic_cis(output):
                                                'decomp_j_matrix': decomp_j_matrix.tolist(),
                                                'decomp_k_matrix': decomp_k_matrix.tolist()})
 
-        mulliken_diabatic = []
-
+        # Mulliken analysis
+        mulliken_analysis = []
         enum = output.find('Mulliken & Loewdin analysis of')
         for m in re.finditer('Mulliken analysis of TDA State', output[enum:]):
             section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
@@ -317,7 +317,7 @@ def basic_cis(output):
             section_mulliken = section_mulliken[:enum_i]
             section_attachment = section_mulliken.split('\n')[4: 4 + n_atoms]
 
-            mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
+            mulliken_analysis.append({'attach': [float(l.split()[1]) for l in section_attachment],
                                       'detach': [float(l.split()[2]) for l in section_attachment],
                                       'total': [float(l.split()[3]) for l in section_attachment]})
 
@@ -327,8 +327,8 @@ def basic_cis(output):
                                   'excitation_energy_units': 'eV',
                                   'transition_moment': [],
                                   'dipole_moment_units': 'ua'}
-            if len(mulliken_diabatic) > 0:
-                diabat_states_data['mulliken'] = mulliken_diabatic[list_diabat[i]]
+            if len(mulliken_analysis) > 0:
+                diabat_states_data['mulliken'] = mulliken_analysis[list_diabat[i]-1]
 
             diabatic_states.append(diabat_states_data)
         diabat_data['diabatic_states'] = diabatic_states
