@@ -85,10 +85,10 @@ def plot_diabatization(diabatic_states, atoms_ranges=(1, 2)):
 
         bars = range(1, atoms_ranges[-1]+1)
 
+        plt.figure(i+1)
         for pos in atoms_ranges[:-1]:
             plt.axvline((pos+0.5), color='black')
 
-        plt.figure(i+1)
         plt.suptitle('Mulliken analysis')
         plt.title('Diabatic state {}'.format(i+1))
         plt.bar(bars, state['mulliken']['attach'], label='Attachment')
