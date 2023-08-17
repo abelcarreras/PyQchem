@@ -91,21 +91,23 @@ symmetry_measures = get_state_symmetry(ee,
                                        orientation2=(0, 1, 0),
                                        )
 
-# Analysis of diabatic states to use in diabatization
-print('\nStates to use in diabatization (1e, max_jump 3)')
-list_diabatic = []
+# Analysis of adiabatic states
+print('\nSymmetry analysis of adiabatic states')
+
 for i, state in enumerate(parsed_data['excited_states']):
-    ratio = get_ratio_of_condition(state, n_electron=1, max_jump=3)
-    if ratio > 0.9:
-        list_diabatic.append(i+1)
-        mark = 'X'
-    else:
-        mark = ''
-    # print('State {}: {:4.3f}  {}'.format(i+1, ratio, mark))
-
     sym_lab = symmetry_measures[i][0]
-    print('State {}: {:3} {:4.3f}  {} '.format(i+1, sym_lab, ratio, mark))
+    print('State {}: {:3}  {:6.2f} {}'.format(i+1, sym_lab, state['excitation_energy'], state['excitation_energy_units']))
 
+
+# select states to diabatize
+# CT
+list_diabatic = [3, 4, 5, 6]
+
+# LE
+# list_diabatic = [1, 2, 7, 8]
+
+# all
+# list_diabatic = [1, 2, 3, 4, 5, 6, 7, 8]
 
 # CIS qchem input
 qc_input = QchemInput(dimer,
@@ -118,9 +120,10 @@ qc_input = QchemInput(dimer,
                       cis_ampl_anal=True,
                       loc_cis_ov_separate=False,
                       namd_nsurfaces=0,
-                      boys_cis_numstate=len(list_diabatic),
+                      boys_cis_numstate=len(list_diabatic),  # use boys method
                       cis_diabath_decompose=True,
                       localized_diabatization=list_diabatic,
+                      extra_rem_keywords={'dft_d': 'd3'},
                       RPA=False,
                       mem_static=900,
                       set_iter=30
