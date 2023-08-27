@@ -586,10 +586,10 @@ def get_output_from_qchem(input_qchem,
     # Q-Chem calculation
     if output is None or force_recalculation is True:
         if remote is None:
-            print('local:')
+            # print('local:')
             output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
         else:
-            print('Remote:')
+            # print('Remote:')
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
 
         if not finish_ok(output):
