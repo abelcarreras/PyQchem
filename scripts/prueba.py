@@ -1,6 +1,5 @@
 
 import numpy as np
-import sys
 
 from pyqchem.parsers.parser_rasci import parser_rasci
 
