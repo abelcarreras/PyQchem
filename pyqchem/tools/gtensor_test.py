@@ -22,7 +22,7 @@ print("      G-TENSOR ")
 print("---------------------")
 print("- File selected: ", qchem_output)
 print("- Number of states in output: ", totalstates)
-print("- Selected states selected: ", nstates)
+print("- Selected states: ", nstates)
 print('g-factor (x, y, z):', np.round(g_shifts.real[0], 3), ',', np.round(g_shifts.real[1], 3), ',',
       np.round(g_shifts.real[2], 3))
 print('')
