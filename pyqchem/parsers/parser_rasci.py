@@ -367,11 +367,11 @@ def parser_rasci(output):
                     pair_dict['1e_socc'] = float(line.split()[3])
 
                 if '2e-SOMF Reduced matrix elements (cm-1)' in line:
-                    r, c = lines[i+1].split()[-2:]
+                    r, c = lines[i+1].replace('i', '').split()[-2:]
                     pair_dict['hso_l-'] = float(r) + float(c) * 1j
-                    r, c = lines[i+2].split()[-2:]
+                    r, c = lines[i+2].replace('i', '').split()[-2:]
                     pair_dict['hso_l0'] = float(r) + float(c) * 1j
-                    r, c = lines[i+3].split()[-2:]
+                    r, c = lines[i+3].replace('i', '').split()[-2:]
                     pair_dict['hso_l+'] = float(r) + float(c) * 1j
 
                 if '2-elec mean-field SOC matrix (cm-1)' in line:

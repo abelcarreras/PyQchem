@@ -165,7 +165,7 @@ class QchemInput:
                         molecule.get_atomic_numbers()) - ras_elec_alpha - ras_elec_beta - molecule.charge) // 2
                 else:
                     self._ras_occ = (np.sum(molecule.get_atomic_numbers()) - molecule.charge) // 2
-                self._ras_occ = int(self._ras_occ)
+                self._ras_occ = max([int(self._ras_occ), 0])
                 warnings.warn(QchemInputWarning('set ras_occ = {}'.format(self._ras_occ)))
 
         # Handle custom basis set
