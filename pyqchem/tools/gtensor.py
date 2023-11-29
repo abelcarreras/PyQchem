@@ -11,6 +11,7 @@ lande_factor = 2.002319304363
 def take_selected_states_values(input_list, selected_states):
     """
     From "input_list", take only the elements in "selected_states" positions and put them in "output_list"
+
     :param: input_list, selected_states
     :return: output_list
     """
@@ -23,6 +24,7 @@ def take_selected_states_values(input_list, selected_states):
 def get_eigenenergies(selected_states, data):
     """
     Get energies of RAS-CI states selected in Q-Chem output. Energies in a.u., excitation energies in eV.
+
     :param: file, totalstates, selected_states
     :return: eigenenergies, excitation_energies
     """
@@ -41,8 +43,8 @@ def get_eigenenergies(selected_states, data):
 
 def get_states_sz(qchem_file, states_selected):
     """
-    Get a list of: i) s2 of all the states ii) [-sz,..,+sz] of the highest s2 state iii) [-sz,..,+sz] of ground
-    state.
+    Get a list of: i) s2 of all the states ii) [-sz,..,+sz] of the highest s2 state iii) [-sz,..,+sz] of ground state.
+
     :param: qchem_file, states_selected
     :return: all_multip, all_sz, ground_sz
     """
@@ -83,6 +85,7 @@ def get_states_sz(qchem_file, states_selected):
 def hermitian_test(matrix, sz_list):
     """
     Check if matrix is Hermitian. If not, "ValueError".
+
     :param: matrix, sz_list
     """
     for i in range(0, len(matrix)):
@@ -103,6 +106,7 @@ def hermitian_test(matrix, sz_list):
 def reordering_eigenvectors(eigenval, eigenvect):
     """
     Reorder eigenvectors and eigenenergies by eigenvectors weight coefficients.
+
     :param: eigenvalues, eigenvectors
     :return: eigenvalues, eigenvectors
     """
@@ -124,6 +128,7 @@ def reordering_eigenvectors(eigenval, eigenvect):
 def diagonalization(matrix):
     """
     Diagonalize Hamiltonian. Eigenvectors-eigenvalues are ordered by weight coefficients. Construct the diagonal matrix.
+
     :param: matrix
     :return: eigenvalues, eigenvectors, diagonal_matrix
     """
@@ -139,6 +144,7 @@ def angular_matrices_obtention(hamiltonian, input_angular_matrix, sz_list):
     """
     Angular matrix from non-relativistic states (states from Q-Chem) is expanded in the relativistic states. In
     < B(S,Sz) | Sx | A(S',Sz') >, < B(S,Sz)| corresponds to rows and | A(S',Sz') > to columns.
+
     :param: eigenvectors, input_angular_matrix, sz_list
     :return: angular_matrix
     """
@@ -487,6 +493,7 @@ class GTensor:
             """
             Get the total angular momentum matrix from the orbital and spin angular momentums. Then, expand it to the
             multiplicity of the ground state multiplicity "sz_ground".
+
             :param: spin, orbital, list_sz, sz_ground
             :return: j_matr
             """
