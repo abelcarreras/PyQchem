@@ -155,7 +155,7 @@ def get_basis_from_BSE(structure, basis, full=False, if_missing=None):
     """
     get basis from Basis Set Exchange
 
-    :param structure:
+    :param structure: Structure object (the molecule)
     :param basis: basis set label (string)
     :param full: if False only list basis for unique atoms
     :return: basis set dictionary
@@ -274,6 +274,13 @@ def get_purecard(basis):
 
 
 def trucate_basis(basis, shells=()):
+    """
+    delete shells from the basis to reduce its size
+
+    :param basis: basis dictionary
+    :param shells: shell type list to be removed ex: ('S', 'P', 'D', 'H', 'I', ..)
+    :return: truncated basis
+    """
 
     basis_trunc = deepcopy(basis)
     for check_shell in shells:
