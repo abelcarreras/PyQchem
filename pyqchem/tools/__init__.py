@@ -7,6 +7,7 @@ import numpy as np
 import json
 import warnings
 from requests.exceptions import ConnectionError
+from pyqchem.tools.geometry import rotate_coordinates
 
 
 def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken_rasci=False):
@@ -135,33 +136,6 @@ def submit_notice(message,
 
     except ConnectionError:
         warnings.warn('Connection error: Message was not delivered')
-
-
-def rotate_coordinates(coordinates, angle, axis, atoms_list=None, center=(0, 0, 0)):
-    """
-    Rotate the coordinates (or range of coordinates) with respect a given axis
-
-    :param coordinates: coordinates to rotate
-    :param angle: rotation angle in radians
-    :param axis: rotation axis
-    :param atoms_list: list of atoms to rotate (if None then rotate all)
-    :return: rotated coordinates
-    """
-
-    axis = np.array(axis) / np.linalg.norm(axis)  # normalize axis
-    coordinates = np.array(coordinates) - np.array(center)
-
-    cos_term = 1 - np.cos(angle)
-    rot_matrix = [[axis[0]**2*cos_term + np.cos(angle),              axis[0]*axis[1]*cos_term - axis[2]*np.sin(angle), axis[0]*axis[2]*cos_term + axis[1]*np.sin(angle)],
-                  [axis[1]*axis[0]*cos_term + axis[2]*np.sin(angle), axis[1]**2*cos_term + np.cos(angle),              axis[1]*axis[2]*cos_term - axis[0]*np.sin(angle)],
-                  [axis[2]*axis[0]*cos_term - axis[1]*np.sin(angle), axis[1]*axis[2]*cos_term + axis[0]*np.sin(angle), axis[2]**2*cos_term + np.cos(angle)]]
-
-    if atoms_list is not None:
-        coordinates[atoms_list] = np.dot(coordinates[atoms_list], rot_matrix)
-    else:
-        coordinates = np.dot(coordinates, rot_matrix) + np.array(center)
-
-    return coordinates.tolist()
 
 
 def get_geometry_from_pubchem(entry, type='name'):
