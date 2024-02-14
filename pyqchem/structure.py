@@ -2,6 +2,7 @@ __author__ = 'Abel Carreras'
 import numpy as np
 import hashlib, json
 from pyqchem.errors import StructureError
+import warnings
 
 
 class Structure:
@@ -293,6 +294,21 @@ class Structure:
         symm_group = PointGroupAnalyzer(pymatgen_mol, tolerance=0.1)
 
         return symm_group.sch_symbol
+
+    def __add__(self, other):
+
+        if isinstance(other, Structure):
+            joint_coordinates = list(self.get_coordinates() + list(other.get_coordinates()))
+            joint_symbols = list(self.get_symbols()) + list(other.get_symbols())
+            joint_charge = self.charge + other.charge
+            joint_multiplicity = self.multiplicity * self.multiplicity
+
+            return Structure(coordinates=joint_coordinates,
+                             symbols=joint_symbols,
+                             charge=joint_charge,
+                             multiplicity=joint_multiplicity)
+
+        raise Exception('Incompatible types, cannot add')
 
 
 atom_data = [
