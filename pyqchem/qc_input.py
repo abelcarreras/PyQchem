@@ -287,8 +287,12 @@ class QchemInput:
         input_file += 'mem_static {}\n'.format(self._mem_static)
         input_file += 'n_frozen_virtual {}\n'.format(self._n_frozen_virtual)
         input_file += 'mom_start {}\n'.format(self._mom_start)
-        input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
         input_file += 'scf_guess_mix {}\n'.format(self._scf_guess_mix)
+        input_file += 'skip_scfman {}\n'.format(self._skip_scfman)
+
+        # set no_ortho when using custom guess and cycles == 0 to skip SCF
+        if self._max_scf_cycles == 0:
+            input_file += 'no_ortho 1\n'
 
         if self._basis2 is not None:
             input_file += 'basis2 {}\n'.format(self._basis2)
