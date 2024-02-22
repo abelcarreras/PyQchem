@@ -10,7 +10,6 @@ from pyqchem.parsers.common import search_bars, standardize_vector, read_input_s
 from pyqchem.parsers.common import float_asterisk as float
 
 
-
 def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
     matrix_list = []
     for m in re.finditer(header, output):
@@ -400,5 +399,40 @@ def parser_rasci(output):
 
         _complete_interstate_pairs(interstate_dict)
         data_dict.update({'interstate_properties': interstate_dict})
+
+    # magnetic hyperfine structure
+    done_hyperfine = bool(output.find('RAS-CI: MAGNETIC HYPERFINE STRUCTURE')+1)
+    if done_hyperfine:
+        ini_section = output.find('RAS-CI: MAGNETIC HYPERFINE STRUCTURE')
+        end_section = output.find('RAS-CI timing summary (seconds)')
+        hyperfine_section = output[ini_section: end_section]
+
+        for i_state, m in enumerate(re.finditer('RAS-CI root: ', hyperfine_section)):
+            state_section = hyperfine_section[m.start():m.end()+(n_atoms*1123)]
+            # end_section = search_bars(state_section, bar_type='----')[0]
+
+            fermi_contact = []
+            spin_dipole = []
+
+            for l, i in enumerate(re.finditer('Nucleus:', state_section)):
+                nucleus_section = state_section[i.start():i.end() + 1123]
+                end_nucleus_section = search_bars(nucleus_section, bar_type='----')[0]
+                nucleus_section = nucleus_section[:end_nucleus_section]
+                lines = nucleus_section.split('\n')
+
+                for k, line in enumerate(lines):
+
+                    if 'fermi contact contribution' in line.lower():
+                        fermi_contact.append(float(lines[k+1].split()[0]))
+
+                    if 'spin dipole contribution' in line.lower():
+                        dipole_x = float(lines[k+1].split()[0])
+                        dipole_y = float(lines[k+1].split()[1])
+                        dipole_z = float(lines[k+1].split()[2])
+
+                        spin_dipole.append([dipole_x, dipole_y, dipole_z])
+
+            data_dict['excited_states'][i_state].update({'hyperfine_couplings': {'fermi_contact': fermi_contact,
+                                                                                 'spin_dipole': spin_dipole}})
 
     return data_dict
