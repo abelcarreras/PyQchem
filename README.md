@@ -23,7 +23,7 @@ Installation instructions
 
 - numpy
 - scipy
-- matplolib
+- matplotlib
 - requests
 - lxml
 - wfnsympy (optional)
