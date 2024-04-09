@@ -395,7 +395,7 @@ class QchemInput:
         if self._method is not None:
 
             # EOM
-            if self._method.upper() in ['EOM-CCSD']:
+            if self._method.upper() in ['EOM-CCSD', 'CIS(D)']:
                 input_file += 'cc_trans_prop {}\n'.format(self._cc_trans_prop)
                 input_file += 'cc_symmetry {}\n'.format(self._cc_symmetry)
 
@@ -405,10 +405,16 @@ class QchemInput:
                     input_file += 'cc_t_conv {}\n'.format(self._cc_t_conv)
 
                 if self._ee_singlets is not False:
-                    input_file += 'ee_singlets [' + ','.join([str(num) for num in self._ee_singlets]) + ']\n'
+                    if isinstance(self._ee_singlets, (list, tuple)):
+                        input_file += 'ee_singlets [' + ','.join([str(num) for num in self._ee_singlets]) + ']\n'
+                    else:
+                        input_file += 'ee_singlets {}\n'.format(self._ee_singlets)
 
                 if self._ee_triplets is not False:
-                    input_file += 'ee_triplets [' + ','.join([str(num) for num in self._ee_triplets]) + ']\n'
+                    if isinstance(self._ee_triplets, (list, tuple)):
+                        input_file += 'ee_triplets [' + ','.join([str(num) for num in self._ee_triplets]) + ']\n'
+                    else:
+                        input_file += 'ee_triplets {}\n'.format(self._ee_triplets)
 
                 input_file += 'eom_davidson_conv {}\n'.format(self._eom_davidson_conv)
 
