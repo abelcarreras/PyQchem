@@ -24,8 +24,6 @@ def _read_simple_matrix(header, output, maxchar=10000, foot='-------'):
 
 
 def _read_soc_matrix(lines, dimensions):
-    # for line in lines:
-    #     print(line)
 
     col_per_line = 5
     matrix = []
@@ -197,9 +195,7 @@ def parser_rasci(output):
     # excited states data
     excited_states = []
     for m in re.finditer('RAS-CI total energy for state', output):
-        # print('ll found', m.start(), m.end())
-
-        end_section = search_bars(output, from_position=m.start(), bar_type=r'\*\*\*\*\*\*\*')[0]
+        end_section = search_bars(output, from_position=m.start(), bar_type=r'\*'*20)[0]
         section_state = output[m.start():end_section]
 
         # energies
@@ -207,7 +203,7 @@ def parser_rasci(output):
         tot_energy = float(section_state[enum: enum + 50].split()[5])
         enum = section_state.find('Excitation energy')
         exc_energy_units = section_state[enum: enum + 30].split()[2].strip('(').strip(')')
-        exc_energy = float(section_state[enum: enum + 50].split()[4])
+        exc_energy = float(section_state[enum: enum + 80].split()[4])
 
         # multiplicity
         n_multi = section_state.find('<S^2>')
@@ -324,8 +320,8 @@ def parser_rasci(output):
 
             lines = section_pair.split('\n')
 
-            state_a = int(lines[0].split()[-1])
-            state_b = int(lines[1].split()[-1])
+            state_a = int(lines[0].lower().split('root')[-1])
+            state_b = int(lines[1].lower().split('root')[-1])
 
             pair_dict = {'state_a': state_a,
                          'state_b': state_b}
