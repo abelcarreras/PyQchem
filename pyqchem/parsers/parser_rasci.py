@@ -311,10 +311,11 @@ def parser_rasci(output):
         ini_section = output.find('Interstate Transition Properties')
         end_section = search_bars(output, from_position=ini_section)[1]
         interstate_section = output[ini_section: end_section]
+        section_sizes = search_bars(interstate_section, bar_type=r'\*' * 20)
 
         interstate_dict = {}
-        for m in re.finditer('State A: Root', interstate_section):
-            section_pair = interstate_section[m.start():m.start() + 10000]
+        for i, m in enumerate(re.finditer('State A: Root', interstate_section)):
+            section_pair = interstate_section[m.start():m.start() + section_sizes[i]]
             end_section = search_bars(section_pair, bar_type=r'\*'*20)[0]
             section_pair = section_pair[:end_section]
 
