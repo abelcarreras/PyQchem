@@ -151,6 +151,7 @@ class float_asterisk(float):
     def __new__(cls, value):
         if isinstance(value, str) and '**' in value:
             return super(float_asterisk, cls).__new__(cls, 'nan')
+        value = str(float(value)+0)
         return super(float_asterisk, cls).__new__(cls, value)
 
 
