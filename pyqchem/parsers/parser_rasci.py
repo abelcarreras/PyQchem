@@ -106,6 +106,10 @@ def parser_rasci(output):
     end_section = search_bars(output, from_position=ini_section, bar_type=r'\*\*\*')[0]
     dimension_section = output[ini_section: end_section]
 
+    enum = dimension_section.find('Active Elec')
+    active_elec = int(dimension_section[enum: enum+50].split()[2])
+    enum = dimension_section.find('Active Orb')
+    active_orb = int(dimension_section[enum: enum+50].split()[2])
     enum = dimension_section.find('Doubly Occ')
     doubly_occ = int(dimension_section[enum: enum+50].split()[3])
     enum = dimension_section.find('Doubly Vir')
@@ -124,7 +128,9 @@ def parser_rasci(output):
     enum = dimension_section.find('Particle configurations')
     particle_conf = int(dimension_section[enum: enum+50].split()[2])
 
-    rasci_dimensions = {'doubly_occupied': doubly_occ,
+    rasci_dimensions = {'active_elec': active_elec,
+                        'active_orb': active_orb,
+                        'doubly_occupied': doubly_occ,
                         'doubly_virtual': doubly_vir,
                         'frozen_occupied': frozen_occ,
                         'frozen_virtual': frozen_vir,
@@ -204,6 +210,10 @@ def parser_rasci(output):
         enum = section_state.find('Excitation energy')
         exc_energy_units = section_state[enum: enum + 30].split()[2].strip('(').strip(')')
         exc_energy = float(section_state[enum: enum + 80].split()[4])
+
+        # symmetry
+        enum = section_state.find('State symmetry')
+        state_symmetry = section_state[enum: enum + 30].split()[2]
 
         # multiplicity
         n_multi = section_state.find('<S^2>')
@@ -287,6 +297,7 @@ def parser_rasci(output):
                       'total_energy_units': tot_energy_units,
                       'excitation_energy': exc_energy,
                       'excitation_energy_units': exc_energy_units,
+                      'symmetry': state_symmetry, 
                       'multiplicity': state_multiplicity,
                       'dipole_moment': dipole_mom,
                       'transition_moment': trans_mom,
