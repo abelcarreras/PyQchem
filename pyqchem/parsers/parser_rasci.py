@@ -164,11 +164,18 @@ def parser_rasci(output):
 
             # section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
             section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
-            section_attachment = section_mulliken.split('\n')[9+n_atoms:9+n_atoms*2]
+            section_mull_check = section_mulliken.split('\n')[9 + n_atoms: 9 + n_atoms+3]
+            section_attachment = section_mulliken.split('\n')[12 + n_atoms:12 + n_atoms * 2]
 
-            mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
-                                      'detach': [float(l.split()[2]) for l in section_attachment],
-                                      'total': [float(l.split()[3]) for l in section_attachment]})
+            if 'spin' in section_mull_check[1].lower():
+                print(section_attachment)
+
+                mulliken_diabatic.append({'charge': [float(l.split()[2]) for l in section_attachment],
+                                          'spin': [float(l.split()[3]) for l in section_attachment]})
+            elif 'h+' in section_mull_check[1].lower():
+                mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
+                                          'detach': [float(l.split()[2]) for l in section_attachment],
+                                          'total': [float(l.split()[3]) for l in section_attachment]})
 
         enum = output.find('Transition dipole moment - diabatic states')
 
