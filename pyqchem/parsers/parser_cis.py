@@ -46,7 +46,7 @@ def basic_cis(output):
     # Molecule
     data_dict['structure'] = read_input_structure(output)
     n_atoms = data_dict['structure'].get_number_of_atoms()
-
+    
     # scf_energy
     enum = output.find('Total energy in the final basis set')
     try:
@@ -99,6 +99,7 @@ def basic_cis(output):
                 # old version of qchem (< 5.01)
                 state_cis_words = output_cis[m.end():].split()
                 mul = state_cis_words[13]
+                print(mul)
                 trans_mom = [float(mom) for mom in [state_cis_words[16],
                                                     state_cis_words[18],
                                                     state_cis_words[20]]]
@@ -175,95 +176,119 @@ def basic_cis(output):
 
     data_dict['excited_states'] = excited_states
 
-    # Spin-Orbit coupling
-    initial = output.find('*********SPIN-ORBIT COUPLING JOB BEGINS HERE*********')
-    final = output.find('*********SOC CODE ENDS HERE*********')
+    # Multiplicity mapping for singlets, triplets... where multiplicity is indicated as "S1", "T1" in SOC section
+    
+    try: 
+        test = float(data_dict['excited_states'][0]['multiplicity'])
+    except ValueError:
+        multiplicity_mapping = {'0': 0}
+        count_multiplicity = {'Singlet': 0, 'Triplet': 0, 'Quintet': 0, 'Heptet': 0}
+        for i, state in enumerate(data_dict['excited_states']):
+            count_multiplicity[state['multiplicity']] += 1
+            multiplicity_mapping.update({state['multiplicity'][0]+str(count_multiplicity[state['multiplicity']]): i+1})
 
-    data_interstate = {}
-    if initial > 0:
-        soc_section = output[initial:final]
+    # SPIN-ORBIT COUPLINGS
 
-        def label_states(excited_states):
-            labels = []
-            ns = 1
-            nt = 1
-            for state in excited_states:
-                if state['multiplicity'].lower() == 'singlet':
-                    labels.append('S{}'.format(ns))
-                    ns += 1
-                elif state['multiplicity'].lower() == 'triplet':
-                    labels.append('T{}'.format(nt))
-                    nt += 1
+    done_interstate_soc = bool(output.find('SPIN-ORBIT COUPLING JOB USING WIGNER–ECKART THEOREM BEGINS HERE')+1)
+
+    if done_interstate_soc:
+        ini_section = output.find('SPIN-ORBIT COUPLING JOB USING WIGNER–ECKART THEOREM BEGINS HERE')
+        end_section = output.find('SPIN-ORBIT COUPLING JOB ENDS HERE')
+        soc_section = output[ini_section: end_section]
+        section_sizes = search_bars(soc_section, bar_type=r'\*'*50+'\n')
+
+        interstate_dict = {}
+
+        for i, m in enumerate(re.finditer('State A:', soc_section)):
+            section_length = section_sizes[i+1] - section_sizes[i]
+            section_pair = soc_section[m.start():m.start() + section_length]
+            
+            lines = section_pair.split('\n')
+            
+            try: # In doublets, where states can be taken as integers (0, 1..)
+                state_a = int(lines[0].split()[-1])
+                state_b = int(lines[1].split()[-1])
+
+            except ValueError: # In singlets, where states cannot be taken as integers (S1, T1...)
+                if 'Ground state' in lines[0]:
+                    state_a = 0
                 else:
-                    try:
-                        m = float(state['multiplicity'])
-                        if abs(m - 1) < 0.1:
-                            labels.append('S{}'.format(ns))
-                            ns += 1
-                        if abs(m - 3) < 0.1:
-                            labels.append('T{}'.format(nt))
-                            nt += 1
-                        state['multiplicity'] = m
+                    state_a = multiplicity_mapping[lines[0].split()[-1]]
+                state_b = multiplicity_mapping[lines[1].split()[-1]]
 
-                    except ValueError:
-                        raise ParserError('basic_cis', 'State multiplicity error', output)
+            pair_dict = {}
+            for j, line in enumerate(lines):
+                if 'Ket state' in line and state_a == 0 and 'scf_multiplicity' not in data_dict:
+                        data_dict['scf_multiplicity'] = int(float(line.split()[5]))
+                
+                if 'WARNING! Clebsh-Gordon coefficient is too small' in line:
+                    pair_dict['1e_socc'] = 0
+                    pair_dict['1e_soc_mat'] = [0]
+                    pair_dict['mf_socc'] = 0
+                    pair_dict['mf_soc_mat'] = [0]
 
-            return labels, nt-1, ns-1
+                if 'One-electron SO (cm-1)' in line: 
+                    soc_keyword = '1e_socc'
+                    soc_matrix_keyword = '1e_soc_mat'
+                elif 'Mean-field SO (cm-1)' in line:
+                    soc_keyword = 'mf_socc'
+                    soc_matrix_keyword = 'mf_soc_mat'                        
 
-        labels, n_triplet, n_singlet = label_states(excited_states)
+                if 'SOCC' in line:
+                    pair_dict[soc_keyword] = float(line.split()[2])
 
-        for i, label in enumerate(labels):
-            data_interstate[(i+1, 0)] = {'1e_soc_mat': [0j, 0j, 0j], 'soc_units': 'cm-1'}
-            data_interstate[(0, i+1)] = {'1e_soc_mat': [0j, 0j, 0j], 'soc_units': 'cm-1'}
-            for j, label2 in enumerate(labels):
-                if (label[0] == 'S' or label2[0] == 'S') and (label[0] != label2[0]):
-                    data_interstate[(i+1, j+1)] = {'1e_soc_mat': [[0j, 0j, 0j]], 'soc_units': 'cm-1'}
-                elif label[0] == 'T' and label2[0] == 'T':
-                    data_interstate[(i+1, j+1)] = {'1e_soc_mat': [[0j, 0j, 0j], [0j, 0j, 0j], [0j, 0j, 0j]], 'soc_units': 'cm-1'}
-                elif label[0] == 'S' and label2[0] == 'S':
-                    data_interstate[(i+1, j+1)] = {'1e_soc_mat': [[0j]], 'soc_units': 'cm-1'}
-                else:
-                    raise ParserError('basic_cis', 'State multiplicity error', output)
+                if 'Actual matrix elements:' in line:
+                    soc_matrix = []
+                    for soc_line in lines[j:]:
 
-        for i, label in enumerate(labels):
-            for k2, ms2 in enumerate([-1, 0, 1]):
-                for j, label2 in enumerate(labels):
-                    if label[0] == 'T':
-                        for k, ms in enumerate([-1, 0, 1]):
-                            enum = soc_section.find('SOC between the {} (ms={}) state and excited triplet states (ms={})'.format(label, ms2, ms))
-                            for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
-                                if len(line.split()) == 0:
-                                    break
-                                if line.split()[0] == '{}(ms={})'.format(label2, ms):
-                                    data_interstate[(i+1, j+1)]['1e_soc_mat'][k2][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(i+1, j+1)]['1e_soc_mat'][k][k2] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['1e_soc_mat'][k2][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['1e_soc_mat'][k][k2] = _list_to_complex(line.split()[1:4])
-                                    break
+                        if '<Sz=' in soc_line:
+                            matches = re.findall(r"\(([^)]+)\)", soc_line)
+                            soc_matrix.append([list(map(float, match.split(','))) for match in matches])
 
-                    elif label[0] == 'S':
-                        for k, ms in enumerate([-1, 0, 1]):
-                            enum = soc_section.find('SOC between the {} state and excited triplet states (ms={})'.format(label, ms))
-                            for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
-                                if len(line.split()) == 0:
-                                    break
-                                if line.split()[0] == '{}(ms={})'.format(label2, ms):
-                                    data_interstate[(i+1, j+1)]['1e_soc_mat'][0][k] = _list_to_complex(line.split()[1:4])
-                                    data_interstate[(j+1, i+1)]['1e_soc_mat'][0][k] = _list_to_complex(line.split()[1:4])
-                                    break
-                    else:
-                        raise ParserError('basic_cis', 'SOC reading error', output)
+                        if r'_'*30 in soc_line:
+                            break
+                    
+                    pair_dict[soc_matrix_keyword] = soc_matrix
 
-                enum = soc_section.find('SOC between the singlet ground state and excited triplet states (ms={})'.format(ms2))
-                for line in soc_section[enum:enum+80*(n_triplet+1)].split('\n'):
-                    if len(line.split()) == 0:
-                        break
-                    if line.split()[0] == '{}(ms={})'.format(label, ms2):
-                        data_interstate[(i+1, 0)]['1e_soc_mat'][k2] = _list_to_complex(line.split()[1:4])
-                        data_interstate[(0, i+1)]['1e_soc_mat'][k2] = _list_to_complex(line.split()[1:4])
-                        break
+            interstate_dict[(state_a, state_b)] = pair_dict
+    
+    data_dict['interstate_socs'] = interstate_dict
 
-        data_dict['interstate_properties'] = data_interstate
+    # ANGULAR MOMENTUMS
+
+    done_interstate_angmom = bool(output.find(' STATE-TO-STATE TRANSITION ANGULAR MOMENTS')+1)
+
+    if done_interstate_angmom:
+        ini_section = output.find('STATE-TO-STATE TRANSITION ANGULAR MOMENTS')
+        end_section = output.find('END OF TRANSITION MOMENT CALCULATION')
+        angmom_section = output[ini_section: end_section]
+        section_sizes = search_bars(angmom_section, bar_type='Transition Angular Moments') # r'-'*40)
+
+        interstate_dict = {}
+
+        for i, m in enumerate(re.finditer('Transition Angular Moments', angmom_section)):
+            try: 
+                section_length = section_sizes[i+1] - section_sizes[i]
+            except IndexError:
+                section_length = len(angmom_section) - section_sizes[i]
+            section_pair = angmom_section[m.start():m.start() + section_length]
+            
+            lines = section_pair.split('\n')
+
+            for line in lines[4:]:
+                if r'-'*40 in line:
+                    break
+
+                pair_dict = {}
+                state_a = int(line.split()[0])
+                state_b = int(line.split()[1])
+                
+                pair_dict['angular_momentum'] = [float(j) for j in line.split()[2:-1]]
+                pair_dict['length'] = float(line.split()[-1])
+
+                interstate_dict[(state_a, state_b)] = pair_dict
+    
+    data_dict['interstate_angmom'] = interstate_dict
 
     # diabatization
     initial = output.find('Localization Code for CIS excited states')
