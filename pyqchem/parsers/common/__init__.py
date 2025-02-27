@@ -3,6 +3,7 @@ from pyqchem.structure import atom_data
 from pyqchem.structure import Structure
 import numpy as np
 import re
+import yaml
 
 
 def read_symmetry_info(output):
@@ -153,5 +154,14 @@ class float_asterisk(float):
             return super(float_asterisk, cls).__new__(cls, 'nan')
         value = str(float(value)+0)
         return super(float_asterisk, cls).__new__(cls, value)
+
+    @classmethod
+    def to_yaml(cls, dumper, data):
+        return dumper.represent_float(float(data))
+
+
+# Representer register in yaml
+yaml.add_representer(float_asterisk, float_asterisk.to_yaml)
+
 
 
