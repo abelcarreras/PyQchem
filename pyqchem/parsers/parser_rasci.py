@@ -165,31 +165,44 @@ def parser_rasci(output):
         mulliken_diabatic = []
         enum = output.find('showing H in diabatic representation')
         for m in re.finditer('Mulliken Analysis of Diabatic State', output[enum:]):
-            end_section = search_bars(output, from_position=m.end(), bar_type=r'\-\-\-\-\-\-')[3]
-            section_mulliken = output[m.end() + enum: m.end() + enum + end_section]
 
-            # section_mulliken = output[m.end() + enum: m.end() + 10000 + enum]  # 10000: assumed to max of section
-            section_mulliken = section_mulliken[:section_mulliken.find('Natural Orbitals stored in FCHK')]
-            section_mull_check = section_mulliken.split('\n')[9 + n_atoms: 9 + n_atoms+3]
-            section_attachment = section_mulliken.split('\n')[12 + n_atoms:12 + n_atoms * 2]
+            end_section_list = search_bars(output[enum:], from_position=m.end(), bar_type=r'\-\-\-\-\-\-')
 
-            if 'spin' in section_mull_check[1].lower():
-                print(section_attachment)
+            dict_mulliken_diabat = {}
+            section_mulliken_header = output[enum + end_section_list[0]: enum + end_section_list[1]]
+            if 'spin' in section_mulliken_header.lower():
+                section_mulliken = output[enum + end_section_list[1]: enum + end_section_list[2]]
+                section_mulliken = section_mulliken.split('\n')[1:n_atoms + 1]
+                dict_mulliken_diabat.update({'charge': [float(l.split()[2]) for l in section_mulliken],
+                                             'spin': [float(l.split()[3]) for l in section_mulliken]})
 
-                mulliken_diabatic.append({'charge': [float(l.split()[2]) for l in section_attachment],
-                                          'spin': [float(l.split()[3]) for l in section_attachment]})
-            elif 'h+' in section_mull_check[1].lower():
-                mulliken_diabatic.append({'attach': [float(l.split()[1]) for l in section_attachment],
-                                          'detach': [float(l.split()[2]) for l in section_attachment],
-                                          'total': [float(l.split()[3]) for l in section_attachment]})
+            section_mulliken_header = output[enum + end_section_list[4]: enum + end_section_list[5]]
+            if 'h+' in section_mulliken_header.lower():
+                section_mulliken = output[enum + end_section_list[5]: enum + end_section_list[6]]
+                section_mulliken = section_mulliken.split('\n')[1:n_atoms + 1]
+                dict_mulliken_diabat.update({'e-': [float(l.split()[1]) for l in section_mulliken],
+                                             'h+': [float(l.split()[2]) for l in section_mulliken],
+                                             'tot_td': [float(l.split()[3]) for l in section_mulliken]})
+
+            section_mulliken_header = output[enum + end_section_list[7]: enum + end_section_list[8]]
+            if 'attach' in section_mulliken_header.lower():
+                section_mulliken = output[enum + end_section_list[8]: enum + end_section_list[9]]
+                section_mulliken = section_mulliken.split('\n')[1:n_atoms + 1]
+
+                dict_mulliken_diabat.update({'attach': [float(l.split()[1]) for l in section_mulliken],
+                                             'detach': [float(l.split()[2]) for l in section_mulliken],
+                                             'total': [float(l.split()[3]) for l in section_mulliken]})
+
+            mulliken_diabatic.append(dict_mulliken_diabat)
 
         enum = output.find('Transition dipole moment - diabatic states')
 
-        tdm_section = output[enum: enum + 70 * len(rot_matrix)]
+        n_diab_states = len(rot_matrix)
+        tdm_section = output[enum: enum + 100 * (n_diab_states + 1) ]
 
         diabatic_tdm = []
-        for m in re.finditer('TDM', tdm_section):
-            diabatic_tdm.append([float(n) for n in tdm_section[m.end(): m.end()+70].split(':')[1].split()[:3]])
+        for i in range(n_diab_states):
+            diabatic_tdm.append([float(n) for n in tdm_section.split('\n')[i+2].split()[4:7]])
 
         diabatic_states = []
         for i, tdm in enumerate(diabatic_tdm):

@@ -123,6 +123,7 @@ qc_input = QchemInput(dimer,
                       ras_do_part=False,
                       ras_diabatization_states=list_diabatic,  # adiabatic states selected for diabatization
                       ras_diabatization_scheme=diabatization_scheme,
+                      state_analysis=True,
                       set_iter=30)
 
 # print(qc_input.get_txt())
