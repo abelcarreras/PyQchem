@@ -531,7 +531,7 @@ def get_output_from_qchem(input_qchem,
                       DeprecationWarning, stacklevel=2)
 
     # Always generate fchk
-    if input_qchem.gui is None or input_qchem.gui < 1:
+    if input_qchem.gui is None:
         input_qchem.gui = 2
 
     if scratch is None:
@@ -611,6 +611,15 @@ def get_output_from_qchem(input_qchem,
 
         if store_full_output:
             cache.store_calculation_data(input_qchem, 'fullout', output)
+
+    # plot directory
+    plot_dir = work_dir + 'plots'
+    if os.path.isdir(plot_dir):
+        plots_dict = {}
+        for file_name in os.listdir(plot_dir):
+            plots_dict[file_name] = open(plot_dir + '/' + file_name, 'r').read()
+
+        elect_struct_data.update({'plots': plots_dict})
 
     if parser is not None:
 

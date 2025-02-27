@@ -97,7 +97,7 @@ class QchemInput:
                  cis_state_deriv=None,
                  RPA=False,
                  set_iter=30,
-                 gui=0,
+                 gui=2,
                  # optimization
                  geom_opt_dmax=300,
                  geom_opt_update=-1,
