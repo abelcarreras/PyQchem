@@ -1,5 +1,5 @@
 # Classify (quasi) molecular orbitals of the individual monomers from a dimer calculation
-from pyqchem.symmetry import get_wf_symmetry
+from pyqchem.symmetry import get_orbitals_symmetry
 from pyqchem.utils import get_plane, crop_electronic_structure
 from pyqchem.qchem_core import get_output_from_qchem, create_qchem_input
 from pyqchem.structure import Structure
@@ -10,23 +10,29 @@ import numpy as np
 # Define custom classification function
 def get_custom_orbital_classification(parsed_fchk,
                                       center=None,
-                                      orientation=(0, 0, 1)
+                                      orientation=(0, 0, 1),
+                                      orbital_numbers=None
                                       ):
 
-    molsym = get_wf_symmetry(parsed_fchk['structure'],
-                             parsed_fchk['basis'],
-                             parsed_fchk['coefficients'],
-                             center=center,
-                             orientation=orientation)
+    n_orbitals = parsed_fchk['coefficients']['alpha']
+    if orbital_numbers is None:
+        orbital_numbers = list(np.range(len(n_orbitals)))
 
-    sh_index = molsym.SymLab.index('i')  # operation used to separate orbitals
+    orbitals_sym = get_orbitals_symmetry(parsed_fchk['structure'],
+                                         parsed_fchk['basis'],
+                                         parsed_fchk['coefficients']['alpha'],
+                                         center=center,
+                                         orientation=orientation,
+                                         orbital_numbers=orbital_numbers)
+
     orbital_type = []
-    for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
-        overlap = overlap / molsym.mo_SOEVs_a[i, molsym.SymLab.index('E')]  # normalize
-        if overlap < 0:
-            orbital_type.append([' NOO', np.abs(overlap)])
+    for orb_sym in orbitals_sym:
+        # use inversion operation to classify
+        trace = orb_sym.get_reduced_op_representation()['i']
+        if trace < 0:
+            orbital_type.append([' NOO', np.abs(trace)])
         else:
-            orbital_type.append([' YES', np.abs(overlap)])
+            orbital_type.append([' YES', np.abs(trace)])
     return orbital_type
 
 
@@ -61,7 +67,6 @@ qc_input = create_qchem_input(molecule,
                               exchange='hf',
                               basis='6-31G')
 
-print(qc_input.get_txt())
 # get data from Q-Chem calculation
 _, electronic_structure = get_output_from_qchem(qc_input,
                                                 processors=4,
@@ -77,6 +82,9 @@ electronic_structure_f1 = crop_electronic_structure(electronic_structure, range_
 # save test fchk file with new coefficients
 open('test_f1.fchk', 'w').write(build_fchk(electronic_structure_f1))
 
+# range of orbitals to show
+frontier_orbitals = [12, 13,  14, 15, 16, 17, 18, 19, 20]
+
 # get plane from coordinates
 coordinates_f1 = electronic_structure['structure'].get_coordinates(fragment=range_f1)
 center_f1, normal_f1 = get_plane(coordinates_f1)
@@ -84,7 +92,8 @@ center_f1, normal_f1 = get_plane(coordinates_f1)
 # get classified orbitals
 orbital_type_f1 = get_custom_orbital_classification(electronic_structure_f1,
                                                     center=center_f1,
-                                                    orientation=normal_f1)
+                                                    orientation=normal_f1,
+                                                    orbital_numbers=frontier_orbitals)
 
 # get plane from coordinates
 coordinates_f2 = electronic_structure['structure'].get_coordinates(fragment=range_f2)
@@ -98,15 +107,13 @@ open('test_f2.fchk', 'w').write(build_fchk(electronic_structure_f2))
 # get classified orbitals
 orbital_type_f2 = get_custom_orbital_classification(electronic_structure_f2,
                                                     center=center_f2,
-                                                    orientation=normal_f2)
-
-# range of orbitals to show
-frontier_orbitals = [12, 13,  14, 15, 16, 17, 18, 19, 20]
+                                                    orientation=normal_f2,
+                                                    orbital_numbers=frontier_orbitals)
 
 # Print results in table
 print('Inversion center?')
 print('index   fragment 1   fragment 2')
-for i in frontier_orbitals:
-    print(' {:4}  {:4}  {:4.3f}  {:4}  {:4.3f}'.format(i,
-                                       orbital_type_f1[i-1][0], orbital_type_f1[i-1][1],
-                                       orbital_type_f2[i-1][0], orbital_type_f2[i-1][1]))
+for i, (o_f1, o_f2) in enumerate(zip(orbital_type_f1, orbital_type_f2)):
+    print(' {:4}  {:4}  {:4.3f}  {:4}  {:4.3f}'.format(frontier_orbitals[i],
+                                                       o_f1[0], o_f1[1], o_f2[0], o_f2[1]))
+

@@ -80,7 +80,7 @@ parsed_data, ee = get_output_from_qchem(qc_input,
                                         processors=4,
                                         force_recalculation=False,
                                         parser=basic_cis,
-                                        read_fchk=True
+                                        return_electronic_structure=True
                                         )
 
 

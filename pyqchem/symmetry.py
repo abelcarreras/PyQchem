@@ -1,19 +1,38 @@
-from wfnsympy import WfnSympy
-import numpy as np
 from pyqchem.utils import get_occupied_electrons, reorder_coefficients
 from pyqchem.utils import classify_diabatic_states_of_fragment, get_basis_functions_ranges_by_atoms
 from pyqchem.utils import get_inertia, get_plane
 from pyqchem import Structure
+import numpy as np
 
 
-def get_wf_symmetry(structure,
-                    basis,
-                    mo_coeff,
-                    center=None,
-                    orientation=(0., 0., 1.),
-                    orientation2=(0, 1, 0),
-                    group='C2h',
-                    occupancy=None):
+def get_orbitals(structure,
+                 basis,
+                 mo_coeff,
+                 orbital_numbers=None):
+
+    from posym.tools import get_basis_set, build_orbital
+    from posym import SymmetryMolecule
+
+    if orbital_numbers is None:
+        orbital_numbers = [i+1 for i in range(len(mo_coeff))]
+
+    basis_set = get_basis_set(structure.get_coordinates(), basis)
+
+    orbitals = []
+    for i, orbital_coeff in enumerate(mo_coeff):
+        if i+1 in orbital_numbers:
+            orbitals.append(build_orbital(basis_set, orbital_coeff))
+
+    return orbitals
+
+
+def get_orbitals_symmetry(structure,
+                          basis,
+                          mo_coeff,
+                          center=None,
+                          orientation=None,
+                          group='C2h',
+                          orbital_numbers=None):
 
     """
     Simplified interface between pyqchem anf wfnsympy
@@ -27,43 +46,85 @@ def get_wf_symmetry(structure,
     :return molsym: wfnsympy object
     """
 
-    alpha_mo_coeff = np.array(mo_coeff['alpha']).tolist()
+    from posym import SymmetryGaussianLinear, SymmetryMolecule
 
-    alpha_occupancy = [0] * len(mo_coeff['alpha'])
-    alpha_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
 
-    if 'beta' in mo_coeff:
-        beta_mo_coeff = np.array(mo_coeff['beta']).tolist()
-        beta_occupancy = [0] * len(mo_coeff['beta'])
-        beta_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
-    else:
-        beta_mo_coeff = None
-        beta_occupancy = None
+    if orbital_numbers is None:
+        orbital_numbers = [i+1 for i in range(len(mo_coeff))]
 
-    if occupancy is not None:
-        alpha_occupancy = occupancy['alpha']
-        if 'beta' in occupancy:
-            beta_occupancy = occupancy['beta']
+    if orientation is None:
+        sm = SymmetryMolecule(group=group,
+                              coordinates=structure.get_coordinates(),
+                              symbols=structure.get_symbols(),
+                              )
 
-    molsym = WfnSympy(coordinates=structure.get_coordinates(),
-                      symbols=structure.get_symbols(),
-                      basis=basis,
-                      center=center,
-                      axis=orientation,
-                      axis2=orientation2,
-                      alpha_mo_coeff=alpha_mo_coeff,
-                      beta_mo_coeff=beta_mo_coeff,
-                      alpha_occupancy=alpha_occupancy,
-                      beta_occupancy=beta_occupancy,
-                      #charge=structure.charge,
-                      #multiplicity=structure.multiplicity,
-                      group=group)
-    return molsym
+        orientation = sm.orientation_angles
+
+    orbitals = get_orbitals(structure, basis, mo_coeff, orbital_numbers=orbital_numbers)
+
+    sym_orbitals = []
+    for orbital in orbitals:
+        sym_orbital = SymmetryGaussianLinear(group, orbital, center=center, orientation_angles=orientation)
+        sym_orbitals.append(sym_orbital)
+
+    return sym_orbitals
+
+
+def get_wf_symmetry(fchk_data,
+                    alpha_electrons,
+                    beta_electrons,
+                    center=None,
+                    orientation=None,
+                    active_orbitals=0,
+                    group='C2h'):
+    """
+    get symmetry of single determinat wave function
+
+    :param fchk_data: electronic structure
+    :param alpha_electrons: number of alpha electrons
+    :param beta_electrons: number of beta electrons
+    :param center: center of the group
+    :param orientation: orientation angles
+    :param active_orbitals: number of double occupied orbitals to use for symmetry calculation
+    :param group: point group
+    :return: symmetry
+    """
+
+    from posym import SymmetrySingleDeterminant
+
+    base_electrons = np.min([alpha_electrons, beta_electrons])
+
+    if active_orbitals < 1 and alpha_electrons- beta_electrons == 0:
+        active_orbitals = 1
+
+    alpha_numbers = list(range(base_electrons - active_orbitals + 1, alpha_electrons + 1))
+    beta_numbers = list(range(base_electrons - active_orbitals + 1, beta_electrons + 1))
+
+    coef_alpha = fchk_data['coefficients']['alpha']
+    coef_beta = fchk_data['coefficients']['beta'] if 'beta' in fchk_data['coefficients'] else coef_alpha
+
+    orbitals_alpha = get_orbitals(fchk_data['structure'],
+                                  fchk_data['basis'],
+                                  coef_alpha,
+                                  orbital_numbers=alpha_numbers)
+
+    orbitals_beta = get_orbitals(fchk_data['structure'],
+                                 fchk_data['basis'],
+                                 coef_beta,
+                                 orbital_numbers=beta_numbers)
+
+    symmetry = SymmetrySingleDeterminant(group=group,
+                                         alpha_orbitals=orbitals_alpha,
+                                         beta_orbitals=orbitals_beta,
+                                         center=center,
+                                         orientation_angles=orientation)
+
+    return symmetry
 
 
 def get_orbital_classification(fchk_data,
                                center=None,
-                               orientation=(0., 0., 1.)):
+                               orientation=(0, 0, 0)):
     """
     Classify orbitals in sigma/pi in planar molecules
 
@@ -71,28 +132,39 @@ def get_orbital_classification(fchk_data,
     :param orientation: unit vector perpendicular to the plane of the molecule
     :return: list of labels 'sigma'/'pi' according to the order of the orbitals
     """
-    molsym = get_wf_symmetry(fchk_data['structure'],
-                             fchk_data['basis'],
-                             fchk_data['coefficients'],
-                             center=center,
-                             orientation=orientation)
 
-    sh_index = molsym.SymLab.index('s_h')
+    orbitals_sym = get_orbitals_symmetry(fchk_data['structure'],
+                                         fchk_data['basis'],
+                                         fchk_data['coefficients']['alpha'],
+                                         center=center,
+                                         orientation=orientation)
+
     orbital_type_alpha = []
-    for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
-        overlap = overlap / molsym.mo_SOEVs_a[i, molsym.SymLab.index('E')]  # normalize
-        if overlap < 0:
-            orbital_type_alpha.append(['pi', np.abs(overlap)])
+    for orb_sym in orbitals_sym:
+        # use inversion operation to classify
+        trace = orb_sym.get_reduced_op_representation()['sh']
+        if trace < 0:
+            orbital_type_alpha.append([' pi', np.abs(trace)])
         else:
-            orbital_type_alpha.append(['sigma', np.abs(overlap)])
+            orbital_type_alpha.append([' sigma', np.abs(trace)])
 
     if 'beta' in fchk_data['coefficients']:
+
+        orbitals_sym = get_orbitals_symmetry(fchk_data['structure'],
+                                             fchk_data['basis'],
+                                             fchk_data['coefficients']['beta'],
+                                             center=center,
+                                             orientation=orientation)
+
         orbital_type_beta = []
-        for i, overlap in enumerate(molsym.mo_SOEVs_b[:, sh_index]):
-            if overlap < 0:
-                orbital_type_beta.append(['pi', np.abs(overlap)])
+        for orb_sym in orbitals_sym:
+            # use inversion operation to classify
+            trace = orb_sym.get_reduced_op_representation()['sh']
+            if trace < 0:
+                orbital_type_beta.append([' pi', np.abs(trace)])
             else:
-                orbital_type_beta.append(['sigma', np.abs(overlap)])
+                orbital_type_beta.append([' sigma', np.abs(trace)])
+
         return orbital_type_alpha, orbital_type_beta
     else:
         return orbital_type_alpha
@@ -101,13 +173,97 @@ def get_orbital_classification(fchk_data,
 def get_state_symmetry(parsed_fchk,
                        rasci_states,
                        center=None,
-                       orientation=(0, 0, 1),
-                       orientation2=(0, 1, 0),
                        group='C2h',
-                       extra_print=False,
-                       amplitude_cutoff=0.0,
-                       check_consistency=True,
-                       full_vector=False):
+                       states_numbers=None):
+    """
+    Determine the symmetry of electronic states of multi-configurational states
+
+    :param parsed_fchk: electronic structure
+    :param rasci_states: parsed rasci output dictionary
+    :param center: center of the molecule
+    :param group: symmetry group label
+    :param states_numbers: list of the states to be analyzed
+    :return: states symmetry
+    """
+
+    from posym import SymmetryMultiDeterminant
+
+    structure = parsed_fchk['structure']
+    # total_orbitals = len(parsed_fchk['coefficients']['alpha'])
+
+    total_states = len(rasci_states)
+    if states_numbers is None:
+        states_numbers = [i+1 for i in range(total_states)]
+
+    def get_relevant_occupation_range(rasci_states):
+
+        occupations_mat = []
+        for istate, state in enumerate(rasci_states):
+            for configuration in state['configurations']:
+                # print('amplitude: {} '.format(configuration['occupations']['alpha']))
+                occupations_mat.append(configuration['occupations']['alpha'])
+                occupations_mat.append(configuration['occupations']['beta'])
+
+        n_conf = len(occupations_mat)
+        occupations_sum = np.sum(occupations_mat, axis=0)
+
+        inferior = 0
+        superior = n_conf
+
+        for i, c in enumerate(occupations_sum):
+            if c == n_conf:
+                inferior = i+2
+            if np.sum(occupations_sum[i:]) == 0:
+                superior = i+1
+                break
+        return list(range(inferior, superior))
+
+    relevant_range = get_relevant_occupation_range(rasci_states)
+
+    orbitals = get_orbitals(structure,
+                            parsed_fchk['basis'],
+                            parsed_fchk['coefficients']['alpha'],
+                            orbital_numbers=relevant_range)
+
+    states_symmetry = []
+    for istate, state in enumerate(rasci_states):
+
+        if istate+1 not in states_numbers:
+            continue
+
+        inf_index = relevant_range[0]-1
+        sup_index = relevant_range[-1]
+
+        conf_reduced = []
+        for configuration in state['configurations']:
+            conf_reduced.append({'amplitude': configuration['amplitude'],
+                                 'occupations': {'alpha': configuration['occupations']['alpha'][inf_index:sup_index],
+                                                 'beta': configuration['occupations']['beta'][inf_index:sup_index]}
+                                 })
+
+        state_symmetry = SymmetryMultiDeterminant(group=group,
+                                                  orbitals=orbitals,
+                                                  center=center,
+                                                  configurations=conf_reduced)
+
+        states_symmetry.append(state_symmetry)
+
+    return states_symmetry
+
+
+
+# Alternative function that make use of WFNSYM - to be deprecated in the future
+
+def get_state_symmetry_wfnsym(parsed_fchk,
+                              rasci_states,
+                              center=None,
+                              orientation=(0, 0, 1),
+                              orientation2=(0, 1, 0),
+                              group='C2h',
+                              extra_print=False,
+                              amplitude_cutoff=0.0,
+                              check_consistency=True,
+                              full_vector=False):
     """
     Determine electronic state symmetry (only for closed shell configurations)
 
@@ -131,7 +287,7 @@ def get_state_symmetry(parsed_fchk,
 
         if extra_print:
             print('HF/KS Ground state\n---------------------------')
-            molsym = get_wf_symmetry(structure,
+            molsym = get_wf_symmetry_wfsym(structure,
                                      parsed_fchk['basis'],
                                      parsed_fchk['coefficients'],
                                      center=center,
@@ -160,7 +316,7 @@ def get_state_symmetry(parsed_fchk,
         states_symmetry_list = []
         for occupations in occupations_list:
 
-            molsym = get_wf_symmetry(structure,
+            molsym = get_wf_symmetry_wfsym(structure,
                                      parsed_fchk['basis'],
                                      parsed_fchk['coefficients'],
                                      center=center,
@@ -213,6 +369,99 @@ def get_state_symmetry(parsed_fchk,
                 sym_states['state {}'.format(i+1)] = states_symmetry_list[np.argmax([a[2]**2 for a in states_symmetry_list])]
 
     return [sym_states['state {}'.format(i+1)] for i in range(len(sym_states))]
+
+
+def get_wf_symmetry_wfsym(structure,
+                          basis,
+                          mo_coeff,
+                          center=None,
+                          orientation=(0., 0., 1.),
+                          orientation2=(0, 1, 0),
+                          group='C2h',
+                          occupancy=None):
+
+    """
+    Simplified interface between pyqchem anf wfnsympy
+
+    :param structure: molecular geometry (3xn) array
+    :param basis: dictionary containing the basis
+    :param mo_coeff: molecular orbitals coefficients
+    :param center: center of the molecule
+    :param orientation: unit vector perpendicular to the plane of the molecule
+    :param group: point symmetry group
+    :return molsym: wfnsympy object
+    """
+    from wfnsympy import WfnSympy
+
+    alpha_mo_coeff = np.array(mo_coeff['alpha']).tolist()
+
+    alpha_occupancy = [0] * len(mo_coeff['alpha'])
+    alpha_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
+
+    if 'beta' in mo_coeff:
+        beta_mo_coeff = np.array(mo_coeff['beta']).tolist()
+        beta_occupancy = [0] * len(mo_coeff['beta'])
+        beta_occupancy[:int(structure.alpha_electrons)] = [1] * structure.alpha_electrons
+    else:
+        beta_mo_coeff = None
+        beta_occupancy = None
+
+    if occupancy is not None:
+        alpha_occupancy = occupancy['alpha']
+        if 'beta' in occupancy:
+            beta_occupancy = occupancy['beta']
+
+    molsym = WfnSympy(coordinates=structure.get_coordinates(),
+                      symbols=structure.get_symbols(),
+                      basis=basis,
+                      center=center,
+                      axis=orientation,
+                      axis2=orientation2,
+                      alpha_mo_coeff=alpha_mo_coeff,
+                      beta_mo_coeff=beta_mo_coeff,
+                      alpha_occupancy=alpha_occupancy,
+                      beta_occupancy=beta_occupancy,
+                      #charge=structure.charge,
+                      #multiplicity=structure.multiplicity,
+                      group=group)
+    return molsym
+
+
+def get_orbital_classification_wfsym(fchk_data,
+                                     center=None,
+                                     orientation=(0., 0., 1.)):
+    """
+    Classify orbitals in sigma/pi in planar molecules
+
+    :param fchk_data: dictionary containing fchk data
+    :param orientation: unit vector perpendicular to the plane of the molecule
+    :return: list of labels 'sigma'/'pi' according to the order of the orbitals
+    """
+    molsym = get_wf_symmetry_wfsym(fchk_data['structure'],
+                                   fchk_data['basis'],
+                                   fchk_data['coefficients'],
+                                   center=center,
+                                   orientation=orientation)
+
+    sh_index = molsym.SymLab.index('s_h')
+    orbital_type_alpha = []
+    for i, overlap in enumerate(molsym.mo_SOEVs_a[:, sh_index]):
+        overlap = overlap / molsym.mo_SOEVs_a[i, molsym.SymLab.index('E')]  # normalize
+        if overlap < 0:
+            orbital_type_alpha.append(['pi', np.abs(overlap)])
+        else:
+            orbital_type_alpha.append(['sigma', np.abs(overlap)])
+
+    if 'beta' in fchk_data['coefficients']:
+        orbital_type_beta = []
+        for i, overlap in enumerate(molsym.mo_SOEVs_b[:, sh_index]):
+            if overlap < 0:
+                orbital_type_beta.append(['pi', np.abs(overlap)])
+            else:
+                orbital_type_beta.append(['sigma', np.abs(overlap)])
+        return orbital_type_alpha, orbital_type_beta
+    else:
+        return orbital_type_alpha
 
 def _indices_from_ranges(ranges):
     indices = []
@@ -291,14 +540,14 @@ def get_symmetry_le(electronic_structure, data_rasci, fragment_atoms=(0), tol=0.
 
             try:
                 # This only works for singlets
-                molsym = get_wf_symmetry(electronic_structure['structure'],
-                                         electronic_structure['basis'],
-                                         coefficients_new,
-                                         center=center_frag,
-                                         orientation=inertia_axis[0],
-                                         orientation2=inertia_axis[1],
-                                         group=group
-                                         )
+                molsym = get_wf_symmetry_wfsym(electronic_structure['structure'],
+                                               electronic_structure['basis'],
+                                               coefficients_new,
+                                               center=center_frag,
+                                               orientation=inertia_axis[0],
+                                               orientation2=inertia_axis[1],
+                                               group=group
+                                               )
 
                 #molsym.print_alpha_mo_IRD()
                 #molsym.print_beta_mo_IRD()

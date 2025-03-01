@@ -47,8 +47,7 @@ open('test_benzene.fchk', 'w').write(txt_fchk)
 
 # get orbital type
 orbital_types = get_orbital_classification(electronic_structure,
-                                           center=[0.0, 0.0, 0.0],
-                                           orientation=[0.0, 0.0, 1.0])
+                                           center=[0.0, 0.0, 0.0])
 
 # print results
 print('  {:5} {:5} {:5}'.format('num', 'type', 'overlap'))

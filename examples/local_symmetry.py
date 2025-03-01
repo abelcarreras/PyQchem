@@ -6,11 +6,8 @@ from pyqchem.parsers.parser_rasci import parser_rasci
 from pyqchem.symmetry import get_state_symmetry
 from pyqchem.file_io import write_to_fchk
 from pyqchem.utils import get_plane, crop_electronic_structure
-from pyqchem.symmetry import get_wf_symmetry
-from posym import SymmetryBase
+from pyqchem.symmetry import get_orbitals_symmetry, get_wf_symmetry
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 
 
 # define monomer
@@ -85,85 +82,61 @@ parsed_data, ee = get_output_from_qchem(qc_input,
 
 write_to_fchk(ee, filename='dimer.fchk')
 
-symmetry_measures = get_state_symmetry(ee,
-                                       parsed_data['excited_states'],
-                                       group='D2h',
-                                       orientation=(1, 0, 0),
-                                       orientation2=(0, 1, 0),
-                                       )
+
+sym = get_wf_symmetry(ee,
+                      alpha_electrons=5,
+                      beta_electrons=6)
+
+states_symmetry = get_state_symmetry(ee,
+                                     parsed_data['excited_states'],
+                                     group='D2h',
+                                     )
+
 
 # Analysis of diabatic states to use in diabatization
 print('\nSymmetry of the electronic states of the dimer')
 list_diabatic = []
 for i, state in enumerate(parsed_data['excited_states']):
-    sym_lab = symmetry_measures[i][0]
     energy = state['excitation_energy']
-    print('State {}: {:3}'.format(i+1, sym_lab))
-
-range_frag = list(range(0, 6))
-
-coordinates_frag = ee['structure'].get_coordinates(fragment=range_frag)
-center_frag, normal_frag = get_plane(coordinates_frag)
-
-electronic_structure_frag = crop_electronic_structure(ee, range_frag, renormalize=True)
-
-# save test fchk file with new coefficients
-write_to_fchk(electronic_structure_frag, filename='fragment.fchk')
-
-molsym = get_wf_symmetry(electronic_structure_frag['structure'],
-                         electronic_structure_frag['basis'],
-                         electronic_structure_frag['coefficients'],
-                         center=center_frag,
-                         orientation=(1, 0, 0),
-                         orientation2=(0, 1, 0),
-                         group='D2h')
-
-molsym.print_alpha_mo_IRD()
-molsym.print_beta_mo_IRD()
-ir_labels = molsym.IRLab
+    print('State {}: {}'.format(i+1, states_symmetry[i]))
 
 
-def get_symmetry_wf(occupation_alpha, occupation_beta):
-    state_wf = SymmetryBase(group='D2h', rep='Ag')
-    for orbital_a, occupation in zip(molsym.mo_SOEVs_a, occupation_alpha):
-        if abs(occupation) > 0.1:
-            state_orb = SymmetryBase(group='D2h',
-                                     rep=pd.Series(np.array(orbital_a),
-                                                   index=[ "E", "C2", "C2'", "C2''", "sh", "i", "sv", "sd"]))
-            state_wf = state_wf * state_orb
-    for orbital_b, occupation in zip(molsym.mo_SOEVs_a, occupation_beta):
-        if abs(occupation) > 0.1:
-            state_orb = SymmetryBase(group='D2h',
-                                     rep=pd.Series(np.array(orbital_b),
-                                                   index=[ "E", "C2", "C2'", "C2''", "sh", "i", "sv", "sd"]))
-            state_wf = state_wf * state_orb
+range_frag_1 = list(range(0, 6))
+range_frag_2 = list(range(6, 12))
 
-    return state_wf
+orbitals_sym_dim = get_orbitals_symmetry(ee['structure'],
+                                         ee['basis'],
+                                         ee['coefficients']['alpha'],
+                                         # orbital_numbers=[1, 2, 3]
+                                         )
 
+orbitals_sym_monomers = []
+for i, range_frag in enumerate([range_frag_1, range_frag_2]):
+    coordinates_frag = ee['structure'].get_coordinates(fragment=range_frag)
+    center_frag, normal_frag = get_plane(coordinates_frag)
 
-total_contributions = {}
-for istate, state in enumerate(parsed_data['excited_states']):
-    for conf in state['configurations']:
-        amplitude = conf['amplitude']
-        state_wf = get_symmetry_wf(conf['occupations']['alpha'], conf['occupations']['beta'])
-        rep = state_wf.get_ir_representation().values
-        ir_labels = state_wf.get_ir_representation().keys()
+    electronic_structure_frag = crop_electronic_structure(ee, range_frag, renormalize=True)
 
-        if 'State: {}'.format(istate+1) in total_contributions:
-            total_contributions['State: {}'.format(istate+1)] += amplitude**2 * rep
-        else:
-            total_contributions['State: {}'.format(istate+1)] = amplitude**2 * rep
+    # save test fchk file with new coefficients
+    write_to_fchk(electronic_structure_frag, filename='fragment_{}.fchk'.format(i))
 
+    orbitals_sym = get_orbitals_symmetry(electronic_structure_frag['structure'],
+                                         electronic_structure_frag['basis'],
+                                         electronic_structure_frag['coefficients']['alpha'],
+                                         center=center_frag,
+                                         # orbital_numbers=[1, 2, 3]
+                                         )
 
-print('\nLocal symmetry of electronic states on the monomer')
-print('           ' + ' '.join(['{:5}'.format(l) for l in ir_labels]))
-for istate, contributions in enumerate(total_contributions.items()):
-    print(contributions[0], ' '.join(['{:5.2f}'.format(abs(c)) for c in contributions[1]]))
+    orbitals_sym_monomers.append(orbitals_sym)
 
-plot_data = pd.DataFrame(total_contributions, index=ir_labels)
-plot_data.plot(kind="bar", width=1)
-plt.title("Local symmetry of electronic states on the monomer")
-plt.xlabel("Irreducible representations")
-plt.ylabel("Contribution")
-plt.show()
+# Analysis of orbitals symmetry
+print('\nSymmetry of the orbitals')
+
+print(' '*15 + '{:5} {:10} {:10}'.format('dimer', 'monomer 1', 'monomer 2'))
+for i in range(len(orbitals_sym_monomers[0])):
+    # print(i+1, orbitals_sym_monomers[0], orbitals_sym_monomers[1])
+    print('Orbital {:3}:     {}     {}        {}'.format(i+1,
+                                                orbitals_sym_dim[i],
+                                                orbitals_sym_monomers[0][i],
+                                                orbitals_sym_monomers[1][i]))
 
