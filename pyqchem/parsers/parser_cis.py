@@ -252,7 +252,7 @@ def basic_cis(output):
 
             interstate_dict[(state_a, state_b)] = pair_dict
     
-    data_dict['interstate_socs'] = interstate_dict
+        data_dict['interstate_socs'] = interstate_dict
 
     # ANGULAR MOMENTUMS
 
@@ -288,7 +288,7 @@ def basic_cis(output):
 
                 interstate_dict[(state_a, state_b)] = pair_dict
     
-    data_dict['interstate_angmom'] = interstate_dict
+        data_dict['interstate_angmom'] = interstate_dict
 
     # diabatization
     initial = output.find('Localization Code for CIS excited states')
