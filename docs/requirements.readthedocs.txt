@@ -1,0 +1,12 @@
+##############################################
+# Reduced requirements list for ReadTheDocs  #
+##############################################
+
+numpy>=1.8.2
+lxml
+requests
+scipy
+matplotlib
+PyYAML
+six
+sphinx-rtd-theme
