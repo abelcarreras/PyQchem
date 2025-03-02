@@ -16,6 +16,7 @@ Requirements
 - matplolib
 - requests
 - lxml
+- posym (optional: for symmetry analysis)
 - wfnsympy (optional: for symmetry analysis)
 - paramiko (optional: for remote calculations)
 
