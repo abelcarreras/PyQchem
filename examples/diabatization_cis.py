@@ -3,8 +3,7 @@ from pyqchem import Structure, QchemInput, get_output_from_qchem
 from pyqchem.parsers.parser_optimization import basic_optimization
 from pyqchem.parsers.parser_cis import basic_cis
 from pyqchem.plots import plot_diabatization, plot_state
-from pyqchem.utils import get_ratio_of_condition
-from pyqchem.symmetry import get_state_symmetry
+from pyqchem.symmetry import get_state_symmetry_wfnsym as get_state_symmetry
 
 import numpy as np
 import matplotlib.pyplot as plt
