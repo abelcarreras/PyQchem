@@ -11,7 +11,7 @@ class ParserError(Exception):
 class OutputError(Exception):
     def __init__(self, output, error_output):
         self.full_output = output
-        self.error_lines = error_output + '\n'.join(output.split('\n')[-20:])
+        self.error_lines = '\n'.join(output.split('\n')[-20:]) + error_output
 
     def __str__(self):
         return 'Error in Q-Chem calculation:\n{}'.format(self.error_lines)

@@ -1,7 +1,7 @@
 from pyqchem.qc_input import QchemInput
 from pyqchem.errors import ParserError, OutputError
 from pyqchem.utils import get_sdm
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE, STDOUT
 from pathlib import Path
 import os, shutil, sys
 import numpy as np
@@ -164,7 +164,7 @@ def parse_output(get_output_function):
     return func_wrapper
 
 
-def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1):
+def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1, stream_output=False):
     """
     Run Q-Chem locally
 
@@ -172,7 +172,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
     :param work_dir:  Scratch directory where calculation run
     :param fchk_file: filename of fchk
     :param use_mpi: use mpi instead of openmp
-
+    :param stream_output: print Q-Chem output live during execution
     :return: output, err: Q-Chem standard output and standard error
     """
 
@@ -188,57 +188,20 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1)
     binary = Path(qc_dir).joinpath(exe_dir).joinpath('qcprog.exe')
     command = [binary, Path(work_dir).joinpath(input_file_name), Path(work_dir)]
 
-    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=work_dir)
-    (output, err) = qchem_process.communicate()
-    qchem_process.wait()
-    output = output.decode(errors='ignore')
-    err = err.decode()
-
-    return output, err
-
-def local_run_stream(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1, print_stream=True):
-    """
-    Run Q-Chem locally
-
-    :param input_file_name: Q-Chem input file in plain text format
-    :param work_dir:  Scratch directory where calculation run
-    :param fchk_file: filename of fchk
-    :param use_mpi: use mpi instead of openmp
-    :param print_stream: set True to print output stream during execution
-
-    :return: output, err: Q-Chem standard output and standard error
-    """
-
-    if not use_mpi:
-        os.environ["QCTHREADS"] = "{}".format(processors)
-        os.environ["OMP_NUM_THREADS"] = "{}".format(processors)
-        os.environ["MKL_NUM_THREADS"] = "1"
-
-    os.environ["GUIFILE"] = fchk_file
-    qc_dir = os.getenv('QC')
-
-    exe_dir = os.getenv('QC_EXE_DIR') if 'QC_EXE_DIR' in os.environ else 'exe'
-    binary = Path(qc_dir).joinpath(exe_dir).joinpath('qcprog.exe')
-    command = [binary, Path(work_dir).joinpath(input_file_name), Path(work_dir)]
-
-    qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=work_dir)
-
-    output = ''
-    err = ''
-    while True:
-        line_out = qchem_process.stdout.readline()
-        line_err = qchem_process.stderr.readline()
-
-        if not line_out and not line_err:
-            break
-
-        if print_stream:
-            print(line_out.strip().decode(errors='ignore'))
-
-        sys.stdout.flush()
-
-        output += line_out.decode(errors='ignore')
-        err += line_err.decode(errors='ignore')
+    if stream_output:
+        qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=STDOUT, cwd=work_dir, text=True, bufsize=1)
+        output = ''
+        err = ''
+        for line_out in qchem_process.stdout:
+            print(line_out, end='')  # Print output as generated
+            output += line_out
+        qchem_process.wait()
+    else:
+        qchem_process = Popen(command, stdout=PIPE, stdin=PIPE, stderr=PIPE, cwd=work_dir)
+        (output, err) = qchem_process.communicate()
+        qchem_process.wait()
+        output = output.decode(errors='ignore')
+        err = err.decode()
 
     return output, err
 
@@ -359,6 +322,7 @@ def retrieve_additional_files(input_qchem, data_fchk, work_dir, scratch_read_lev
     :param data_fchk: FCHK parsed dictionary
     :param work_dir: scratch directory
     :param scratch_read_level: defines what data to retrieve
+
     :return: dictionary with additional data
     """
 
@@ -487,6 +451,7 @@ def get_output_from_qchem(input_qchem,
                           fchk_only=False,
                           store_full_output=False,
                           delete_scratch=True,
+                          stream_output=False,
                           remote=None,
                           scratch_read_level=0):
 
@@ -514,6 +479,7 @@ def get_output_from_qchem(input_qchem,
     :param remote: dictionary containing the data for remote calculation (beta)
     :param store_full_output: store full output in plain text in pkl file
     :param delete_scratch: delete all scratch files when calculation is finished
+    :param stream_output: print Q-Chem output live during execution
 
     :return: output [, electronic_structure]
     """
@@ -587,7 +553,8 @@ def get_output_from_qchem(input_qchem,
     if output is None or force_recalculation is True:
         if remote is None:
             # print('local:')
-            output, err = local_run(temp_filename, work_dir, fchk_filename, use_mpi=use_mpi, processors=processors)
+            output, err = local_run(temp_filename, work_dir, fchk_filename,
+                                    use_mpi=use_mpi, processors=processors, stream_output=stream_output)
         else:
             # print('Remote:')
             output, err = remote_run(temp_filename, work_dir, fchk_filename, remote, use_mpi=use_mpi, processors=processors)
