@@ -19,6 +19,18 @@ def read_symmetry_info(output):
             'largest_abelian_subgroup': las}
 
 
+def read_scf_info(output):
+    # scf_energy
+
+    enum = output.find('Total energy in the final basis set') # 6.0 support
+    if enum < 0:
+        enum = output.find('Total energy =') # >6.3 support
+        scf_energy = float(output[enum:enum+100].split()[3])
+    else:
+        scf_energy = float(output[enum:enum+100].split()[8])
+
+    return {'scf_energy': scf_energy}
+
 def read_basic_info(output):
 
     there_vector = [m.start() for m in re.finditer('There are ', output)]

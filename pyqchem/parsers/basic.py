@@ -21,7 +21,7 @@ def basic_parser_qchem(output):
     This showcases the format of  Q-Chem version parser compatibility.
     Just by creating a docstring with the following line:
 
-    compatibility: 5.1, 5.2+, 6.0
+    compatibility: 5.1, 5.2+, 6.0, 6.3
 
     will activate the check for parser-qchem version compatibility.
     If they are not compatible a warning will rise.
@@ -30,8 +30,12 @@ def basic_parser_qchem(output):
     data_dict = {}
 
     # scf_energy
-    enum = output.find('Total energy in the final basis set')
-    data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
+    enum = output.find('Total energy in the final basis set') # 6.0 support
+    if enum < 0:
+        enum = output.find('Total energy =') # >6.3 support
+        data_dict['scf_energy'] = float(output[enum:enum+100].split()[3])
+    else:
+        data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
 
     # Orbitals energy
     enum = output.find('Orbital Energies (a.u.)')

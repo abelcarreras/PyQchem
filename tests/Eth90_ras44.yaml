@@ -1,91 +1,7 @@
 excited_states:
 - configurations:
-  - alpha: '1100'
-    amplitude: 0.70555919336385
-    beta: '1010'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '1010'
-    amplitude: -0.7055591933636
+    amplitude: 0.70555919336478
     beta: '1100'
     hole: ''
     occupations:
@@ -138,6 +54,90 @@ excited_states:
       - 1
       - 1
       - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  - alpha: '1100'
+    amplitude: -0.70555919336474
+    beta: '1010'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
       - 0
       - 0
       - 0
@@ -220,96 +220,12 @@ excited_states:
   - 3.02e-05
   oscillator_strength: null
   symmetry: A2
-  total_energy: -77.947675295511
+  total_energy: -77.947675295439
   total_energy_units: au
   transition_moment: null
 - configurations:
-  - alpha: '1010'
-    amplitude: 0.70541805375927
-    beta: '1100'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '1100'
-    amplitude: 0.70541805375901
+    amplitude: 0.70541805376015
     beta: '1010'
     hole: ''
     occupations:
@@ -392,6 +308,90 @@ excited_states:
       - 0
       - 0
     part: ''
+  - alpha: '1010'
+    amplitude: 0.70541805376011
+    beta: '1100'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
   contributions_wfn:
     active: 99.56
     hole: 0.29
@@ -401,7 +401,7 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 0.059969786574
+  excitation_energy: 0.059969790552
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -443,7 +443,7 @@ excited_states:
   - 2.21e-05
   oscillator_strength: 0.0
   symmetry: A2
-  total_energy: -77.94547144636
+  total_energy: -77.945471446285
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -451,7 +451,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '1100'
-    amplitude: 0.6529672839643
+    amplitude: 0.65296728399104
     beta: '1100'
     hole: ''
     occupations:
@@ -535,7 +535,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1010'
-    amplitude: -0.65296707405776
+    amplitude: -0.6529670740795
     beta: '1010'
     hole: ''
     occupations:
@@ -619,7 +619,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1100'
-    amplitude: -0.1525624886257
+    amplitude: -0.15256248861127
     beta: '1110'
     hole: '6'
     occupations:
@@ -703,7 +703,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1110'
-    amplitude: -0.1525624886257
+    amplitude: -0.15256248861127
     beta: '1100'
     hole: '6'
     occupations:
@@ -787,7 +787,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1010'
-    amplitude: 0.15256243982258
+    amplitude: -0.152562439807
     beta: '1110'
     hole: '5'
     occupations:
@@ -871,7 +871,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1110'
-    amplitude: 0.15256243982258
+    amplitude: -0.152562439807
     beta: '1010'
     hole: '5'
     occupations:
@@ -963,7 +963,7 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 3.157269399289
+  excitation_energy: 3.157269604538
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -1009,7 +1009,7 @@ excited_states:
   - 2.54e-05
   oscillator_strength: 0.0
   symmetry: A1
-  total_energy: -77.831647777597
+  total_energy: -77.831647777546
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -1017,7 +1017,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '1010'
-    amplitude: 0.64913343344006
+    amplitude: 0.64913343347301
     beta: '1010'
     hole: ''
     occupations:
@@ -1101,7 +1101,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1100'
-    amplitude: 0.64913322228995
+    amplitude: 0.64913322231789
     beta: '1100'
     hole: ''
     occupations:
@@ -1185,7 +1185,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1010'
-    amplitude: -0.15112396524451
+    amplitude: 0.15112396522306
     beta: '1110'
     hole: '5'
     occupations:
@@ -1269,7 +1269,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1110'
-    amplitude: -0.15112396524451
+    amplitude: 0.15112396522306
     beta: '1010'
     hole: '5'
     occupations:
@@ -1353,7 +1353,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1100'
-    amplitude: -0.15112391598468
+    amplitude: -0.15112391596203
     beta: '1110'
     hole: '6'
     occupations:
@@ -1437,7 +1437,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1110'
-    amplitude: -0.15112391598468
+    amplitude: -0.15112391596203
     beta: '1100'
     hole: '6'
     occupations:
@@ -1529,7 +1529,7 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 3.172649212869
+  excitation_energy: 3.172649419302
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -1575,99 +1575,15 @@ excited_states:
   - 2.59e-05
   oscillator_strength: 0.0
   symmetry: A1
-  total_energy: -77.831082579836
+  total_energy: -77.831082579779
   total_energy_units: au
   transition_moment:
   - 0.0
   - 0.0
   - 0.0
 - configurations:
-  - alpha: '1001'
-    amplitude: 0.52284648493551
-    beta: '1010'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '1010'
-    amplitude: -0.52284648491927
+    amplitude: 0.52284648487985
     beta: '1001'
     hole: ''
     occupations:
@@ -1750,8 +1666,176 @@ excited_states:
       - 0
       - 0
     part: ''
+  - alpha: '1001'
+    amplitude: -0.52284648487932
+    beta: '1010'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  - alpha: '0110'
+    amplitude: 0.33956084459273
+    beta: '1100'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
   - alpha: '1100'
-    amplitude: 0.33956084453625
+    amplitude: -0.33956084459266
     beta: '0110'
     hole: ''
     occupations:
@@ -1834,176 +1918,8 @@ excited_states:
       - 0
       - 0
     part: ''
-  - alpha: '0110'
-    amplitude: -0.33956084453494
-    beta: '1100'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
-  - alpha: '1010'
-    amplitude: -0.2821092414749
-    beta: '1000'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: '11'
   - alpha: '1000'
-    amplitude: 0.28210924147146
+    amplitude: -0.28210924151274
     beta: '1010'
     hole: ''
     occupations:
@@ -2086,20 +2002,20 @@ excited_states:
       - 0
       - 0
     part: '11'
-  - alpha: '1110'
-    amplitude: -0.1134854641585
-    beta: '1100'
-    hole: '4'
+  - alpha: '1010'
+    amplitude: 0.28210924151263
+    beta: '1000'
+    hole: ''
     occupations:
       alpha:
       - 1
       - 1
       - 1
+      - 1
+      - 1
+      - 1
+      - 1
       - 0
-      - 1
-      - 1
-      - 1
-      - 1
       - 1
       - 0
       - 0
@@ -2138,6 +2054,9 @@ excited_states:
       - 1
       - 1
       - 1
+      - 0
+      - 0
+      - 0
       - 1
       - 0
       - 0
@@ -2166,12 +2085,9 @@ excited_states:
       - 0
       - 0
       - 0
-      - 0
-      - 0
-      - 0
-    part: ''
+    part: '11'
   - alpha: '1100'
-    amplitude: 0.11348546415691
+    amplitude: -0.1134854641546
     beta: '1110'
     hole: '4'
     occupations:
@@ -2254,6 +2170,90 @@ excited_states:
       - 0
       - 0
     part: ''
+  - alpha: '1110'
+    amplitude: 0.11348546415455
+    beta: '1100'
+    hole: '4'
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
   contributions_wfn:
     active: 77.89
     hole: 4.32
@@ -2263,7 +2263,7 @@ excited_states:
   - 0.0
   - 0.8531
   dipole_moment_units: ua
-  excitation_energy: 8.103825141675
+  excitation_energy: 8.103825671638
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -2309,7 +2309,7 @@ excited_states:
   - 1.24e-05
   oscillator_strength: 0.003007
   symmetry: B2
-  total_energy: -77.649865195109
+  total_energy: -77.649865194976
   total_energy_units: au
   transition_moment:
   - 0.1231
@@ -2317,7 +2317,7 @@ excited_states:
   - 0.0
 - configurations:
   - alpha: '1100'
-    amplitude: -0.52283033130408
+    amplitude: -0.52283033125815
     beta: '1001'
     hole: ''
     occupations:
@@ -2401,7 +2401,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1001'
-    amplitude: 0.52282709241991
+    amplitude: 0.52282709237405
     beta: '1100'
     hole: ''
     occupations:
@@ -2485,7 +2485,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '0110'
-    amplitude: -0.33956138063155
+    amplitude: -0.33956138068735
     beta: '1010'
     hole: ''
     occupations:
@@ -2569,7 +2569,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1010'
-    amplitude: 0.33956055608391
+    amplitude: 0.33956055613968
     beta: '0110'
     hole: ''
     occupations:
@@ -2653,7 +2653,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1100'
-    amplitude: 0.28214378177356
+    amplitude: 0.28214378181109
     beta: '1000'
     hole: ''
     occupations:
@@ -2737,7 +2737,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '1000'
-    amplitude: -0.28213942933151
+    amplitude: -0.28213942936909
     beta: '1100'
     hole: ''
     occupations:
@@ -2821,7 +2821,7 @@ excited_states:
       - 0
     part: '11'
   - alpha: '1110'
-    amplitude: 0.11350543323927
+    amplitude: 0.11350543323608
     beta: '1010'
     hole: '4'
     occupations:
@@ -2905,7 +2905,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '1010'
-    amplitude: -0.11348483448108
+    amplitude: -0.11348483447784
     beta: '1110'
     hole: '4'
     occupations:
@@ -2997,7 +2997,7 @@ excited_states:
   - 0.0
   - -0.853
   dipole_moment_units: ua
-  excitation_energy: 8.10382516023
+  excitation_energy: 8.103825690192
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -3043,99 +3043,15 @@ excited_states:
   - 1.24e-05
   oscillator_strength: 0.003007
   symmetry: B1
-  total_energy: -77.649865194427
+  total_energy: -77.649865194295
   total_energy_units: au
   transition_moment:
   - 0.0
   - 0.1231
   - 0.0
 - configurations:
-  - alpha: '1100'
-    amplitude: 0.59394450476908
-    beta: '0110'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: ''
   - alpha: '0110'
-    amplitude: -0.59394450471339
+    amplitude: 0.59394450471413
     beta: '1100'
     hole: ''
     occupations:
@@ -3218,8 +3134,176 @@ excited_states:
       - 0
       - 0
     part: ''
+  - alpha: '1100'
+    amplitude: -0.59394450471232
+    beta: '0110'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
+  - alpha: '1001'
+    amplitude: 0.30424214877233
+    beta: '1010'
+    hole: ''
+    occupations:
+      alpha:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      beta:
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 1
+      - 0
+      - 1
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+      - 0
+    part: ''
   - alpha: '1010'
-    amplitude: 0.30424214886847
+    amplitude: -0.30424214876488
     beta: '1001'
     hole: ''
     occupations:
@@ -3302,8 +3386,8 @@ excited_states:
       - 0
       - 0
     part: ''
-  - alpha: '1001'
-    amplitude: -0.3042421486303
+  - alpha: '1000'
+    amplitude: 0.16380415649998
     beta: '1010'
     hole: ''
     occupations:
@@ -3317,8 +3401,8 @@ excited_states:
       - 1
       - 0
       - 0
-      - 1
       - 0
+      - 1
       - 0
       - 0
       - 0
@@ -3385,9 +3469,9 @@ excited_states:
       - 0
       - 0
       - 0
-    part: ''
+    part: '11'
   - alpha: '1010'
-    amplitude: 0.16380415649876
+    amplitude: -0.16380415649377
     beta: '1000'
     hole: ''
     occupations:
@@ -3470,90 +3554,6 @@ excited_states:
       - 0
       - 0
     part: '11'
-  - alpha: '1000'
-    amplitude: -0.16380415630161
-    beta: '1010'
-    hole: ''
-    occupations:
-      alpha:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 0
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      beta:
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 1
-      - 0
-      - 1
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-      - 0
-    part: '11'
   contributions_wfn:
     active: 89.1
     hole: 3.32
@@ -3563,7 +3563,7 @@ excited_states:
   - 0.0
   - 0.5177
   dipole_moment_units: ua
-  excitation_energy: 8.510656328837
+  excitation_energy: 8.510656885359
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -3607,7 +3607,7 @@ excited_states:
   - 2.12e-05
   oscillator_strength: 0.002912
   symmetry: B2
-  total_energy: -77.634914423766
+  total_energy: -77.634914423632
   total_energy_units: au
   transition_moment:
   - 0.1182
@@ -3654,8 +3654,8 @@ interstate_properties:
   - 1
   - 5
   : angular_momentum:
-    - !!python/complex '4e-08j'
-    - !!python/complex '-0.455319494j'
+    - !!python/complex '1.5e-07j'
+    - !!python/complex '-0.455319495j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.483441
     gamma_sym: 0.503847
@@ -3666,8 +3666,8 @@ interstate_properties:
   - 1
   - 6
   : angular_momentum:
-    - !!python/complex '0.455351717j'
-    - !!python/complex '4e-08j'
+    - !!python/complex '-0.455351717j'
+    - !!python/complex '-1.5e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.483443
     gamma_sym: 0.50385
@@ -3678,7 +3678,7 @@ interstate_properties:
   - 1
   - 7
   : angular_momentum:
-    - !!python/complex '-2e-09j'
+    - !!python/complex '-1e-09j'
     - !!python/complex '-0.811311515j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.499479
@@ -3906,8 +3906,8 @@ interstate_properties:
   - 5
   - 1
   : angular_momentum:
-    - !!python/complex '-4e-08j'
-    - !!python/complex '0.455319494j'
+    - !!python/complex '-1.5e-07j'
+    - !!python/complex '0.455319495j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.483441
     gamma_sym: 0.503847
@@ -3956,7 +3956,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-0.130734214j'
+    - !!python/complex '0.130734214j'
     gamma_anti_sym: 0.103749
     gamma_sym: 0.303223
     gamma_total: 0.320481
@@ -3968,7 +3968,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-1.9e-08j'
+    - !!python/complex '-6.8e-08j'
     gamma_anti_sym: 0.075347
     gamma_sym: 0.737421
     gamma_total: 0.74126
@@ -3978,8 +3978,8 @@ interstate_properties:
   - 6
   - 1
   : angular_momentum:
-    - !!python/complex '-0.455351717j'
-    - !!python/complex '-4e-08j'
+    - !!python/complex '0.455351717j'
+    - !!python/complex '1.5e-07j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.483443
     gamma_sym: 0.50385
@@ -4028,7 +4028,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '0.130734214j'
+    - !!python/complex '-0.130734214j'
     gamma_anti_sym: 0.103749
     gamma_sym: 0.303223
     gamma_total: 0.320481
@@ -4040,7 +4040,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '-0.20597439j'
+    - !!python/complex '0.20597439j'
     gamma_anti_sym: 0.310257
     gamma_sym: 0.082234
     gamma_total: 0.32097
@@ -4050,7 +4050,7 @@ interstate_properties:
   - 7
   - 1
   : angular_momentum:
-    - !!python/complex '2e-09j'
+    - !!python/complex '1e-09j'
     - !!python/complex '0.811311515j'
     - !!python/complex '0.0'
     gamma_anti_sym: 0.499479
@@ -4100,7 +4100,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '1.9e-08j'
+    - !!python/complex '6.8e-08j'
     gamma_anti_sym: 0.075347
     gamma_sym: 0.737421
     gamma_total: 0.74126
@@ -4112,7 +4112,7 @@ interstate_properties:
   : angular_momentum:
     - !!python/complex '0.0'
     - !!python/complex '0.0'
-    - !!python/complex '0.20597439j'
+    - !!python/complex '-0.20597439j'
     gamma_anti_sym: 0.310257
     gamma_sym: 0.082234
     gamma_total: 0.32097
@@ -4129,7 +4129,7 @@ rasci_dimensions:
   hole_configurations: 288
   particle_configurations: 1344
   total_configurations: 1668
-scf_energy: -77.942731997
+scf_energy: -77.942732
 structure: !!python/object:pyqchem.structure.Structure
   _atomic_masses: null
   _atomic_numbers: null

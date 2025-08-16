@@ -1,5 +1,5 @@
 from pyqchem.structure import Structure
-from pyqchem.parsers.common import read_input_structure
+from pyqchem.parsers.common import read_input_structure, read_scf_info
 import numpy as np
 import re
 
@@ -23,9 +23,10 @@ def basic_irc(output, print_data=False):
         atoms_list = step_section[enum:].split('\n')[3:n_atoms+3]
         coordinates_step = np.array([atom.split()[2:] for atom in atoms_list], dtype=float).tolist()
 
-        step_energy = None
-        for l in re.finditer('Total energy in the final basis set', step_section):
-            step_energy = float(step_section[l.end(): l.end()+50].split()[1])
+        if step_section.find('Total energy') < 0:
+            break
+
+        step_energy = read_scf_info(step_section)['scf_energy']
 
         step_molecule = Structure(coordinates=coordinates_step,
                                   symbols=structure.get_symbols(),

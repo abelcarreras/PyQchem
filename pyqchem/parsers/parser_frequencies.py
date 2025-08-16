@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from pyqchem.parsers.common import read_input_structure
+from pyqchem.parsers.common import read_input_structure, read_scf_info
 
 
 # parser for frequencies calculations
@@ -18,9 +18,7 @@ def basic_frequencies(output, print_data=False):
     n_atoms = structure.get_number_of_atoms()
 
     # Energy
-    n = output.find('Total energy in the final basis set =')
-    energy = float(output[n:n+70].split()[8])
-
+    energy = read_scf_info(output)['scf_energy']
     n_hess = output.find('Hessian of the SCF Energy')
     n_van = output.find('VIBRATIONAL ANALYSIS')
 

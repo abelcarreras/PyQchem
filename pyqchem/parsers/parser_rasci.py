@@ -5,7 +5,7 @@ import operator
 import warnings
 
 import numpy as np
-from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list
+from pyqchem.parsers.common import read_basic_info, get_rasci_occupations_list, read_scf_info
 from pyqchem.parsers.common import search_bars, standardize_vector, read_input_structure
 from pyqchem.parsers.common import float_asterisk as float
 
@@ -92,11 +92,9 @@ def parser_rasci(output):
     enum = output.find('Nuclear Repulsion Energy')
     basic_data = read_basic_info(output[enum:enum + 5000])
 
-    # scf_energy
-    enum = output.find('SCF   energy in the final basis set')
-    scf_energy = float(output[enum:enum+100].split()[8])
+    # scf_info
+    data_dict.update(read_scf_info(output))
 
-    data_dict['scf_energy'] = scf_energy
     # total energy
     # enum = output.find('Total energy in the final basis set')
     # total_energy = float(output[enum:enum+100].split()[8])

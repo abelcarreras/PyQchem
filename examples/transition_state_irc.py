@@ -34,7 +34,7 @@ qc_input = QchemInput(molecule,
 opt_data, ee = get_output_from_qchem(qc_input,
                                      processors=4,
                                      parser=basic_optimization,
-                                     force_recalculation=True,
+                                     force_recalculation=False,
                                      read_fchk=True,
                                      store_full_output=True)
 

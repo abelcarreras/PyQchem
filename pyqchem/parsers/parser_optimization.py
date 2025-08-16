@@ -82,6 +82,20 @@ def basic_optimization(output, print_data=False):
         data_dict['energy'] = final_energy
         data_dict['s2'] = step_s2
 
+    # Optimization Convergence
+    enum = output.find('** TRANSITION STATE CONVERGED  **')
+    if enum > 0:
+        ne = output[enum - 200:enum].find('Final energy')
+
+        final_energy = float(output[ne + enum - 200: enum].split()[3])
+        optimization_section = output[enum:]
+
+        optimized_molecule = parse_molecule(optimization_section, structure.charge, structure.multiplicity)
+
+        data_dict['optimized_molecule'] = optimized_molecule
+        data_dict['energy'] = final_energy
+        data_dict['s2'] = step_s2
+
     return data_dict
 
 

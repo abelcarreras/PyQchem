@@ -3,7 +3,7 @@ AU_TO_EV = 27.21138
 
 from pyqchem.structure import Structure
 from pyqchem.errors import ParserError
-from pyqchem.parsers.common import search_bars, standardize_vector
+from pyqchem.parsers.common import search_bars, standardize_vector, read_scf_info
 from pyqchem.parsers.common import read_basic_info, get_cis_occupations_list, read_symmetry_info, read_input_structure
 import numpy as np
 import re
@@ -47,12 +47,8 @@ def basic_cis(output):
     data_dict['structure'] = read_input_structure(output)
     n_atoms = data_dict['structure'].get_number_of_atoms()
     
-    # scf_energy
-    enum = output.find('Total energy in the final basis set')
-    try:
-        data_dict['scf_energy'] = float(output[enum:enum+100].split()[8])
-    except IndexError:
-        pass
+    # info
+    data_dict.update(read_scf_info(output))
 
     enum = output.find('Molecular Point Group')
     if enum > 0:

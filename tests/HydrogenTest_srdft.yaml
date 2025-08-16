@@ -1,7 +1,7 @@
 excited_states:
 - configurations:
   - alpha: '10'
-    amplitude: 0.99124218910216
+    amplitude: 0.99124218910979
     beta: '10'
     hole: ''
     occupations:
@@ -29,7 +29,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '01'
-    amplitude: -0.11076978254667
+    amplitude: -0.11076978248192
     beta: '01'
     hole: ''
     occupations:
@@ -78,12 +78,12 @@ excited_states:
   multiplicity: 0.0
   oscillator_strength: null
   symmetry: Ag
-  total_energy: -1.058011517453
+  total_energy: -1.058011517504
   total_energy_units: au
   transition_moment: null
 - configurations:
   - alpha: '01'
-    amplitude: -0.70143696942572
+    amplitude: -0.70143696942483
     beta: '10'
     hole: ''
     occupations:
@@ -111,7 +111,7 @@ excited_states:
       - 0
     part: ''
   - alpha: '10'
-    amplitude: 0.70143696942572
+    amplitude: 0.70143696942483
     beta: '01'
     hole: ''
     occupations:
@@ -147,7 +147,7 @@ excited_states:
   - 0.0
   - 0.0
   dipole_moment_units: ua
-  excitation_energy: 4.151933914203
+  excitation_energy: 4.151934187058
   excitation_energy_units: eV
   mulliken_population:
     charge:
@@ -160,7 +160,7 @@ excited_states:
   multiplicity: 2.0
   oscillator_strength: 0.0
   symmetry: B1u
-  total_energy: -0.905430750441
+  total_energy: -0.905430750412
   total_energy_units: au
   transition_moment:
   - 0.0
@@ -202,7 +202,7 @@ rasci_dimensions:
   hole_configurations: 0
   particle_configurations: 32
   total_configurations: 36
-scf_energy: -0.9992415372
+scf_energy: -0.99924154
 structure: !!python/object:pyqchem.structure.Structure
   _atomic_masses: null
   _atomic_numbers: null
