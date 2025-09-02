@@ -1,5 +1,4 @@
 import requests as req
-from lxml import html
 import unicodedata
 import re
 import numpy as np
@@ -68,6 +67,7 @@ def get_basis_element_from_ccRepo(element,
     :param basis: basis name
     :return: citation, description, basis set dictionary
     """
+    from lxml import html
 
     # Check main page element list
     with req.get("http://www.grant-hill.group.shef.ac.uk/ccrepo/") as resp:
