@@ -206,7 +206,7 @@ def local_run(input_file_name, work_dir, fchk_file, use_mpi=False, processors=1,
     return output, err
 
 
-def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=False, processors=1):
+def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=False, processors=1, retrieve_scratch=False):
     """
     Run Q-Chem remotely
 
@@ -215,6 +215,8 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     :param fchk_file: filename of fchk
     :param remote_params: connection parameters for paramiko
     :param use_mpi: use mpi instead of openmp
+    :param processors: number of processors
+    :param retrieve_scratch: retrieve full scratch data
 
     :return: output, err: Q-Chem standard output and standard error
     """
@@ -257,8 +259,15 @@ def remote_run(input_file_name, work_dir, fchk_file, remote_params, use_mpi=Fals
     flag = '-np' if use_mpi else '-nt'
 
     # Define commands to run Q-Chem in remote machine
-    commands += ['cd  {}'.format(remote_dir),  # go to remote work dir
-                 'qchem {} {} {}'.format(flag, processors, input_file_name)]  # run qchem
+    if retrieve_scratch:
+        commands += ['cd  {}'.format(remote_dir),  # go to remote work dir,
+                     'export QCSCRATCH={}'.format(remote_dir),
+                     'qchem -save {} {} {} output.out .'.format(flag, processors, input_file_name),  # run qchem
+                     'cat {}/output.out'.format(remote_dir)]
+
+    else:
+        commands += ['cd  {}'.format(remote_dir),  # go to remote work dir
+                     'qchem {} {} {}'.format(flag, processors, input_file_name)]  # run qchem
 
     # Execute command in remote machine
     stdin, stdout, stderr = ssh.exec_command('bash -l -c "{}"'.format(';'.join(commands)), get_pty=True)
