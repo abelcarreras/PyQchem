@@ -588,7 +588,7 @@ class Duschinsky:
         n_modes = len(s)
 
         # compute FCF <0|0>
-        freq_rel_prod = np.product(np.divide(freq_origin, freq_target))
+        freq_rel_prod = np.prod(np.divide(freq_origin, freq_target))
         exponential = np.exp(-1 / 2 * np.dot(dt, np.dot(np.identity(n_modes) - p, dt)))
         pre_factor = 2**(n_modes / 2) / np.sqrt(abs(np.linalg.det(s)))
         fcf_00 = pre_factor * freq_rel_prod ** (-1 / 4) * np.sqrt(np.linalg.det(q)) * exponential

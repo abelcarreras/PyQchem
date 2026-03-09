@@ -9,7 +9,7 @@ scipy
 matplotlib
 PyYAML
 six
+paramiko
 
 # optional modules
-# paramiko
 # posym

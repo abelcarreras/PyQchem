@@ -10,6 +10,7 @@ from pyqchem.tools.gaussian import gaussian
 from pyqchem.tools.spectrum import get_fcwd
 from pyqchem.units import AU_TO_EV, KB_EV
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 
@@ -228,8 +229,8 @@ plt.title('Spectrum at {} K'.format(temperature))
 plt.plot(energies, intensities_abs, label='absorption', color='C0')
 plt.plot(energies, intensities_em, label='emission', color='C1')
 
-print('\nintegral absorption: {:7.4f}'.format(np.trapz(intensities_abs, energies)))  # should be close to 1
-print('integral emission: {:7.4f}'.format(np.trapz(intensities_em, energies)))  # should be close to 1
+print('\nintegral absorption: {:7.4f}'.format(np.trapezoid(intensities_abs, energies)))  # should be close to 1
+print('integral emission: {:7.4f}'.format(np.trapezoid(intensities_em, energies)))  # should be close to 1
 print('FCWD: {:7.4f} eV^-1'.format(get_fcwd(transitions, temperature)))
 
 
@@ -272,7 +273,7 @@ def lj_function(e, de, l_cl, huang_rhys, frequencies):
     e = np.array(e, dtype=float)
     fcwd_term = np.zeros_like(e)
     for m in range(10):
-        fcwd_term += s_eff**m / np.math.factorial(m) * np.exp(-s_eff) * np.exp(
+        fcwd_term += s_eff**m / math.factorial(m) * np.exp(-s_eff) * np.exp(
             -(de - e * sign + l_cl + m * HBAR_PLANCK * w_eff)**2 / (4 * KB_EV * temperature * l_cl))
 
     return 1.0 / (np.sqrt(4 * np.pi * KB_EV * temperature * l_cl)) * fcwd_term
@@ -306,9 +307,9 @@ if plot_lj:
         lj_em[i] = lj_emission(e, excitation_energy, reorganization/2, s_f, freq_f)
         lj_abs[i] = lj_absorption(e, excitation_energy, reorganization/2, s_i, freq_i)
 
-    print('\nintegral LJ absorption: {:7.4f}'.format(np.trapz(lj_em, energies)))  # should be close to 1
-    print('integral LJ emission: {:7.4f}'.format(np.trapz(lj_abs, energies)))  # should be close to 1
-    print('FCWD LJ: {:7.4f} eV^-1'.format(np.trapz(lj_em * lj_abs, energies)))
+    print('\nintegral LJ absorption: {:7.4f}'.format(np.trapezoid(lj_em, energies)))  # should be close to 1
+    print('integral LJ emission: {:7.4f}'.format(np.trapezoid(lj_abs, energies)))  # should be close to 1
+    print('FCWD LJ: {:7.4f} eV^-1'.format(np.trapezoid(lj_em * lj_abs, energies)))
 
     plt.plot(energies, lj_em, ':', label='LJ emission', color='C0')
     plt.plot(energies, lj_abs, ':', label='LJ absorption', color='C1')

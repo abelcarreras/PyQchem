@@ -26,8 +26,8 @@ Installation instructions
 - matplotlib
 - requests
 - lxml
-- wfnsympy (optional)
-- paramiko (optional)
+- paramiko
+- posym (optional)
 - pymatgen (optional)
 
 2a. From pypi repository (recommended)
