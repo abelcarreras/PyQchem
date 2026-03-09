@@ -1,13 +1,11 @@
-import matplotlib.pyplot as plt
-from pyqchem.plots import plot_configuration
 from pyqchem.structure import Structure
+from pyqchem.tools.geometry import rotate_coordinates
 from urllib.request import urlopen
+from requests.exceptions import ConnectionError
 import requests as req
 import numpy as np
 import json
 import warnings
-from requests.exceptions import ConnectionError
-from pyqchem.tools.geometry import rotate_coordinates
 
 
 def print_excited_states(parsed_data, include_conf_rasci=False, include_mulliken_rasci=False):
@@ -51,6 +49,10 @@ def plot_rasci_state_configurations(states):
     :param states: parsed data (excited states) dictionary entry from RASCI calculation
     :return: None
     """
+    from pyqchem.plots import plot_configuration
+    import matplotlib.pyplot as plt
+
+
     for i, state in enumerate(states):
         plt.figure(figsize=(len(state['configurations']), 5))
         plt.title('State {}'.format(i+1))
