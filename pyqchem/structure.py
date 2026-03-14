@@ -169,7 +169,7 @@ class Structure:
         """
         if self._symbols is None:
             self._symbols = np.array(atom_data)[self.get_atomic_numbers()].T[1]
-        return np.array([i for i in self._symbols if i != "X"], dtype=str)
+        return np.array([i for i in self._symbols if i != "X"], dtype=str).tolist()
 
     def set_symbols(self, atomic_elements):
         self._symbols = atomic_elements
