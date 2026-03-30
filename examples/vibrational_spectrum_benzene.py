@@ -264,9 +264,9 @@ if plot_marcus:
     plt.plot(energies, marcus_em, '--', label='marcus emission', color='C0')
     plt.plot(energies, marcus_abs, '--', label='marcus absorption', color='C1')
 
-    print('\nintegral marcus absorption: {:7.4f}'.format(np.trapz(marcus_abs, energies)))  # should be close to 1
-    print('integral marcus emission: {:7.4f}'.format(np.trapz(marcus_em, energies)))  # should be close to 1
-    print('FCWD Marcus: {:7.4f} eV^-1'.format(np.trapz(marcus_em * marcus_abs, energies)))
+    print('\nintegral marcus absorption: {:7.4f}'.format(np.trapezoid(marcus_abs, energies)))  # should be close to 1
+    print('integral marcus emission: {:7.4f}'.format(np.trapezoid(marcus_em, energies)))  # should be close to 1
+    print('FCWD Marcus: {:7.4f} eV^-1'.format(np.trapezoid(marcus_em * marcus_abs, energies)))
 
 
 # Levich–Jortner
