@@ -356,5 +356,26 @@ def basic_cis(output):
 
         data_dict['diabatization'] = diabat_data
 
+    # FED
+    done_fed = bool(output.find('Fragment Excitations of Transition Densities')+1)
+    if done_fed:
+        ini_section = output.find('FED Couplings Between Singlet Excited States')
+        end_section = output.find('END OF FED CALCULATION')
+        angmom_section = output[ini_section: end_section]
+        section_sizes = search_bars(angmom_section, bar_type=r'-'*40) # r'-'*40)
+        data_fed = {}
+        for line in angmom_section[section_sizes[1]:section_sizes[2]].split('\n')[1:-1]:
+            i, j = [int(k) for k in line.split()[0: 2]]
+            # print(i, j)
+            data_fed[(i, j)] = {'X12(D)':float(line.split()[2]),
+                                'X12(A)':float(line.split()[3]),
+                                'dX12':float(line.split()[4]),
+                                'coupling':float(line.split()[5]),
+                                'FED-dX1':float(line.split()[6]),
+                                'FED-dX2': float(line.split()[7]),
+                                }
+
+        data_dict['FED'] = data_fed
+
     return data_dict
 
