@@ -326,6 +326,9 @@ class VibrationalTransition:
 
 
 class Duschinsky:
+    """
+    Implementation follows Chap. 6 (Duschinsky rotations) in ezFCF manual
+    """
     def __init__(self,
                  structure_initial,  # angstrom
                  structure_final,  # angstrom
