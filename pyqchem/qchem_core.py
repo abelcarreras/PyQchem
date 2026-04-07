@@ -89,7 +89,7 @@ def get_version_output(output):
         def is_development(self):
             return self._devel
 
-    index = output[:500].find('\n Q-Chem')
+    index = output[:1000].find('\n Q-Chem')
     string = output[index: index + 30]
 
     return QChemVersion(string)
