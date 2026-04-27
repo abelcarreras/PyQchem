@@ -65,7 +65,7 @@ def get_reduced_mass(atomic_masses, modes):
 
 def get_mass_weighted_modes(atomic_masses, modes):
     """
-    get mass woeighted normal modes
+    get mass weighted normal modes
 
     :param atomic_masses: atomic masses vector
     :param modes: normal modes (non-mass weighted)
