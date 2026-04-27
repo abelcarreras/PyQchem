@@ -79,8 +79,8 @@ def get_mass_weighted_modes(atomic_masses, modes):
 
     mass_weighted_modes = []
     for mode, rm in zip(modes, reduced_mass):
-        #m_b = np.sqrt(mass_atoms / rm)
-        #mass_weighted_modes.append(mode * m_b)
+        # m_b = np.sqrt(mass_atoms / rm)
+        # mass_weighted_modes.append(mode * m_b)
 
         mode = mode * np.sqrt(mass_atoms)
         mass_weighted_modes.append(mode/np.linalg.norm(mode))
@@ -95,7 +95,6 @@ class NormalModes:
     def __init__(self, structure, modes, frequencies, is_mass_weighted=False):
         self._coordinates = np.array(structure.get_coordinates())
 
-        # modes mass weighted and reduced mass in AMU
         self._modes = modes
         if not is_mass_weighted:
             self._modes = get_mass_weighted_modes(structure.get_atomic_masses(), modes)
@@ -124,7 +123,7 @@ class NormalModes:
         """
         get normal modes displacements in mass-weighted coordinates
 
-        :return: normal modes displacements
+        :return: normal modes displacements (modes in columns)
         """
 
         modes = np.array([np.array(mode).flatten().tolist() for mode in self._modes])
