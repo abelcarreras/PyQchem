@@ -36,18 +36,18 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
     return moments_of_inertia, axis_of_inertia
 
 
-def get_reduced_mass(structure, modes, mass_weighted=True):
+def get_reduced_mass(atomic_masses, modes, mass_weighted=False):
     """
     compute the reduced mass of normal modes (AMU)
 
-    :param structure: Structure object
+    :param atomic_masses: atomic masses
     :param modes: normal modes
     :param mass_weighted: if True, Normal modes are assumed mass weighted, else False
     :return: reduced mass in AMU
     """
 
     mass_vector = []
-    for m in structure.get_atomic_masses():
+    for m in atomic_masses:
         for _ in range(3):
             mass_vector.append(m)
 
@@ -55,7 +55,7 @@ def get_reduced_mass(structure, modes, mass_weighted=True):
     for mode in modes:
         mode = np.array(mode).flatten()
 
-        if mass_weighted:
+        if not mass_weighted:
             mode = mode * np.sqrt(mass_vector)
             mode = mode / np.linalg.norm(mode)
 
@@ -66,12 +66,14 @@ def get_reduced_mass(structure, modes, mass_weighted=True):
 
 
 class NormalModes:
-    def __init__(self, structure, modes, frequencies):
+    def __init__(self, structure, modes, frequencies, is_mass_weighted=False):
         self._coordinates = np.array(structure.get_coordinates())
-        self._modes = modes  # in mass weighted coordinates
+        self._modes = modes  # normal modes coordinates
         self._symbols = structure.get_symbols()
+        self._atomic_masses = structure.get_atomic_masses()
         self._frequencies = frequencies  # cm-1
-        self._reduced_mass = get_reduced_mass(structure, modes)  # AMU
+        self._is_mass_weighted = is_mass_weighted
+        self._reduced_mass = get_reduced_mass(self._atomic_masses, modes, mass_weighted=is_mass_weighted)  # AMU
 
         is_freq_negative = np.array(self._frequencies) < 0
         if is_freq_negative.any():
@@ -94,14 +96,23 @@ class NormalModes:
         return [atom_data[an][3] for an in atomic_numbers]
 
     def get_displacements(self):
+        """
+        get normal modes displacements in mass-weighted coordinates
+
+        :return: normal modes displacements
+        """
 
         mass_atoms = np.array([[m] * 3 for m in self.get_atomic_masses()]).flatten()
         modes = np.array([np.array(mode).flatten().tolist() for mode in self._modes])
 
         rot_modes = []
-        for mode, rm in zip(modes, self._reduced_mass):
-            m_b = np.sqrt(rm / np.array(mass_atoms))
-            rot_modes.append(mode/m_b)
+        if not self._is_mass_weighted:
+            for mode, rm in zip(modes, self._reduced_mass):
+                m_b = np.sqrt(rm / np.array(mass_atoms))
+                rot_modes.append(mode/m_b)
+        else:
+            for mode in modes:
+                rot_modes.append(mode)
 
         return np.array(rot_modes).T
 
@@ -332,8 +343,8 @@ class Duschinsky:
     def __init__(self,
                  structure_initial,  # angstrom
                  structure_final,  # angstrom
-                 modes_initial,  # mass weighted coordinates
-                 modes_final,  # mass weighted coordinates
+                 modes_initial,  # non-mass weighted coordinates
+                 modes_final,  # non-mass weighted coordinates
                  frequencies_initial,  # cm -1
                  frequencies_final,  # cm -1
                  n_max_modes=None,
