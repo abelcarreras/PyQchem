@@ -36,13 +36,12 @@ def get_principal_axis_and_moments_of_inertia(cm_vectors, masses):
     return moments_of_inertia, axis_of_inertia
 
 
-def get_reduced_mass(atomic_masses, modes, mass_weighted=False):
+def get_reduced_mass(atomic_masses, modes):
     """
     compute the reduced mass of normal modes (AMU)
 
     :param atomic_masses: atomic masses
-    :param modes: normal modes
-    :param mass_weighted: if True, Normal modes are assumed mass weighted, else False
+    :param modes: non-mass weighted normal modes
     :return: reduced mass in AMU
     """
 
@@ -55,26 +54,55 @@ def get_reduced_mass(atomic_masses, modes, mass_weighted=False):
     for mode in modes:
         mode = np.array(mode).flatten()
 
-        if not mass_weighted:
-            mode = mode * np.sqrt(mass_vector)
-            mode = mode / np.linalg.norm(mode)
-
+        mode = mode * np.sqrt(mass_vector)
+        mode = mode / np.linalg.norm(mode)
         mode = mode / np.sqrt(mass_vector)
+
         r_mass.append(1 / np.dot(mode, mode))
 
     return r_mass
 
 
+def get_mass_weighted_modes(atomic_masses, modes):
+    """
+    get mass woeighted normal modes
+
+    :param atomic_masses: atomic masses vector
+    :param modes: normal modes (non-mass weighted)
+    :return: mass-weighted modes
+    """
+
+    mass_atoms = np.array([[m] * 3 for m in atomic_masses]).flatten()
+    modes = np.array([np.array(mode).flatten().tolist() for mode in modes])
+
+    reduced_mass = get_reduced_mass(atomic_masses, modes)
+
+    mass_weighted_modes = []
+    for mode, rm in zip(modes, reduced_mass):
+        #m_b = np.sqrt(mass_atoms / rm)
+        #mass_weighted_modes.append(mode * m_b)
+
+        mode = mode * np.sqrt(mass_atoms)
+        mass_weighted_modes.append(mode/np.linalg.norm(mode))
+
+    # reshape in original N_modes x N-atoms x 3
+    mass_weighted_modes = np.reshape(mass_weighted_modes, (len(modes), len(atomic_masses), 3))
+
+    return mass_weighted_modes.tolist()
+
+
 class NormalModes:
     def __init__(self, structure, modes, frequencies, is_mass_weighted=False):
         self._coordinates = np.array(structure.get_coordinates())
-        self._modes = modes  # normal modes coordinates
+
+        # modes mass weighted and reduced mass in AMU
+        self._modes = modes
+        if not is_mass_weighted:
+            self._modes = get_mass_weighted_modes(structure.get_atomic_masses(), modes)
+
         self._symbols = structure.get_symbols()
         self._atomic_masses = structure.get_atomic_masses()
         self._frequencies = frequencies  # cm-1
-        self._is_mass_weighted = is_mass_weighted
-        self._reduced_mass = get_reduced_mass(self._atomic_masses, modes, mass_weighted=is_mass_weighted)  # AMU
-
         is_freq_negative = np.array(self._frequencies) < 0
         if is_freq_negative.any():
             warnings.warn('Some modes have negative frequency')
@@ -88,9 +116,6 @@ class NormalModes:
     def get_frequencies(self):
         return self._frequencies  # cm-1
 
-    def get_reduced_mass(self):
-        return self._reduced_mass  # AMU
-
     def get_atomic_masses(self):
         atomic_numbers = [[data[1].upper() for data in atom_data].index(element.upper()) for element in self._symbols]
         return [atom_data[an][3] for an in atomic_numbers]
@@ -102,17 +127,11 @@ class NormalModes:
         :return: normal modes displacements
         """
 
-        mass_atoms = np.array([[m] * 3 for m in self.get_atomic_masses()]).flatten()
         modes = np.array([np.array(mode).flatten().tolist() for mode in self._modes])
 
         rot_modes = []
-        if not self._is_mass_weighted:
-            for mode, rm in zip(modes, self._reduced_mass):
-                m_b = np.sqrt(rm / np.array(mass_atoms))
-                rot_modes.append(mode/m_b)
-        else:
-            for mode in modes:
-                rot_modes.append(mode)
+        for mode in modes:
+            rot_modes.append(mode)
 
         return np.array(rot_modes).T
 
@@ -189,15 +208,12 @@ class NormalModes:
     def trim_modes(self, modes_list):
         modes = []
         frequencies = []
-        reduced_mass = []
         for i in modes_list:
             modes.append(self._modes[i])
             frequencies.append(self._frequencies[i])
-            reduced_mass.append(self._reduced_mass[i])
 
         self._modes = modes
         self._frequencies = frequencies
-        self._reduced_mass = reduced_mass
 
     def trim_negative_frequency_modes(self):
 
