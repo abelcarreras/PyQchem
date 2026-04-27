@@ -352,11 +352,13 @@ class Duschinsky:
 
         self._modes_initial = NormalModes(structure_initial,
                                           modes_initial,
-                                          frequencies_initial)
+                                          frequencies_initial,
+                                          is_mass_weighted=False)
 
         self._modes_final = NormalModes(structure_final,
                                         modes_final,
-                                        frequencies_final)
+                                        frequencies_final,
+                                        is_mass_weighted=False)
 
         self._modes_initial.trim_negative_frequency_modes()
         self._modes_final.trim_negative_frequency_modes()
