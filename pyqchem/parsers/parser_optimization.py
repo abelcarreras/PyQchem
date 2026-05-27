@@ -46,11 +46,13 @@ def basic_optimization(output, print_data=False):
     list_iterations = [l.end() for l in re.finditer('Optimization Cycle', output, re.IGNORECASE)]
     for ini, fin in zip(list_iterations, list_iterations[1:] + [len(output)]):
         step_section = output[ini:fin]
-        enum = step_section.find('Coordinates (Angstroms)')
 
         step_molecule = parse_molecule(step_section, structure.charge, structure.multiplicity)
 
         enum = step_section.find('Energy is')
+        if enum < 0:
+            continue
+
         step_energy = float(step_section[enum: enum+50].split()[2])
         enum = step_section.find('      Gradient')
         step_gradient = float(step_section[enum: enum+50].split()[1])
