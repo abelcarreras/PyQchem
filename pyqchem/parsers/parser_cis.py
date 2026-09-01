@@ -377,5 +377,17 @@ def basic_cis(output):
 
         data_dict['FED'] = data_fed
 
+    # Derivative coupling
+    done_DC = bool(output.find('CIS Derivative Couplings')+1)
+    if done_DC:
+        ini_section = output.find('DC between ground and excited states with ETF:') # DC starts 3 lines after this
+        end_section = output.find('Derivative coupling time:')
+        dc_section = output[ini_section: end_section]
+        data_dc = []
+        for line in dc_section.split('\n')[3:3+n_atoms]:
+            data_dc.append([float(line.split()[1]), float(line.split()[2]), float(line.split()[3])])
+
+        data_dict['derivative_coupling'] = data_dc
+
     return data_dict
 

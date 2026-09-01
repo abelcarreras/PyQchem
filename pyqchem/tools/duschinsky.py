@@ -4,6 +4,7 @@ from scipy.optimize import minimize
 from itertools import product
 from pyqchem.structure import atom_data
 from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS, BOHR_TO_CM, SPEEDOFLIGHT_AU, AU_TO_EV, KB_EV
+from pyqchem.tools.internal_coordinates import get_bonds, get_angles, get_dihedrals, curvilinear_displacement
 import warnings
 
 
@@ -817,6 +818,47 @@ class Duschinsky:
 
         return lmb_i , lmb_f
 
+    def _get_curvilinear_topology(self):
+        """
+        Bond/angle/dihedral topology for the curvilinear displacement
+        """
+        coords = self._modes_final.get_coordinates()
+        bonds = get_bonds(coords)
+        angles = get_angles(coords, bonds)
+        dihedrals = get_dihedrals(bonds, angles)
+        return bonds, angles, dihedrals
+
+    def get_d_vector_curvilinear(self):
+        """
+        Curvilinear-coordinate version of get_d_vector()
+        """
+        bonds, angles, dihedrals = self._get_curvilinear_topology()
+
+        coords_ini = self._modes_initial.get_coordinates()
+        coords_fin = self._modes_final.get_coordinates()
+        L_ini = self._modes_initial.get_displacements()
+        L_fin = self._modes_final.get_displacements()
+        masses = self._modes_initial.get_atomic_masses()
+
+        d_fin = curvilinear_displacement(coords_fin, L_fin, masses, coords_ini,
+                                         bonds, angles, dihedrals)
+        d_ini = curvilinear_displacement(coords_ini, L_ini, masses, coords_fin,
+                                         bonds, angles, dihedrals)
+        return d_ini, d_fin
+
+    def get_huang_rys_curvilinear(self):
+        freq_origin, freq_target = self._get_frequencies()
+        d_ini, d_fin = self.get_d_vector_curvilinear()
+        s_i = 0.5 * freq_origin * d_ini ** 2
+        s_f = 0.5 * freq_target * d_fin ** 2
+        return s_i, s_f
+
+    def get_reorganization_energies_curvilinear(self):
+        freq_origin, freq_target = self._get_frequencies()
+        d_ini, d_fin = self.get_d_vector_curvilinear()
+        lmb_i = 0.5 * freq_origin ** 2 * d_ini ** 2 * AU_TO_EV
+        lmb_f = 0.5 * freq_target ** 2 * d_fin ** 2 * AU_TO_EV
+        return lmb_i, lmb_f
 
 def get_duschinsky(origin_frequency_output, target_frequency_output, n_max_modes=None):
     """
