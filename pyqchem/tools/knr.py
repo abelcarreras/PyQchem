@@ -5,7 +5,7 @@ from pyqchem.tools.duschinsky import NormalModes
 from pyqchem.tools.internal_coordinates import get_bonds, get_angles, get_dihedrals, curvilinear_displacement
 from pyqchem.units import CM1_TO_AU, AMU_TO_ELECTRONMASS, AU_TO_EV, ANGSTROM_TO_AU
 from pyqchem.tools.morse_fit import fit_De_per_mode
-from functools import cache
+from functools import lru_cache
 from scipy.special import gammaln, hyp2f1
 
 class Knr:
@@ -435,7 +435,7 @@ class Knr:
         return (np.pi / hbar ) * np.sum(self.compute_C(max_modes)**2) * fcwd
 
 
-@cache
+@lru_cache(maxsize=None)
 def _recursive_FCF(S,n):
     """
     Compute the FCF using the relation FCF(S,n+1) = S/(n+1) * F(S,n)
