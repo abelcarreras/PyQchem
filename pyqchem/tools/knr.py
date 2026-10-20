@@ -600,7 +600,7 @@ def get_knr(target_frequency_output,
     :return: knr object
     """
 
-    origin_structure = origin_energy_output['optimized_molecule']
+    origin_structure = derivative_coupling_output['structure']
 
     # origin keeps its own frame (derivative_coupling lives there); target gets aligned onto it
     target_frequency_output = _align_structure(target_frequency_output, origin_structure)
