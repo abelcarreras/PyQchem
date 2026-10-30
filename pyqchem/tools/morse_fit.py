@@ -1,7 +1,7 @@
 import re
 import numpy as np
 import glob
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, minimize_scalar
 from pyqchem.units import CM1_TO_AU
 
 def load_morse_scan(filepath):
@@ -75,3 +75,79 @@ def fit_De_per_mode(scan_dir):
         header, fit = fit_morse_scan_file(filepath)
         D_e_per_mode[header['mode_idx']] = fit['D_e']
     return D_e_per_mode
+
+def _fit_De_fixed_V0(Q, E_hartree, V0, freq_cm1):
+    """
+    Least-squares D_e (cm-1) of a Morse potential with V0 and frequency fixed (log scale search)
+    """
+    ssr = lambda lg: np.sum((E_hartree - morse_model(Q, 10 ** lg, 0.0, V0, freq_cm1)) ** 2)
+    grid = np.linspace(1, 20, 381)   # D_e de 10 a 1e20 cm-1
+    g0 = grid[np.argmin([ssr(g) for g in grid])]
+    if grid[0] < g0 < grid[-1]:
+        g0 = minimize_scalar(ssr, bracket=(g0 - 0.05, g0, g0 + 0.05)).x
+    return 10 ** g0
+
+
+def fit_morse_De_oriented(Q, E_hartree, freq_cm1, Q_max=None, V0=None, De_cap=1e8, min_explained=0.5):
+    """
+    Fit the D_e of a Morse potential choosing the orientation of Q from the scan itself.
+    """
+    Q = np.asarray(Q, dtype=float)
+    E_hartree = np.asarray(E_hartree, dtype=float)
+    if Q_max is None:
+        Q_max = min(-Q.min(), Q.max())
+    sel = np.abs(Q) <= Q_max + 1e-8
+    Q, E = Q[sel], E_hartree[sel]
+    if V0 is None:
+        V0 = E[np.argmin(np.abs(Q))]
+
+    e_harm = V0 + 0.5 * freq_cm1 * Q ** 2 * CM1_TO_AU
+    dE = (E - e_harm) / CM1_TO_AU
+    c3, c4 = np.linalg.lstsq(np.vstack([Q ** 3, Q ** 4]).T, dE, rcond=None)[0]
+    sign = 1 if c3 < 0 else -1
+
+    D_e = _fit_De_fixed_V0(sign * Q, E, V0, freq_cm1)
+    e_morse = morse_model(sign * Q, D_e, 0.0, V0, freq_cm1)
+    ssr_harm = np.sum((E - e_harm) ** 2)
+    ssr_morse = np.sum((E - e_morse) ** 2)
+    explained = 1 - ssr_morse / ssr_harm if ssr_harm > 0 else 0.0
+
+    if D_e >= De_cap:
+        status = 'harmonic'
+    elif explained < min_explained:
+        status = 'non_morse'
+    else:
+        status = 'morse'
+
+    return {'D_e': D_e if status == 'morse' else None,
+            'D_e_fit': D_e,
+            'sign': sign,
+            'status': status,
+            'c3': c3,
+            'c4': c4,
+            'explained': explained,
+            'r_squared': 1 - ssr_morse / np.sum((E - E.mean()) ** 2),
+            'V0': V0,
+            'Q_max': Q_max}
+
+
+def fit_morse_scan_file_oriented(filepath, **kwargs):
+    header, Q, E = load_morse_scan(filepath)
+    fit = fit_morse_De_oriented(Q, E, header['freq_cm1'], **kwargs)
+    return header, fit
+
+
+def fit_De_and_signs_per_mode(scan_dir, **kwargs):
+    """
+    Fit all morse_scan_mode*.dat files in scan_dir with fit_morse_De_oriented
+
+    :return: D_e_per_mode {mode: D_e} (only modes with status 'morse'; the rest are harmonic) and
+             signs_per_mode {mode: +1/-1} (orientation of Q, relative to the scan files)
+    """
+    D_e_per_mode, signs_per_mode = {}, {}
+    for filepath in glob.glob('{}/morse_scan_mode*.dat'.format(scan_dir)):
+        header, fit = fit_morse_scan_file_oriented(filepath, **kwargs)
+        if fit['status'] == 'morse':
+            D_e_per_mode[header['mode_idx']] = fit['D_e']
+            signs_per_mode[header['mode_idx']] = fit['sign']
+    return D_e_per_mode, signs_per_mode

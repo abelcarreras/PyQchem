@@ -4,9 +4,9 @@ import copy
 from pyqchem.tools.duschinsky import NormalModes
 from pyqchem.tools.internal_coordinates import get_bonds, get_angles, get_dihedrals, curvilinear_displacement
 from pyqchem.units import CM1_TO_AU, AMU_TO_ELECTRONMASS, AU_TO_EV, ANGSTROM_TO_AU
-from pyqchem.tools.morse_fit import fit_De_per_mode
+from pyqchem.tools.morse_fit import fit_De_and_signs_per_mode
 from functools import lru_cache
-from scipy.special import gammaln, hyp2f1
+from scipy.special import gammaln, hyp2f1, voigt_profile
 
 class Knr:
     """
@@ -20,6 +20,8 @@ class Knr:
                  frequencies_final, # cm-1
                  derivative_coupling,
                  excitation_energy,
+                 broadening='lorentzian',
+                 HWHM=0.005 # eV, (HWHW_gauss, HWHM_lor)
                  ):
 
         self._coordinates_initial = np.array(structure_initial.get_coordinates())  # angstrom
@@ -33,6 +35,8 @@ class Knr:
 
         self.derivative_coupling = np.array(derivative_coupling).flatten() # dim 3N
         self._excitation_energy = excitation_energy
+        self._broadening = broadening
+        self._HWHM = HWHM
 
     def compute_C(self, max_modes=-1):
         """
@@ -183,12 +187,13 @@ class Knr:
                      fcf_threshold=1e-8,
                      max_modes=-1,
                      curvilinear=True,
-                     HWHM=0.005):
+                     HWHM=None,
+                     broadening=None):
         """
         Compute FCWD using the convolution algorithm
         """
 
-        hwhm = HWHM
+        broadening, HWHM = self._get_broadening(broadening,HWHM)
 
         # Pasamos a cm-1 para reproducir el articulo
         num_modes = len(self._modes_final)
@@ -245,19 +250,23 @@ class Knr:
             r_grid = r_new
 
         # Paso D: Average over gaussian function
-        gamma = hwhm / AU_TO_EV / CM1_TO_AU
-
-        lorentzian_array = 1 / np.pi * (gamma / ((energy_grid - gap_cm1)**2 + gamma**2))
-        vibrational_part = np.sum(r_grid * lorentzian_array) * step / CM1_TO_AU / AU_TO_EV
+        profile = _line_profile(energy_grid - gap_cm1, broadening, HWHM)
+        vibrational_part = np.sum(r_grid * profile) * step / CM1_TO_AU / AU_TO_EV
 
         return vibrational_part
 
     def compute_FCWD_anharmonic(self, max_quanta=10, fcf_threshold=1e-8, D_e=30000, max_modes=-1,
-                                curvilinear=True, HWHM=0.005, scan_dir='.'):
+                                curvilinear=True, HWHM=None, scan_dir='.', broadening=None, mode_signs=None):
         """
         Compute FCWD using the convolution algorithms and anharmonic Morse FCF
         """
-        hwhm = HWHM
+
+        broadening, HWHM = self._get_broadening(broadening, HWHM)
+
+        if isinstance(D_e, str) and D_e == 'fitting':
+            D_e, fitted_signs = fit_De_and_signs_per_mode(scan_dir)
+            if mode_signs is None:
+                mode_signs = fitted_signs
 
         num_modes = len(self._modes_final)
         if 0 < max_modes < num_modes:
@@ -267,12 +276,10 @@ class Knr:
 
         d_fin = self.get_d_vector(curvilinear)  # desplazamientos en a.u.
         sign_corr = _get_mode_sign_corrections(self._modes_final)
+        sign_corr = _apply_mode_signs(sign_corr, mode_signs)
         d_fin = sign_corr * np.array(d_fin)  # signo físico por modo (sin abs: preservar signo)
         Delta = -np.sqrt(freqs_au) * d_fin  # Δ = Q_GS - Q_ES = -d_fin
         s_f = 0.5 * freqs_au * d_fin ** 2  # H-R factors (no cambia, depende de |d_fin|²)
-
-        if D_e == 'fitting':
-            D_e = fit_De_per_mode(scan_dir)
 
         # Paso (P): calculo de FCF y energias de configuracion
         modos_data = []
@@ -334,10 +341,8 @@ class Knr:
             r_grid = r_new
 
         # Paso D: Average over gaussian function
-        gamma = hwhm / AU_TO_EV / CM1_TO_AU
-
-        lorentzian_array = 1 / np.pi * (gamma / ((energy_grid - gap_cm1) ** 2 + gamma ** 2))
-        vibrational_part = np.sum(r_grid * lorentzian_array) * step / CM1_TO_AU / AU_TO_EV
+        profile = _line_profile(energy_grid - gap_cm1, broadening, HWHM)
+        vibrational_part = np.sum(r_grid * profile) * step / CM1_TO_AU / AU_TO_EV
 
         return vibrational_part
 
@@ -347,7 +352,8 @@ class Knr:
                   D_e=30000,
                   max_modes=-1,
                   curvilinear=True,
-                  output_file=None):
+                  output_file=None,
+                  mode_signs=None):
         """
         Print harmonic and anharmonic FC factors above fcf_threshold for each mode.
         If output_file is given, writes to that file.
@@ -355,7 +361,7 @@ class Knr:
         freqs_cm1 = self._modes_final.get_frequencies()
         s_f = self.get_huang_rhys(curvilinear)
         d_fin = self.get_d_vector(curvilinear)
-        sign_corr = _get_mode_sign_corrections(self._modes_final)
+        sign_corr =  _apply_mode_signs(_get_mode_sign_corrections(self._modes_final), mode_signs)
         d_fin_signed = sign_corr * np.array(d_fin)
         freqs_au = np.array(freqs_cm1) * CM1_TO_AU
         Delta = -np.sqrt(freqs_au) * d_fin_signed
@@ -413,6 +419,14 @@ class Knr:
         else:
             print(text)
 
+    def _get_broadening(self, broadening, HWHM):
+        """
+        line shape for one calculation: the given one, or the one stored in the object (set in get_knr)
+        """
+        broadening = self._broadening if broadening is None else broadening
+        HWHM = self._HWHM if HWHM is None else HWHM
+        return broadening, HWHM
+
     def compute_knr(self,
                     max_quanta=2,
                     max_modes=-1,
@@ -420,8 +434,10 @@ class Knr:
                     anharmonic=False,
                     D_e=30000,
                     curvilinear=True,
-                    HWHM=0.005,
-                    scan_dir='.'):
+                    HWHM=None,
+                    scan_dir='.',
+                    broadening=None,
+                    mode_signs=None):
         """
         Compute knr as the product of its two parts:
         """
@@ -429,9 +445,12 @@ class Knr:
         hbar = 6.582119569E-16 # eV * s
         # return (np.pi / hbar ) * np.sum(self.compute_C()**2) * self.compute_vibrational(max_quanta, max_modes,fcf_threshold)
         if anharmonic:
-            fcwd = self.compute_FCWD_anharmonic(max_quanta, fcf_threshold, D_e, max_modes,curvilinear, HWHM, scan_dir)
+            fcwd = self.compute_FCWD_anharmonic(max_quanta=max_quanta, fcf_threshold=fcf_threshold, D_e=D_e,
+                                                max_modes=max_modes,curvilinear=curvilinear, HWHM=HWHM,
+                                                scan_dir=scan_dir, broadening=broadening, mode_signs=mode_signs)
         else:
-            fcwd = self.compute_FCWD(max_quanta, fcf_threshold, max_modes,curvilinear, HWHM)
+            fcwd = self.compute_FCWD(max_quanta=max_quanta, fcf_threshold=fcf_threshold, max_modes=max_modes,
+                                     curvilinear=curvilinear, HWHM=HWHM, broadening=broadening)
         return (np.pi / hbar ) * np.sum(self.compute_C(max_modes)**2) * fcwd
 
 
@@ -450,6 +469,30 @@ def _compute_FCF(S,n):
     Compute F-C factor between 0 quanta S1 and n quanta S0, for a mode with Huang-Rhys S
     """
     return (S**n)/ math.factorial(n) * np.exp(-S)
+
+def _line_profile(x_cm1, broadening, HWHM):
+    ev_to_cm1 = 1.0 / (AU_TO_EV * CM1_TO_AU)
+    if broadening == 'lorentzian':
+        gamma = HWHM * ev_to_cm1
+        return gamma / np.pi / (x_cm1 ** 2 + gamma ** 2)
+    if broadening == 'gaussian':
+        sigma = HWHM * ev_to_cm1 / np.sqrt(2 * np.log(2))      # HWHM -> desviacion estandar
+        return np.exp(-0.5 * (x_cm1 / sigma) ** 2) / (sigma * np.sqrt(2 * np.pi))
+    if broadening == 'voigt':
+        hwhm_gauss, hwhm_lorentz = HWHM
+        sigma = hwhm_gauss * ev_to_cm1 / np.sqrt(2 * np.log(2))
+        gamma = hwhm_lorentz * ev_to_cm1
+        return voigt_profile(x_cm1, sigma, gamma)
+
+
+def _apply_mode_signs(sign_corr, mode_signs):
+    sign_corr = np.array(sign_corr, dtype=float)
+    if mode_signs:
+        for mode, sign in mode_signs.items():
+            if sign not in (1, -1):
+                raise ValueError('mode_signs values must be +1 or -1, got {!r} for mode {}'.format(sign, mode))
+            sign_corr[int(mode)] *= sign
+    return sign_corr
 
 def _lorentzian(E, sigma):
     """
@@ -590,7 +633,9 @@ def _align_structure(source_output, reference_structure):
 
 def get_knr(target_frequency_output,
             origin_energy_output, target_energy_output,
-            derivative_coupling_output):
+            derivative_coupling_output,
+            broadening='lorentzian',
+            HWHM=0.005):
     """
     build knr instance object from frequency parser dictionary and derivative coupling calculation
 
@@ -611,4 +656,6 @@ def get_knr(target_frequency_output,
                frequencies_final=[mode['frequency'] for mode in target_frequency_output['modes']],
                derivative_coupling=derivative_coupling_output['derivative_coupling'],
                excitation_energy=origin_energy_output['energy']-target_energy_output['energy'],
+               broadening=broadening,
+               HWHM=HWHM,
                )
