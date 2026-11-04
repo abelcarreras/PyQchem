@@ -2,7 +2,7 @@ import numpy as np
 from collections import defaultdict
 from pyqchem.units import ANGSTROM_TO_AU, AMU_TO_ELECTRONMASS
 
-def get_bonds(coords, cutoff=1.7):
+def get_bonds(coords, cutoff=1.8):
     """
     Builds a matrix that yields indexes
     """
