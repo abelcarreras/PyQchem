@@ -1,0 +1,26 @@
+{
+  "title": "PyQchem: A Python interface for Q-Chem",
+  "upload_type": "software",
+  "description": "<p>PyQchem is a Python library designed to provide a simple and flexible interface to the Q-Chem quantum chemistry software. It allows users to define molecular structures and quantum chemistry calculations directly from Python, execute Q-Chem calculations, and retrieve structured results through a collection of specialized output parsers.</p>\n\n<p>PyQchem is designed to facilitate the integration of quantum chemistry calculations into Python-based computational workflows, providing tools for managing calculations, handling molecular structures, and processing electronic structure data.</p>\n\n<p><strong>Features</strong><br>\n- Simple and clean Python interface for defining and executing Q-Chem calculations<br>\n- Automatic detection and use of the Q-Chem environment<br>\n- Specialized output parsers for different types of quantum chemistry calculations<br>\n- Support for custom basis sets and initial electronic structure guesses<br>\n- Calculation caching system powered by SQLite<br>\n- Tools for handling molecular geometries and electronic structure data<br>\n- Integration with external Python libraries and computational workflows<br>\n- Optional compatibility with wfnsympy, paramiko, and pymatgen</p>\n\n<p><strong>Requirements</strong><br>\n- NumPy<br>\n- SciPy<br>\n- Matplotlib<br>\n- Requests<br>\n- lxml</p>\n\n<p><strong>Installation</strong><br>\nPyQchem can be installed from the Python Package Index using pip:</p>\n<pre>pip install pyqchem</pre>\n\n<p><strong>Documentation and source code</strong><br>\nDocumentation: https://pyqchem.readthedocs.io/<br>\nSource code: https://github.com/abelcarreras/PyQchem</p>",
+  "creators": [
+    {
+      "orcid": "0000-0001-5529-2440",
+      "affiliation": "Donostia International Physics Center (DIPC)",
+      "name": "Abel Carreras"
+    }
+  ],
+  "keywords": [
+    "Python",
+    "Q-Chem",
+    "quantum chemistry",
+    "computational chemistry",
+    "electronic structure",
+    "molecular modeling",
+    "software",
+    "interface"
+  ],
+  "license": {
+    "id": "MIT"
+  },
+  "access_right": "open"
+}
