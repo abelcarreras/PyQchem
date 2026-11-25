@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/abelcarreras/PyQchem/badge.svg?branch=master)](https://coveralls.io/github/abelcarreras/PyQchem?branch=master)
 [![PyPI version](https://badge.fury.io/py/pyqchem.svg)](https://badge.fury.io/py/pyqchem)
 [![Documentation Status](https://readthedocs.org/projects/pyqchem/badge/?version=master)](https://pyqchem.readthedocs.io/en/master/?badge=master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24536389.svg)](https://doi.org/10.5281/zenodo.24536389)
 
 PyQchem
 =======
